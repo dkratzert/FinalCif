@@ -57,6 +57,7 @@ TableRow = namedtuple('TableRow', experiment_table_columns)
 class ReportFormat(enum.Enum):
     RICHTEXT = 'richtext'
     HTML = 'html'
+    LATEX = 'latex'
 
 
 @dataclasses.dataclass(frozen=True)
@@ -715,7 +716,7 @@ class Formatter(ABC):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = ref.Nosphera2Reference()
         return string_to_utf8(refined.split('(')[0]).strip()
 
@@ -1067,6 +1068,7 @@ def text_factory(options: Options, cif: CifContainer) -> dict[ReportFormat, Form
     factory = {
         ReportFormat.RICHTEXT: RichTextFormatter(options, cif),
         ReportFormat.HTML    : HtmlFormatter(options, cif),
+        ReportFormat.LATEX    : HtmlFormatter(options, cif),
         # 'plaintext': StringFormatter(),
     }
     return factory
@@ -1177,25 +1179,41 @@ class TemplatedReport:
         return True
 
     def make_templated_latex_report(self,
-                                   output_filename: str = 'test.html',
-                                   picfile: Path | None = None,
-                                   template_path: Path = Path('.'),
-                                   template_file: str = "report.tmpl") -> bool:
+                                    output_filename: str = 'test.tex',
+                                    picfile: Path | None = None,
+                                    template_path: Path = Path('.'),
+                                    template_file: str = "report.tex") -> bool:
         context = self.get_context(self.cif, self.options, picfile, None)
         jinja_env = jinja2.Environment(
-            block_start_string='\BLOCK{',
-            block_end_string='}',
-            variable_start_string='\VAR{',
-            variable_end_string='}',
-            comment_start_string='\#{',
-            comment_end_string='}',
-            line_statement_prefix='%%',
-            line_comment_prefix='%#',
+            block_start_string=r'\BLOCK{',
+            block_end_string=r'}',
+            variable_start_string=r'\VAR{',
+            variable_end_string=r'}',
+            comment_start_string=r'\#{',
+            comment_end_string=r'}',
+            line_statement_prefix=r'%%',
+            line_comment_prefix=r'%#',
             trim_blocks=True,
             autoescape=False,
             loader=jinja2.FileSystemLoader(searchpath=template_path.resolve())
         )
-        template = jinja_env.get_template('report.tex')
+        jinja_env.globals.update(zip=zip)
+        jinja_env.globals.update(strip=str.strip)
+        jinja_env.filters['to_pm'] = angstrom_to_pm if self.options.use_picometers else do_nothing
+        jinja_env.filters['to_nm'] = angstrom_to_nanometers if self.options.use_picometers else do_nothing
+        jinja_env.filters['inv_article'] = report_text.get_inf_article
+        jinja_env.filters['utf8'] = report_text.utf8
+        jinja_env.filters['float_num'] = report_text.format_float_with_decimal_places
+        jinja_env.filters['ref_num'] = self.count_reference
+        # foo(Kratzert, 2015):
+        jinja_env.filters['ref_short'] = self.reference_short
+        # richtext formatted full reference:
+        jinja_env.filters['ref_long'] = self.reference_long
+        # plain text full reference:
+        jinja_env.filters['ref_txt'] = self.reference_text
+        # html reference:
+        jinja_env.filters['ref_html'] = self.reference_html
+        template = jinja_env.get_template(template_file)
 
         try:
             with open(output_filename, encoding='utf-8', mode='w+t') as f:
@@ -1342,7 +1360,7 @@ if __name__ == '__main__':
 
     import subprocess
 
-    html = True
+    report_type = ReportFormat.LATEX
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
@@ -1364,15 +1382,21 @@ if __name__ == '__main__':
     work.mkdir(exist_ok=True)
     template_path = app_path.application_path / 'template'
 
-    if html:
+    if report_type == ReportFormat.HTML:
         output = work / 'test.html'
         t = TemplatedReport(format=ReportFormat.HTML, options=options, cif=cif)
         ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
-    else:
+    elif report_type == ReportFormat.RICHTEXT:
         output = work / 'test.docx'
         t = TemplatedReport(format=ReportFormat.RICHTEXT, options=options, cif=cif)
         ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
                                           output_filename=str(output), picfile=pic)
+    elif report_type == ReportFormat.LATEX:
+        print('Doing LaTex report')
+        output = work / 'test.tex'
+        t = TemplatedReport(format=ReportFormat.LATEX, options=options, cif=cif)
+        ok = t.make_templated_latex_report(template_path=template_path,
+                                           output_filename=str(output), picfile=pic)
     if ok:
         print('report successfully generated')
         if sys.platform == 'darwin':
