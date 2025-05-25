@@ -1,101 +1,77 @@
 \documentclass[11pt,a4paper,twocolumn]{article}
 
-% Modernes Design und Schrift
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[scaled]{helvet}
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage[ngerman]{babel}
 
-% Seitenränder – linker Rand größer für Ablage
 \usepackage[left=3.5cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
 
-% Tabellen und Typografie
 \usepackage{booktabs}
 \usepackage{microtype}
 \usepackage{caption}
 \captionsetup[table]{position=above}
-\usepackage{siunitx} % für Maßeinheiten
+\usepackage{siunitx}
+\usepackage{verbatim}
+\usepackage{unicode-math}
 
-% Dokumentinformationen
-\title{\textbf{Strukturbeschreibung eines Einkristalls}}
-% \author{Max Mustermann}
-%\date{\today}
+\title{\textbf{  Crystal Structure Report for \VAR{ cif.block.name| replace('_', '\_') } }}
+\author{}
+\date{}
 
 \begin{document}
     \maketitle
 
 
-    A {\VAR{ crystal_colour }}, {\VAR{ crystal_shape }} shaped crystal was mounted on
-    a {\VAR{ cif._diffrn_measurement_specimen_support }}
-    with perfluoroether oil. {\VAR{ crystallization_method }}. Data for {\VAR{ cif.block.name }}
-    were collected from a shock-cooled single crystal at \VAR{ cif._diffrn_ambient_temperature } K
-    on {\VAR{ diffr_type|inv_article }}
-        {\VAR{ diffr_type }} {\VAR{ diffr_device }} with {\VAR{ diffr_source|inv_article }} {\VAR{ diffr_source }}
-    using a {\VAR{ monochromator }} as monochromator and {\VAR{ detector|inv_article }} {\VAR{ detector }}
+    A
+    \BLOCK{ if crystal_colour }
+        \VAR{ crystal_colour },
+    \BLOCK{ endif }
+    \BLOCK{ if crystal_shape }
+        \VAR{ crystal_shape } shaped
+    \BLOCK{ endif }
+    crystal was mounted on
+    \BLOCK{ if cif._diffrn_measurement_specimen_support }
+        a \VAR{ cif._diffrn_measurement_specimen_support }
+        with perfluoroether oil.
+    \BLOCK{ else }
+        the goniometer.
+    \BLOCK{ endif }
+    \VAR{ crystallization_method }. Data for \VAR{ cif.block.name| replace('_', '\_') }
+    were collected from a shock-cooled single crystal at \VAR{ cif._diffrn_ambient_temperature }~K
+    on \VAR{ diffr_type|inv_article } \VAR{ diffr_type } \VAR{ diffr_device } with \VAR{ diffr_source|inv_article } \VAR{ diffr_source }
+    using a \VAR{ monochromator } as monochromator and \VAR{ detector|inv_article } \VAR{ detector }
     detector. The diffractometer
-        BLOCK{ if lowtemp_dev }was equipped with {\VAR{ lowtemp_dev|inv_article }} {\VAR{ lowtemp_dev }}
-        low temperature device and
-            BLOCK{  endif }
-            used {\VAR{ radiation }} radiation BLOCK{if wavelength}(λ = {\VAR{ wavelength }} Å)BLOCK{  endif }.
-                All data were integrated with {\VAR{ integration_progr }} yielding {\VAR{ cif._diffrn_reflns_number }}
-                reflections of which {\VAR{ cif._reflns_number_total }} where independent and
-                    {\VAR{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) }} %
-                were greater than 2σ(<i>F</i><sup>2</sup>).<sup>[{\VAR{ literature.integration|ref_num }}]</sup> A
-                    {\VAR{ abstype }} absorption correction using {\VAR{ abs_details }} was applied.<sup>[{\VAR{ literature.absorption|ref_num }}]</sup>
-                The structure was solved by
-                    {\VAR{ solution_method }} methods with {\VAR{ solution_program }} and refined by full-matrix
-                least-squares methods against
-                <i>F</i><sup>2</sup>
-                using {\VAR{ refinement_prog }}.&NoBreak;<sup>[{\VAR{ literature.solution|ref_num }},{\VAR{ literature.refinement|ref_num }}]</sup>
-                All non-hydrogen atoms
-                were refined with anisotropic displacement parameters.
-                    BLOCK{ if cif.hydrogen_atoms_present }
-                        {\VAR{ hydrogen_atoms }}
-                        BLOCK{  endif }
-                        Crystallographic data for the structures reported in this paper have been deposited
-                        with the Cambridge Crystallographic Data Centre.<sup>[{\VAR{ literature.ccdc|ref_num }}]</sup> CCDC
-                            BLOCK{ if cif._database_code_depnum_ccdc_archive }
-                                {\VAR{ cif._database_code_depnum_ccdc_archive|replace('CCDC ', '') }}BLOCK{ else }
-                                ??????
-                                    BLOCK{  endif }
-                                    contain the supplementary crystallographic data for this paper.
-                                    These data can be obtained free of charge from The Cambridge Crystallographic Data
-                                    Centre via <a href="www.ccdc.cam.ac.uk/structures">www.ccdc.cam.ac.uk/structures</a>.
-                                    This report and the CIF file were generated using FinalCif.<sup>[{\VAR{ literature.finalcif|ref_num }}]</sup>
-                                    \section*{Kristallstruktur}
+    \BLOCK{ if lowtemp_dev }
+        was equipped with \VAR{ lowtemp_dev|inv_article } \VAR{ lowtemp_dev } low temperature device and
+    \BLOCK{  endif }
+        used \VAR{ radiation } radiation \BLOCK{if wavelength}\(λ = \VAR{ wavelength }~Å\)\BLOCK{  endif }.
 
-                                    Die untersuchte Verbindung kristallisiert im monoklinen Kristallsystem. Die Kristallstruktur wurde mit Mo-K\(\alpha\)-Strahlung bei Raumtemperatur gemessen. Die wichtigsten strukturellen Parameter sind in Tabelle~\ref{tab:struktur} zusammengefasst.
-
-                                    \begin{table}[h!]
-                                        \centering
-                                        \caption{Gitterparameter und Raumgruppe der untersuchten Verbindung.}
-                                        \label{tab:struktur}
-                                        \begin{tabular}{@{}ll@{}}
-                                            \toprule
-                                            \textbf{Parameter}                        & \textbf{Wert}     \\
-                                            \midrule
-                                            Raumgruppe                                & $P2_1/c$ (Nr. 14) \\
-                                            a / \si{\angstrom}                        & 7.123(2)          \\
-                                            b / \si{\angstrom}                        & 12.456(3)         \\
-                                            c / \si{\angstrom}                        & 9.789(2)          \\
-                                            $\beta$ / \si{\degree}                    & 101.23(1)         \\
-                                            Volumen / \si{\angstrom^3}                & 842.5(5)          \\
-                                            Z                                         & 4                 \\
-                                            Dichte / \si{\gram\per\cubic\centi\metre} & 2.36              \\
-                                            \bottomrule
-                                        \end{tabular}
-                                    \end{table}
-
-                                    \section*{Diskussion}
-
-                                    Die Raumgruppe $P2_1/c$ ist eine der häufigsten monoklinen Raumgruppen und erlaubt eine dichte Packung der Moleküle. Die Werte der Gitterparameter sind typisch für kleine bis mittelgroße anorganische Molekülverbindungen.
-
-                                    \section*{Fazit}
-
-                                    Die Strukturaufklärung zeigt, dass die Verbindung eine stabile monokline Kristallstruktur besitzt. Die Analyse der atomaren Positionen liefert die Grundlage für weiterführende Untersuchungen, etwa zur elektronischen Struktur oder zum Bindungsverhalten.
-
-
-\end{document}
+            All data were integrated with \VAR{ integration_progr } yielding \VAR{ cif._diffrn_reflns_number }
+            reflections of which \VAR{ cif._reflns_number_total } where independent and
+                \VAR{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) } %
+            were greater than 2σ(<i>F</i><sup>2</sup>).<sup>[\VAR{ literature.integration|ref_num }]</sup> A
+                \VAR{ abstype } absorption correction using \VAR{ abs_details } was applied.<sup>[\VAR{ literature.absorption|ref_num }]</sup>
+            The structure was solved by
+                \VAR{ solution_method } methods with \VAR{ solution_program } and refined by full-matrix
+            least-squares methods against
+            <i>F</i><sup>2</sup>
+            using \VAR{ refinement_prog }.\nobreak<sup>[\VAR{ literature.solution|ref_num },\VAR{ literature.refinement|ref_num }]</sup>
+            All non-hydrogen atoms
+            were refined with anisotropic displacement parameters.
+                \BLOCK{ if cif.hydrogen_atoms_present }
+                    \VAR{ hydrogen_atoms }
+                    \BLOCK{  endif }
+                    Crystallographic data for the structures reported in this paper have been deposited
+                    with the Cambridge Crystallographic Data Centre.<sup>[\VAR{ literature.ccdc|ref_num }]</sup> CCDC
+                        \BLOCK{ if cif._database_code_depnum_ccdc_archive }
+                            \VAR{ cif._database_code_depnum_ccdc_archive|replace('CCDC ', '') }\BLOCK{ else }
+                            ??????
+                                \BLOCK{  endif }
+                                contain the supplementary crystallographic data for this paper.
+                                These data can be obtained free of charge from The Cambridge Crystallographic Data
+                                Centre via <a href="www.ccdc.cam.ac.uk/structures">www.ccdc.cam.ac.uk/structures</a>.
+                                This report and the CIF file were generated using FinalCif.<sup>[\VAR{ literature.finalcif|ref_num }]</sup>
 
 \end{document}

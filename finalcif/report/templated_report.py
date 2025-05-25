@@ -1068,7 +1068,7 @@ def text_factory(options: Options, cif: CifContainer) -> dict[ReportFormat, Form
     factory = {
         ReportFormat.RICHTEXT: RichTextFormatter(options, cif),
         ReportFormat.HTML    : HtmlFormatter(options, cif),
-        ReportFormat.LATEX    : HtmlFormatter(options, cif),
+        ReportFormat.LATEX   : HtmlFormatter(options, cif),
         # 'plaintext': StringFormatter(),
     }
     return factory
@@ -1271,16 +1271,12 @@ class TemplatedReport:
                    'radiation'              : self.text_formatter.get_radiation(cif),
                    'wavelength'             : self.text_formatter.get_wavelength(cif),
                    'theta_range'            : self.text_formatter.get_from_to_theta_range(cif),
-                   'diffr_type'             : gstr(cif['_diffrn_measurement_device_type'])
-                                              or '[No _diffrn_measurement_device_type given]',
-                   'diffr_device'           : string_to_utf8(gstr(cif['_diffrn_measurement_device'])
-                                                             or '[No _diffrn_measurement_device given]'),
-                   'diffr_source'           : gstr(cif['_diffrn_source']).strip('\n\r')
-                                              or '[No _diffrn_source given]',
-                   'monochromator'          : gstr(cif['_diffrn_radiation_monochromator']) \
-                                              or '[No _diffrn_radiation_monochromator given]',
-                   'detector'               : gstr(cif['_diffrn_detector_type']) \
-                                              or '[No _diffrn_detector_type given]',
+                   'diffr_type'             : gstr(cif['_diffrn_measurement_device_type']),
+                   'diffr_device'           : string_to_utf8(gstr(cif['_diffrn_measurement_device'])) or
+                                              'diffractometer',
+                   'diffr_source'           : gstr(cif['_diffrn_source']).strip('\n\r'),
+                   'monochromator'          : gstr(cif['_diffrn_radiation_monochromator']),
+                   'detector'               : gstr(cif['_diffrn_detector_type']),
                    'lowtemp_dev'            : _get_cooling_device(cif),
                    'index_ranges'           : self.text_formatter.hkl_index_limits(cif),
                    'indepentent_refl'       : this_or_quest(cif['_reflns_number_total']),
@@ -1364,7 +1360,7 @@ if __name__ == '__main__':
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
-    testcif = Path(r'test-data/p31c.cif').absolute()
+    #testcif = Path(r'test-data/p31c.cif').absolute()
     cif = CifContainer(testcif)
 
     pic = pathlib.Path("screenshots/finalcif_checkcif.png")
