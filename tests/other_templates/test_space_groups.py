@@ -24,6 +24,9 @@ class TestSpaceGroups(unittest.TestCase):
     def test_to_html(self):
         self.assertEqual('<i>P</i>1', self.s.to_html('P 1'))
 
+    def test_p_1_to_html(self):
+        self.assertEqual('<i>P</i><span style=" text-decoration: overline;">1</span>', self.s.to_html('P -1'))
+
     def test_to_html2(self):
         self.assertEqual('<i>I</i>2/<i>a</i>', self.s.to_html('I 1 2/a 1'))
 

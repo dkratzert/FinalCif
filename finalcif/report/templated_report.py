@@ -16,8 +16,8 @@ from typing import Any
 
 from PySide6.QtWidgets import QApplication
 
-from finalcif.cif.text import string_to_utf8
-from finalcif.template.xsl.convert import xml_to_html
+from finalcif.cif.text import string_to_utf8, escape_for_latex
+from finalcif.template.xsl.convert import xml_to_html, xml_to_latex
 from finalcif.tools.dsrmath import my_isnumeric
 
 # This is necessary, because if jinja crashes, we show an error dialog:
@@ -477,6 +477,12 @@ class Hydrogens:
         """
         return xml_to_html(self.rt)
 
+    def latex(self):
+        """
+        Transforms XML to Latex using XSLT.
+        """
+        return xml_to_latex(self.rt)
+
 
 class Disorder:
     def __init__(self, cif: CifContainer):
@@ -493,11 +499,14 @@ class Disorder:
     def richtext(self) -> RichText:
         return self.rt
 
-    def html(self):
+    def html(self) -> str:
         """
         Transforms XML to HTML using XSLT.
         """
         return xml_to_html(self.rt)
+
+    def latex(self) -> str:
+        return xml_to_latex(self.rt)
 
 
 class Formatter(ABC):
@@ -855,6 +864,106 @@ class Formatter(ABC):
         return string_to_utf8(details)
 
 
+class LatexFormatter(Formatter):
+
+    def __init__(self, options: Options, cif: CifContainer) -> None:
+        super().__init__(options, cif)
+
+    def get_bonds(self) -> list[Bond]:
+        return self._bonds_angles.bonds_as_string
+
+    def get_angles(self) -> list[Angle]:
+        return self._bonds_angles.angles_as_string
+
+    def get_torsion_angles(self) -> list[Torsion]:
+        return self._torsions.torsion_angles_as_string
+
+    def get_hydrogen_bonds(self) -> list[HydrogenBond]:
+        return self._hydrogens.hydrogen_bonds_as_str
+
+    def _format_symminfo(self, txt: str) -> str:
+        return escape_for_latex(txt)
+
+    def get_bonds_angles_symminfo(self) -> str:
+        return self._format_symminfo(self._bonds_angles.symminfo)
+
+    def get_torsion_symminfo(self) -> str:
+        return self._format_symminfo(self._torsions.symminfo)
+
+    def get_hydrogen_symminfo(self) -> str:
+        return self._format_symminfo(self._hydrogens.symminfo)
+
+    def make_3d(self, cif: CifContainer, options: Options) -> str:
+        return escape_for_latex('[3D representation of the structure in html/javascript not implemented]')
+
+    def space_group_formatted(self, cif: CifContainer, _: None) -> str:
+        s = SpaceGroups()
+        try:
+            spgrxml = s.to_latex(cif.space_group)
+            # Mathml doesn't work well in pyQt
+            # spgrxml = s.to_mathml(cif.space_group)
+        except KeyError:
+            spgrxml = '\\emph{?}'
+        return f'{spgrxml} ({cif.spgr_number})'
+
+    def make_picture(self, options: Options, picfile: Path, _: None):
+        picture_path = ''
+        if options.report_text and picfile and picfile.exists():
+            picture_path = str(picfile.resolve())
+        return picture_path
+
+    def format_sum_formula(self, sum_formula: str) -> str:
+        sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
+        html_text = ''
+        if sum_formula_group:
+            for _, word in enumerate(sum_formula_group):
+                if isnumeric(word):
+                    html_text += f'\\_{{{word}}}'
+                elif ')' in word:
+                    html_text += f"\\_{{{word.split(')')[0]}}}\\)"
+                elif ']' in word:
+                    html_text += f"\\_{{{word.split(']')[0]}}}\\)"
+                else:
+                    html_text += word
+                    if word == ',':
+                        html_text += ';\\nobreak'
+            return html_text
+        else:
+            return 'no formula'
+
+    def hydrogen_atoms_refinement(self, cif: CifContainer) -> str:
+        return Hydrogens(cif).html()
+
+    def atoms_refinement(self, cif: CifContainer) -> str:
+        return Atoms(cif).html()
+
+    def disorder_description(self, cif: CifContainer) -> str:
+        self.literature['dsr'] = ref.DSRReference2018()
+        return Disorder(cif).html()
+
+    def get_radiation(self, cif: CifContainer) -> str:
+        # TODO: Make test for this method
+        rad_element, radtype, radline = cif['_diffrn_radiation_type'].partition("K")
+        radline = (radline.replace(r'\a', r'\alpha').replace(r'\b', r'\beta')
+                   .replace(r'\gamma', r'\gamma'))
+        radiation = f'{rad_element}\\textit{{{radtype}}}$_{{{radline}}}$'
+        return radiation
+
+    def hkl_index_limits(self, cif: CifContainer) -> str:
+        limit_h_min = cif['_diffrn_reflns_limit_h_min']
+        limit_h_max = cif['_diffrn_reflns_limit_h_max']
+        limit_k_min = cif['_diffrn_reflns_limit_k_min']
+        limit_k_max = cif['_diffrn_reflns_limit_k_max']
+        limit_l_min = cif['_diffrn_reflns_limit_l_min']
+        limit_l_max = cif['_diffrn_reflns_limit_l_max']
+        return (f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} '
+                f'{less_or_equal} h {less_or_equal} {limit_h_max}<br>'
+                f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} '
+                f'{less_or_equal} k {less_or_equal} {limit_k_max}<br>'
+                f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} '
+                f'{less_or_equal} l {less_or_equal} {limit_l_max}')
+
+
 class HtmlFormatter(Formatter):
 
     def __init__(self, options: Options, cif: CifContainer) -> None:
@@ -1068,7 +1177,7 @@ def text_factory(options: Options, cif: CifContainer) -> dict[ReportFormat, Form
     factory = {
         ReportFormat.RICHTEXT: RichTextFormatter(options, cif),
         ReportFormat.HTML    : HtmlFormatter(options, cif),
-        ReportFormat.LATEX   : HtmlFormatter(options, cif),
+        ReportFormat.LATEX   : LatexFormatter(options, cif),
         # 'plaintext': StringFormatter(),
     }
     return factory
@@ -1360,7 +1469,7 @@ if __name__ == '__main__':
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
-    #testcif = Path(r'test-data/p31c.cif').absolute()
+    # testcif = Path(r'test-data/p31c.cif').absolute()
     cif = CifContainer(testcif)
 
     pic = pathlib.Path("screenshots/finalcif_checkcif.png")

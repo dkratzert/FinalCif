@@ -14,7 +14,8 @@
 \captionsetup[table]{position=above}
 \usepackage{siunitx}
 \usepackage{verbatim}
-\usepackage{unicode-math}
+%\usepackage{unicode-math}
+\usepackage{amsmath}
 
 \title{\textbf{  Crystal Structure Report for \VAR{ cif.block.name| replace('_', '\_') } }}
 \author{}
@@ -46,25 +47,24 @@
     \BLOCK{ if lowtemp_dev }
         was equipped with \VAR{ lowtemp_dev|inv_article } \VAR{ lowtemp_dev } low temperature device and
     \BLOCK{  endif }
-        used \VAR{ radiation } radiation \BLOCK{if wavelength}\(λ = \VAR{ wavelength }~Å\)\BLOCK{  endif }.
-
+        used \VAR{ radiation } radiation \BLOCK{if wavelength} ($\lambda$ = \VAR{ wavelength }~\AA)\BLOCK{ endif }.
             All data were integrated with \VAR{ integration_progr } yielding \VAR{ cif._diffrn_reflns_number }
             reflections of which \VAR{ cif._reflns_number_total } where independent and
-                \VAR{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) } %
-            were greater than 2σ(<i>F</i><sup>2</sup>).<sup>[\VAR{ literature.integration|ref_num }]</sup> A
-                \VAR{ abstype } absorption correction using \VAR{ abs_details } was applied.<sup>[\VAR{ literature.absorption|ref_num }]</sup>
+                \VAR{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) } \%
+            were greater than 2$\sigma$(\textit{F}$^2$).$^{[\VAR{ literature.integration|ref_num }]}$ A
+                \VAR{ abstype } absorption correction using \VAR{ abs_details } was applied.$^{[\VAR{ literature.absorption|ref_num }]}$
             The structure was solved by
                 \VAR{ solution_method } methods with \VAR{ solution_program } and refined by full-matrix
             least-squares methods against
-            <i>F</i><sup>2</sup>
-            using \VAR{ refinement_prog }.\nobreak<sup>[\VAR{ literature.solution|ref_num },\VAR{ literature.refinement|ref_num }]</sup>
+            \textit{F}$^{2}$
+            using \VAR{ refinement_prog }.\nobreak$^{[\VAR{ literature.solution|ref_num },\VAR{ literature.refinement|ref_num }]}$
             All non-hydrogen atoms
             were refined with anisotropic displacement parameters.
                 \BLOCK{ if cif.hydrogen_atoms_present }
                     \VAR{ hydrogen_atoms }
                     \BLOCK{  endif }
                     Crystallographic data for the structures reported in this paper have been deposited
-                    with the Cambridge Crystallographic Data Centre.<sup>[\VAR{ literature.ccdc|ref_num }]</sup> CCDC
+                    with the Cambridge Crystallographic Data Centre.$^{[\VAR{ literature.ccdc|ref_num }]}$ CCDC
                         \BLOCK{ if cif._database_code_depnum_ccdc_archive }
                             \VAR{ cif._database_code_depnum_ccdc_archive|replace('CCDC ', '') }\BLOCK{ else }
                             ??????
@@ -72,6 +72,6 @@
                                 contain the supplementary crystallographic data for this paper.
                                 These data can be obtained free of charge from The Cambridge Crystallographic Data
                                 Centre via <a href="www.ccdc.cam.ac.uk/structures">www.ccdc.cam.ac.uk/structures</a>.
-                                This report and the CIF file were generated using FinalCif.<sup>[\VAR{ literature.finalcif|ref_num }]</sup>
+                                This report and the CIF file were generated using FinalCif.$^{[\VAR{ literature.finalcif|ref_num }]}$
 
 \end{document}
