@@ -10,6 +10,8 @@ from html import unescape
 
 import gemmi
 
+from finalcif.template.unicode2latex.u2l import uni2tex
+
 
 def quote(string: str, wrapping=80) -> str:
     """
@@ -193,6 +195,15 @@ def string_to_utf8(txt: str) -> str:
     return retranslate_delimiter(txt)
 
 
+def string_to_latex(cif_string: str) -> str:
+    utf8_string = string_to_utf8(cif_string)
+    return uni2tex(utf8_string, add_font_modifiers=False, prefer_unicode_math=False, convert_accents=True)
+
+
+def utf8_to_latex(utf8_string: str) -> str:
+    return uni2tex(utf8_string, add_font_modifiers=False, prefer_unicode_math=False, convert_accents=True)
+
+
 def retranslate_delimiter(txt: str, no_html_unescape: bool = False) -> str:
     """
     Translates delimited cif characters back to Unicode characters.
@@ -228,9 +239,9 @@ def escape_for_latex(text: str) -> str:
         '%' : r'\%',
         '~' : r'\textasciitilde{}',
         '^' : r'\textasciicircum{}',
-        '[': r'\[',
-        ']': r'\]',
+        '[' : r'\[',
+        ']' : r'\]',
     }
     regex = re.compile('|'.join(re.escape(key) for key in latex_special_chars))
     escaped_text = regex.sub(lambda match: latex_special_chars[match.group()], text)
-    return escaped_text
+    return string_to_latex(escaped_text)

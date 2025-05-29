@@ -16,7 +16,8 @@ from typing import Any
 
 from PySide6.QtWidgets import QApplication
 
-from finalcif.cif.text import string_to_utf8, escape_for_latex
+from finalcif.cif.text import string_to_utf8, escape_for_latex, string_to_latex
+from finalcif.template.unicode2latex.u2l import uni2tex
 from finalcif.template.xsl.convert import xml_to_html, xml_to_latex
 from finalcif.tools.dsrmath import my_isnumeric
 
@@ -944,8 +945,7 @@ class LatexFormatter(Formatter):
     def get_radiation(self, cif: CifContainer) -> str:
         # TODO: Make test for this method
         rad_element, radtype, radline = cif['_diffrn_radiation_type'].partition("K")
-        radline = (radline.replace(r'\a', r'\alpha').replace(r'\b', r'\beta')
-                   .replace(r'\gamma', r'\gamma'))
+        radline = string_to_latex(radline)
         radiation = f'{rad_element}\\textit{{{radtype}}}$_{{{radline}}}$'
         return radiation
 
