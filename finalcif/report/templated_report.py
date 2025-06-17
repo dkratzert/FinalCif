@@ -356,6 +356,9 @@ class Atoms:
         """
         return xml_to_html(self.rt)
 
+    def latex(self):
+        return xml_to_latex(self.rt)
+
     def number_of_isotropic_atoms(self, without_h: bool = True) -> float | int:
         isotropic_count = 0
         for site in self.cif.atomic_struct.sites:
@@ -933,14 +936,14 @@ class LatexFormatter(Formatter):
             return 'no formula'
 
     def hydrogen_atoms_refinement(self, cif: CifContainer) -> str:
-        return Hydrogens(cif).html()
+        return Hydrogens(cif).latex()
 
     def atoms_refinement(self, cif: CifContainer) -> str:
-        return Atoms(cif).html()
+        return Atoms(cif).latex()
 
     def disorder_description(self, cif: CifContainer) -> str:
         self.literature['dsr'] = ref.DSRReference2018()
-        return Disorder(cif).html()
+        return Disorder(cif).latex()
 
     def get_radiation(self, cif: CifContainer) -> str:
         # TODO: Make test for this method
@@ -1322,6 +1325,7 @@ class TemplatedReport:
         jinja_env.filters['ref_txt'] = self.reference_text
         # html reference:
         jinja_env.filters['ref_html'] = self.reference_html
+        jinja_env.filters['to_latex'] = string_to_latex
         template = jinja_env.get_template(template_file)
 
         try:

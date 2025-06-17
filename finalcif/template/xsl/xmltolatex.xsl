@@ -23,22 +23,22 @@
 
         <xsl:choose>
             <xsl:when test="$sup">
-                <xsl:text>^{</xsl:text>
+                <xsl:text>$^{</xsl:text>
                 <xsl:call-template name="fmt">
                     <xsl:with-param name="txt" select="w:t"/>
                     <xsl:with-param name="b" select="$b"/>
                     <xsl:with-param name="i" select="$i"/>
                 </xsl:call-template>
-                <xsl:text>}</xsl:text>
+                <xsl:text>}$</xsl:text>
             </xsl:when>
             <xsl:when test="$sub">
-                <xsl:text>_{</xsl:text>
+                <xsl:text>$_{</xsl:text>
                 <xsl:call-template name="fmt">
                     <xsl:with-param name="txt" select="w:t"/>
                     <xsl:with-param name="b" select="$b"/>
                     <xsl:with-param name="i" select="$i"/>
                 </xsl:call-template>
-                <xsl:text>}</xsl:text>
+                <xsl:text>}$</xsl:text>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:call-template name="fmt">
