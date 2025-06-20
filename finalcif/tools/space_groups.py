@@ -80,22 +80,22 @@ class SpaceGroups:
         """
         Uses the general format dictionary in order to output a space group as html.
         """
-        html = ''
+        html = '$'
         if not space_group:
             return ''
         for word in self.spgrps[space_group][0]:
             char, space_group_format = word
             if space_group_format == 'italic':
-                html = html + f'\\textit{{{char}}}'
-            elif space_group_format == 'regular':
                 html = html + char
+            elif space_group_format == 'regular':
+                html = html + f'\\text{{{char}}}'
             elif space_group_format == 'sub':
-                html = html + f'\\_{{{char}}}'
+                html = html + f'_{{{char}}}'
             elif space_group_format == 'overline':
                 html = html + f'\\bar{{{char}}}'
             else:
                 print('##############', char)
-        return html
+        return html + '$'
 
     def to_html_without_body(self, space_group: str) -> str:
         """

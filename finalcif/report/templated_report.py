@@ -918,20 +918,19 @@ class LatexFormatter(Formatter):
 
     def format_sum_formula(self, sum_formula: str) -> str:
         sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
-        html_text = ''
+        tex_text = ''
         if sum_formula_group:
             for _, word in enumerate(sum_formula_group):
                 if isnumeric(word):
-                    html_text += f'\\_{{{word}}}'
+                    tex_text += f'$_{{{word}}}$'
                 elif ')' in word:
-                    html_text += f"\\_{{{word.split(')')[0]}}}\\)"
+                    tex_text += f"{word.split(')')[0]})"
                 elif ']' in word:
-                    html_text += f"\\_{{{word.split(']')[0]}}}\\)"
+                    tex_text += f"{word.split(']')[0]})"
                 else:
-                    html_text += word
-                    if word == ',':
-                        html_text += ';\\nobreak'
-            return html_text
+                    word = word.replace(',', ';\\nobreak')
+                    tex_text += word
+            return tex_text
         else:
             return 'no formula'
 
