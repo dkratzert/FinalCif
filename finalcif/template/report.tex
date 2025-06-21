@@ -16,6 +16,7 @@
 \usepackage{verbatim}
 %\usepackage{unicode-math}
 \usepackage{amsmath}
+\usepackage{upgreek}
 
 \title{\textbf{  Crystal Structure Report for \detokenize{\VAR{ cif.block.name }} }}
 \author{}
@@ -84,18 +85,44 @@
 
     \begin{table}[]
     \begin{tabular}{ll}
-    CCDC number             & \VAR{cif._database_code_depnum_ccdc_archive}  \\
-    Empirical formula       &  \VAR{sum_formula} \\
-    Formula weight          & \VAR{ cif._chemical_formula_weight } \\
-    Temperature [K]         & \VAR{ cif._diffrn_ambient_temperature } \\
-    Crystal system          &  \VAR{cif._space_group_crystal_system} \\
-    Space group (number)    &  \VAR{space_group}  \\
-    \textit{a} [Å]          &  \VAR{cif._cell_length_a}  \\
-    \textit{b} [Å]          &  \VAR{cif._cell_length_b}  \\
-    \textit{c} [Å]          &  \VAR{cif._cell_length_c}  \\
-    \textit{alpha} [°]      &  \VAR{cif._cell_angle_alpha}  \\
-    \textit{beta} [°]       &  \VAR{cif._cell_angle_beta}  \\
-    \textit{gamma} [°]      &  \VAR{cif._cell_angle_gamma}  \\
+    CCDC number                         & \VAR{cif._database_code_depnum_ccdc_archive}  \\
+    Empirical formula                   &  \VAR{sum_formula} \\
+    Formula weight                      & \VAR{ cif._chemical_formula_weight } \\
+    Temperature [K]                     & \VAR{ cif._diffrn_ambient_temperature } \\
+    Crystal system                      &  \VAR{cif._space_group_crystal_system} \\
+    Space group (number)                &  \VAR{space_group}  \\
+    \textit{a} [Å]                      &  \VAR{cif._cell_length_a}  \\
+    \textit{b} [Å]                      &  \VAR{cif._cell_length_b}  \\
+    \textit{c} [Å]                      &  \VAR{cif._cell_length_c}  \\
+    \textit{alpha} [°]                  &  \VAR{cif._cell_angle_alpha}  \\
+    \textit{beta} [°]                   &  \VAR{cif._cell_angle_beta}  \\
+    \textit{gamma} [°]                  &  \VAR{cif._cell_angle_gamma}  \\
+    Volume [\AA$^3$]                    &  \VAR{cif._cell_volume}  \\
+    \textit{Z}                          &  \VAR{cif._cell_formula_units_Z}  \\
+    $\rho_{calc}$ [gcm$^{-3}$]          &  \VAR{cif._exptl_crystal_density_diffrn}  \\
+    $\mu$ [mm$^{-1}$]                   &  \VAR{cif._exptl_absorpt_coefficient_mu}  \\
+    $F$(000)                            &  \VAR{cif._exptl_crystal_F_000}  \\
+    Crystal size [mm$^3$]               &  \VAR{crystal_size}  \\
+    Crystal colour                      &  \VAR{crystal_colour}  \\
+    Crystal shape                       &  \VAR{crystal_shape}  \\
+    Radiation                           &  \VAR{radiation} \BLOCK{if wavelength} ($\lambda$=\VAR{ wavelength }\nobreakspace\AA)\BLOCK{ endif } \\
+    2$\uptheta$ range [°]               &  \VAR{theta_range}  \\
+    Index ranges                        &  \VAR{index_ranges}  \\
+    Reflections collected               &  \VAR{cif._diffrn_reflns_number}  \\
+    Independent reflections             &  \VAR{indepentent_refl}  \\
+                                        &  Rint = \VAR{r_int}            \\
+                                        &  Rsigma = \VAR{r_sigma}        \\
+    Completeness
+    \BLOCK{ if theta_full } to
+      $\uptheta$ = \VAR{ theta_full }°
+    \BLOCK{ endif }                     &  \VAR{completeness}\% \\
+    Data / Restraints / Parameters      &  \VAR{ data } / \VAR{ restraints } / \VAR{ parameters }  \\
+    Absorption correction Tmin/Tmax (method)  &  \VAR{ t_min } / \VAR{ t_max } \BLOCK{ if abstype }(\VAR{ abstype })\BLOCK{ endif }  \\
+    Radiation                           &  \VAR{crystal_shape}  \\
+    Radiation                           &  \VAR{crystal_shape}  \\
+    Radiation                           &  \VAR{crystal_shape}  \\
+    Radiation                           &  \VAR{crystal_shape}  \\
+
 
     \end{tabular}
     \end{table}

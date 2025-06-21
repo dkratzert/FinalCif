@@ -928,7 +928,7 @@ class LatexFormatter(Formatter):
                 elif ']' in word:
                     tex_text += f"{word.split(']')[0]})"
                 else:
-                    word = word.replace(',', ';\\nobreak')
+                    word = word.replace(',', ';\\nobreakspace')
                     tex_text += word
             return tex_text
         else:
@@ -958,12 +958,12 @@ class LatexFormatter(Formatter):
         limit_k_max = cif['_diffrn_reflns_limit_k_max']
         limit_l_min = cif['_diffrn_reflns_limit_l_min']
         limit_l_max = cif['_diffrn_reflns_limit_l_max']
-        return (f'{minus_sign if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} '
-                f'{less_or_equal} h {less_or_equal} {limit_h_max}<br>'
-                f'{minus_sign if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} '
-                f'{less_or_equal} k {less_or_equal} {limit_k_max}<br>'
-                f'{minus_sign if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} '
-                f'{less_or_equal} l {less_or_equal} {limit_l_max}')
+        return (f'{"$-$" if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} '
+                fr'$\leq$ h $\leq$ {limit_h_max}\\'
+                f'& {"$-$" if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} '
+                fr'$\leq$ k $\leq$ {limit_k_max}\\'
+                f'& {"$-$" if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} '
+                fr'$\leq$ l $\leq$ {limit_l_max}')
 
 
 class HtmlFormatter(Formatter):
