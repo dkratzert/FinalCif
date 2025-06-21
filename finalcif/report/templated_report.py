@@ -613,7 +613,7 @@ class Formatter(ABC):
             diff_density_min = f"{float(cif['_refine_diff_density_min']):.2f}"
         except ValueError:
             diff_density_min = '?'
-        return diff_density_min
+        return diff_density_min.replace('-', minus_sign)
 
     @staticmethod
     def get_diff_density_max(cif: CifContainer) -> str:
@@ -621,7 +621,7 @@ class Formatter(ABC):
             diff_density_max = f"{float(cif['_refine_diff_density_max']):.2f}"
         except ValueError:
             diff_density_max = '?'
-        return diff_density_max
+        return diff_density_max.replace('-', minus_sign)
 
     @staticmethod
     def get_exti(cif: CifContainer) -> str:
@@ -878,6 +878,22 @@ class LatexFormatter(Formatter):
 
     def get_angles(self) -> list[Angle]:
         return self._bonds_angles.angles_as_string
+
+    @staticmethod
+    def get_diff_density_min(cif: CifContainer) -> str:
+        try:
+            diff_density_min = f"{float(cif['_refine_diff_density_min']):.2f}"
+        except ValueError:
+            diff_density_min = '?'
+        return diff_density_min.replace('-', r'\textminus')
+
+    @staticmethod
+    def get_diff_density_max(cif: CifContainer) -> str:
+        try:
+            diff_density_max = f"{float(cif['_refine_diff_density_max']):.2f}"
+        except ValueError:
+            diff_density_max = '?'
+        return diff_density_max.replace('-', r'\textminus')
 
     def get_torsion_angles(self) -> list[Torsion]:
         return self._torsions.torsion_angles_as_string
@@ -1410,8 +1426,8 @@ class TemplatedReport:
                    'ls_wR_factor_gt'        : this_or_quest(cif['_refine_ls_wR_factor_gt']),
                    'ls_R_factor_all'        : this_or_quest(cif['_refine_ls_R_factor_all']),
                    'ls_wR_factor_ref'       : this_or_quest(cif['_refine_ls_wR_factor_ref']),
-                   'diff_dens_min'          : self.text_formatter.get_diff_density_min(cif).replace('-', minus_sign),
-                   'diff_dens_max'          : self.text_formatter.get_diff_density_max(cif).replace('-', minus_sign),
+                   'diff_dens_min'          : self.text_formatter.get_diff_density_min(cif),
+                   'diff_dens_max'          : self.text_formatter.get_diff_density_max(cif),
                    'exti'                   : self.text_formatter.get_exti(cif),
                    'flack_x'                : self.text_formatter.get_flackx(cif),
                    'integration_progr'      : string_to_utf8(self.text_formatter.get_integration_program(cif)),

@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper,twocolumn]{article}
+\documentclass[10pt,a4paper,twocolumn]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -6,7 +6,7 @@
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage[ngerman]{babel}
 
-\usepackage[left=3.5cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage[left=1.5cm,right=1cm,top=2.0cm,bottom=2.0cm]{geometry}
 
 \usepackage{booktabs}
 \usepackage{microtype}
@@ -117,9 +117,13 @@
       $\uptheta$ = \VAR{ theta_full }°
     \BLOCK{ endif }                     &  \VAR{completeness}\% \\
     Data / Restraints / Parameters      &  \VAR{ data } / \VAR{ restraints } / \VAR{ parameters }  \\
-    Absorption correction Tmin/Tmax (method)  &  \VAR{ t_min } / \VAR{ t_max } \BLOCK{ if abstype }(\VAR{ abstype })\BLOCK{ endif }  \\
-    Radiation                           &  \VAR{crystal_shape}  \\
-    Radiation                           &  \VAR{crystal_shape}  \\
+    Absorption correction Tmin/Tmax     &  \VAR{ t_min } / \VAR{ t_max } \BLOCK{ if abstype }(\VAR{ abstype })\BLOCK{ endif }  \\
+    Goodness-of-fit on $F^2$            &  \VAR{goof}  \\
+    Final R indexes                     &  $R_1$ = \VAR{ ls_R_factor_gt }  \\
+    \([I \geq 2\sigma(I)]\)             &  $wR_2$ = \VAR{ ls_wR_factor_gt }      \\
+    Final R Indexes                     &  $R_1$ = \VAR{ ls_R_factor_all }  \\
+    {[all data]}                        &  $wR_2$ = \VAR{ ls_wR_factor_ref }  \\
+    Largest peak/hole {[e\AA$^{-3}$]}       &  \VAR{ diff_dens_max }/\VAR{ diff_dens_min }  \\
     Radiation                           &  \VAR{crystal_shape}  \\
     Radiation                           &  \VAR{crystal_shape}  \\
 
