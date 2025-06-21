@@ -123,12 +123,36 @@
     \([I \geq 2\sigma(I)]\)             &  $wR_2$ = \VAR{ ls_wR_factor_gt }      \\
     Final R Indexes                     &  $R_1$ = \VAR{ ls_R_factor_all }  \\
     {[all data]}                        &  $wR_2$ = \VAR{ ls_wR_factor_ref }  \\
-    Largest peak/hole {[e\AA$^{-3}$]}       &  \VAR{ diff_dens_max }/\VAR{ diff_dens_min }  \\
-    Radiation                           &  \VAR{crystal_shape}  \\
-    Radiation                           &  \VAR{crystal_shape}  \\
-
-
+    Largest peak/hole {[e\AA$^{-3}$]}   &  \VAR{ diff_dens_max }/\VAR{ diff_dens_min }  \\
+    \BLOCK{ if exti }
+      Extinction coefficient            &  \VAR{ exti }    \\
+    \BLOCK{ endif }
+    \BLOCK{ if flack_x }
+      Flack X parameter                 &  \VAR{flack_x}  \\
+    \BLOCK{ endif }
     \end{tabular}
     \end{table}
+
+    \BLOCK{ if atomic_coordinates }
+        \section*{Table 2. Atomic coordinates and \textit{U}$_{eq}$ {[\AA$^2$]} for \detokenize{\VAR{ cif.block.name }}}
+
+ %   <caption><i>U</i><sub>eq</sub> is defined as 1/3 of the trace of the orthogonalized<i>U</i><sub>ij</sub> tensor.</caption>
+
+        \begin{table}[]
+        \begin{tabular}{lllll}
+            \BLOCK{ for atom in atomic_coordinates }
+                \VAR{ atom.label } & \VAR{ atom.x|replace('\u2212', '\\textminus') } &
+                \VAR{ atom.y|replace('\u2212', '\\textminus') } & \VAR{ atom.z|replace('\u2212', '\\textminus') } &
+                \VAR{ atom.u_eq }  \\
+            \BLOCK{ endfor }
+        \end{tabular}
+        \end{table}
+    \BLOCK{ endif }
+
+    \BLOCK{ if displacement_parameters and options.report_adp }
+
+
+    \BLOCK{ endif }
+
 
 \end{document}
