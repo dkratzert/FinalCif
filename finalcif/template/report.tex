@@ -150,7 +150,21 @@
     \BLOCK{ endif }
 
     \BLOCK{ if displacement_parameters and options.report_adp }
+        %Table 3. Anisotropic displacement parameters [Å<sup>2</sup>] for {{ cif.block.name }}.
+        %        The anisotropic displacement factor exponent takes the form: −2π<sup>2</sup>[&thinsp;<i>h</i><sup>2</sup>(<i>a</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>11</sub>&thinsp;+&thinsp;<i>k</i><sup>2</sup>(<i>b</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>22</sub>&thinsp;+&thinsp;…&thinsp;+&thinsp;2<i>hka</i><sup>*</sup><i>b</i><sup>*</sup><i>U</i><sub>12</sub>&thinsp;]
 
+    % <caption><i>U</i><sub>eq</sub> is defined as 1/3 of the trace of the orthogonalized <i>U</i><sub>ij</sub> tensor.
+
+        \begin{table}[]
+        \begin{tabular}{lllllll}
+           % <th>Atom  <i>U</i><sub>11</sub>  <i>U</i><sub>22</sub>   <i>U</i><sub>33</sub>   <i>U</i><sub>23</sub>   <i>U</i><sub>13</sub>   <i>U</i><sub>12</sub>
+            \BLOCK{ for atom in displacement_parameters }
+                \VAR{ atom.label }  &  \VAR{ atom.U11|replace('\u2212', '\\textminus') }  &  \VAR{ atom.U22|replace('\u2212', '\\textminus') }
+            &  \VAR{ atom.U33|replace('\u2212', '\\textminus') } &  \VAR{ atom.U23|replace('\u2212', '\\textminus') }
+            &  \VAR{ atom.U13|replace('\u2212', '\\textminus') }  &  \VAR{ atom.U12|replace('\u2212', '\\textminus') }  \\
+            \BLOCK{ endfor }
+        \end{tabular}
+        \end{table}
 
     \BLOCK{ endif }
 
