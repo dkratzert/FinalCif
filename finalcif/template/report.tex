@@ -11,7 +11,8 @@
 \usepackage{booktabs}
 \usepackage{microtype}
 \usepackage{caption}
-\captionsetup[table]{position=above}
+\usepackage{makecell}
+\captionsetup[table]{position=below}
 \usepackage{siunitx}
 \usepackage{verbatim}
 %\usepackage{unicode-math}
@@ -28,17 +29,17 @@
 
     A
     \BLOCK{ if crystal_colour }
-        \VAR{ crystal_colour },
+    \VAR{ crystal_colour },
     \BLOCK{ endif }
     \BLOCK{ if crystal_shape }
-        \VAR{ crystal_shape } shaped
+    \VAR{ crystal_shape } shaped
     \BLOCK{ endif }
     crystal was mounted on
     \BLOCK{ if cif._diffrn_measurement_specimen_support }
-        a \VAR{ cif._diffrn_measurement_specimen_support }
-        with perfluoroether oil.
+    a \VAR{ cif._diffrn_measurement_specimen_support }
+    with perfluoroether oil.
     \BLOCK{ else }
-        the goniometer.
+    the goniometer.
     \BLOCK{ endif }
     \VAR{ crystallization_method }. Data for \detokenize{\VAR{ cif.block.name }}
     were collected from a shock-cooled single crystal at \VAR{ cif._diffrn_ambient_temperature }~K
@@ -46,28 +47,28 @@
     using a \VAR{ monochromator } as monochromator and \VAR{ detector|inv_article } \VAR{ detector }
     detector. The diffractometer
     \BLOCK{ if lowtemp_dev }
-        was equipped with \VAR{ lowtemp_dev|inv_article } \VAR{ lowtemp_dev } low temperature device and
+    was equipped with \VAR{ lowtemp_dev|inv_article } \VAR{ lowtemp_dev } low temperature device and
     \BLOCK{  endif }
     used \VAR{ radiation } radiation \BLOCK{if wavelength} ($\lambda$ = \VAR{ wavelength }~\AA)\BLOCK{ endif }.
     All data were integrated with \VAR{ integration_progr } yielding \VAR{ cif._diffrn_reflns_number }
     reflections of which \VAR{ cif._reflns_number_total } where independent and
-        \VAR{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) } \%
+    \VAR{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) } \%
     were greater than 2$\sigma$(\textit{F}$^2$).$^{[\VAR{ literature.integration|ref_num }]}$ A
-        \VAR{ abstype } absorption correction using \VAR{ abs_details } was applied.$^{[\VAR{ literature.absorption|ref_num }]}$
+    \VAR{ abstype } absorption correction using \VAR{ abs_details } was applied.$^{[\VAR{ literature.absorption|ref_num }]}$
     The structure was solved by
-        \VAR{ solution_method } methods with \VAR{ solution_program } and refined by full-matrix
+    \VAR{ solution_method } methods with \VAR{ solution_program } and refined by full-matrix
     least-squares methods against
     \textit{F}$^{2}$
     using \VAR{ refinement_prog }.\nobreak$^{[\VAR{ literature.solution|ref_num },\VAR{ literature.refinement|ref_num }]}$
     All non-hydrogen atoms were refined with anisotropic displacement parameters.
     \BLOCK{ if cif.hydrogen_atoms_present }
-        \VAR{ hydrogen_atoms }
+    \VAR{ hydrogen_atoms }
     \BLOCK{  endif }
     Crystallographic data for the structures reported in this paper have been deposited
     with the Cambridge Crystallographic Data Centre.$^{[\VAR{ literature.ccdc|ref_num }]}$ CCDC
     \BLOCK{ if cif._database_code_depnum_ccdc_archive }
     \VAR{ cif._database_code_depnum_ccdc_archive|replace('CCDC ', '') }\BLOCK{ else }
-        ??????
+    ??????
     \BLOCK{ endif }
     contain the supplementary crystallographic data for this paper.
     These data can be obtained free of charge from The Cambridge Crystallographic Data
@@ -75,99 +76,136 @@
     This report and the CIF file were generated using FinalCif.$^{[\VAR{ literature.finalcif|ref_num }]}$
 
     \BLOCK{ if refinement_details }
-        \section*{Refinement details for \detokenize{\VAR{ cif.block.name }}}
-            \VAR{ refinement_details }
+    \section*{Refinement details for \detokenize{\VAR{ cif.block.name }}}
+    \VAR{ refinement_details }
     \BLOCK{ endif }
 
     \pagebreak
-    
+
     \section*{Table 1. Crystal data and structure refinement for \detokenize{\VAR{ cif.block.name }}}
 
     \begin{table}[]
-    \begin{tabular}{ll}
-    CCDC number                         & \VAR{cif._database_code_depnum_ccdc_archive}  \\
-    Empirical formula                   &  \VAR{sum_formula} \\
-    Formula weight                      & \VAR{ cif._chemical_formula_weight } \\
-    Temperature [K]                     & \VAR{ cif._diffrn_ambient_temperature } \\
-    Crystal system                      &  \VAR{cif._space_group_crystal_system} \\
-    Space group (number)                &  \VAR{space_group}  \\
-    \textit{a} [Å]                      &  \VAR{cif._cell_length_a}  \\
-    \textit{b} [Å]                      &  \VAR{cif._cell_length_b}  \\
-    \textit{c} [Å]                      &  \VAR{cif._cell_length_c}  \\
-    \textit{alpha} [°]                  &  \VAR{cif._cell_angle_alpha}  \\
-    \textit{beta} [°]                   &  \VAR{cif._cell_angle_beta}  \\
-    \textit{gamma} [°]                  &  \VAR{cif._cell_angle_gamma}  \\
-    Volume [\AA$^3$]                    &  \VAR{cif._cell_volume}  \\
-    \textit{Z}                          &  \VAR{cif._cell_formula_units_Z}  \\
-    $\rho_{calc}$ [gcm$^{-3}$]          &  \VAR{cif._exptl_crystal_density_diffrn}  \\
-    $\mu$ [mm$^{-1}$]                   &  \VAR{cif._exptl_absorpt_coefficient_mu}  \\
-    $F$(000)                            &  \VAR{cif._exptl_crystal_F_000}  \\
-    Crystal size [mm$^3$]               &  \VAR{crystal_size}  \\
-    Crystal colour                      &  \VAR{crystal_colour}  \\
-    Crystal shape                       &  \VAR{crystal_shape}  \\
-    Radiation                           &  \VAR{radiation} \BLOCK{if wavelength} ($\lambda$=\VAR{ wavelength }\nobreakspace\AA)\BLOCK{ endif } \\
-    2$\uptheta$ range [°]               &  \VAR{theta_range}  \\
-    Index ranges                        &  \VAR{index_ranges}  \\
-    Reflections collected               &  \VAR{cif._diffrn_reflns_number}  \\
-    Independent reflections             &  \VAR{indepentent_refl}  \\
-                                        &  Rint = \VAR{r_int}            \\
-                                        &  Rsigma = \VAR{r_sigma}        \\
-    Completeness
-    \BLOCK{ if theta_full } to
-      $\uptheta$ = \VAR{ theta_full }°
-    \BLOCK{ endif }                     &  \VAR{completeness}\% \\
-    Data / Restraints / Parameters      &  \VAR{ data } / \VAR{ restraints } / \VAR{ parameters }  \\
-    Absorption correction Tmin/Tmax     &  \VAR{ t_min } / \VAR{ t_max } \BLOCK{ if abstype }(\VAR{ abstype })\BLOCK{ endif }  \\
-    Goodness-of-fit on $F^2$            &  \VAR{goof}  \\
-    Final R indexes                     &  $R_1$ = \VAR{ ls_R_factor_gt }  \\
-    \([I \geq 2\sigma(I)]\)             &  $wR_2$ = \VAR{ ls_wR_factor_gt }      \\
-    Final R Indexes                     &  $R_1$ = \VAR{ ls_R_factor_all }  \\
-    {[all data]}                        &  $wR_2$ = \VAR{ ls_wR_factor_ref }  \\
-    Largest peak/hole {[e\AA$^{-3}$]}   &  \VAR{ diff_dens_max }/\VAR{ diff_dens_min }  \\
-    \BLOCK{ if exti }
-      Extinction coefficient            &  \VAR{ exti }    \\
-    \BLOCK{ endif }
-    \BLOCK{ if flack_x }
-      Flack X parameter                 &  \VAR{flack_x}  \\
-    \BLOCK{ endif }
-    \end{tabular}
+        \begin{tabular}{ll}
+            CCDC number                       & \VAR{cif._database_code_depnum_ccdc_archive}                                                        \\
+            Empirical formula                 & \VAR{sum_formula}                                                                                   \\
+            Formula weight                    & \VAR{ cif._chemical_formula_weight }                                                                \\
+            Temperature [K]                   & \VAR{ cif._diffrn_ambient_temperature }                                                             \\
+            Crystal system                    & \VAR{cif._space_group_crystal_system}                                                               \\
+            Space group (number)              & \VAR{space_group}                                                                                   \\
+            \textit{a} [Å]                    & \VAR{cif._cell_length_a}                                                                            \\
+            \textit{b} [Å]                    & \VAR{cif._cell_length_b}                                                                            \\
+            \textit{c} [Å]                    & \VAR{cif._cell_length_c}                                                                            \\
+            \textit{alpha} [°]                & \VAR{cif._cell_angle_alpha}                                                                         \\
+            \textit{beta} [°]                 & \VAR{cif._cell_angle_beta}                                                                          \\
+            \textit{gamma} [°]                & \VAR{cif._cell_angle_gamma}                                                                         \\
+            Volume [\AA$^3$]                  & \VAR{cif._cell_volume}                                                                              \\
+            \textit{Z}                        & \VAR{cif._cell_formula_units_Z}                                                                     \\
+            $\rho_{calc}$ [gcm$^{-3}$]        & \VAR{cif._exptl_crystal_density_diffrn}                                                             \\
+            $\mu$ [mm$^{-1}$]                 & \VAR{cif._exptl_absorpt_coefficient_mu}                                                             \\
+            $F$(000)                          & \VAR{cif._exptl_crystal_F_000}                                                                      \\
+            Crystal size [mm$^3$]             & \VAR{crystal_size}                                                                                  \\
+            Crystal colour                    & \VAR{crystal_colour}                                                                                \\
+            Crystal shape                     & \VAR{crystal_shape}                                                                                 \\
+            Radiation                         & \VAR{radiation} \BLOCK{if wavelength} ($\lambda$=\VAR{ wavelength }\nobreakspace\AA)\BLOCK{ endif } \\
+            2$\uptheta$ range [°]             & \VAR{theta_range}                                                                                   \\
+            Index ranges                      & \VAR{index_ranges}                                                                                  \\
+            Reflections collected             & \VAR{cif._diffrn_reflns_number}                                                                     \\
+            Independent reflections           & \VAR{indepentent_refl}                                                                              \\
+            & Rint = \VAR{r_int}                                                                                  \\
+            & Rsigma = \VAR{r_sigma}                                                                              \\
+            Completeness
+            \BLOCK{ if theta_full } to
+            $\uptheta$ = \VAR{ theta_full }°
+            \BLOCK{ endif }                   & \VAR{completeness}\%                                                                                \\
+            Data / Restraints / Parameters    & \VAR{ data } / \VAR{ restraints } / \VAR{ parameters }                                              \\
+            Absorption correction Tmin/Tmax   & \VAR{ t_min } / \VAR{ t_max } \BLOCK{ if abstype }(\VAR{ abstype })\BLOCK{ endif }                  \\
+            Goodness-of-fit on $F^2$          & \VAR{goof}                                                                                          \\
+            Final R indexes                   & $R_1$ = \VAR{ ls_R_factor_gt }                                                                      \\
+            \([I \geq 2\sigma(I)]\)           & $wR_2$ = \VAR{ ls_wR_factor_gt }                                                                    \\
+            Final R Indexes                   & $R_1$ = \VAR{ ls_R_factor_all }  \\
+            {[all data]}                      & $wR_2$ = \VAR{ ls_wR_factor_ref }                                                                   \\
+            Largest peak/hole {[e\AA$^{-3}$]} & \VAR{ diff_dens_max }/\VAR{ diff_dens_min }                                                         \\
+            \BLOCK{ if exti }
+            Extinction coefficient            & \VAR{ exti }                                                                                        \\
+            \BLOCK{ endif }
+            \BLOCK{ if flack_x }
+            Flack X parameter                 & \VAR{flack_x}                                                                                       \\
+            \BLOCK{ endif }
+        \end{tabular}\label{tab:table1}
     \end{table}
 
     \BLOCK{ if atomic_coordinates }
-        \section*{Table 2. Atomic coordinates and \textit{U}$_{eq}$ {[\AA$^2$]} for \detokenize{\VAR{ cif.block.name }}}
+    \section*{Table 2. Atomic coordinates and \textit{U}$_{eq}$ {[\AA$^2$]} for \detokenize{\VAR{ cif.block.name }}}
 
-        \begin{table}[]
-            \caption{$U_{eq}$ is defined as 1/3 of the trace of the orthogonalized $U_ij$ tensor.}
+    \begin{table}[]
+        \caption{$U_{eq}$ is defined as 1/3 of the trace of the orthogonalized $U_{ij}$ tensor.}
         \begin{tabular}{lllll}
+            \hline
+            \thead{Atom} &
+            \thead{$x$} &
+            \thead{$y$} &
+            \thead{$z$} &
+            \thead{$U_{eq}$} \\
             \BLOCK{ for atom in atomic_coordinates }
-                \VAR{ atom.label } & \VAR{ atom.x|replace('\u2212', '\\textminus') } &
-                \VAR{ atom.y|replace('\u2212', '\\textminus') } & \VAR{ atom.z|replace('\u2212', '\\textminus') } &
-                \VAR{ atom.u_eq }  \\
+            \VAR{ atom.label } & \VAR{ atom.x|replace('\u2212', ' \\textminus') } &
+            \VAR{ atom.y|replace('\u2212', ' \\textminus') } & \VAR{ atom.z|replace('\u2212', ' \\textminus') } &
+            \VAR{ atom.u_eq } \\
             \BLOCK{ endfor }
-        \end{tabular}
-        \end{table}
+        \end{tabular}\label{tab:table2}
+    \end{table}
     \BLOCK{ endif }
 
     \BLOCK{ if displacement_parameters and options.report_adp }
-        \section*{} Table 3. Anisotropic displacement parameters {[\AA$^2$]} for {{ cif.block.name }}.
-                The anisotropic displacement factor exponent takes the form: −2π<sup>2</sup>[&thinsp;<i>h</i><sup>2</sup>(<i>a</i><sup>*</sup>)
-    <sup>2</sup><i>U</i><sub>11</sub>&thinsp;+&thinsp;<i>k</i><sup>2</sup>(<i>b</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>22</sub>&thinsp;+&thinsp;…&thinsp;+&thinsp;
-    2<i>hka</i><sup>*</sup><i>b</i><sup>*</sup><i>U</i><sub>12</sub>&thinsp;]}
+    \section*{Table 3. Anisotropic displacement parameters {[\AA$^2$]} for \detokenize{\VAR{cif.block.name}}.}
 
 
-        \begin{table}[]
+    \begin{table}[]
+        \caption{
+            The anisotropic displacement factor exponent takes the form:
+            $
+            -2\pi^2\left[h^2\left(a^*\right)^{2}U_{11}\allowbreak +k^2\left(b^*\right)^{2}U_{22} \allowbreak
+                       +\dots \allowbreak +2hka^*b^*U_{12}\right]
+            $
+        }
 
         \begin{tabular}{lllllll}
-           % <th>Atom  <i>U</i><sub>11</sub>  <i>U</i><sub>22</sub>   <i>U</i><sub>33</sub>   <i>U</i><sub>23</sub>   <i>U</i><sub>13</sub>   <i>U</i><sub>12</sub>
+            % <th>Atom  <i>U</i><sub>11</sub>  <i>U</i><sub>22</sub>   <i>U</i><sub>33</sub>   <i>U</i><sub>23</sub>   <i>U</i><sub>13</sub>   <i>U</i><sub>12</sub>
+            \hline
+            \thead{Atom} &
+            \thead{$U_{11}$} &
+            \thead{$U_{22}$} &
+            \thead{$U_{33}$} &
+            \thead{$U_{23}$} &
+            \thead{$U_{13}$} &
+            \thead{$U_{12}$} \\
+
             \BLOCK{ for atom in displacement_parameters }
-                \VAR{ atom.label }  &  \VAR{ atom.U11|replace('\u2212', '\\textminus') }  &  \VAR{ atom.U22|replace('\u2212', '\\textminus') }
-            &  \VAR{ atom.U33|replace('\u2212', '\\textminus') } &  \VAR{ atom.U23|replace('\u2212', '\\textminus') }
-            &  \VAR{ atom.U13|replace('\u2212', '\\textminus') }  &  \VAR{ atom.U12|replace('\u2212', '\\textminus') }  \\
+            \VAR{ atom.label } &
+            \VAR{ atom.U11|replace('\u2212', ' \\textminus') } &
+            \VAR{ atom.U22|replace('\u2212', ' \\textminus') } &
+            \VAR{ atom.U33|replace('\u2212', ' \\textminus') } &
+            \VAR{ atom.U23|replace('\u2212', ' \\textminus') } &
+            \VAR{ atom.U13|replace('\u2212', ' \\textminus') } &
+            \VAR{ atom.U12|replace('\u2212', ' \\textminus') } \\
             \BLOCK{ endfor }
-        \end{tabular}
-        \end{table}
+        \end{tabular}\label{tab:table3}
+    \end{table}
 
     \BLOCK{ endif }
 
+
+    \BLOCK{ if options.bonds_table }
+        \BLOCK{if bonds}
+        \section*{Table 4. Bond lengths and angles for \detokenize{\VAR{ cif.block.name }}}
+        \begin{table}[]
+            \begin{tabular}{ll}
+                \hline
+                \thead{Atom} &
+                \thead{Length {[\AA]}} \\
+            \end{tabular}
+        \end{table}
+
+        \BLOCK{endif}
+    \BLOCK{ endif }
 
 \end{document}
