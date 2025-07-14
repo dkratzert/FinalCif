@@ -59,7 +59,10 @@ class AuthorLoops:
                           f'{self.cif_key}_phone', f'{self.cif_key}_id_orcid', f'{self.cif_key}_id_iucr',
                           f'{self.cif_key}_footnote']
         self.settings = FinalCifSettings()
-        self._migrate_pyqt_saved_templates()
+        try:
+            self._migrate_pyqt_saved_templates()
+        except ImportError as e:
+            print(f'Import of old settings failed:\n{e}')
         if app:
             self.ui.authorEditTabWidget.setCurrentIndex(0)
             self.contact_author_checked(self.ui.ContactAuthorCheckBox.isChecked())
