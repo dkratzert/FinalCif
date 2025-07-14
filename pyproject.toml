@@ -22,28 +22,28 @@ classifiers = [
 ]
 
 dependencies = [
-    "wheel==0.46.1",
-    "certifi==2025.7.9",
+    "wheel",
+    "certifi",
     "chardet",
-    "gemmi==0.7.3",
-    "html2text==2025.4.15",
-    "lxml==6.0.0",
+    "gemmi",
+    "html2text",
+    "lxml",
     "pefile",
     "pybind11",
     "pyqt6",
-    "pyqtwebengine",
+    "PyQt6-WebEngine",
     "python-docx",
     "QtAwesome",
     "QtPy",
     "requests",
     "urllib3",
-    "docxtpl==0.20.0",
+    "docxtpl",
     "shelxfile",
-    "crossrefapi==1.7.0",
+    "crossrefapi",
     "numpy",
     "pyenchant",
-    "hatchling>=1.27.0",
-    "charset-normalizer==3.4.2",
+    "hatchling",
+    "charset-normalizer",
 ]
 
 [dependency-groups]
