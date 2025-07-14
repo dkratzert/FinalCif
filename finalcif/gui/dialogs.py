@@ -3,8 +3,8 @@ import os
 import sys
 from pathlib import Path
 
-from PySide6 import QtCore
-from PySide6.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, QPushButton, QFrame
+from qtpy import QtCore
+from qtpy.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, QPushButton, QFrame
 
 from finalcif import VERSION
 
@@ -226,8 +226,8 @@ def cif_file_save_dialog(filename: str) -> str:
 
 
 if __name__ == '__main__':
-    from PySide6 import QtWidgets
-    from PySide6.QtWidgets import QApplication
+    from qtpy import QtWidgets
+    from qtpy.QtWidgets import QApplication
 
     app = QApplication.instance()
     if app is None:

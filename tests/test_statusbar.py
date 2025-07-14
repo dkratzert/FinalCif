@@ -3,7 +3,7 @@ import os
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
 
-from PySide6.QtGui import QIcon
+from qtpy.QtGui import QIcon
 
 from finalcif.appwindow import AppWindow
 from finalcif.tools.statusbar import StatusBar

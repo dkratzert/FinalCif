@@ -6,7 +6,7 @@ html2text
 lxml
 pefile
 pybind11
-pyside6<6.9
+PyQt6-Qt6
 python-docx~=1.0
 QtAwesome
 QtPy

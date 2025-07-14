@@ -1,10 +1,10 @@
 from __future__ import annotations
 # QcodeEditor.py by acbetter.
 # Taken from: https://stackoverflow.com/questions/40386194/create-text-area-textedit-with-line-number-in-pyqt
-from PySide6 import QtCore, QtGui
-from PySide6.QtCore import QRect, QSize
-from PySide6.QtGui import QColor, QPainter, QTextFormat
-from PySide6.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
+from qtpy import QtCore, QtGui
+from qtpy.QtCore import QRect, QSize
+from qtpy.QtGui import QColor, QPainter, QTextFormat
+from qtpy.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
 
 
 class QLineNumberArea(QWidget):
@@ -94,7 +94,7 @@ class QCodeEditor(QPlainTextEdit):
 
 
 if __name__ == '__main__':
-    from PySide6.QtWidgets import QApplication
+    from qtpy.QtWidgets import QApplication
 
     app = QApplication.instance()
     if app is None:

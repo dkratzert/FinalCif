@@ -6,8 +6,8 @@ from contextlib import suppress
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PySide6 import QtCore
-from PySide6.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget, QLabel
+from qtpy import QtCore
+from qtpy.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget, QLabel
 from gemmi import cif
 
 from finalcif.cif.text import retranslate_delimiter, utf8_to_str

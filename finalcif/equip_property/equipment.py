@@ -4,8 +4,8 @@ from bisect import bisect
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from PySide6 import QtCore
-from PySide6.QtWidgets import QListWidgetItem
+from qtpy import QtCore
+from qtpy.QtWidgets import QListWidgetItem
 from gemmi import cif
 
 from finalcif.app_path import application_path

@@ -8,7 +8,7 @@
 from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
-from PySide6.QtCore import QPoint, QSettings, QSize
+from qtpy.QtCore import QPoint, QSettings, QSize
 
 if TYPE_CHECKING:
     pass

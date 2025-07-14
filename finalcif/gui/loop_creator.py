@@ -1,6 +1,6 @@
 import re
 
-from PySide6.QtWidgets import QWidget
+from qtpy.QtWidgets import QWidget
 
 from finalcif.cif import all_cif_dicts
 from finalcif.cif.cif_file_io import CifContainer
@@ -73,7 +73,7 @@ class LoopCreator(QWidget, Ui_LoopCreator):
 
 if __name__ == '__main__':
     import sys
-    from PySide6.QtWidgets import QApplication
+    from qtpy.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
     cif = CifContainer('test-data/1000006.cif')

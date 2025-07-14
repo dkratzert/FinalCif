@@ -16,9 +16,9 @@ from pathlib import Path, WindowsPath
 
 import gemmi.cif
 import requests
-from PySide6 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
-from PySide6.QtCore import Qt, QEvent
-from PySide6.QtWidgets import (QMainWindow, QCheckBox, QListWidgetItem, QApplication,
+from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
+from qtpy.QtCore import Qt, QEvent
+from qtpy.QtWidgets import (QMainWindow, QCheckBox, QListWidgetItem, QApplication,
                                QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar)
 from gemmi import cif
 

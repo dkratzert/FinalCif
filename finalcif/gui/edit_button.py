@@ -5,7 +5,7 @@
 
 import sys
 
-from PySide6 import QtWidgets, QtCore, QtGui
+from qtpy import QtWidgets, QtCore, QtGui
 
 
 class FloatingButtonWidget(QtWidgets.QPushButton):

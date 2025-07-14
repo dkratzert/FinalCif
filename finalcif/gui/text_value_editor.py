@@ -1,8 +1,8 @@
 import sys
 
-from PySide6 import QtGui, QtCore
-from PySide6.QtCore import QSize, Signal
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QListWidgetItem, QVBoxLayout, QLabel
+from qtpy import QtGui, QtCore
+from qtpy.QtCore import QSize, Signal
+from qtpy.QtWidgets import QWidget, QHBoxLayout, QCheckBox, QListWidgetItem, QVBoxLayout, QLabel
 
 from finalcif.gui import text_templates_ui
 from finalcif.gui.spell_check_edit import SpellTextEdit
@@ -119,7 +119,7 @@ class MyTextTemplateEdit(QWidget):
 
 
 if __name__ == "__main__":
-    from PySide6.QtWidgets import QApplication
+    from qtpy.QtWidgets import QApplication
 
     app = QApplication.instance()
     if app is None:

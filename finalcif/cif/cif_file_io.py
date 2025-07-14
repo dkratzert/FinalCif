@@ -207,18 +207,20 @@ class CifContainer:
         return doc
 
     def cif_as_string(self, without_hkl=False) -> str:
+        opt = gemmi.cif.WriteOptions(gemmi.cif.Style.Indent35)
+
         if without_hkl:
             # return a copy, do not delete hkl from original:
             doc = gemmi.cif.Document()
-            doc.parse_string(self.doc.as_string(style=gemmi.cif.Style.Indent35))
+            doc.parse_string(self.doc.as_string(options=opt))
             for block in doc:
                 if block.find_pair_item('_shelx_hkl_file'):
                     block.find_pair_item('_shelx_hkl_file').erase()
                 if block.find_pair_item('_shelx_fcf_file'):
                     block.find_pair_item('_shelx_fcf_file').erase()
-            return doc.as_string(style=gemmi.cif.Style.Indent35)
+            return doc.as_string(options=opt)
         else:
-            return self.doc.as_string(style=gemmi.cif.Style.Indent35)
+            return self.doc.as_string(options=opt)
 
     def __getitem__(self, item: str) -> str:
         """

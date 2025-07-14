@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
-from PySide6.QtWidgets import QTableWidgetItem, QTextBrowser, QFrame
+from qtpy.QtWidgets import QTableWidgetItem, QTextBrowser, QFrame
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.cod.deposition_list import CODFetcher
