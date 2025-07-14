@@ -210,7 +210,7 @@ class CODdeposit:
             if f.authenticated:
                 self.token_valid = True
             else:
-                self.ui.statusBar.showMessage('Unable to login. Check username/password.', timeout=12000)
+                self.ui.statusBar.showMessage('Unable to login. Check username/password.', 12000)
         f.get_table_data_by_token(self._cod_token)
         parser = MyCODStructuresParser()
         parser.feed(f.table_html)
