@@ -3,8 +3,8 @@ import os
 import sys
 from pathlib import Path
 
-from qtpy import QtCore
-from qtpy.QtWidgets import QMessageBox, QMainWindow, QFileDialog, QVBoxLayout, QTextEdit, QPushButton, QFrame
+from qtpy import QtCore, compat
+from qtpy.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QTextEdit, QPushButton, QFrame
 
 from finalcif import VERSION
 
@@ -203,25 +203,29 @@ def show_yes_now_question(title: str, question: str, parent=None) -> bool:
         return False
 
 
-def cif_file_open_dialog(filter: str = "CIF file (*.cif)", last_dir='') -> str:
+def cif_file_open_dialog(parent: object = None, filter: str = "CIF file (*.cif)", last_dir='', options=None) -> str:
     """
     Returns a cif file name from a file dialog.
     """
-    filename, _ = QFileDialog.getOpenFileName(filter=filter,
-                                              dir=last_dir,
-                                              selectedFilter=filter,
-                                              caption='Open a .cif File')
+    filename, _ = compat.getopenfilename(parent=parent,
+                                         caption='Open a .cif File',
+                                         basedir=last_dir,
+                                         filters=filter,
+                                         selectedfilter=filter,
+                                         options=options
+                                         )
     return filename
 
 
-def cif_file_save_dialog(filename: str) -> str:
+def cif_file_save_dialog(filename: str, parent=None) -> str:
     """
     Returns a cif file name from a file dialog.
     """
-    dialog = QFileDialog(filter="CIF file (*.cif)", caption='Save .cif File')
-    dialog.setDefaultSuffix('.cif')
-    dialog.selectFile(filename)
-    filename, _ = dialog.getSaveFileName(None, 'Select file name', filename)
+    filter = "CIF file (*.cif)"
+    filename, _ = compat.getsavefilename(parent=parent,
+                                         filters=filter,
+                                         caption='Save .cif File',
+                                         selectedfilter=filter)
     return filename
 
 
@@ -248,7 +252,7 @@ if __name__ == '__main__':
     # show_hkl_checksum_warning(parent=w)
     # show_res_checksum_warning(parent=w)
     # unable_to_open_message(parent=w, not_ok=Exception('foo'), filepath=Path('C:/foo.txt'))
-    #do_update_program('127')
+    # do_update_program('127')
     # window.show()
 
     app.exec()

@@ -328,7 +328,7 @@ class AuthorLoops:
         Import an author from a cif file.
         """
         if not filename:
-            filename = cif_file_open_dialog(filter="CIF file (*.cif)")
+            filename = cif_file_open_dialog(parent=self.app, filter="CIF file (*.cif)")
         if not filename:
             return
         doc = read_document_from_cif_file(filename)

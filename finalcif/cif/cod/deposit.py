@@ -380,7 +380,7 @@ class CODdeposit:
         self.user_email = text
 
     def _set_external_hkl_file(self) -> None:
-        file = cif_file_open_dialog(filter="HKL file (*.hkl *.fcf)")
+        file = cif_file_open_dialog(parent=self, filter="HKL file (*.hkl *.fcf)")
         if file.endswith('.hkl'):
             if self.cif.res_file_data:
                 hklf = self.cif._hklf_number_from_shelxl_file()

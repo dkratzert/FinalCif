@@ -14,12 +14,14 @@ from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
 
-import gemmi.cif
+import gemmi
+
+gemmi.set_leak_warnings(False)
 import requests
-from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets
+from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets, compat
 from qtpy.QtCore import Qt, QEvent
 from qtpy.QtWidgets import (QMainWindow, QCheckBox, QListWidgetItem, QApplication,
-                               QPlainTextEdit, QFileDialog, QMessageBox, QScrollBar)
+                            QPlainTextEdit, QMessageBox, QScrollBar)
 from gemmi import cif
 
 from finalcif import VERSION
@@ -417,11 +419,12 @@ class AppWindow(QMainWindow):
     def export_all_templates(self, filename: Path | None = None):
         import pickle
         if not filename:
-            filename, _ = QFileDialog.getSaveFileName(dir=str(Path(self.get_last_workdir()).joinpath(
-                f'finalcif_templates_{time.strftime("%Y-%m-%d")}.dat')),
-                selectedFilter="Template File (*.dat)",
-                filter="Template File (*.dat)",
-                caption='Save templates')
+            filename, _ = compat.getsavefilename(parent=self,
+                                                 basedir=str(Path(self.get_last_workdir()).joinpath(
+                                                     f'finalcif_templates_{time.strftime("%Y-%m-%d")}.dat')),
+                                                 selectedfilter="Template File (*.dat)",
+                                                 filters="Template File (*.dat)",
+                                                 caption='Save templates')
         if not filename:
             return
         templates = {'text'               : self.export_raw_text_templates(),
@@ -440,10 +443,11 @@ class AppWindow(QMainWindow):
     def import_all_templates(self, filename: Path | None = None):
         import pickle
         if not filename:
-            filename, _ = QFileDialog.getOpenFileName(dir=self.get_last_workdir(),
-                                                      selectedFilter="Template File (*.dat)",
-                                                      filter="Template File (*.dat)",
-                                                      caption='Save templates')
+            filename, _ = compat.getopenfilename(parent=self,
+                                                 basedir=self.get_last_workdir(),
+                                                 selectedfilter="Template File (*.dat)",
+                                                 filters="Template File (*.dat)",
+                                                 caption='Save templates')
         if not filename:
             return
         try:
@@ -495,7 +499,7 @@ class AppWindow(QMainWindow):
         """
         Imports a text template from a CIF file.
         """
-        filename = cif_file_open_dialog()
+        filename = cif_file_open_dialog(parent=self)
         if not filename:
             return
         try:
@@ -536,7 +540,8 @@ class AppWindow(QMainWindow):
         if not filename.strip():
             return
         try:
-            doc.write_file(filename, style=cif.Style.Indent35)
+            write_options = cif.WriteOptions(cif.Style.Indent35)
+            doc.write_file(filename, options=write_options)
             # Path(filename).write_text(doc.as_string(cif.Style.Indent35))
         except PermissionError:
             if Path(filename).is_dir():
@@ -1103,9 +1108,10 @@ class AppWindow(QMainWindow):
         if file:
             self.report_picture_path = Path(file)
         else:
-            filename, _ = QFileDialog.getOpenFileName(filter="Image Files (*.png *.jpg *.jpeg *.bmp "
-                                                             "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
-                                                      caption='Open a Report Picture')
+            filename, _ = compat.getopenfilename(parent=self,
+                                                 filters="Image Files (*.png *.jpg *.jpeg *.bmp "
+                                                         "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
+                                                 caption='Open a Report Picture')
             self.set_report_picture_path(filename)
 
     def set_report_picture_path(self, filename: str):
@@ -1409,7 +1415,7 @@ class AppWindow(QMainWindow):
         """
         imp_cif: CifContainer | None = None
         if not filename:
-            filename = cif_file_open_dialog(filter="CIF file (*.cif *.pcf *.cif_od *.cfx *.sqf)")
+            filename = cif_file_open_dialog(parent=self, filter="CIF file (*.cif *.pcf *.cif_od *.cfx *.sqf)")
         if not filename:
             return
         try:
@@ -1460,7 +1466,7 @@ class AppWindow(QMainWindow):
         """
         self.ui.datanameComboBox.blockSignals(True)
         if not filepath:
-            filepath = Path(cif_file_open_dialog(last_dir=self.get_last_workdir()))
+            filepath = Path(cif_file_open_dialog(parent=self, last_dir=self.get_last_workdir()))
             if not filepath.is_file():
                 return
         self.set_path_display_in_file_selector(str(filepath))
@@ -1669,7 +1675,7 @@ class AppWindow(QMainWindow):
         self.load_cif_file(filepath=self.cif.fileobj, load_changes=False)
 
     def get_file_from_dialog(self) -> Path | None:
-        fp = cif_file_open_dialog(last_dir=self.get_last_workdir())
+        fp = cif_file_open_dialog(parent=self, last_dir=self.get_last_workdir())
         if not fp:
             return None
         filepath = Path(fp)

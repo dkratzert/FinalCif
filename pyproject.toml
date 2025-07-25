@@ -33,6 +33,7 @@ dependencies = [
     "pyqt6",
     "PyQt6-WebEngine",
     "python-docx",
+    "packaging",
     "QtAwesome",
     "QtPy",
     "requests",

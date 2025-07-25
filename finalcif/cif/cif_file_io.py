@@ -12,6 +12,7 @@ from contextlib import suppress
 from pathlib import Path
 
 import gemmi
+gemmi.set_leak_warnings(False)
 from gemmi.cif import as_string, Document, Loop
 from packaging.version import Version
 from shelxfile import Shelxfile

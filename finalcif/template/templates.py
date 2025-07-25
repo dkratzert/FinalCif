@@ -4,6 +4,7 @@ from contextlib import suppress
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from qtpy import compat
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QColor
 from qtpy.QtWidgets import QFileDialog, QListWidgetItem
@@ -32,9 +33,9 @@ class ReportTemplates:
 
     def add_new_template(self, templ_path: str = '') -> None:
         if not templ_path:
-            templ_path, _ = QFileDialog.getOpenFileName(filter="DOCX file (*.docx);; html file (*.html *.tmpl)",
-                                                        selectedFilter="DOCX file (*.docx)",
-                                                        caption='Open a Report Template File', parent=self.app)
+            templ_path, _ = compat.getopenfilename(parent=self.app, filters="DOCX file (*.docx);; html file (*.html *.tmpl)",
+                                                        selectedfilter="DOCX file (*.docx)",
+                                                        caption='Open a Report Template File')
         itemslist = self.get_templates_list_from_widget()
         self.app.status_bar.show_message('')
         if templ_path in itemslist:
