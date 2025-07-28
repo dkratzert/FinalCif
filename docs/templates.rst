@@ -54,7 +54,7 @@ Property templates
 
 .. figure:: pics/property_templates.png
 
-Template editor for crystallization methods.
+Template editor for cell measurement temperature.
 
 Templates can be edited anytime and they can be saved as a CIF file. You can use them for any cif keyword.
 Just be creative...
