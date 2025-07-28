@@ -1,7 +1,7 @@
 import sys
 
 import requests
-from PySide6.QtCore import Signal, QObject
+from qtpy.QtCore import Signal, QObject
 
 from finalcif import VERSION
 
@@ -44,8 +44,8 @@ class MyDownloader(QObject):
 
 
 if __name__ == "__main__":
-    from PySide6.QtWidgets import QWidget, QHBoxLayout, QLabel
-    from PySide6.QtWidgets import QApplication
+    from qtpy.QtWidgets import QWidget, QHBoxLayout, QLabel
+    from qtpy.QtWidgets import QApplication
     import threading
 
     app = QApplication(sys.argv)

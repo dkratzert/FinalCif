@@ -9,7 +9,7 @@ import sys
 import time
 import traceback
 from pathlib import Path
-
+from qtpy.QtGui import QIcon
 from finalcif import VERSION
 from finalcif.app_path import application_path
 from finalcif.appwindow import AppWindow, DEBUG, app
@@ -74,7 +74,6 @@ def main():
             file = None
     app.setQuitOnLastWindowClosed(True)
     w = AppWindow(file=file)
-    from PySide6.QtGui import QIcon
     app.setWindowIcon(QIcon(str(application_path / r'icon/finalcif2.png')))
     w.setWindowTitle(f'FinalCif v{VERSION}')
     # w.showMaximized()  # For full screen view

@@ -1,10 +1,10 @@
 from enum import IntEnum
 from typing import TYPE_CHECKING
 
-from PySide6 import QtCore, QtGui
-from PySide6.QtCore import Signal, Qt, QObject, QEvent, QSize
-from PySide6.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
-from PySide6.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea, QWidget
+from qtpy import QtCore, QtGui
+from qtpy.QtCore import Signal, Qt, QObject, QEvent, QSize
+from qtpy.QtGui import QTextOption, QFontMetrics, QContextMenuEvent, QFont, QColor
+from qtpy.QtWidgets import QPlainTextEdit, QFrame, QAbstractScrollArea, QWidget
 
 from finalcif.gui.edit_button import FloatingButtonWidget
 from finalcif.gui.new_key_dialog import NewKey
@@ -91,7 +91,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         """
         Copies the content of a field.
         """
-        from PySide6 import QtWidgets
+        from qtpy import QtWidgets
         if hasattr(self.parent, 'vheaderitems'):
             clipboard = QtWidgets.QApplication.clipboard()
             clipboard.setText(self.cif_key)
@@ -267,7 +267,7 @@ class PlainTextEditTemplate(QPlainTextEdit):
 if __name__ == '__main__':
     import sys
     import random
-    from PySide6.QtWidgets import QApplication, QTableWidget
+    from qtpy.QtWidgets import QApplication, QTableWidget
 
     app = QApplication(sys.argv)
     window = QTableWidget()

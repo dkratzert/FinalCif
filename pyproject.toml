@@ -30,10 +30,8 @@ dependencies = [
     "lxml",
     "pefile",
     "pybind11",
-    "pyside6<6.9",
-    "PyQt5",
-    "PyQt5-Qt5==5.15.2",
     "python-docx",
+    "packaging",
     "QtAwesome",
     "QtPy",
     "requests",
@@ -43,14 +41,16 @@ dependencies = [
     "crossrefapi",
     "numpy",
     "pyenchant",
-    "hatchling>=1.27.0",
+    "hatchling",
+    "charset-normalizer",
+    "pyside6",
+    "pyside6-addons"
 ]
 
 [dependency-groups]
 dev = [
     "pytest",
-    "ruff",
-    "pyside6-stubs",
+    "ruff"
 ]
 
 doc = [

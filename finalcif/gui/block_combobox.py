@@ -1,4 +1,4 @@
-from PySide6 import QtWidgets, QtCore
+from qtpy import QtWidgets, QtCore
 
 
 class ComboBoxWithContextMenu(QtWidgets.QComboBox):

@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
-from PySide6.QtWidgets import QTableWidgetItem, QTextBrowser, QFrame
+from qtpy.QtWidgets import QTableWidgetItem, QTextBrowser, QFrame
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.cod.deposition_list import CODFetcher
@@ -210,7 +210,7 @@ class CODdeposit:
             if f.authenticated:
                 self.token_valid = True
             else:
-                self.ui.statusBar.showMessage('Unable to login. Check username/password.', timeout=12000)
+                self.ui.statusBar.showMessage('Unable to login. Check username/password.', 12000)
         f.get_table_data_by_token(self._cod_token)
         parser = MyCODStructuresParser()
         parser.feed(f.table_html)
@@ -380,7 +380,7 @@ class CODdeposit:
         self.user_email = text
 
     def _set_external_hkl_file(self) -> None:
-        file = cif_file_open_dialog(filter="HKL file (*.hkl *.fcf)")
+        file = cif_file_open_dialog(parent=self, filter="HKL file (*.hkl *.fcf)")
         if file.endswith('.hkl'):
             if self.cif.res_file_data:
                 hklf = self.cif._hklf_number_from_shelxl_file()

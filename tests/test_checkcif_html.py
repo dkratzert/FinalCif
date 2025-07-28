@@ -11,8 +11,8 @@ import time
 import unittest
 from pathlib import Path
 
-from PySide6.QtCore import Qt
-from PySide6.QtTest import QTest
+from qtpy.QtCore import Qt
+from qtpy.QtTest import QTest
 
 from finalcif.appwindow import AppWindow
 from finalcif.gui.custom_classes import Column

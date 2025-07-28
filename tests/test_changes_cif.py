@@ -4,7 +4,7 @@ os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 
-from PySide6.QtGui import QIcon
+from qtpy.QtGui import QIcon
 
 from finalcif import VERSION
 from finalcif.appwindow import AppWindow

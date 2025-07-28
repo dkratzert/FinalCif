@@ -14,7 +14,7 @@ from math import sin, radians
 from pathlib import Path
 from typing import Any
 
-from PySide6.QtWidgets import QApplication
+from qtpy.QtWidgets import QApplication
 
 from finalcif.cif.text import string_to_utf8
 from finalcif.template.xsl.convert import xml_to_html

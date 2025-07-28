@@ -2,7 +2,7 @@ import os
 import unittest
 from pathlib import Path
 
-from PySide6.QtWidgets import QApplication, QMainWindow
+from qtpy.QtWidgets import QApplication, QMainWindow
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.loop_creator import LoopCreator

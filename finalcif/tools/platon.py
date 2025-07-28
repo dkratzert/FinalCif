@@ -7,8 +7,8 @@ from contextlib import suppress
 from pathlib import Path
 from shutil import which
 
-from PySide6 import QtCore
-from PySide6.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, \
+from qtpy import QtCore
+from qtpy.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, \
     QPlainTextEdit
 
 

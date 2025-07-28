@@ -1,8 +1,8 @@
 import sys
 
 import vtk
-from PySide6 import QtWidgets, QtCore
-from PySide6.QtGui import QSurfaceFormat
+from qtpy import QtWidgets, QtCore
+from qtpy.QtGui import QSurfaceFormat
 from vtkmodules.qt.QVTKRenderWindowInteractor import QVTKRenderWindowInteractor
 from vtkmodules.vtkCommonCore import vtkLookupTable
 from vtkmodules.vtkDomainsChemistry import vtkPeriodicTable

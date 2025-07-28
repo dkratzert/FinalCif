@@ -1,5 +1,5 @@
-from PySide6.QtCore import QObject, QEvent
-from PySide6.QtWidgets import QTableWidget
+from qtpy.QtCore import QObject, QEvent
+from qtpy.QtWidgets import QTableWidget
 
 from finalcif.cif.text import retranslate_delimiter
 from finalcif.gui.mixins import ItemTextMixin

@@ -1,8 +1,8 @@
 import threading
 
 import requests
-from PySide6.QtCore import QObject, Signal, Slot
-from PySide6.QtWidgets import QLabel, QMainWindow
+from qtpy.QtCore import QObject, Signal, Slot
+from qtpy.QtWidgets import QLabel, QMainWindow
 
 
 class Class1(QObject):
@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     import sys
-    from PySide6 import QtWidgets
+    from qtpy import QtWidgets
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
     window.show()
@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
 
 """if __name__ == '__main__':
-    from PySide6 import QtWidgets
+    from qtpy import QtWidgets
 
     app = QtWidgets.QApplication([])
 

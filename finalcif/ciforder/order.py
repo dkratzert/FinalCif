@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import gemmi
-from PySide6 import QtWidgets, QtCore
+from qtpy import QtWidgets, QtCore
 
 from finalcif.cif import cif_order
 from finalcif.ciforder.order_ui import Ui_CifOrderForm

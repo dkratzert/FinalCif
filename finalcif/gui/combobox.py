@@ -2,9 +2,9 @@ from __future__ import annotations
 from textwrap import wrap
 from typing import TYPE_CHECKING
 
-from PySide6 import QtCore, QtGui
-from PySide6.QtCore import Qt, QObject, QEvent
-from PySide6.QtWidgets import QComboBox, QSizePolicy
+from qtpy import QtCore, QtGui
+from qtpy.QtCore import Qt, QObject, QEvent
+from qtpy.QtWidgets import QComboBox, QSizePolicy
 
 from finalcif.gui.validators import validators
 

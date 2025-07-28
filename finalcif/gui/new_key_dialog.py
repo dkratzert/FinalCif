@@ -1,7 +1,7 @@
 import re
 
-from PySide6 import QtWidgets, QtGui, QtCore
-from PySide6.QtCore import Signal
+from qtpy import QtWidgets, QtGui, QtCore
+from qtpy.QtCore import Signal
 
 from finalcif.cif import all_cif_dicts
 from finalcif.gui.new_key_dialog_ui import Ui_AddKeyWindow
@@ -50,7 +50,7 @@ class NewKey(QtWidgets.QMainWindow, Ui_AddKeyWindow):
 
 if __name__ == '__main__':
     import sys
-    from PySide6.QtWidgets import QApplication
+    from qtpy.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
 

@@ -12,6 +12,10 @@ from contextlib import suppress
 from pathlib import Path
 
 import gemmi
+
+if hasattr(gemmi, 'set_leak_warnings'):
+    gemmi.set_leak_warnings(False)
+
 from gemmi.cif import as_string, Document, Loop
 from packaging.version import Version
 from shelxfile import Shelxfile
@@ -207,18 +211,20 @@ class CifContainer:
         return doc
 
     def cif_as_string(self, without_hkl=False) -> str:
+        opt = gemmi.cif.WriteOptions(gemmi.cif.Style.Indent35)
+
         if without_hkl:
             # return a copy, do not delete hkl from original:
             doc = gemmi.cif.Document()
-            doc.parse_string(self.doc.as_string(style=gemmi.cif.Style.Indent35))
+            doc.parse_string(self.doc.as_string(options=opt))
             for block in doc:
                 if block.find_pair_item('_shelx_hkl_file'):
                     block.find_pair_item('_shelx_hkl_file').erase()
                 if block.find_pair_item('_shelx_fcf_file'):
                     block.find_pair_item('_shelx_fcf_file').erase()
-            return doc.as_string(style=gemmi.cif.Style.Indent35)
+            return doc.as_string(options=opt)
         else:
-            return self.doc.as_string(style=gemmi.cif.Style.Indent35)
+            return self.doc.as_string(options=opt)
 
     def __getitem__(self, item: str) -> str:
         """
@@ -850,7 +856,7 @@ class CifContainer:
         publ_loop = self.block.find_loop('_geom_angle_publ_flag')
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in \
-                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=True):
+            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=True):
             if ((without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or
                                 self.ishydrogen(label3))) or (self.yes_not_set(publ))):
                 continue
@@ -895,11 +901,13 @@ class CifContainer:
         publ_loop = self.block.find_loop('_geom_torsion_publ_flag')
         tors = namedtuple('Torsion',
                           ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
-        for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4, publ in zip(label1, label2, label3,  # noqa: B020
+        for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4, publ in zip(label1, label2, label3,
+                                                                                             # noqa: B020
                                                                                              label4,
                                                                                              torsang, symm1, symm2,
                                                                                              symm3,
-                                                                                             symm4, publ_loop, strict=True):
+                                                                                             symm4, publ_loop,
+                                                                                             strict=True):
             if ((without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
                                 or self.ishydrogen(label3) or self.ishydrogen(label3))) or self.yes_not_set(publ)):
                 continue
@@ -922,7 +930,7 @@ class CifContainer:
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in (
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
             if self.yes_not_set(publ):
                 continue
             if self.picometer:

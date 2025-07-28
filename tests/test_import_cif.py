@@ -1,6 +1,6 @@
 import os
 
-from PySide6.QtWidgets import QApplication
+from qtpy.QtWidgets import QApplication
 app = QApplication.instance()
 if app is None:
     app = QApplication([])
