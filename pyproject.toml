@@ -30,8 +30,6 @@ dependencies = [
     "lxml",
     "pefile",
     "pybind11",
-    "pyqt6",
-    "PyQt6-WebEngine",
     "python-docx",
     "packaging",
     "QtAwesome",
@@ -45,6 +43,8 @@ dependencies = [
     "pyenchant",
     "hatchling",
     "charset-normalizer",
+    "pyside6",
+    "pyside6-addons"
 ]
 
 [dependency-groups]

@@ -2,6 +2,7 @@
 
 import sys
 from os import path
+#pyinstaller myapp.py --noconfirm --onedir --hidden-import PySide6.QtWebEngineWidgets --exclude-module PySide6.QtMultimedia
 
 block_cipher = None
 site_packages = next(p for p in sys.path if 'site-packages' in p)

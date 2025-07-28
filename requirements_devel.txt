@@ -8,4 +8,4 @@ sphinx
 sphinx-rtd-theme
 pytest
 ruff
-pyqt6-stubs
+pyside6-stubs

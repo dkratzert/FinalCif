@@ -16,7 +16,9 @@ from pathlib import Path, WindowsPath
 
 import gemmi
 
-gemmi.set_leak_warnings(False)
+if hasattr(gemmi, 'set_leak_warnings'):
+    gemmi.set_leak_warnings(False)
+
 import requests
 from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets, compat
 from qtpy.QtCore import Qt, QEvent
