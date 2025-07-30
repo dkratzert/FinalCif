@@ -19,7 +19,7 @@ class SHELXTlistfile(ParserMixin):
             self.solutions = {}
             self.parse_file()
 
-    def parse_file(self):
+    def parse_file(self) -> None:
         """
          +  SHELXT  -  CRYSTAL STRUCTURE SOLUTION - VERSION 2018/2            +
         """
@@ -29,11 +29,15 @@ class SHELXTlistfile(ParserMixin):
                 if 'SHELXTL' in line:
                     self.version = 'SHELXT ' + line.split()[-1]
             if line.strip().startswith('R1  Rweak Alpha'):
-                for n in range(100):
-                    if not self._text[num + 1 + n]:
-                        break
-                    if self._text[num + 1]:
-                        self.solutions[self._text[num + 1 + n][58:76].strip()] = self._text[num + 1 + n][37:51].strip()
+                try:
+                    for n in range(100):
+                        if not self._text[num + 1 + n]:
+                            break
+                        if self._text[num + 1]:
+                            self.solutions[self._text[num + 1 + n][58:76].strip()] = self._text[num + 1 + n][37:51].strip()
+                except IndexError:
+                    return None
+        return None
 
 
 class SolutionProgram:
@@ -58,16 +62,21 @@ class SolutionProgram:
         except (TypeError, AttributeError):
             res = ''
         byxt = res.find('REM SHELXT solution in')
-        for x in xt_files:
-            shelxt = SHELXTlistfile(x.as_posix())
-            if shelxt.version and byxt:
-                self.method = 'direct'
-                self.solution_listfile = 'foo'  # x.name
-                return shelxt
         if byxt > 0:
+            for x in xt_files:
+                shelxt = SHELXTlistfile(x.as_posix())
+                if shelxt.version and byxt:
+                    self.method = 'direct'
+                    self.solution_listfile = 'foo'  # x.name
+                    return shelxt
             xt = SHELXTlistfile('')
             xt.version = "SHELXT (G. Sheldrick)"
             self.method = 'direct'
+            return xt
+        if res.find('Best SHELXD solution'):
+            xt = SHELXTlistfile('')
+            xt.version = "SHELXD (G. Sheldrick)"
+            self.method = 'dual space'
             return xt
         xt = SHELXTlistfile('')
         xt.version = "SHELXS (G. Sheldrick)"
