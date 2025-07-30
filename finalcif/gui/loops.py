@@ -18,10 +18,10 @@ from finalcif.gui.validators import validators
 
 with suppress(ImportError):
     import qtawesome
-from PySide6 import QtCore, QtWidgets, QtGui
-from PySide6.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, Signal, QEvent
-from PySide6.QtGui import QCursor, QColor
-from PySide6.QtWidgets import QTableView, QHeaderView, QMenu
+from qtpy import QtCore, QtWidgets, QtGui
+from qtpy.QtCore import QAbstractTableModel, QModelIndex, Qt, QSize, Signal, QEvent
+from qtpy.QtGui import QCursor, QColor
+from qtpy.QtWidgets import QTableView, QHeaderView, QMenu
 from gemmi import cif
 from gemmi.cif import as_string, is_null
 from packaging import version

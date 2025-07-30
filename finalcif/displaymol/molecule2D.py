@@ -5,9 +5,9 @@ from math import sqrt, cos, sin, dist
 from pathlib import Path
 
 import numpy as np
-from PySide6 import QtWidgets, QtCore, QtGui
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent
+from qtpy import QtWidgets, QtCore, QtGui
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer

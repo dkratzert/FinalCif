@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import gemmi.cif
-from PySide6.QtWidgets import QListWidgetItem
+from qtpy.QtWidgets import QListWidgetItem
 from gemmi.cif import Loop, as_string
 
 from finalcif.cif.cif_file_io import CifContainer
@@ -59,7 +59,10 @@ class AuthorLoops:
                           f'{self.cif_key}_phone', f'{self.cif_key}_id_orcid', f'{self.cif_key}_id_iucr',
                           f'{self.cif_key}_footnote']
         self.settings = FinalCifSettings()
-        self._migrate_pyqt_saved_templates()
+        try:
+            self._migrate_pyqt_saved_templates()
+        except ImportError as e:
+            print(f'Import of old settings failed:\n{e}')
         if app:
             self.ui.authorEditTabWidget.setCurrentIndex(0)
             self.contact_author_checked(self.ui.ContactAuthorCheckBox.isChecked())
@@ -325,7 +328,7 @@ class AuthorLoops:
         Import an author from a cif file.
         """
         if not filename:
-            filename = cif_file_open_dialog(filter="CIF file (*.cif)")
+            filename = cif_file_open_dialog(parent=self.app, filter="CIF file (*.cif)")
         if not filename:
             return
         doc = read_document_from_cif_file(filename)

@@ -3,10 +3,10 @@ from __future__ import annotations
 import re
 from enum import IntEnum
 
-from PySide6 import QtCore, QtGui
-from PySide6.QtCore import QEvent, QObject, Qt
-from PySide6.QtGui import QColor, QKeySequence, QBrush
-from PySide6.QtWidgets import QAbstractScrollArea, QTableWidget, \
+from qtpy import QtCore, QtGui
+from qtpy.QtCore import QEvent, QObject, Qt
+from qtpy.QtGui import QColor, QKeySequence, QBrush
+from qtpy.QtWidgets import QAbstractScrollArea, QTableWidget, \
     QTableWidgetItem, QWidget, QApplication, QHeaderView
 
 from finalcif.cif.text import retranslate_delimiter

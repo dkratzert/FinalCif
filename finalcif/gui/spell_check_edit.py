@@ -29,11 +29,11 @@ import os
 import sys
 from typing import Union
 
-from PySide6 import QtGui, QtCore
-from PySide6.QtCore import QEvent, QPoint
-from PySide6.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
+from qtpy import QtGui, QtCore
+from qtpy.QtCore import QEvent, QPoint
+from qtpy.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTextCharFormat, QTextCursor,
                            QContextMenuEvent)
-from PySide6.QtWidgets import (QApplication, QMenu, QPlainTextEdit)
+from qtpy.QtWidgets import (QApplication, QMenu, QPlainTextEdit)
 
 try:
     if "RUNNING_TEST" in os.environ:

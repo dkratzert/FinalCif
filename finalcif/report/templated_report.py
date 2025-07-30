@@ -14,7 +14,7 @@ from math import sin, radians
 from pathlib import Path
 from typing import Any
 
-from PySide6.QtWidgets import QApplication
+from qtpy.QtWidgets import QApplication
 
 from finalcif.cif.text import string_to_utf8, escape_for_latex, string_to_latex
 from finalcif.template.unicode2latex.u2l import uni2tex

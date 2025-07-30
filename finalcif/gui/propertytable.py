@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QTableWidget, QWidget
+from qtpy.QtWidgets import QTableWidget, QWidget
 
 
 class MyPropTableWidget(QTableWidget):

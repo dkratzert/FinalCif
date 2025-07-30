@@ -1,6 +1,6 @@
-from PySide6 import QtCore
-from PySide6.QtCore import QSize, Qt
-from PySide6.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
+from qtpy import QtCore
+from qtpy.QtCore import QSize, Qt
+from qtpy.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
     QVBoxLayout, QWidget
 
 
@@ -185,7 +185,7 @@ class MyVRFContainer(QWidget):
 
 
 if __name__ == '__main__':
-    from PySide6.QtWidgets import QApplication
+    from qtpy.QtWidgets import QApplication
     import sys
 
     app = QApplication(sys.argv)

@@ -12,6 +12,10 @@ from contextlib import suppress
 from pathlib import Path
 
 import gemmi
+
+if hasattr(gemmi, 'set_leak_warnings'):
+    gemmi.set_leak_warnings(False)
+
 from gemmi.cif import as_string, Document, Loop
 from packaging.version import Version
 from shelxfile import Shelxfile
@@ -207,18 +211,20 @@ class CifContainer:
         return doc
 
     def cif_as_string(self, without_hkl=False) -> str:
+        opt = gemmi.cif.WriteOptions(gemmi.cif.Style.Indent35)
+
         if without_hkl:
             # return a copy, do not delete hkl from original:
             doc = gemmi.cif.Document()
-            doc.parse_string(self.doc.as_string(style=gemmi.cif.Style.Indent35))
+            doc.parse_string(self.doc.as_string(options=opt))
             for block in doc:
                 if block.find_pair_item('_shelx_hkl_file'):
                     block.find_pair_item('_shelx_hkl_file').erase()
                 if block.find_pair_item('_shelx_fcf_file'):
                     block.find_pair_item('_shelx_fcf_file').erase()
-            return doc.as_string(style=gemmi.cif.Style.Indent35)
+            return doc.as_string(options=opt)
         else:
-            return self.doc.as_string(style=gemmi.cif.Style.Indent35)
+            return self.doc.as_string(options=opt)
 
     def __getitem__(self, item: str) -> str:
         """
@@ -712,13 +718,13 @@ class CifContainer:
         x = self.block.find_loop('_atom_site_fract_x')
         y = self.block.find_loop('_atom_site_fract_y')
         z = self.block.find_loop('_atom_site_fract_z')
-        part = self.block.find_loop('_atom_site_disorder_group')
-        occ = self.block.find_loop('_atom_site_occupancy')
+        part = self.block.find_loop('_atom_site_disorder_group') or ('0',) * len(labels)
+        occ = self.block.find_loop('_atom_site_occupancy') or ('1.000000',) * len(labels)
         u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
         atom = namedtuple('atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
         for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z,
-                                                         part if part else ('0',) * len(labels),
-                                                         occ if occ else ('1.000000',) * len(labels),
+                                                         part,
+                                                         occ,
                                                          u_eq, strict=True):
             if without_h and self.ishydrogen(label):
                 continue
@@ -809,7 +815,7 @@ class CifContainer:
         label2 = self.block.find_loop('_geom_bond_atom_site_label_2')
         dist = self.block.find_loop('_geom_bond_distance')
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
-        publ_loop = self.block.find_loop('_geom_bond_publ_flag')
+        publ_loop = self.block.find_loop('_geom_bond_publ_flag') or len(label1) * ['?']
         bond = namedtuple('bond', ('label1', 'label2', 'dist', 'symm'))
         for label1, label2, dist, symm, publ in zip(label1, label2, dist, symm, publ_loop):
             if (without_h and (self.ishydrogen(label1) or self.ishydrogen(label2))) or self.yes_not_set(publ):
@@ -847,10 +853,10 @@ class CifContainer:
         angle_val = self.block.find_loop('_geom_angle')
         symm1 = self.block.find_loop('_geom_angle_site_symmetry_1')
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
-        publ_loop = self.block.find_loop('_geom_angle_publ_flag')
+        publ_loop = self.block.find_loop('_geom_angle_publ_flag') or len(label1) * ['?']
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in \
-                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=True):
+            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=True):
             if ((without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or
                                 self.ishydrogen(label3))) or (self.yes_not_set(publ))):
                 continue
@@ -892,14 +898,16 @@ class CifContainer:
         symm2 = self.block.find_loop('_geom_torsion_site_symmetry_2')
         symm3 = self.block.find_loop('_geom_torsion_site_symmetry_3')
         symm4 = self.block.find_loop('_geom_torsion_site_symmetry_4')
-        publ_loop = self.block.find_loop('_geom_torsion_publ_flag')
+        publ_loop = self.block.find_loop('_geom_torsion_publ_flag') or len(label1) * ['?']
         tors = namedtuple('Torsion',
                           ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
-        for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4, publ in zip(label1, label2, label3,  # noqa: B020
+        for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4, publ in zip(label1, label2, label3,
+                                                                                             # noqa: B020
                                                                                              label4,
                                                                                              torsang, symm1, symm2,
                                                                                              symm3,
-                                                                                             symm4, publ_loop, strict=True):
+                                                                                             symm4, publ_loop,
+                                                                                             strict=True):
             if ((without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
                                 or self.ishydrogen(label3) or self.ishydrogen(label3))) or self.yes_not_set(publ)):
                 continue
@@ -918,11 +926,11 @@ class CifContainer:
         dist_da = self.block.find_loop('_geom_hbond_distance_DA')
         angle_dha = self.block.find_loop('_geom_hbond_angle_DHA')
         symm = self.block.find_loop('_geom_hbond_site_symmetry_A')
-        publ_loop = self.block.find_loop('_geom_hbond_publ_flag')
+        publ_loop = self.block.find_loop('_geom_hbond_publ_flag') or len(label_d) * ['?']
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in (
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
             if self.yes_not_set(publ):
                 continue
             if self.picometer:

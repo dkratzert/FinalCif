@@ -6,9 +6,9 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 from collections.abc import Iterable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from PySide6.QtCore import QPoint, QSettings, QSize
+from qtpy.QtCore import QPoint, QSettings, QSize
 
 if TYPE_CHECKING:
     pass
@@ -189,7 +189,7 @@ class FinalCifSettings:
                 continue
         return keydict
 
-    def _load_settings(self, property: str, item_name: str):
+    def _load_settings(self, property: str, item_name: str) -> Any | None:
         directory = self.list_saved_items(property)
         if directory and item_name in directory:
             self.settings.beginGroup(property)
@@ -201,6 +201,7 @@ class FinalCifSettings:
                 v = None
             self.settings.endGroup()
             return v
+        return None
 
     def list_saved_items(self, property: str) -> list:
         self.settings.beginGroup(property)
