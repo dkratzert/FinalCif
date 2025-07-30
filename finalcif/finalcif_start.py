@@ -5,6 +5,7 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+import os
 import sys
 import time
 import traceback
@@ -64,6 +65,7 @@ def main():
         sys.excepthook = my_exception_hook
     # windows_style = QStyleFactory.create('Fusion')
     # app.setStyle(windows_style)
+    os.environ['QT_API'] = 'pyside6'
     file = None
     if len(sys.argv) > 1:
         file = Path(sys.argv[1])
