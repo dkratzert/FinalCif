@@ -6,6 +6,8 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 import os
+
+os.environ['QT_API'] = 'pyside6'
 import sys
 import time
 import traceback
@@ -61,7 +63,6 @@ def my_exception_hook(exctype: type[BaseException], value: BaseException, error_
 
 
 def main():
-    os.environ['QT_API'] = 'pyside6'
     if not DEBUG:
         sys.excepthook = my_exception_hook
     # windows_style = QStyleFactory.create('Fusion')
