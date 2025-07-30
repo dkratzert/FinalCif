@@ -61,11 +61,11 @@ def my_exception_hook(exctype: type[BaseException], value: BaseException, error_
 
 
 def main():
+    os.environ['QT_API'] = 'pyside6'
     if not DEBUG:
         sys.excepthook = my_exception_hook
     # windows_style = QStyleFactory.create('Fusion')
     # app.setStyle(windows_style)
-    os.environ['QT_API'] = 'pyside6'
     file = None
     if len(sys.argv) > 1:
         file = Path(sys.argv[1])
