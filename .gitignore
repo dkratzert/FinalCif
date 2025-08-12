@@ -226,3 +226,4 @@ tests/examples/report_multi-finalcif.docx
 tests/examples/work/cu_BruecknerJK_153F40_0m.lxt
 finalcif_keys_order.cif
 !/.python-version
+/platon/*.mod

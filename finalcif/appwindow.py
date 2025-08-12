@@ -127,6 +127,25 @@ class AppWindow(QMainWindow):
         if file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
+        self.ui.CheckcifPlaintextEdit.insertPlainText(
+            "\n"
+            "  Offline CheckCIF uses PLATON from Anthony L. Spek, Utrecht University, The Netherlands."
+            "\n"
+            "  https://platonsoft.nl\n"
+            "  \n"
+            "  Please cite PLATON in your publication if you use it.\n"
+            "  \n"
+            "  - PLATON References : \n"
+            "            Spek, A.L. (2003). J. Appl. Cryst. 36, 7-13.\n"
+            "            Spek, A.L. (2009). Acta Cryst. D65, 148-155.\n"
+            "            Spek, A.L. (2015). Acta Cryst. C71, 9-18.\n"
+            "            Spek, A.L. (2018). Inorg. Chim. Acta, 470, 232-237.\n"
+            "            Spek, A.L. (2020). Acta Cryst. E76, 1-11.\n"
+            "  \n"
+            "  \n"
+            "  - Recent versions of PLATON may be obtained from: https://platonsoft.nl/xraysoft\n"
+            "  "
+        )
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
@@ -1073,6 +1092,7 @@ class AppWindow(QMainWindow):
         runner.finished.connect(lambda: self.ui.CheckcifButton.setEnabled(True))
         runner.run_process()
         runner.formula.connect(self.add_moiety_furmula)
+        return None
 
     def add_moiety_furmula(self, formula_moiety):
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=Column.CIF)
