@@ -43,7 +43,7 @@ class PlatonRunner(QtCore.QObject):
         self.cif_file.with_suffix('.chk').unlink(missing_ok=True)
         self.process.start(self.platon_exe, ["-U", str(self.cif_file.name)])
 
-    def _onfinished(self):
+    def _onfinished(self) -> None:
         self._on_ready_read()
         # os.chdir(self._origdir)
         self._parse_chk_file()
@@ -51,11 +51,11 @@ class PlatonRunner(QtCore.QObject):
         self.finished.emit(True)
         self.delete_orphaned_files()
 
-    def _on_ready_read(self):
+    def _on_ready_read(self) -> None:
         output = self.process.readAllStandardOutput().data().decode()
         self.log_widget.appendPlainText(output)
 
-    def _monitor_output_log(self):
+    def _monitor_output_log(self) -> None:
         while not self.is_stopped:
             self.tick.emit('#')
             time.sleep(0.3)
@@ -68,13 +68,13 @@ class PlatonRunner(QtCore.QObject):
             except FileNotFoundError:
                 break
 
-    def _stop_program(self):
+    def _stop_program(self) -> None:
         self.is_stopped = True
         # if self.process and self.process.state() == QProcess.Running:
         self.process.terminate()
         self.finished.emit(True)
 
-    def _parse_chk_file(self):
+    def _parse_chk_file(self) -> None:
         try:
             self.chk_file_text = self.cif_file.with_suffix('.chk').read_text(encoding='latin1', errors='ignore')
         except FileNotFoundError as e:
@@ -89,6 +89,9 @@ class PlatonRunner(QtCore.QObject):
 
     @property
     def platon_exe(self) -> str:
+        special_platon = Path(__file__).resolve().parent.parent.parent.joinpath('platon/platon_special.exe')
+        if special_platon.exists():
+            return str(special_platon)
         if sys.platform.startswith('win'):
             in_pwt = r'C:\pwt\platon.exe'
         else:
@@ -103,10 +106,10 @@ class PlatonRunner(QtCore.QObject):
     def kill(self):
         if sys.platform.startswith('win'):
             with suppress(FileNotFoundError):
-                subprocess.run(["taskkill", "/f", "/im", "platon.exe"], shell=False)
+                subprocess.run(["taskkill", "/f", "/im", "platon.exe"], check=False, shell=False)
         if sys.platform[:5] in ('linux', 'darwi'):
             with suppress(FileNotFoundError):
-                subprocess.run(["killall", "platon"], shell=False)
+                subprocess.run(["killall", "platon"], check=False, shell=False)
 
     def delete_orphaned_files(self):
         # delete orphaned files:
