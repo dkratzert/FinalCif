@@ -817,7 +817,7 @@ class CifContainer:
         symm = self.block.find_loop('_geom_bond_site_symmetry_2')
         publ_loop = self.block.find_loop('_geom_bond_publ_flag') or len(label1) * ['?']
         bond = namedtuple('bond', ('label1', 'label2', 'dist', 'symm'))
-        for label1, label2, dist, symm, publ in zip(label1, label2, dist, symm, publ_loop):
+        for label1, label2, dist, symm, publ in zip(label1, label2, dist, symm, publ_loop, strict=False):
             if (without_h and (self.ishydrogen(label1) or self.ishydrogen(label2))) or self.yes_not_set(publ):
                 continue
             else:
@@ -855,10 +855,10 @@ class CifContainer:
         symm2 = self.block.find_loop('_geom_angle_site_symmetry_3')
         publ_loop = self.block.find_loop('_geom_angle_publ_flag') or len(label1) * ['?']
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
-        for label1, label2, label3, angle_val, symm1, symm2, publ in \
-            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=True):
-            if ((without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or
-                                self.ishydrogen(label3))) or (self.yes_not_set(publ))):
+        for label1, label2, label3, angle_val, symm1, symm2, publ in (
+                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=False)):
+            if ((without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3))) or
+                    self.yes_not_set(publ)):
                 continue
             else:
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
@@ -902,12 +902,11 @@ class CifContainer:
         tors = namedtuple('Torsion',
                           ('label1', 'label2', 'label3', 'label4', 'torsang', 'symm1', 'symm2', 'symm3', 'symm4'))
         for label1, label2, label3, label4, torsang, symm1, symm2, symm3, symm4, publ in zip(label1, label2, label3,
-                                                                                             # noqa: B020
                                                                                              label4,
                                                                                              torsang, symm1, symm2,
                                                                                              symm3,
                                                                                              symm4, publ_loop,
-                                                                                             strict=True):
+                                                                                             strict=False):
             if ((without_h and (self.ishydrogen(label1) or self.ishydrogen(label2)
                                 or self.ishydrogen(label3) or self.ishydrogen(label3))) or self.yes_not_set(publ)):
                 continue
@@ -930,7 +929,7 @@ class CifContainer:
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in (
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop)):
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop, strict=False)):
             if self.yes_not_set(publ):
                 continue
             if self.picometer:
@@ -948,6 +947,11 @@ class CifContainer:
         """
         keys_without_values, keys_with_values = self.keys_with_essentials()
         return keys_without_values + [('These below are already in:', '---------------------')] + keys_with_values
+
+    def pairs(self):
+        for item in self.block:
+            if item.pair is not None:
+                yield item.pair
 
     def _is_centrokey(self, key) -> bool:
         """
