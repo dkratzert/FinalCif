@@ -6,6 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 import re
+import os
 from collections import namedtuple
 from collections.abc import Generator
 from contextlib import suppress
@@ -257,7 +258,6 @@ class CifContainer:
                 f", {self.nangles()} angles")
 
     def file_is_there_and_writable(self) -> bool:
-        import os
         return self.fileobj.exists() and self.fileobj.is_file() and os.access(self.fileobj, os.W_OK)
 
     def set_pair_delimited(self, key: str, txt: str):
@@ -720,7 +720,7 @@ class CifContainer:
         z = self.block.find_loop('_atom_site_fract_z')
         part = self.block.find_loop('_atom_site_disorder_group') or ('0',) * len(labels)
         occ = self.block.find_loop('_atom_site_occupancy') or ('1.000000',) * len(labels)
-        u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv')
+        u_eq = self.block.find_loop('_atom_site_U_iso_or_equiv') or ('.',) * len(labels)
         atom = namedtuple('atom', ('label', 'type', 'x', 'y', 'z', 'part', 'occ', 'u_eq'))
         for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z,
                                                          part,
@@ -946,7 +946,7 @@ class CifContainer:
         Returns the key/value pairs of a cif file sorted by priority.
         """
         keys_without_values, keys_with_values = self.keys_with_essentials()
-        return keys_without_values + [('These below are already in:', '---------------------')] + keys_with_values
+        return [*keys_without_values, ('These below are already in:', '---------------------'), *keys_with_values]
 
     def pairs(self):
         for item in self.block:
@@ -977,7 +977,7 @@ class CifContainer:
                 #    continue
                 if self._is_centrokey(key):
                     continue
-                if not value or value == '?' or value == "'?'":
+                if not value or value in {'?', "'?'"}:
                     questions.append((key, value))
                 else:
                     with_values.append((key, value))
