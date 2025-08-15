@@ -46,6 +46,7 @@ class CifContainer:
             new_block: Create a new block (new file) if a name is given. Otherwise, just
                        the existing document is opened.
         """
+        self.chars_ok = True
         self.picometer: bool = False
         self._abs_hkl_details: dict[str, str] = {}
         if isinstance(file, str):
