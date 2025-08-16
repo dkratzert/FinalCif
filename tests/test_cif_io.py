@@ -128,6 +128,15 @@ class CifFileTestCase(unittest.TestCase):
                   '-1 0 0 -0.0279 0.03389 7\n')
         self.assertEqual(result, self.cif.hkl_as_cif[:200])
 
+    def test_publ_flag_not_set(self):
+        self.assertEqual("bond(label1='C1', label2='O1', dist='1.438(3)', symm='.')", str(next(iter(self.cif.bonds()))))
+        self.cif.block.find_loop('_geom_bond_publ_flag')[0] = 'no'
+        # This is not C1-O1, but C1-C14, because the first bond is with publ_flag 'no'.
+        self.assertEqual("bond(label1='C1', label2='C14', dist='1.519(3)', symm='.')", str(next(iter(self.cif.bonds()))))
+        self.cif.block.find_loop('_geom_bond_publ_flag').erase()
+        self.assertEqual([], list(self.cif.block.find_loop('_geom_bond_publ_flag')))
+        self.assertEqual("bond(label1='C1', label2='O1', dist='1.438(3)', symm='.')", str(next(iter(self.cif.bonds()))))
+
 
 class TestQuotationMark(unittest.TestCase):
     def setUp(self) -> None:

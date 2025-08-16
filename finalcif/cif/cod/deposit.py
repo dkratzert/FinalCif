@@ -346,14 +346,14 @@ class CODdeposit:
         self.ui.depositionOptionsStackedWidget.setCurrentIndex(self.deposition_type_to_int(deposition_type))
 
     def reset_deposit_button_state_to_initial(self):
-        self.ui.depositCIFpushButton.disconnect()
+        self.ui.depositCIFpushButton.clicked.disconnect()
         self.ui.depositOutputTextBrowser.clear()
         self.ui.depositCIFpushButton.setText("Deposit CIF")
         self.ui.depositCIFpushButton.clicked.connect(self._init_deposit)
 
     def set_deposit_button_to_try_again(self):
         self.ui.depositCIFpushButton.setText("Try Again")
-        self.ui.depositCIFpushButton.disconnect()
+        self.ui.depositCIFpushButton.clicked.disconnect()
         self.ui.depositCIFpushButton.clicked.connect(lambda: self.switch_to_page(self.deposition_type))
 
     def log_response_text(self, resp: requests.Response, *args, **kwargs):

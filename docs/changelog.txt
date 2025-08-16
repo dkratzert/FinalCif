@@ -1,6 +1,8 @@
 FinalCif recent changes
 -----------------------
 
+* v153 Fixed crash during report if publ flags are missing for angles tables. Fixed crash when an incomplete .lxt file
+       is loaded. Using qtpy for better compatibility with PyQt6 and PySide6.
 * v152 Fixed incompatibility of author templates saved in versions prior 151. Thanks to Alvin Meng for support.
 * v151 Ported application to Qt6. Global font size can be configured now. Also, CIF order is stored in templates export.
 * v150 CIF files with _global block can now be opened again, even though _global is forbidden in CIF-1.1:
