@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper,twocolumn]{article}
+\documentclass[8pt,a4paper,twocolumn]{article}
 
 % Compatibility with non-Unicode LaTeX (e.g. pdfLaTeX)
 \usepackage[utf8]{inputenc}    % Input in UTF-8
@@ -23,9 +23,10 @@
 }
 
 % Tables
-\usepackage{booktabs}
+%\usepackage{booktabs}
 \usepackage{makecell}
 \usepackage{caption}
+\usepackage{float}
 \captionsetup[table]{position=below}
 
 % Metadata
@@ -95,7 +96,7 @@
 % ------------------- Table 1 -------------------
 
     \section*{Table 1. Crystal data and structure refinement for \detokenize{\VAR{ cif.block.name }}}
-    \begin{table}[htbp]
+    \begin{table}[H]
         \centering
         \begin{tabular}{ll}
             CCDC number                                                                            & \VAR{cif._database_code_depnum_ccdc_archive}                                              \\
@@ -146,13 +147,13 @@
         \centering
         \caption{$U_{eq}$ is defined as 1/3 of the trace of the orthogonalized $U_{ij}$ tensor.}
         \begin{tabular}{lllll}
-            \toprule
+            %\toprule
             \thead{Atom} & \thead{$x$} & \thead{$y$} & \thead{$z$} & \thead{$U_{eq}$} \\
-            \midrule
+            %\midrule
             \BLOCK{ for atom in atomic_coordinates }
             \VAR{ atom.label } & \VAR{ atom.x|replace('\u2212', ' \\textminus') } & \VAR{ atom.y|replace('\u2212', ' \\textminus') } & \VAR{ atom.z|replace('\u2212', ' \\textminus') } & \VAR{ atom.u_eq } \\
             \BLOCK{ endfor }
-            \bottomrule
+            %\bottomrule
         \end{tabular}
         \label{tab:table2}
     \end{table}
@@ -169,13 +170,13 @@
             $-2\pi^2[h^2(a^*)^2U_{11} + \dots + 2hka^*b^*U_{12}]$
         }
         \begin{tabular}{lllllll}
-            \toprule
+            %\toprule
             \thead{Atom} & \thead{$U_{11}$} & \thead{$U_{22}$} & \thead{$U_{33}$} & \thead{$U_{23}$} & \thead{$U_{13}$} & \thead{$U_{12}$} \\
-            \midrule
+            %\midrule
             \BLOCK{ for atom in displacement_parameters }
             \VAR{ atom.label } & \VAR{ atom.U11|replace('\u2212', ' \\textminus') } & \VAR{ atom.U22|replace('\u2212', ' \\textminus') } & \VAR{ atom.U33|replace('\u2212', ' \\textminus') } & \VAR{ atom.U23|replace('\u2212', ' \\textminus') } & \VAR{ atom.U13|replace('\u2212', ' \\textminus') } & \VAR{ atom.U12|replace('\u2212', ' \\textminus') } \\
             \BLOCK{ endfor }
-            \bottomrule
+            %\bottomrule
         \end{tabular}
         \label{tab:table3}
     \end{table}
@@ -189,11 +190,11 @@
     \begin{table}[htbp]
         \centering
         \begin{tabular}{ll}
-            \toprule
+            %\toprule
             \thead{Atom} & \thead{Length [\AA]} \\
-            \midrule
+            %\midrule
             % Add content here
-            \bottomrule
+            %\bottomrule
         \end{tabular}
     \end{table}
     \BLOCK{ endif }
