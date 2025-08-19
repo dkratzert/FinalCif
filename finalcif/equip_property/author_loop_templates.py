@@ -171,33 +171,36 @@ class AuthorLoops:
     def save_author_to_loop(self) -> None:
         author = self.get_author_info()
         row = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id, author.footnote]
-        if author.contact_author:
+        """if author.contact_author:
             author_type = f'_{author.author_type}_contact_author_name'
             del row[-1]  # contact author has no footnote
         else:
-            author_type = f'_{author.author_type}_author_name'
-        if self.cif.block.find_loop(author_type):
-            gemmi_loop: Loop = self.cif.block.find_loop(author_type).get_loop()
+            author_type = f'_{author.author_type}_author_name'"""
+        author.author_type = AuthorType.publ
+        author_loop = self.get_author_loop(author)
+        if self.cif.block.find(author_loop).loop:
+            gemmi_loop: Loop = self.cif.block.find(author_loop).loop
             if tuple(row) in list(grouper(gemmi_loop.values, len(row))):
                 self.app.status_bar.show_message('This author already exists.', 10)
                 print('dbg> Author already exists.')
                 return
         else:
-            author_loop = self.get_author_loop(author)
-            gemmi_loop = self.cif.init_loop(author_loop)
-        self.check_if_loop_and_row_size_fit_together(gemmi_loop, row)
+            self.cif.init_loop(author_loop)
+        for key, value in zip(self.keys_list, row, strict=True):
+            #if value:
+            self.cif.set_pair_delimited(key, as_string(value))
         self.app.make_loops_tables()
         self.show_authors_list()
 
-    def check_if_loop_and_row_size_fit_together(self, gemmi_loop: gemmi.cif.Loop, row: list[str]) -> None:
-        if gemmi_loop.width() < len(row):
-            cut_row = row[:gemmi_loop.width()]
-            if cut_row not in gemmi_loop.values:
-                gemmi_loop.add_row(cut_row)
-        elif gemmi_loop.width() > len(row):
-            show_general_warning(self, 'An author loop with larger size is already in the CIF. Can not proceed.')
-        elif row not in gemmi_loop.values:
-            gemmi_loop.add_row(row)
+    def put_author_in_cif_object(self, blockname: str, filename: str) -> CifContainer:
+        author = self.author_loopdata(author_name=self.get_selected_loop_name())
+        data = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id,
+                author.footnote]
+        author_cif = CifContainer(filename, new_block=blockname)
+        for key, value in zip(self.keys_list, data, strict=True):
+            if value:
+                author_cif.set_pair_delimited(key, as_string(value))
+        return author_cif
 
     def get_author_info(self) -> Author:
         if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication':
@@ -445,4 +448,5 @@ if __name__ == '__main__':
     import pprint
 
     l = AuthorLoops(Ui_FinalCifWindow(), CifContainer('test-data/1000007.cif'), None)
-    pprint.pprint(l.export_raw_data())
+    data = l.export_raw_data()
+    pprint.pprint(data)
