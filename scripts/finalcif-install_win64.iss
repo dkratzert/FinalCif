@@ -59,7 +59,7 @@ Source: "..\dist\python_dist\*";    DestDir: "{app}";           Flags: ignorever
 Source: "..\finalcif.exe";          DestDir: "{app}";           Flags: ignoreversion
 Source: "..\update.exe";            DestDir: "{app}";           Flags: ignoreversion
 Source: "..\vc_redist.x64.exe";     DestDir: "{app}";           Flags: ignoreversion
-Source: "..\platon_special.exe";    DestDir: "{app}\platon";    Flags: ignoreversion
+Source: "..\platon\platon_special.exe";    DestDir: "{app}\platon";    Flags: ignoreversion
 
 
 [Dirs]
