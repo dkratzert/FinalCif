@@ -76,7 +76,13 @@
                 used {{ radiation }} radiation {% if wavelength %}(λ = {{ wavelength }} Å){% endif %}.
                 All data were integrated with {{ integration_progr }} yielding {{ cif._diffrn_reflns_number }}
                 reflections of which {{ cif._reflns_number_total }} where independent and
-                {{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) }} %
+                {% set gt = cif._reflns_number_gt | float %}
+                {% set total = cif._reflns_number_total | float %}
+                {% if total > 0 %}
+                    {{ (gt / total * 100) | round(1) }} %
+                {% else %}
+                    n/a
+                {% endif %}
                 were greater than 2σ(<i>F</i><sup>2</sup>).<sup>[{{ literature.integration|ref_num }}]</sup> A
                 {{ abstype }} absorption correction using {{ abs_details }} was applied.<sup>[{{ literature.absorption|ref_num }}]</sup>
                 The structure was solved by
