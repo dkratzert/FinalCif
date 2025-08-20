@@ -1,6 +1,11 @@
 FinalCif recent changes
 -----------------------
 
+* v154 A special version of PLATON (https://www.platonsoft.nl/platon/) is now distributed together with FinalCif
+       for easier local CheckCIF. Fixed problems with the order of author name and adress if the CIF contained a loop
+       with _publ_author_name and _publ_author_address with unusual order. Fixed crash when a CIF with atom loops is
+       loaded which has only _atom_site_label and coordinates.
+       Fixed problems with the report when the atom loops are missing publ flags.
 * v153 Fixed crash during report if publ flags are missing for angles tables. Fixed crash when an incomplete .lxt file
        is loaded. Using qtpy for better compatibility with PyQt6 and PySide6.
 * v152 Fixed incompatibility of author templates saved in versions prior 151. Thanks to Alvin Meng for support.
