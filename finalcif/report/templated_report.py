@@ -7,7 +7,6 @@ import itertools
 import pathlib
 import re
 import sys
-from abc import ABC
 from collections import namedtuple
 from collections.abc import Iterator
 from contextlib import suppress
@@ -500,7 +499,7 @@ class Disorder:
         return xml_to_html(self.rt)
 
 
-class Formatter(ABC):
+class Formatter(abc.ABC):
     def __init__(self, options: Options, cif: CifContainer) -> None:
         self.literature: dict[str, Reference] = {'finalcif'   : ref.FinalCifReference(),
                                                  'ccdc'       : ref.CCDCReference(),
@@ -737,10 +736,17 @@ class Formatter(ABC):
             self.literature['solution'] = ref.SHELXDReference()
         return string_to_utf8(solution_prog.split('(')[0]).strip()
 
-    def _tvalue(self, tval: str) -> str:
+    def t_minvalue(self, cif: CifContainer) -> str:
+        t_min = cif['_exptl_absorpt_correction_T_min']
         with suppress(ValueError):
-            return f'{float(tval):.4f}'
-        return tval
+            return f'{float(t_min):.4f}'
+        return '?'
+
+    def t_maxvalue(self, cif: CifContainer) -> str:
+        t_max = cif['_exptl_absorpt_correction_T_max']
+        with suppress(ValueError):
+            return f'{float(t_max) :.4f}'
+        return '?'
 
     def get_atomic_coordinates(self, cif: CifContainer) -> tuple[dict[str, str], ...]:
         coords = []
@@ -909,9 +915,13 @@ class HtmlFormatter(Formatter):
             # spgrxml = s.to_mathml(cif.space_group)
         except KeyError:
             spgrxml = '<math xmlns="http://www.w3.org/1998/Math/MathML">?</math>'
-        return f'{spgrxml} ({cif.spgr_number})'
+        try:
+            number = cif.spgr_number
+        except AttributeError:
+            return '?'
+        return f'{spgrxml} ({number})'
 
-    def make_picture(self, options: Options, picfile: Path, _: None):
+    def make_picture(self, options: Options, picfile: Path, _: None) -> str:
         picture_path = ''
         if options.report_text and picfile and picfile.exists():
             picture_path = str(picfile.resolve())
@@ -1055,7 +1065,7 @@ class RichTextFormatter(Formatter):
         radiation.add(radline, italic=True, subscript=True)
         return radiation
 
-    def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
+    def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate) -> InlineImage | None:
         if options.report_text and picfile and picfile.exists():
             return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
@@ -1259,10 +1269,8 @@ class TemplatedReport:
                    'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
                    'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
                    'goof'                   : this_or_quest(cif['_refine_ls_goodness_of_fit_ref']),
-                   't_min'                  : self.text_formatter._tvalue(
-                       this_or_quest(cif['_exptl_absorpt_correction_T_min'])),
-                   't_max'                  : self.text_formatter._tvalue(
-                       this_or_quest(cif['_exptl_absorpt_correction_T_max'])),
+                   't_min'                  : self.text_formatter.t_minvalue(cif),
+                   't_max'                  : self.text_formatter.t_maxvalue(cif),
                    'ls_R_factor_gt'         : this_or_quest(cif['_refine_ls_R_factor_gt']),
                    'ls_wR_factor_gt'        : this_or_quest(cif['_refine_ls_wR_factor_gt']),
                    'ls_R_factor_all'        : this_or_quest(cif['_refine_ls_R_factor_all']),

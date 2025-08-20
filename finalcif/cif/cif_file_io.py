@@ -75,6 +75,7 @@ class CifContainer:
         self._on_load()
         self.order = []
         self.essential_keys = []
+        # May be overwritten later:
         self.set_order_keys(order)
         self.set_essential_keys(essential_keys)
 
@@ -213,8 +214,8 @@ class CifContainer:
         return doc
 
     def cif_as_string(self, without_hkl=False) -> str:
-        opt = gemmi.cif.WriteOptions(gemmi.cif.Style.Indent35)
-
+        opt = gemmi.cif.WriteOptions()
+        opt.align_pairs = 33
         if without_hkl:
             # return a copy, do not delete hkl from original:
             doc = gemmi.cif.Document()
@@ -279,13 +280,13 @@ class CifContainer:
 
     def save(self, filename: Path | None = None) -> None:
         """
-        Saves the current cif file.
-        :param filename:  Name to save cif file to.
+        Saves the current cif file. It uses the '[basename]-finalcif.cif' suffix by default.
+        :param filename:  Name to save cif file to if the default is not sufficient.
         """
         if not filename:
             filename = self.finalcif_file
         if self.is_empty():
-            print(f'File {filename} is empty.')
+            print(f'DBG> CIF file {filename} is empty.')
             return
         if not self.is_writable(filename):
             raise PermissionError(f'Failed to open {filename.resolve()} for writing: Operation not permitted')
