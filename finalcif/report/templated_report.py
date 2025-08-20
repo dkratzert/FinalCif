@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import abc
 import dataclasses
 import enum
 import itertools
@@ -513,17 +514,21 @@ class Formatter(ABC):
         self._torsions = TorsionAngles(cif, without_h=options.without_h)
         self._hydrogens = HydrogenBonds(cif)
 
+    @abc.abstractmethod
     def get_bonds(self):
-        raise NotImplementedError
+        ...
 
+    @abc.abstractmethod
     def get_angles(self):
-        raise NotImplementedError
+        ...
 
+    @abc.abstractmethod
     def get_torsion_angles(self) -> list[dict[str, RichText]] | list[Torsion]:
-        raise NotImplementedError
+        ...
 
+    @abc.abstractmethod
     def get_hydrogen_bonds(self) -> list[dict[str, RichText]] | list[HydrogenBond]:
-        raise NotImplementedError
+        ...
 
     def get_bonds_angles_symminfo(self) -> str:
         return self._bonds_angles.symminfo
@@ -537,8 +542,9 @@ class Formatter(ABC):
     def get_crystallization_method(self, cif: CifContainer) -> str:
         return string_to_utf8(gstr(cif['_exptl_crystal_recrystallization_method']))
 
+    @abc.abstractmethod
     def get_radiation(self, cif: CifContainer) -> str | RichText:
-        raise NotImplementedError
+        ...
 
     def get_wavelength(self, cif: CifContainer) -> str:
         try:
@@ -547,8 +553,9 @@ class Formatter(ABC):
         except ValueError:
             return ''
 
+    @abc.abstractmethod
     def hkl_index_limits(self, cif: CifContainer) -> str:
-        raise NotImplementedError
+        ...
 
     def make_3d(self, cif: CifContainer, options: Options) -> str:
         raise NotImplementedError
@@ -559,8 +566,9 @@ class Formatter(ABC):
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         raise NotImplementedError
 
+    @abc.abstractmethod
     def format_sum_formula(self, sum_formula: str) -> str:
-        raise NotImplementedError
+        ...
 
     def hydrogen_atoms_refinement(self, cif: CifContainer) -> RichText | str:
         """
@@ -734,29 +742,33 @@ class Formatter(ABC):
             return f'{float(tval):.4f}'
         return tval
 
-    def get_atomic_coordinates(self, cif: CifContainer) -> Iterator[dict[str, str]]:
+    def get_atomic_coordinates(self, cif: CifContainer) -> tuple[dict[str, str], ...]:
+        coords = []
         for at in cif.atoms(without_h=False):
-            yield {'label': at.label,
-                   'type' : at.type,
-                   'x'    : at.x.replace('-', minus_sign),
-                   'y'    : at.y.replace('-', minus_sign),
-                   'z'    : at.z.replace('-', minus_sign),
-                   'part' : at.part.replace('-', minus_sign),
-                   'occ'  : at.occ.replace('-', minus_sign),
-                   'u_eq' : at.u_eq.replace('-', minus_sign)}
+            coords.append({
+                'label': at.label,
+                'type' : at.type,
+                'x'    : at.x.replace('-', minus_sign),
+                'y'    : at.y.replace('-', minus_sign),
+                'z'    : at.z.replace('-', minus_sign),
+                'part' : at.part.replace('-', minus_sign),
+                'occ'  : at.occ.replace('-', minus_sign),
+                'u_eq' : at.u_eq.replace('-', minus_sign)
+            })
+        return tuple(coords)
 
-    def get_displacement_parameters(self, cif: CifContainer) -> Iterator[AdpWithMinus]:
+    def get_displacement_parameters(self, cif: CifContainer) -> tuple[AdpWithMinus, ...]:
         """
-        Yields the anisotropic displacement parameters. With hypehens replaced to minus signs.
+        Returns anisotropic displacement parameters with hyphens replaced by minus signs.
         """
-        for label, u11, u22, u33, u23, u13, u12 in cif.displacement_parameters():
-            yield AdpWithMinus(label=label,
-                               U11=u11.replace('-', minus_sign),
-                               U22=u22.replace('-', minus_sign),
-                               U33=u33.replace('-', minus_sign),
-                               U12=u12.replace('-', minus_sign),
-                               U13=u13.replace('-', minus_sign),
-                               U23=u23.replace('-', minus_sign))
+        return tuple(AdpWithMinus(label=label,
+                                  U11=u11.replace('-', minus_sign),
+                                  U22=u22.replace('-', minus_sign),
+                                  U33=u33.replace('-', minus_sign),
+                                  U12=u12.replace('-', minus_sign),
+                                  U13=u13.replace('-', minus_sign),
+                                  U23=u23.replace('-', minus_sign))
+                     for label, u11, u22, u33, u23, u13, u12 in cif.displacement_parameters())
 
     def get_completeness(self, cif: CifContainer) -> str:
         try:
@@ -1138,6 +1150,7 @@ class TemplatedReport:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
             print(e)
+            raise
             return False
 
     def make_templated_html_report(self,
@@ -1173,6 +1186,7 @@ class TemplatedReport:
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
+            raise
             return False
         return True
 
@@ -1316,6 +1330,7 @@ if __name__ == '__main__':
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
     testcif = Path(r'test-data/p31c.cif').absolute()
+    testcif = Path(r"D:\Downloads\9008564.cif").absolute()
     cif = CifContainer(testcif)
 
     pic = pathlib.Path("screenshots/finalcif_checkcif.png")
