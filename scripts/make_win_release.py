@@ -28,7 +28,7 @@ def disable_debug(filepath: str):
     for num, line in enumerate(file_lst):
         if line.startswith("DEBUG") or line.startswith("PROFILE"):
             l = line.split()
-            print("DEBUG/PROFILE.. {}, {}".format(l[2], filepath))
+            print(f"DEBUG/PROFILE.. {l[2]}, {filepath}")
             l[2] = '{}'.format("False")
             file_lst[num] = " ".join(l)
     pth.write_text("\n".join(file_lst), encoding="UTF-8")
@@ -36,10 +36,10 @@ def disable_debug(filepath: str):
 
 def make_shasum(filename):
     sha = sha512_checksum_of_file(filename)
-    shafile = Path('scripts/Output/FinalCif-setup-x64-v{}-sha512.sha'.format(VERSION))
+    shafile = Path(f'scripts/Output/FinalCif-setup-x64-v{VERSION}-sha512.sha')
     shafile.unlink(missing_ok=True)
     shafile.write_text(sha)
-    print("SHA512: {}".format(sha))
+    print(f"SHA512: {sha}")
 
 
 def make_installer(iss_file: str):
@@ -47,7 +47,7 @@ def make_installer(iss_file: str):
     innosetup_compiler2 = r'C:\Program Files (x86)\Inno Setup 6/ISCC.exe'
     if not Path(innosetup_compiler).exists():
         innosetup_compiler = innosetup_compiler2
-    subprocess.run([innosetup_compiler, '/Qp', f'/dMyAppVersion={VERSION}', iss_file])
+    subprocess.run([innosetup_compiler, '/Qp', f'/dMyAppVersion={VERSION}', iss_file], check=False)
 
 
 def compile_python_files():
@@ -67,9 +67,9 @@ if __name__ == '__main__':
 
     make_installer(iss_file)
 
-    make_shasum("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
+    make_shasum(f"scripts/Output/FinalCif-setup-x64-v{VERSION}.exe")
 
-    print('Created version: {}'.format(VERSION))
+    print(f'Created version: {VERSION}')
     print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
 
-    subprocess.call("scripts/Output/FinalCif-setup-x64-v{}.exe".format(VERSION))
+    subprocess.call([f"scripts/Output/FinalCif-setup-x64-v{VERSION}.exe", '/SILENT'])
