@@ -171,36 +171,23 @@ class AuthorLoops:
     def save_author_to_loop(self) -> None:
         author = self.get_author_info()
         row = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id, author.footnote]
-        """if author.contact_author:
-            author_type = f'_{author.author_type}_contact_author_name'
-            del row[-1]  # contact author has no footnote
-        else:
-            author_type = f'_{author.author_type}_author_name'"""
-        author.author_type = AuthorType.publ
-        author_loop = self.get_author_loop(author)
-        if self.cif.block.find(author_loop).loop:
-            gemmi_loop: Loop = self.cif.block.find(author_loop).loop
-            if tuple(row) in list(grouper(gemmi_loop.values, len(row))):
-                self.app.status_bar.show_message('This author already exists.', 10)
+        author_loop_tags = self.get_author_loop(author)
+        table: gemmi.cif.Table = self.cif.block.find(author_loop_tags)
+        if table.width():
+            gemmi_loop: Loop = table.loop
+            if tuple(row) in list(grouper(gemmi_loop.values, gemmi_loop.width())):
+                self.app.status_bar.show_message('This author already exists.', 15)
                 print('dbg> Author already exists.')
                 return
         else:
-            self.cif.init_loop(author_loop)
-        for key, value in zip(self.keys_list, row, strict=True):
-            #if value:
-            self.cif.set_pair_delimited(key, as_string(value))
+            gemmi_loop = self.cif.init_loop(author_loop_tags)
+        table = self.cif.block.find(author_loop_tags)
+        if gemmi_loop.width() < len(row):
+            row = row[:gemmi_loop.width()]
+        if row not in table:
+            table.append_row(row)
         self.app.make_loops_tables()
         self.show_authors_list()
-
-    def put_author_in_cif_object(self, blockname: str, filename: str) -> CifContainer:
-        author = self.author_loopdata(author_name=self.get_selected_loop_name())
-        data = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id,
-                author.footnote]
-        author_cif = CifContainer(filename, new_block=blockname)
-        for key, value in zip(self.keys_list, data, strict=True):
-            if value:
-                author_cif.set_pair_delimited(key, as_string(value))
-        return author_cif
 
     def get_author_info(self) -> Author:
         if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication':
