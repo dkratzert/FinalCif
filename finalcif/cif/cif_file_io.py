@@ -5,14 +5,16 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-import re
 import os
+import re
 from collections import namedtuple
 from collections.abc import Generator
 from contextlib import suppress
 from pathlib import Path
 
 import gemmi
+
+from finalcif.cif import atoms
 
 if hasattr(gemmi, 'set_leak_warnings'):
     gemmi.set_leak_warnings(False)
@@ -25,8 +27,7 @@ from finalcif.cif.cif_order import order, special_keys, essential_keys, non_cent
 from finalcif.cif.hkl import HKL, Limit
 from finalcif.cif.text import utf8_to_str, quote, retranslate_delimiter
 from finalcif.datafiles.utils import DSRFind
-from finalcif.tools.misc import isnumeric, grouper, strip_finalcif_of_name, \
-    _angstrom_to_x
+from finalcif.tools.misc import isnumeric, grouper, strip_finalcif_of_name, _angstrom_to_x
 
 
 class GemmiError(Exception):
@@ -125,7 +126,7 @@ class CifContainer:
         for num, line in enumerate(filepath.read_bytes().splitlines(keepends=True)):
             try:
                 line.decode('ascii')
-            except(UnicodeDecodeError):
+            except UnicodeDecodeError:
                 line_numbers.append(num)
         return line_numbers
 
@@ -157,9 +158,8 @@ class CifContainer:
         self.dsr_used = DSRFind(self.res_file_data).dsr_used
         self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
         # A dictionary to convert Atom names like 'C1_2' or 'Ga3' into Element names like 'C' or 'Ga'
-        self._name2elements = dict(
-            zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
-                [x.upper() for x in self.block.find_loop('_atom_site_type_symbol')], strict=True))
+        self._name2elements = dict(zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
+                                       [y.upper() for y in self.block.find_loop('_atom_site_type_symbol')], strict=False))
         self.check_hkl_min_max()
 
     @property
@@ -715,7 +715,7 @@ class CifContainer:
         Atoms from the CIF where values are returned as string like in the CIF with esds.
         """
         labels = self.block.find_loop('_atom_site_label')
-        types = self.block.find_loop('_atom_site_type_symbol')
+        types = self.block.find_loop('_atom_site_type_symbol') or [atoms.get_atomlabel(x) for x in labels]
         x = self.block.find_loop('_atom_site_fract_x')
         y = self.block.find_loop('_atom_site_fract_y')
         z = self.block.find_loop('_atom_site_fract_z')
@@ -726,7 +726,7 @@ class CifContainer:
         for label, type, x, y, z, part, occ, u_eq in zip(labels, types, x, y, z,
                                                          part,
                                                          occ,
-                                                         u_eq, strict=True):
+                                                         u_eq, strict=False):
             if without_h and self.ishydrogen(label):
                 continue
             if self.picometer:
@@ -762,7 +762,7 @@ class CifContainer:
         u13 = self.block.find_loop('_atom_site_aniso_U_13')
         u12 = self.block.find_loop('_atom_site_aniso_U_12')
         adp = namedtuple('adp', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
-        for label, u11, u22, u33, u23, u13, u12 in zip(labels, u11, u22, u33, u23, u13, u12):
+        for label, u11, u22, u33, u23, u13, u12 in zip(labels, u11, u22, u33, u23, u13, u12, strict=True):
             if self.picometer:
                 u11 = _angstrom_to_x(u11, factor=100 ** 2)
                 u22 = _angstrom_to_x(u22, factor=100 ** 2)
@@ -866,7 +866,10 @@ class CifContainer:
                             symm1=self.checksymm(symm1), symm2=self.checksymm(symm2))
 
     def _iselement(self, name: str) -> str:
-        return self._name2elements[name.upper()]
+        try:
+            return self._name2elements[name.upper()]
+        except KeyError:
+            return atoms.get_atomlabel(name)
 
     def natoms(self, without_h: bool = False) -> int:
         return len(tuple(self.atoms(without_h)))
