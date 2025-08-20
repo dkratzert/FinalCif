@@ -816,7 +816,7 @@ def get_atomlabel(input_atom: str) -> str:
         else:
             # print('*** {} is not a valid atom!! ***'.format(atom))
             raise KeyError
-    except(IndexError):
+    except IndexError:
         # print('*** {} is not a valid atom! ***'.format(atom))
         raise KeyError
 
@@ -826,6 +826,6 @@ if __name__ == '__main__':
 
     failed, attempted = doctest.testmod()  # verbose=True)
     if failed == 0:
-        print('passed all {} tests!'.format(attempted))
+        print(f'passed all {attempted} tests!')
     else:
-        print('{} of {} tests failed'.format(failed, attempted))
+        print(f'{failed} of {attempted} tests failed')
