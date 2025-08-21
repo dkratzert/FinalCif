@@ -921,7 +921,7 @@ class AppWindow(QMainWindow):
         url = QtCore.QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
-        self.checkcif_browser.load(url)
+        self.checkcif_browser.setHtml(self.htmlfile.resolve().read_text('utf-8', 'ignore'))
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
         threading.Thread(target=self._display_structure_factor_report, args=(parser,)).start()
         # The picture file linked in the html file:
