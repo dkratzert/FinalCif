@@ -25,7 +25,7 @@ class CheckCif(QThread):
     failed = Signal(str)
 
     def __init__(self, parent, cif: CifContainer, outfile: Path, hkl_upload: bool = True,
-                 pdf: bool = False, url: str = '', full_iucr: bool = False):
+                 pdf: bool = False, url: str = '', full_iucr: bool = False, check_duplicates: bool = True):
         # hkl == False means no hkl upload
         super().__init__(parent=parent)
         self.hkl_upload = hkl_upload
@@ -34,6 +34,7 @@ class CheckCif(QThread):
         self.pdf = pdf
         self.checkcif_url = url
         self.full_iucr = full_iucr
+        self.check_duplicates = check_duplicates
 
     def _html_check(self) -> None:
         if self.hkl_upload:
@@ -63,11 +64,13 @@ class CheckCif(QThread):
             validation_type = 'checkcif_with_hkl'
         vrf = self.get_vrf()
         headers = {
+            "from_index": "from_index",
             "runtype"   : "symmonly",
             "referer"   : "checkcif_server",
             "outputtype": 'PDF' if self.pdf else 'HTML',
             "validtype" : validation_type,
             "valout"    : vrf,
+            "duplic"    : "duplicyes" if self.check_duplicates else "duplicno",
         }
         t1 = time.perf_counter()
         self.progress.emit('Report request sent. Please wait...')

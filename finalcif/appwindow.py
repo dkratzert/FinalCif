@@ -979,7 +979,8 @@ class AppWindow(QMainWindow):
         self.ckf = CheckCif(parent=self, cif=self.cif, outfile=self.htmlfile,
                             hkl_upload=(not self.ui.structfactCheckBox.isChecked()), pdf=False,
                             url=self.options.checkcif_url,
-                            full_iucr=self.ui.fullIucrCheckBox.isChecked())
+                            full_iucr=self.ui.fullIucrCheckBox.isChecked(),
+                            check_duplicates=self.ui.checkDuplicatesCheckBox.isChecked())
         self.ckf.progress.connect(self._ckf_progress)
         self.ckf.failed.connect(self._checkcif_failed)
         self.ckf.finished.connect(self._checkcif_finished)
@@ -1052,7 +1053,8 @@ class AppWindow(QMainWindow):
         self.ckf = CheckCif(parent=self, cif=self.cif, outfile=htmlfile,
                             hkl_upload=(not self.ui.structfactCheckBox.isChecked()),
                             pdf=True, url=self.options.checkcif_url,
-                            full_iucr=self.ui.fullIucrCheckBox.isChecked())
+                            full_iucr=self.ui.fullIucrCheckBox.isChecked(),
+                            check_duplicates=self.ui.checkDuplicatesCheckBox.isChecked())
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._pdf_checkcif_finished)
