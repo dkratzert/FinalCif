@@ -92,7 +92,16 @@ class TestCheckCifInterface(TestCase):
         fields = self.form.fields.keys()
         fields.sort()
         self.assertEqual(
-            ['Qemailaddress', 'UPLOAD', 'filecif', 'from_index', 'outputtype', 'referer', 'runtype', 'validtype', 'valout'],
+            ['Qemailaddress',
+             'UPLOAD',
+             'duplic',
+             'filecif',
+             'from_index',
+             'outputtype',
+             'referer',
+             'runtype',
+             'validtype',
+             'valout'],
             fields
         )
 
