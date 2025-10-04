@@ -45,13 +45,16 @@ dependencies = [
     "charset-normalizer",
     "pyside6",
     "pyside6-addons",
-    "pyrefly==0.35.0",
 ]
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "pytest",
-    "ruff"
+    "ruff",
+    "pyrefly",
+    "sphinx",
+    "sphinx-rtd-theme",
+    "pyside6-stubs",
 ]
 
 doc = [
