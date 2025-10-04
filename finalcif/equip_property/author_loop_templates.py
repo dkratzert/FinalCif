@@ -171,33 +171,23 @@ class AuthorLoops:
     def save_author_to_loop(self) -> None:
         author = self.get_author_info()
         row = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id, author.footnote]
-        if author.contact_author:
-            author_type = f'_{author.author_type}_contact_author_name'
-            del row[-1]  # contact author has no footnote
-        else:
-            author_type = f'_{author.author_type}_author_name'
-        if self.cif.block.find_loop(author_type):
-            gemmi_loop: Loop = self.cif.block.find_loop(author_type).get_loop()
-            if tuple(row) in list(grouper(gemmi_loop.values, len(row))):
-                self.app.status_bar.show_message('This author already exists.', 10)
+        author_loop_tags = self.get_author_loop(author)
+        table: gemmi.cif.Table = self.cif.block.find(author_loop_tags)
+        if table.width():
+            gemmi_loop: Loop = table.loop
+            if tuple(row) in list(grouper(gemmi_loop.values, gemmi_loop.width())):
+                self.app.status_bar.show_message('This author already exists.', 15)
                 print('dbg> Author already exists.')
                 return
         else:
-            author_loop = self.get_author_loop(author)
-            gemmi_loop = self.cif.init_loop(author_loop)
-        self.check_if_loop_and_row_size_fit_together(gemmi_loop, row)
+            gemmi_loop = self.cif.init_loop(author_loop_tags)
+        table = self.cif.block.find(author_loop_tags)
+        if gemmi_loop.width() < len(row):
+            row = row[:gemmi_loop.width()]
+        if row not in table:
+            table.append_row(row)
         self.app.make_loops_tables()
         self.show_authors_list()
-
-    def check_if_loop_and_row_size_fit_together(self, gemmi_loop: gemmi.cif.Loop, row: list[str]) -> None:
-        if gemmi_loop.width() < len(row):
-            cut_row = row[:gemmi_loop.width()]
-            if cut_row not in gemmi_loop.values:
-                gemmi_loop.add_row(cut_row)
-        elif gemmi_loop.width() > len(row):
-            show_general_warning(self, 'An author loop with larger size is already in the CIF. Can not proceed.')
-        elif row not in gemmi_loop.values:
-            gemmi_loop.add_row(row)
 
     def get_author_info(self) -> Author:
         if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication':
@@ -391,7 +381,7 @@ class AuthorLoops:
             authors.append(author_data)
         return authors
 
-    def import_raw_data(self, authors_data: list[Author]):
+    def import_raw_data(self, authors_data: list[Author]) -> None:
         """
         Import all authors from an external file"""
         for author in authors_data:
@@ -401,7 +391,7 @@ class AuthorLoops:
     def authors_list(self) -> list[str]:
         return self.settings.list_saved_items(property='authors_list')
 
-    def contact_author_checked(self, checked: bool):
+    def contact_author_checked(self, checked: bool) -> None:
         """
         :parameter checked: state of the ContactAuthorCheckBox
         """
@@ -445,4 +435,5 @@ if __name__ == '__main__':
     import pprint
 
     l = AuthorLoops(Ui_FinalCifWindow(), CifContainer('test-data/1000007.cif'), None)
-    pprint.pprint(l.export_raw_data())
+    data = l.export_raw_data()
+    pprint.pprint(data)

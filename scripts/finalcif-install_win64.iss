@@ -54,12 +54,12 @@ ArchitecturesInstallIn64BitMode=x64
 [Files]
 ;Excludes: "*.pyc"
 Source: "pyqt5_minimal.7z";                           Flags: dontcopy
-Source: "..\finalcif\*";            DestDir: "{app}\finalcif"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\dist\python_dist\*";    DestDir: "{app}"; Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\finalcif.exe";          DestDir: "{app}"; Flags: ignoreversion
-Source: "..\update.exe";            DestDir: "{app}"; Flags: ignoreversion
-Source: "..\vc_redist.x64.exe";     DestDir: "{app}"; Flags: ignoreversion
-
+Source: "..\finalcif\*";            DestDir: "{app}\finalcif";  Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\dist\python_dist\*";    DestDir: "{app}";           Flags: ignoreversion createallsubdirs recursesubdirs
+Source: "..\finalcif.exe";          DestDir: "{app}";           Flags: ignoreversion
+Source: "..\update.exe";            DestDir: "{app}";           Flags: ignoreversion
+Source: "..\vc_redist.x64.exe";     DestDir: "{app}";           Flags: ignoreversion
+Source: "..\platon\platon_special.exe";    DestDir: "{app}\platon";    Flags: ignoreversion
 
 
 [Dirs]

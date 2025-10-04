@@ -2,6 +2,14 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+[tool.pyrefly]
+project-includes = ["**/*"]
+project-excludes = [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/*venv/**/*",
+]
+
 
 [project]
 name = "finalcif"
@@ -44,13 +52,15 @@ dependencies = [
     "hatchling",
     "charset-normalizer",
     "pyside6",
-    "pyside6-addons"
+    "pyside6-addons",
 ]
 
 [dependency-groups]
 dev = [
     "pytest",
-    "ruff"
+    "ruff",
+    "pyrefly",
+    "pyside6-stubs",
 ]
 
 doc = [

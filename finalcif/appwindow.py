@@ -737,7 +737,7 @@ class AppWindow(QMainWindow):
         if self.options.track_changes and self.changes_answer == QMessageBox.StandardButton.Yes:
             self.delete_key_from_changes_cif(key)
 
-    def delete_key_from_changes_cif(self, key):
+    def delete_key_from_changes_cif(self, key: str) -> None:
         changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
         del changes_cif[key]
         if changes_cif.is_empty():
@@ -921,7 +921,7 @@ class AppWindow(QMainWindow):
         url = QtCore.QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
-        self.checkcif_browser.load(url)
+        self.checkcif_browser.setHtml(self.htmlfile.resolve().read_text('utf-8', 'ignore'))
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
         threading.Thread(target=self._display_structure_factor_report, args=(parser,)).start()
         # The picture file linked in the html file:
@@ -979,7 +979,8 @@ class AppWindow(QMainWindow):
         self.ckf = CheckCif(parent=self, cif=self.cif, outfile=self.htmlfile,
                             hkl_upload=(not self.ui.structfactCheckBox.isChecked()), pdf=False,
                             url=self.options.checkcif_url,
-                            full_iucr=self.ui.fullIucrCheckBox.isChecked())
+                            full_iucr=self.ui.fullIucrCheckBox.isChecked(),
+                            check_duplicates=self.ui.checkDuplicatesCheckBox.isChecked())
         self.ckf.progress.connect(self._ckf_progress)
         self.ckf.failed.connect(self._checkcif_failed)
         self.ckf.finished.connect(self._checkcif_finished)
@@ -1052,7 +1053,8 @@ class AppWindow(QMainWindow):
         self.ckf = CheckCif(parent=self, cif=self.cif, outfile=htmlfile,
                             hkl_upload=(not self.ui.structfactCheckBox.isChecked()),
                             pdf=True, url=self.options.checkcif_url,
-                            full_iucr=self.ui.fullIucrCheckBox.isChecked())
+                            full_iucr=self.ui.fullIucrCheckBox.isChecked(),
+                            check_duplicates=self.ui.checkDuplicatesCheckBox.isChecked())
         self.ckf.failed.connect(self._checkcif_failed)
         # noinspection PyUnresolvedReferences
         self.ckf.finished.connect(self._pdf_checkcif_finished)

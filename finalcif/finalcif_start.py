@@ -53,7 +53,7 @@ def my_exception_hook(exctype: type[BaseException], value: BaseException, error_
 
     logfile = Path.home().joinpath(Path(r'finalcif-crash.txt'))
     try:
-        logfile.write_text(errortext)
+        logfile.write_text(errortext, encoding='utf-8', errors='ignore')
     except PermissionError:
         pass
     sys.__excepthook__(exctype, value, error_traceback)

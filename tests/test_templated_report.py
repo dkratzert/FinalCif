@@ -163,7 +163,41 @@ class TestReportFromMultiCif(unittest.TestCase):
         self.assertEqual('C1-C2 in p21c distance: 1.544(3)', doc.paragraphs[1].text)
 
 
-# noinspection PyMissingTypeHints
+class TestCIFwithOneAtom(unittest.TestCase):
+
+    def setUp(self) -> None:
+        # creating a new CIF with a new block:
+        self.cif = CifContainer('test-data/diamond/9008564.cif')
+        self.options = Options()
+        self.t = TemplatedReport(options=self.options,
+                                 cif=self.cif,
+                                 format=ReportFormat.HTML)
+
+    def test_foo(self):
+        context = self.t.get_context(cif=self.cif, options=self.options, picfile=Path())
+        self.assertEqual(({'label': 'C',
+                           'occ'  : '1.000000',
+                           'part' : '0',
+                           'type' : 'C',
+                           'u_eq' : '.',
+                           'x'    : '0.00000',
+                           'y'    : '0.00000',
+                           'z'    : '0.00000'},), context.get('atomic_coordinates'))
+        self.assertEqual([], context.get('bonds'))
+        self.assertEqual([], context.get('angles'))
+        self.assertEqual((), context.get('displacement_parameters'))
+        self.assertEqual('??', context.get('solution_method'))
+        self.assertEqual('??', context.get('solution_program'))
+        self.assertEqual('', context.get('resolution_angstrom'))
+        self.assertEqual('Å', context.get('dist_unit'))
+        self.assertEqual('', context.get('completeness'))
+        self.assertEqual([], context.get('torsions'))
+        self.assertEqual('?', context.get('t_min'))
+        self.assertEqual('', context.get('ba_symminfo'))
+        self.assertEqual(('<i>F</i><i>d</i><span style=" text-decoration: overline;">3</span><i>m</i> '
+                          '(227)'), context.get('space_group'))
+
+
 class TestData(unittest.TestCase):
 
     def setUp(self) -> None:

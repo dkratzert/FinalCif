@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+import abc
 import dataclasses
 import enum
 import itertools
 import pathlib
 import re
 import sys
-from abc import ABC
 from collections import namedtuple
 from collections.abc import Iterator
 from contextlib import suppress
@@ -513,7 +513,7 @@ class Disorder:
         return xml_to_latex(self.rt)
 
 
-class Formatter(ABC):
+class Formatter(abc.ABC):
     def __init__(self, options: Options, cif: CifContainer) -> None:
         self.literature: dict[str, Reference] = {'finalcif'   : ref.FinalCifReference(),
                                                  'ccdc'       : ref.CCDCReference(),
@@ -527,17 +527,21 @@ class Formatter(ABC):
         self._torsions = TorsionAngles(cif, without_h=options.without_h)
         self._hydrogens = HydrogenBonds(cif)
 
+    @abc.abstractmethod
     def get_bonds(self):
-        raise NotImplementedError
+        ...
 
+    @abc.abstractmethod
     def get_angles(self):
-        raise NotImplementedError
+        ...
 
+    @abc.abstractmethod
     def get_torsion_angles(self) -> list[dict[str, RichText]] | list[Torsion]:
-        raise NotImplementedError
+        ...
 
+    @abc.abstractmethod
     def get_hydrogen_bonds(self) -> list[dict[str, RichText]] | list[HydrogenBond]:
-        raise NotImplementedError
+        ...
 
     def get_bonds_angles_symminfo(self) -> str:
         return self._bonds_angles.symminfo
@@ -551,8 +555,9 @@ class Formatter(ABC):
     def get_crystallization_method(self, cif: CifContainer) -> str:
         return string_to_utf8(gstr(cif['_exptl_crystal_recrystallization_method']))
 
+    @abc.abstractmethod
     def get_radiation(self, cif: CifContainer) -> str | RichText:
-        raise NotImplementedError
+        ...
 
     def get_wavelength(self, cif: CifContainer) -> str:
         try:
@@ -561,8 +566,9 @@ class Formatter(ABC):
         except ValueError:
             return ''
 
+    @abc.abstractmethod
     def hkl_index_limits(self, cif: CifContainer) -> str:
-        raise NotImplementedError
+        ...
 
     def make_3d(self, cif: CifContainer, options: Options) -> str:
         raise NotImplementedError
@@ -573,8 +579,9 @@ class Formatter(ABC):
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         raise NotImplementedError
 
+    @abc.abstractmethod
     def format_sum_formula(self, sum_formula: str) -> str:
-        raise NotImplementedError
+        ...
 
     def hydrogen_atoms_refinement(self, cif: CifContainer) -> RichText | str:
         """
@@ -743,34 +750,45 @@ class Formatter(ABC):
             self.literature['solution'] = ref.SHELXDReference()
         return string_to_utf8(solution_prog.split('(')[0]).strip()
 
-    def _tvalue(self, tval: str) -> str:
+    def t_minvalue(self, cif: CifContainer) -> str:
+        t_min = cif['_exptl_absorpt_correction_T_min']
         with suppress(ValueError):
-            return f'{float(tval):.4f}'
-        return tval
+            return f'{float(t_min):.4f}'
+        return '?'
 
-    def get_atomic_coordinates(self, cif: CifContainer) -> Iterator[dict[str, str]]:
+    def t_maxvalue(self, cif: CifContainer) -> str:
+        t_max = cif['_exptl_absorpt_correction_T_max']
+        with suppress(ValueError):
+            return f'{float(t_max) :.4f}'
+        return '?'
+
+    def get_atomic_coordinates(self, cif: CifContainer) -> tuple[dict[str, str], ...]:
+        coords = []
         for at in cif.atoms(without_h=False):
-            yield {'label': at.label,
-                   'type' : at.type,
-                   'x'    : at.x.replace('-', minus_sign),
-                   'y'    : at.y.replace('-', minus_sign),
-                   'z'    : at.z.replace('-', minus_sign),
-                   'part' : at.part.replace('-', minus_sign),
-                   'occ'  : at.occ.replace('-', minus_sign),
-                   'u_eq' : at.u_eq.replace('-', minus_sign)}
+            coords.append({
+                'label': at.label,
+                'type' : at.type,
+                'x'    : at.x.replace('-', minus_sign),
+                'y'    : at.y.replace('-', minus_sign),
+                'z'    : at.z.replace('-', minus_sign),
+                'part' : at.part.replace('-', minus_sign),
+                'occ'  : at.occ.replace('-', minus_sign),
+                'u_eq' : at.u_eq.replace('-', minus_sign)
+            })
+        return tuple(coords)
 
-    def get_displacement_parameters(self, cif: CifContainer) -> Iterator[AdpWithMinus]:
+    def get_displacement_parameters(self, cif: CifContainer) -> tuple[AdpWithMinus, ...]:
         """
-        Yields the anisotropic displacement parameters. With hypehens replaced to minus signs.
+        Returns anisotropic displacement parameters with hyphens replaced by minus signs.
         """
-        for label, u11, u22, u33, u23, u13, u12 in cif.displacement_parameters():
-            yield AdpWithMinus(label=label,
-                               U11=u11.replace('-', minus_sign),
-                               U22=u22.replace('-', minus_sign),
-                               U33=u33.replace('-', minus_sign),
-                               U12=u12.replace('-', minus_sign),
-                               U13=u13.replace('-', minus_sign),
-                               U23=u23.replace('-', minus_sign))
+        return tuple(AdpWithMinus(label=label,
+                                  U11=u11.replace('-', minus_sign),
+                                  U22=u22.replace('-', minus_sign),
+                                  U33=u33.replace('-', minus_sign),
+                                  U12=u12.replace('-', minus_sign),
+                                  U13=u13.replace('-', minus_sign),
+                                  U23=u23.replace('-', minus_sign))
+                     for label, u11, u22, u33, u23, u13, u12 in cif.displacement_parameters())
 
     def get_completeness(self, cif: CifContainer) -> str:
         try:
@@ -1025,9 +1043,13 @@ class HtmlFormatter(Formatter):
             # spgrxml = s.to_mathml(cif.space_group)
         except KeyError:
             spgrxml = '<math xmlns="http://www.w3.org/1998/Math/MathML">?</math>'
-        return f'{spgrxml} ({cif.spgr_number})'
+        try:
+            number = cif.spgr_number
+        except AttributeError:
+            return '?'
+        return f'{spgrxml} ({number})'
 
-    def make_picture(self, options: Options, picfile: Path, _: None):
+    def make_picture(self, options: Options, picfile: Path, _: None) -> str:
         picture_path = ''
         if options.report_text and picfile and picfile.exists():
             picture_path = str(picfile.resolve())
@@ -1171,7 +1193,7 @@ class RichTextFormatter(Formatter):
         radiation.add(radline, italic=True, subscript=True)
         return radiation
 
-    def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
+    def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate) -> InlineImage | None:
         if options.report_text and picfile and picfile.exists():
             return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
@@ -1267,6 +1289,7 @@ class TemplatedReport:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
             print(e)
+            raise
             return False
 
     def make_templated_html_report(self,
@@ -1302,6 +1325,7 @@ class TemplatedReport:
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
+            raise
             return False
         return True
 
@@ -1399,12 +1423,16 @@ class TemplatedReport:
                    'radiation'              : self.text_formatter.get_radiation(cif),
                    'wavelength'             : self.text_formatter.get_wavelength(cif),
                    'theta_range'            : self.text_formatter.get_from_to_theta_range(cif),
-                   'diffr_type'             : gstr(cif['_diffrn_measurement_device_type']),
-                   'diffr_device'           : string_to_utf8(gstr(cif['_diffrn_measurement_device'])) or
-                                              'diffractometer',
-                   'diffr_source'           : gstr(cif['_diffrn_source']).strip('\n\r'),
-                   'monochromator'          : gstr(cif['_diffrn_radiation_monochromator']),
-                   'detector'               : gstr(cif['_diffrn_detector_type']),
+                   'diffr_type'             : gstr(cif['_diffrn_measurement_device_type'])
+                                              or '[No _diffrn_measurement_device_type given]',
+                   'diffr_device'           : string_to_utf8(gstr(cif['_diffrn_measurement_device'])
+                                                             or '[No _diffrn_measurement_device given]'),
+                   'diffr_source'           : gstr(cif['_diffrn_source']).strip('\n\r')
+                                              or '[No _diffrn_source given]',
+                   'monochromator'          : gstr(cif['_diffrn_radiation_monochromator']) \
+                                              or '[No _diffrn_radiation_monochromator given]',
+                   'detector'               : gstr(cif['_diffrn_detector_type']) \
+                                              or '[No _diffrn_detector_type given]',
                    'lowtemp_dev'            : _get_cooling_device(cif),
                    'index_ranges'           : self.text_formatter.hkl_index_limits(cif),
                    'indepentent_refl'       : this_or_quest(cif['_reflns_number_total']),
@@ -1418,10 +1446,8 @@ class TemplatedReport:
                    'restraints'             : this_or_quest(cif['_refine_ls_number_restraints']),
                    'parameters'             : this_or_quest(cif['_refine_ls_number_parameters']),
                    'goof'                   : this_or_quest(cif['_refine_ls_goodness_of_fit_ref']),
-                   't_min'                  : self.text_formatter._tvalue(
-                       this_or_quest(cif['_exptl_absorpt_correction_T_min'])),
-                   't_max'                  : self.text_formatter._tvalue(
-                       this_or_quest(cif['_exptl_absorpt_correction_T_max'])),
+                   't_min'                  : self.text_formatter.t_minvalue(cif),
+                   't_max'                  : self.text_formatter.t_maxvalue(cif),
                    'ls_R_factor_gt'         : this_or_quest(cif['_refine_ls_R_factor_gt']),
                    'ls_wR_factor_gt'        : this_or_quest(cif['_refine_ls_wR_factor_gt']),
                    'ls_R_factor_all'        : this_or_quest(cif['_refine_ls_R_factor_all']),
@@ -1489,6 +1515,8 @@ if __name__ == '__main__':
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
     # testcif = Path(r'test-data/p31c.cif').absolute()
+    testcif = Path(r'test-data/p31c.cif').absolute()
+    testcif = Path(r"D:\Downloads\9008564.cif").absolute()
     cif = CifContainer(testcif)
 
     pic = pathlib.Path("screenshots/finalcif_checkcif.png")
