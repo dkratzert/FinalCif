@@ -8,7 +8,6 @@ import pathlib
 import re
 import sys
 from collections import namedtuple
-from collections.abc import Iterator
 from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
@@ -17,7 +16,6 @@ from typing import Any
 from qtpy.QtWidgets import QApplication
 
 from finalcif.cif.text import string_to_utf8, escape_for_latex, string_to_latex
-from finalcif.template.unicode2latex.u2l import uni2tex
 from finalcif.template.xsl.convert import xml_to_html, xml_to_latex
 from finalcif.tools.dsrmath import my_isnumeric
 
@@ -818,7 +816,7 @@ class Formatter(abc.ABC):
                           )
         return result
 
-    def _value_format(self, value: str, string_format: str, multiply: bool = False) -> str:
+    def _value_format(self, value: str | None, string_format: str, multiply: bool = False) -> str:
         if value is None:
             value = 0.0
         if my_isnumeric(value):
@@ -881,7 +879,7 @@ class Formatter(abc.ABC):
             return ''
         return f'{redundancy:.2f}'
 
-    def refinement_details(self, cif):
+    def refinement_details(self, cif: CifContainer) -> str:
         details = ' '.join(cif['_refine_special_details'].splitlines(keepends=False)).strip()
         return string_to_utf8(details)
 
@@ -1515,8 +1513,8 @@ if __name__ == '__main__':
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
     # testcif = Path(r'test-data/p31c.cif').absolute()
-    testcif = Path(r'test-data/p31c.cif').absolute()
-    testcif = Path(r"D:\Downloads\9008564.cif").absolute()
+    #testcif = Path(r'test-data/p31c.cif').absolute()
+    #testcif = Path(r"D:\Downloads\9008564.cif").absolute()
     cif = CifContainer(testcif)
 
     pic = pathlib.Path("screenshots/finalcif_checkcif.png")

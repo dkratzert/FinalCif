@@ -1,5 +1,6 @@
-\documentclass[8pt,a4paper,twocolumn]{article}
-
+%\documentclass[8pt,a4paper,pagesize,smallheadings,twocolumn]{article}
+\documentclass[a4paper,pagesize,twocolumn,8pt,DIV=calc]{scrartcl}
+%\usepackage[headlines=2.1]{typearea}
 % Compatibility with non-Unicode LaTeX (e.g. pdfLaTeX)
 \usepackage[utf8]{inputenc}    % Input in UTF-8
 \usepackage[T1]{fontenc}       % Output font encoding
@@ -11,6 +12,21 @@
 \renewcommand{\familydefault}{\sfdefault}
 \usepackage[left=1.5cm,right=1cm,top=2.0cm,bottom=2.0cm]{geometry}
 \usepackage{microtype}         % Better spacing
+\usepackage[dvips]{graphicx}
+
+%\usepackage{float}
+%\floatstyle{plain}
+%\newfloat{Table}{H}{tab}[table]
+%\newfloat{Schema}{H}{she}[chapter]                             % zusätzliche bilder mit scheme statt abb.
+
+%\renewcommand{\familydefault}{\sfdefault}                     % alles in computer modern serifenlose schrift
+%\usepackage{palatino}                                          % Schrift im Text auf Palatino
+%\usepackage[sc]{mathpazo}                                      % Schrift der Formeln auf mathpazo
+\usepackage{lmodern}                                           %
+%\renewcommand{\rmdefault}{ppl}                                 % überschriften in cmss
+
+\setlength{\headheight}{2.5\baselineskip}                      % größe der kopfzeile
+
 
 % Math and units
 \usepackage{amsmath}
@@ -22,12 +38,16 @@
     output-decimal-marker = {.}
 }
 
+
+%\renewcommand*{\chapterpagestyle}{scrheadings}
 % Tables
 %\usepackage{booktabs}
 \usepackage{makecell}
 \usepackage{caption}
-\usepackage{float}
-\captionsetup[table]{position=below}
+\renewcommand{\tablename}{Table}
+%\renewcommand{\tablecaption}{Table}
+%\captionsetup[table]{position=above}
+
 
 % Metadata
 \title{\textbf{Crystal Structure Report for \detokenize{\VAR{ cif.block.name }}}}
@@ -95,9 +115,10 @@
 
 % ------------------- Table 1 -------------------
 
-    \section*{Table 1. Crystal data and structure refinement for \detokenize{\VAR{ cif.block.name }}}
-    \begin{table}[H]
+    %\section*{Table 1. Crystal data and structure refinement for \detokenize{\VAR{ cif.block.name }}}
+    \begin{table}[htbp]
         \centering
+        \caption{Crystal data and structure refinement}
         \begin{tabular}{ll}
             CCDC number                                                                            & \VAR{cif._database_code_depnum_ccdc_archive}                                              \\
             Empirical formula                                                                      & \VAR{sum_formula}                                                                         \\
@@ -135,7 +156,7 @@
             \BLOCK{ if exti } Extinction coefficient                                               & \VAR{ exti }                                                                              \\ \BLOCK{ endif }
             \BLOCK{ if flack_x } Flack X parameter                                                 & \VAR{flack_x}                                                                             \\ \BLOCK{ endif }
         \end{tabular}
-        \caption{Crystal data and structure refinement}
+
         \label{tab:table1}
     \end{table}
     \pagebreak
