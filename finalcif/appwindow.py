@@ -737,7 +737,7 @@ class AppWindow(QMainWindow):
         if self.options.track_changes and self.changes_answer == QMessageBox.StandardButton.Yes:
             self.delete_key_from_changes_cif(key)
 
-    def delete_key_from_changes_cif(self, key):
+    def delete_key_from_changes_cif(self, key: str) -> None:
         changes_cif = self.get_changes_cif(self.finalcif_changes_filename)
         del changes_cif[key]
         if changes_cif.is_empty():

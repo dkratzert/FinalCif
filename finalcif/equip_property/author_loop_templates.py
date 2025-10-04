@@ -381,7 +381,7 @@ class AuthorLoops:
             authors.append(author_data)
         return authors
 
-    def import_raw_data(self, authors_data: list[Author]):
+    def import_raw_data(self, authors_data: list[Author]) -> None:
         """
         Import all authors from an external file"""
         for author in authors_data:
@@ -391,7 +391,7 @@ class AuthorLoops:
     def authors_list(self) -> list[str]:
         return self.settings.list_saved_items(property='authors_list')
 
-    def contact_author_checked(self, checked: bool):
+    def contact_author_checked(self, checked: bool) -> None:
         """
         :parameter checked: state of the ContactAuthorCheckBox
         """

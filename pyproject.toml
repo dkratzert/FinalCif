@@ -44,7 +44,8 @@ dependencies = [
     "hatchling",
     "charset-normalizer",
     "pyside6",
-    "pyside6-addons"
+    "pyside6-addons",
+    "pyrefly==0.35.0",
 ]
 
 [dependency-groups]
