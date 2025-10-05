@@ -1,9 +1,13 @@
+from typing import TypeVar
+
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.tools.settings import FinalCifSettings
 
+T = TypeVar('T')
+
 
 class Options:
-    def __init__(self, ui: Ui_FinalCifWindow = None, settings: FinalCifSettings = None):
+    def __init__(self, ui: Ui_FinalCifWindow | None = None, settings: FinalCifSettings | None = None):
         self.ui = ui
         self.settings = settings
         # initial default, otherwise we have width=0.0 and no picture visible:
@@ -15,7 +19,7 @@ class Options:
             self._connect_signal_and_slots()
         self._options = {}
 
-    def _connect_signal_and_slots(self):
+    def _connect_signal_and_slots(self) -> None:
         self.ui.HAtomsCheckBox.stateChanged.connect(self._state_changed)
         self.ui.ReportTextCheckBox.stateChanged.connect(self._state_changed)
         self.ui.PictureWidthDoubleSpinBox.valueChanged.connect(self._state_changed)
@@ -46,7 +50,7 @@ class Options:
         self.ui.trackChangesCifCheckBox.setChecked(self.track_changes)
         self.ui.UsePicometersCheckBox.setChecked(self.use_picometers)
 
-    def _state_changed(self):
+    def _state_changed(self) -> None:
         lw = self.ui.docxTemplatesListWidget
         self._options = {
             'report_text'            : not self.ui.ReportTextCheckBox.isChecked(),
@@ -72,7 +76,7 @@ class Options:
     def __getitem__(self, item):
         return self.settings.load_options()[item]
 
-    def _get_setting(self, setting: str, default: object):
+    def _get_setting(self, setting: str, default: T) -> T:
         try:
             return self.settings.load_options()[setting]
         except KeyError:
