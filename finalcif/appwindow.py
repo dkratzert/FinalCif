@@ -14,6 +14,9 @@ from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
 
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning, module="shibokensupport.signature.parser")
+
 import gemmi
 
 if hasattr(gemmi, 'set_leak_warnings'):
