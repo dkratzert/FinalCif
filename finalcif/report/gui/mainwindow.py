@@ -90,8 +90,6 @@ class Ui_MultitableWindow(object):
         MultitableWindow.setCentralWidget(self.Mainwidget)
 
         self.retranslateUi(MultitableWindow)
-
-        QMetaObject.connectSlotsByName(MultitableWindow)
     # setupUi
 
     def retranslateUi(self, MultitableWindow):

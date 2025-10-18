@@ -67,8 +67,6 @@ class Ui_AddKeyWindow(object):
         AddKeyWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(AddKeyWindow)
-
-        QMetaObject.connectSlotsByName(AddKeyWindow)
     # setupUi
 
     def retranslateUi(self, AddKeyWindow):
