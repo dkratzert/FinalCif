@@ -2,16 +2,17 @@ import sys
 import zipfile
 from pathlib import Path
 
-from qtpy import QtCore
-from qtpy import QtGui, QtWidgets
+from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Qt
+
+from finalcif.gui.custom_classes import light_red
 
 
 class VZSImageViewer(QtWidgets.QWidget):
     zip_path: None
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.zipfile: zipfile.ZipFile
         self.image_names: list[str] | None = None
         self.index = 0
@@ -57,8 +58,8 @@ class VZSImageViewer(QtWidgets.QWidget):
             painter.drawPixmap(self.rect().center() - scaled.rect().center(), scaled)
         if self.zoom_start and self.zoom_end:
             pen = painter.pen()
-            pen.setColor(Qt.GlobalColor.red)
-            pen.setWidth(2)
+            pen.setColor(light_red)
+            pen.setWidth(1)
             painter.setPen(pen)
             rect = QtCore.QRectF(self.zoom_start, self.zoom_end)
             painter.drawRect(rect)
@@ -114,7 +115,7 @@ class VZSImageViewer(QtWidgets.QWidget):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     widget = VZSImageViewer()
-    widget.load_file("test-data/BB_GS3.vzs")
+    widget.load_file(Path("test-data/BB_GS3.vzs"))
     widget.setWindowTitle("VZS Viewer")
     widget.show()
     sys.exit(app.exec())

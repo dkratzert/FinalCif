@@ -15,6 +15,9 @@ from math import sin, radians
 from pathlib import Path, WindowsPath
 
 import warnings
+
+from finalcif.gui.vzs_viewer import VZSImageViewer
+
 warnings.filterwarnings("ignore", category=RuntimeWarning, module="shibokensupport.signature.parser")
 
 import gemmi
@@ -127,6 +130,8 @@ class AppWindow(QMainWindow):
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
+        self.video = VZSImageViewer(self)
+        self.ui.video_vLayout.addWidget(self.video)
         if file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
