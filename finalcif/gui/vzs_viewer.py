@@ -32,7 +32,7 @@ class VZSImageViewer(QtWidgets.QWidget):
 
     def load_jpegs(self, file_path: Path):
         self.zipfile = None
-        globber = f'{file_path.stem.rstrip('0123456789')}*.jpg'
+        globber = f'{file_path.stem.rstrip("1234567890")}*.jpg'
         self.image_names = list(file_path.parent.glob(globber))
         self.image_names.sort()
         self._load_current_image()
