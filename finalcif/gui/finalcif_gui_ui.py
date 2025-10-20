@@ -23,7 +23,7 @@ from qtpy.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication
     QRadioButton, QSizePolicy, QSpacerItem, QSpinBox,
     QSplitter, QStackedWidget, QStatusBar, QTabWidget,
     QTableWidget, QTableWidgetItem, QTextBrowser, QTextEdit,
-    QVBoxLayout, QWidget)
+    QToolButton, QVBoxLayout, QWidget)
 
 from finalcif.ciforder.order import CifOrder
 from finalcif.displaymol.molecule2D import MoleculeWidget
@@ -1156,6 +1156,7 @@ class Ui_FinalCifWindow(object):
         self.tab_structure.setObjectName(u"tab_structure")
         self.verticalLayout_42 = QVBoxLayout(self.tab_structure)
         self.verticalLayout_42.setObjectName(u"verticalLayout_42")
+        self.verticalLayout_42.setContentsMargins(3, 3, 3, 3)
         self.molGroupBox = QGroupBox(self.tab_structure)
         self.molGroupBox.setObjectName(u"molGroupBox")
         sizePolicy16 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -1215,6 +1216,7 @@ class Ui_FinalCifWindow(object):
         self.tab_video.setObjectName(u"tab_video")
         self.verticalLayout_44 = QVBoxLayout(self.tab_video)
         self.verticalLayout_44.setObjectName(u"verticalLayout_44")
+        self.verticalLayout_44.setContentsMargins(3, 3, 3, 3)
         self.videoFrame = QFrame(self.tab_video)
         self.videoFrame.setObjectName(u"videoFrame")
         sizePolicy8.setHeightForWidth(self.videoFrame.sizePolicy().hasHeightForWidth())
@@ -1236,7 +1238,6 @@ class Ui_FinalCifWindow(object):
         sizePolicy18.setVerticalStretch(0)
         sizePolicy18.setHeightForWidth(self.videoLineEdit.sizePolicy().hasHeightForWidth())
         self.videoLineEdit.setSizePolicy(sizePolicy18)
-        self.videoLineEdit.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
         self.videoLineEdit.setReadOnly(True)
 
         self.horizontalLayout_17.addWidget(self.videoLineEdit)
@@ -1254,6 +1255,16 @@ class Ui_FinalCifWindow(object):
         self.setVideoPicturePushButton.setObjectName(u"setVideoPicturePushButton")
 
         self.horizontalLayout_17.addWidget(self.setVideoPicturePushButton)
+
+        self.videoLeftToolButton = QToolButton(self.tab_video)
+        self.videoLeftToolButton.setObjectName(u"videoLeftToolButton")
+
+        self.horizontalLayout_17.addWidget(self.videoLeftToolButton)
+
+        self.videoRightToolButton = QToolButton(self.tab_video)
+        self.videoRightToolButton.setObjectName(u"videoRightToolButton")
+
+        self.horizontalLayout_17.addWidget(self.videoRightToolButton)
 
 
         self.verticalLayout_44.addLayout(self.horizontalLayout_17)
@@ -2854,9 +2865,11 @@ class Ui_FinalCifWindow(object):
         self.labelsCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Show Labels", None))
         self.drawImagePushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Use as Image for Report", None))
         self.picturesTabWidget.setTabText(self.picturesTabWidget.indexOf(self.tab_structure), QCoreApplication.translate("FinalCifWindow", u"Structure", None))
-        self.videoLineEdit.setPlaceholderText(QCoreApplication.translate("FinalCifWindow", u"*.vzs file", None))
+        self.videoLineEdit.setPlaceholderText(QCoreApplication.translate("FinalCifWindow", u"*.vzs; *.jpg file", None))
         self.SelectVideo_PushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Select File", None))
         self.setVideoPicturePushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Use Picture for Report", None))
+        self.videoLeftToolButton.setText(QCoreApplication.translate("FinalCifWindow", u"<-", None))
+        self.videoRightToolButton.setText(QCoreApplication.translate("FinalCifWindow", u"->", None))
         self.picturesTabWidget.setTabText(self.picturesTabWidget.indexOf(self.tab_video), QCoreApplication.translate("FinalCifWindow", u"Video", None))
         self.groupBox_2.setTitle("")
         self.label_3.setText(QCoreApplication.translate("FinalCifWindow", u"The list of data sources shows the origin of CIF items automatically collected by FinalCif. \n"

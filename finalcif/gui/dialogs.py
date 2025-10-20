@@ -3,10 +3,9 @@ import os
 import sys
 from pathlib import Path
 
+from finalcif import VERSION
 from qtpy import QtCore, compat
 from qtpy.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QTextEdit, QPushButton, QFrame
-
-from finalcif import VERSION
 
 
 def do_update_program(version) -> None:
@@ -226,6 +225,17 @@ def cif_file_save_dialog(filename: str, parent=None) -> str:
                                          filters=filter,
                                          caption='Save .cif File',
                                          selectedfilter=filter)
+    return filename
+
+
+def video_file_open_dialog(parent: object = None, filter: str = "Video file (*.vzs; *.jpg)", last_dir='', options=None) -> str:
+    filename, _ = compat.getopenfilename(parent=parent,
+                                         caption='Open a crystal video file',
+                                         basedir=last_dir,
+                                         filters=filter,
+                                         selectedfilter=filter,
+                                         options=options
+                                         )
     return filename
 
 

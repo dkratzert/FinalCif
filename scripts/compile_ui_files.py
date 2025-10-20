@@ -14,7 +14,7 @@ def fix_comment(pyfile: Path) -> str:
 
 
 def compile_ui():
-    ui_files = Path(__file__).parent.parent.rglob('*.ui')
+    ui_files = (Path(__file__).parent.parent / 'finalcif').rglob('*.ui')
     for ui_file in ui_files:
         compile_ui_file(ui_file)
 

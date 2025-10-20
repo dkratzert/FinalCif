@@ -5,16 +5,17 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import os
+import pickle
 import subprocess
 import sys
 import threading
 import time
+import warnings
 from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
-
-import warnings
+from typing import cast
 
 from finalcif.gui.vzs_viewer import VZSImageViewer
 
@@ -49,7 +50,8 @@ from finalcif.gui.custom_classes import Column, MyTableWidgetItem, light_green, 
     white
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
-    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
+    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question, \
+    video_file_open_dialog
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
 from finalcif.gui.loop_creator import LoopCreator
@@ -131,6 +133,7 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
         self.video = VZSImageViewer(self)
+        self.ui.picturesTabWidget.setCurrentIndex(0)
         self.ui.video_vLayout.addWidget(self.video)
         if file:
             self.load_cif_file(file)
@@ -169,7 +172,7 @@ class AppWindow(QMainWindow):
         # self.set_font_sizes()
 
     def load_fontsize_from_settings(self):
-        fontsize = self.settings.load_value_of_key('global_font_size')
+        fontsize = cast(int, self.settings.load_value_of_key('global_font_size'))
         if fontsize is not None and fontsize >= 8:
             self.set_global_font(fontsize)
             self.ui.textSizeSpinBox.setValue(fontsize)
@@ -436,6 +439,22 @@ class AppWindow(QMainWindow):
         self.ui.ImportAllTemplatesPushButton.clicked.connect(self.import_all_templates)
         self.ui.searchMainTableLineEdit.textChanged.connect(self.ui.cif_main_table.search)
         self.ui.textSizeSpinBox.valueChanged.connect(self.set_global_font)
+        # video:
+        self.ui.SelectVideo_PushButton.clicked.connect(self._select_crystal_video)
+        self.ui.videoRightToolButton.clicked.connect(self.video.next)
+        self.ui.videoLeftToolButton.clicked.connect(self.video.previous)
+        self.ui.setVideoPicturePushButton.clicked.connect(self.set_video_image_for_report)
+
+    def set_video_image_for_report(self):
+        image_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='_video-finalcif.png')
+        self.video.save_image(image_filename)
+        self.set_report_picture_path(str(image_filename))
+
+    def _select_crystal_video(self) -> None:
+        video_file = Path(video_file_open_dialog(parent=self, last_dir=self.get_last_workdir()))
+        if video_file is not None and video_file.is_file() and video_file.exists():
+            self.ui.videoLineEdit.setText(str(video_file.resolve()))
+            self.video.load_file(video_file)
 
     @property
     def finalcif_changes_filename(self):
@@ -446,7 +465,6 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.go_to_loops_page()
 
     def export_all_templates(self, filename: Path | None = None):
-        import pickle
         if not filename:
             filename, _ = compat.getsavefilename(parent=self,
                                                  basedir=str(Path(self.get_last_workdir()).joinpath(

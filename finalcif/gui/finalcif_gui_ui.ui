@@ -2058,6 +2058,18 @@
                 <string>Structure</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_42">
+                <property name="leftMargin">
+                 <number>3</number>
+                </property>
+                <property name="topMargin">
+                 <number>3</number>
+                </property>
+                <property name="rightMargin">
+                 <number>3</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>3</number>
+                </property>
                 <item>
                  <widget class="QGroupBox" name="molGroupBox">
                   <property name="sizePolicy">
@@ -2171,6 +2183,18 @@
                 <string>Video</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_44">
+                <property name="leftMargin">
+                 <number>3</number>
+                </property>
+                <property name="topMargin">
+                 <number>3</number>
+                </property>
+                <property name="rightMargin">
+                 <number>3</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>3</number>
+                </property>
                 <item>
                  <widget class="QFrame" name="videoFrame">
                   <property name="sizePolicy">
@@ -2211,14 +2235,11 @@
                       <verstretch>0</verstretch>
                      </sizepolicy>
                     </property>
-                    <property name="alignment">
-                     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                    </property>
                     <property name="readOnly">
                      <bool>true</bool>
                     </property>
                     <property name="placeholderText">
-                     <string>*.vzs file</string>
+                     <string>*.vzs; *.jpg file</string>
                     </property>
                    </widget>
                   </item>
@@ -2246,6 +2267,20 @@
                    <widget class="QPushButton" name="setVideoPicturePushButton">
                     <property name="text">
                      <string>Use Picture for Report</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="videoLeftToolButton">
+                    <property name="text">
+                     <string>&lt;-</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="videoRightToolButton">
+                    <property name="text">
+                     <string>-&gt;</string>
                     </property>
                    </widget>
                   </item>

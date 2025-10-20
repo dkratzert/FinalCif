@@ -2,10 +2,9 @@ import sys
 import zipfile
 from pathlib import Path
 
+from finalcif.gui.custom_classes import light_red
 from qtpy import QtCore, QtGui, QtWidgets
 from qtpy.QtCore import Qt
-
-from finalcif.gui.custom_classes import light_red
 
 
 class VZSImageViewer(QtWidgets.QWidget):
@@ -17,17 +16,32 @@ class VZSImageViewer(QtWidgets.QWidget):
         self.image_names: list[str] | None = None
         self.index = 0
         self.pixmap = None
-        self.setMinimumSize(400, 400)
+        # self.setMinimumSize(300, 300)
         self.zoom_rect = None
         self.zoomed = False
         self.zoom_start = None
         self.zoom_end = None
 
-    def load_file(self, zip_path: Path) -> None:
+    def load_file(self, file_path: Path) -> None:
+        if not file_path or not file_path.is_file():
+            return
+        if file_path.suffix.lower() == '.vzs':
+            self._load_zip(file_path)
+        elif file_path.suffix.lower() == '.jpg':
+            self.load_jpegs(file_path)
+
+    def load_jpegs(self, file_path: Path):
+        self.zipfile = None
+        globber = f'{file_path.stem.rstrip('0123456789')}*.jpg'
+        self.image_names = list(file_path.parent.glob(globber))
+        self.image_names.sort()
+        self._load_current_image()
+
+    def _load_zip(self, zip_path: Path) -> None:
         self.zipfile = zipfile.ZipFile(zip_path, mode="r")
         if self.zipfile.namelist():
             self.image_names = [name for name in self.zipfile.namelist()
-                                if name.lower().endswith((".jpg", ".jpeg"))]
+                                if name.lower().endswith(".jpg")]
             self.image_names.sort()
             self._load_current_image()
 
@@ -35,17 +49,31 @@ class VZSImageViewer(QtWidgets.QWidget):
         if not self.image_names:
             self.pixmap = None
             return
-        with self.zipfile.open(self.image_names[self.index]) as f:
-            data = f.read()
-        image = QtGui.QImage()
-        image.loadFromData(data)
-        self.pixmap = QtGui.QPixmap().fromImage(image)
-        self.update()
+        try:
+            data = self._read_data()
+            image = QtGui.QImage()
+            image.loadFromData(data)
+            self.pixmap = QtGui.QPixmap().fromImage(image)
+            self.update()
+        except Exception as e:
+            print(e)
+
+    def save_image(self, file_path: Path) -> None:
+        self.pixmap.save(str(file_path))
+
+    def _read_data(self) -> bytes:
+        if self.zipfile:
+            with self.zipfile.open(self.image_names[self.index]) as f:
+                data = f.read()
+        else:
+            with self.image_names[self.index] as f:
+                data = f.read_bytes()
+        return data
 
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
         if not self.pixmap:
-            painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, "No images found")
+            painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, "No images found.\nSelect a crystal video file.")
             return
         if self.zoomed and self.zoom_rect:
             cropped = self.pixmap.copy(self.zoom_rect)
@@ -64,13 +92,20 @@ class VZSImageViewer(QtWidgets.QWidget):
             rect = QtCore.QRectF(self.zoom_start, self.zoom_end)
             painter.drawRect(rect)
 
-    def wheelEvent(self, event: QtGui.QWheelEvent):
+    def wheelEvent(self, event: QtGui.QWheelEvent) -> None:
         if not self.image_names:
             return
         if event.angleDelta().y() > 0:
-            self.index = (self.index - 1) % len(self.image_names)
+            self.next()
         else:
-            self.index = (self.index + 1) % len(self.image_names)
+            self.previous()
+
+    def previous(self) -> None:
+        self.index = (self.index + 1) % len(self.image_names)
+        self._load_current_image()
+
+    def next(self) -> None:
+        self.index = (self.index - 1) % len(self.image_names)
         self._load_current_image()
 
     def mousePressEvent(self, event: QtGui.QMouseEvent):
