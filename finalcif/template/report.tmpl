@@ -61,6 +61,13 @@
                 </div>
             {% endif %}
 
+            {% if crystal_video %}
+                <div class="card w-90 mt-4 mb-4">
+                    <!--suppress HtmlUnknownTarget -->
+                    <img alt="Crystal Video" src="{{ crystal_video }}" width="100%">
+                </div>
+            {% endif %}
+
             <p id="report_text">
                 A {{ crystal_colour }}, {{ crystal_shape }} shaped crystal was mounted on
                 a {{ cif._diffrn_measurement_specimen_support }}

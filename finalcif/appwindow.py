@@ -448,10 +448,11 @@ class AppWindow(QMainWindow):
     def set_video_image_for_report(self):
         image_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='_video-finalcif.png')
         self.video.save_image(image_filename)
-        self.set_report_picture_path(str(image_filename))
+        self.options.video_image = image_filename
 
-    def _select_crystal_video(self) -> None:
-        video_file = Path(video_file_open_dialog(parent=self, last_dir=self.get_last_workdir()))
+    def _select_crystal_video(self, video_file: Path | None = None) -> None:
+        if video_file is None:
+            video_file = Path(video_file_open_dialog(parent=self, last_dir=self.get_last_workdir()))
         if video_file is not None and video_file.is_file() and video_file.exists():
             self.ui.videoLineEdit.setText(str(video_file.resolve()))
             self.video.load_file(video_file)
@@ -1557,8 +1558,15 @@ class AppWindow(QMainWindow):
         if self.cif.is_multi_cif:
             self._flash_block_combobox()
         self.cif.set_order_keys(self.ui.cifOrderWidget.order_keys)
+        QtCore.QTimer().singleShot(0, self._find_video)
         # Enable to find widgets without parent:
         # QtCore.QTimer(self).singleShot(1000, self.find_widgets_without_parent)
+
+    def _find_video(self):
+        path = self.cif.fileobj.parent.parent
+        videos = list(path.glob('*.vzs'))
+        if videos:
+            self._select_crystal_video(videos[0])
 
     def find_widgets_without_parent(self) -> None:
         print('Finding parents...')

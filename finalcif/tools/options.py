@@ -1,3 +1,4 @@
+import pathlib
 from typing import TypeVar
 
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
@@ -18,6 +19,7 @@ class Options:
             self.load_state()
             self._connect_signal_and_slots()
         self._options = {}
+        self.video_image: pathlib.Path | None = None
 
     def _connect_signal_and_slots(self) -> None:
         self.ui.HAtomsCheckBox.stateChanged.connect(self._state_changed)

@@ -722,7 +722,7 @@ class Formatter(abc.ABC):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = ref.Nosphera2Reference()
         return string_to_utf8(refined.split('(')[0]).strip()
 
@@ -1230,6 +1230,8 @@ class TemplatedReport:
                    'name'                   : cif.block.name,
                    'space_group'            : self.text_formatter.space_group_formatted(cif, tpl_doc),
                    'structure_figure'       : self.text_formatter.make_picture(options, picfile,
+                                                                               tpl_doc) if options else '',
+                   'crystal_video'          : self.text_formatter.make_picture(options, options.video_image,
                                                                                tpl_doc) if options else '',
                    '3d_structure'           : self.text_formatter.make_3d(cif, options) if options else '',
                    'crystallization_method' : self.text_formatter.get_crystallization_method(cif),
