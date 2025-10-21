@@ -562,7 +562,7 @@ class Formatter(abc.ABC):
     def space_group_formatted(self, cif: CifContainer, tpl_doc: DocxTemplate):
         raise NotImplementedError
 
-    def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
+    def make_picture(self, picfile: Path, tpl_doc: DocxTemplate):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -921,12 +921,11 @@ class HtmlFormatter(Formatter):
             return '?'
         return f'{spgrxml} ({number})'
 
-    def make_picture(self, options: Options, picfile: Path, _: None) -> str:
+    def make_picture(self, picfile: Path, _: None) -> str:
         picture_path = ''
-        if options.report_text and picfile and picfile.exists():
+        if picfile and picfile.exists():
             picture_path = str(picfile.resolve())
-        return picture_path  # (f'<img src="{picture_path}" '
-        # f'alt="Structure View" style="width:20%;height:20%;">')
+        return picture_path
 
     def format_sum_formula(self, sum_formula: str) -> str:
         sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
@@ -1065,8 +1064,8 @@ class RichTextFormatter(Formatter):
         radiation.add(radline, italic=True, subscript=True)
         return radiation
 
-    def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate) -> InlineImage | None:
-        if options.report_text and picfile and picfile.exists():
+    def make_picture(self, picfile: Path, tpl_doc: DocxTemplate) -> InlineImage | None:
+        if picfile and picfile.exists():
             return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
 
@@ -1125,10 +1124,9 @@ class TemplatedReport:
 
     def make_templated_docx_report(self,
                                    output_filename: str,
-                                   picfile: Path | None,
                                    template_path: Path) -> bool:
         tpl_doc = DocxTemplate(template_path)
-        context, tpl_doc = self.prepare_report_data(self.cif, self.options, picfile, tpl_doc)
+        context, tpl_doc = self.prepare_report_data(self.cif, self.options, tpl_doc)
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.globals.update(zip=zip)
@@ -1165,10 +1163,9 @@ class TemplatedReport:
 
     def make_templated_html_report(self,
                                    output_filename: str = 'test.html',
-                                   picfile: Path | None = None,
                                    template_path: Path = Path('.'),
                                    template_file: str = "report.tmpl") -> bool:
-        context = self.get_context(self.cif, self.options, picfile, None)
+        context = self.get_context(self.cif, self.options, None)
         jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath=template_path.resolve()),
                                        autoescape=select_autoescape(['html', 'htm', 'xml']))
         # Add zip() method to global namespace of the template:
@@ -1202,21 +1199,20 @@ class TemplatedReport:
 
     def prepare_report_data(self, cif: CifContainer,
                             options: Options,
-                            picfile: Path | None,
                             tpl_doc: DocxTemplate | None) -> tuple[dict[str, Any], DocxTemplate]:
         maincontext = {}
         if not cif.is_multi_cif:
-            maincontext = self.get_context(cif, options, picfile, tpl_doc)
+            maincontext = self.get_context(cif, options, tpl_doc)
         else:
             current_block = cif.block.name
             current_file = cif.fileobj
-            maincontext.update(self.get_context(cif, options, picfile, tpl_doc))
+            maincontext.update(self.get_context(cif, options, tpl_doc))
             block_list = []
             blocks = {}
             for block in cif.doc:
                 cif2 = CifContainer(file=current_file)
                 cif2.load_block_by_name(block.name)
-                context = self.get_context(cif2, options, picfile, tpl_doc)
+                context = self.get_context(cif2, options, tpl_doc)
                 block_list.append(context)
                 blocks[block.name] = context
             maincontext['blocklist'] = block_list
@@ -1224,15 +1220,15 @@ class TemplatedReport:
             cif.load_block_by_name(current_block)
         return maincontext, tpl_doc
 
-    def get_context(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate = None):
+    def get_context(self, cif: CifContainer, options: Options, tpl_doc: DocxTemplate = None) -> dict[str, str | Any]:
         context = {'options'                : options,
                    'cif'                    : cif,
                    'name'                   : cif.block.name,
                    'space_group'            : self.text_formatter.space_group_formatted(cif, tpl_doc),
-                   'structure_figure'       : self.text_formatter.make_picture(options, picfile,
-                                                                               tpl_doc) if options else '',
-                   'crystal_video'          : self.text_formatter.make_picture(options, options.video_image,
-                                                                               tpl_doc) if options else '',
+                   'structure_figure'       : self.text_formatter.make_picture(options.structure_figure, tpl_doc) if (
+                       options and options.report_text) else '',
+                   'crystal_video'          : self.text_formatter.make_picture(options.video_image, tpl_doc) if (
+                       options and options.report_text) else '',
                    '3d_structure'           : self.text_formatter.make_3d(cif, options) if options else '',
                    'crystallization_method' : self.text_formatter.get_crystallization_method(cif),
                    'sum_formula'            : self.text_formatter.format_sum_formula(
@@ -1335,17 +1331,19 @@ if __name__ == '__main__':
 
     import subprocess
 
-    html = True
+    html = False
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
     testcif = Path(r'test-data/p31c.cif').absolute()
-    testcif = Path(r"D:\Downloads\9008564.cif").absolute()
+    # testcif = Path(r"D:\Downloads\9008564.cif").absolute()
     cif = CifContainer(testcif)
 
     pic = pathlib.Path("screenshots/finalcif_checkcif.png")
 
     options = Options()
+    options.structure_figure = pic
+    options.video_image = Path('test-data/rigaku_video/sample01.jpg')
     # Set options with leading underscore without settings parameter in Options:
     options._bonds_table = True
     # options._report_adp = True
@@ -1361,12 +1359,12 @@ if __name__ == '__main__':
     if html:
         output = work / 'test.html'
         t = TemplatedReport(format=ReportFormat.HTML, options=options, cif=cif)
-        ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
+        ok = t.make_templated_html_report(output_filename=str(output), template_path=template_path)
     else:
         output = work / 'test.docx'
         t = TemplatedReport(format=ReportFormat.RICHTEXT, options=options, cif=cif)
-        ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
-                                          output_filename=str(output), picfile=pic)
+        ok = t.make_templated_docx_report(template_path=Path('finalcif/template/report_default.docx'),
+                                          output_filename=str(output))
     if ok:
         print('report successfully generated')
         if sys.platform == 'darwin':

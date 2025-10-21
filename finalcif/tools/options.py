@@ -20,6 +20,7 @@ class Options:
             self._connect_signal_and_slots()
         self._options = {}
         self.video_image: pathlib.Path | None = None
+        self.structure_figure: pathlib.Path | None = None
 
     def _connect_signal_and_slots(self) -> None:
         self.ui.HAtomsCheckBox.stateChanged.connect(self._state_changed)

@@ -1208,9 +1208,9 @@ class AppWindow(QMainWindow):
         self.cif.picometer = self.options.use_picometers
         # The picture after the header:
         if self.report_picture_path:
-            picfile = self.report_picture_path
+            self.options.structure_figure = self.report_picture_path
         else:
-            picfile = self.cif.finalcif_file.with_suffix('.gif')
+            self.options.structure_figure = self.cif.finalcif_file.with_suffix('.gif')
         try:
             print('Report with templates')
             template_path = Path(self.get_checked_templates_list_text())
@@ -1218,7 +1218,6 @@ class AppWindow(QMainWindow):
             if template_path.suffix in ('.docx',):
                 t = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
                 ok = t.make_templated_docx_report(output_filename=str(report_filename),
-                                                  picfile=picfile,
                                                   template_path=Path(self.get_checked_templates_list_text()))
                 if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
                     make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
@@ -1226,7 +1225,6 @@ class AppWindow(QMainWindow):
                 t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
                 report_filename = report_filename.with_suffix('.html')
                 ok = t.make_templated_html_report(output_filename=str(report_filename),
-                                                  picfile=picfile,
                                                   template_path=template_path.parent,
                                                   template_file=template_path.name)
             if not ok:
