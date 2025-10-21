@@ -73,8 +73,8 @@ class TemplateReportTestCase(unittest.TestCase):
         self.myapp.ui.docxTemplatesListWidget.setCurrentRow(2)
         self.myapp.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
-        # for n, p in enumerate(doc.paragraphs):
-        #    print(n, p.text)
+        for n, p in enumerate(doc.paragraphs):
+            print(n, p.text)
         self.assertEqual('The compound was crystalli', doc.paragraphs[2].text[:26])
 
 
@@ -90,6 +90,7 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         self.reportdoc = cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
         self.report_pic = Path('finalcif/icon/finalcif.png')
+        self.options.structure_figure = self.report_pic
 
     def tearDown(self) -> None:
         self.reportdoc.unlink(missing_ok=True)
@@ -100,7 +101,6 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
                             cif=CifContainer(self.testcif),
                             format=ReportFormat.RICHTEXT)
         ok = t.make_templated_docx_report(output_filename=str(self.reportdoc),
-                                          picfile=self.report_pic,
                                           template_path=self.text_template)
         self.assertTrue(ok)
         doc = Document(str(self.reportdoc.absolute()))
@@ -117,7 +117,6 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
                             cif=CifContainer(self.testcif),
                             format=ReportFormat.RICHTEXT)
         ok = t.make_templated_docx_report(output_filename=str(self.reportdoc),
-                                          picfile=self.report_pic,
                                           template_path=self.text_template)
         self.assertTrue(ok)
         doc = Document(self.reportdoc.absolute())
@@ -130,7 +129,6 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
                             cif=CifContainer(self.testcif),
                             format=ReportFormat.RICHTEXT)
         t.make_templated_docx_report(output_filename=str(self.reportdoc),
-                                     picfile=self.report_pic,
                                      template_path=self.text_template)
         doc = Document(self.reportdoc.absolute())
         paragraphs = [p.text for p in doc.paragraphs]
@@ -155,8 +153,7 @@ class TestReportFromMultiCif(unittest.TestCase):
         t = TemplatedReport(options=self.options,
                             cif=self.cif,
                             format=ReportFormat.RICHTEXT)
-        ok = t.make_templated_docx_report(output_filename='test.docx', picfile=Path(),
-                                          template_path=self.docx_templ)
+        ok = t.make_templated_docx_report(output_filename='test.docx', template_path=self.docx_templ)
         self.assertTrue(ok)
         doc = Document(self.reportdoc.resolve().__str__())
         self.assertEqual('C1-C2 in p-1 distance: 1.5123(17)', doc.paragraphs[0].text)
@@ -174,7 +171,7 @@ class TestCIFwithOneAtom(unittest.TestCase):
                                  format=ReportFormat.HTML)
 
     def test_foo(self):
-        context = self.t.get_context(cif=self.cif, options=self.options, picfile=Path())
+        context = self.t.get_context(cif=self.cif, options=self.options)
         self.assertEqual(({'label': 'C',
                            'occ'  : '1.000000',
                            'part' : '0',

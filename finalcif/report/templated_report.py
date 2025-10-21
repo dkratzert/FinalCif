@@ -562,7 +562,7 @@ class Formatter(abc.ABC):
     def space_group_formatted(self, cif: CifContainer, tpl_doc: DocxTemplate):
         raise NotImplementedError
 
-    def make_picture(self, picfile: Path, tpl_doc: DocxTemplate):
+    def make_picture(self, picfile: Path, options: Options, tpl_doc: DocxTemplate):
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -921,9 +921,9 @@ class HtmlFormatter(Formatter):
             return '?'
         return f'{spgrxml} ({number})'
 
-    def make_picture(self, picfile: Path, _: None) -> str:
+    def make_picture(self, picfile: Path, options: Options, _: None) -> str:
         picture_path = ''
-        if picfile and picfile.exists():
+        if options and picfile and picfile.exists():
             picture_path = str(picfile.resolve())
         return picture_path
 
@@ -1064,8 +1064,8 @@ class RichTextFormatter(Formatter):
         radiation.add(radline, italic=True, subscript=True)
         return radiation
 
-    def make_picture(self, picfile: Path, tpl_doc: DocxTemplate) -> InlineImage | None:
-        if picfile and picfile.exists():
+    def make_picture(self, picfile: Path, options: Options, tpl_doc: DocxTemplate) -> InlineImage | None:
+        if options and picfile and picfile.exists():
             return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
 
@@ -1225,9 +1225,11 @@ class TemplatedReport:
                    'cif'                    : cif,
                    'name'                   : cif.block.name,
                    'space_group'            : self.text_formatter.space_group_formatted(cif, tpl_doc),
-                   'structure_figure'       : self.text_formatter.make_picture(options.structure_figure, tpl_doc) if (
+                   'structure_figure'       : self.text_formatter.make_picture(options.structure_figure,
+                                                                               options, tpl_doc) if (
                        options and options.report_text) else '',
-                   'crystal_video'          : self.text_formatter.make_picture(options.video_image, tpl_doc) if (
+                   'crystal_video'          : self.text_formatter.make_picture(options.video_image,
+                                                                               options, tpl_doc) if (
                        options and options.report_text) else '',
                    '3d_structure'           : self.text_formatter.make_3d(cif, options) if options else '',
                    'crystallization_method' : self.text_formatter.get_crystallization_method(cif),
