@@ -54,19 +54,21 @@
         <h2>Crystal Structure Report for {{ cif.block.name }}</h2>
         {% if options.report_text %}
 
-            {% if structure_figure %}
-                <div class="card w-90 mt-4 mb-4">
-                    <!--suppress HtmlUnknownTarget -->
-                    <img alt="Structure Figure" src="{{ structure_figure }}" width="100%">
-                </div>
-            {% endif %}
+            <div class="d-flex flex-row w-100 mt-4 mb-4" style="gap: 2rem;">
+                {% if structure_figure %}
+                    <div class="card w-90 mt-4 mb-4">
+                        <!--suppress HtmlUnknownTarget -->
+                        <img alt="Structure Figure" src="{{ structure_figure }}" width="100%">
+                    </div>
+                {% endif %}
 
-            {% if crystal_video %}
-                <div class="card w-90 mt-4 mb-4">
-                    <!--suppress HtmlUnknownTarget -->
-                    <img alt="Crystal Video" src="{{ crystal_video }}" width="100%">
-                </div>
-            {% endif %}
+                {% if crystal_video %}
+                    <div class="card w-90 mt-4 mb-4">
+                        <!--suppress HtmlUnknownTarget -->
+                        <img alt="Crystal Video" src="{{ crystal_video }}" width="100%">
+                    </div>
+                {% endif %}
+            </div>
 
             <p id="report_text">
                 A {{ crystal_colour }}, {{ crystal_shape }} shaped crystal was mounted on
@@ -78,7 +80,7 @@
                 using a {{ monochromator }} as monochromator and {{ detector|inv_article }} {{ detector }}
                 detector. The diffractometer
                 {% if lowtemp_dev %}was equipped with {{ lowtemp_dev|inv_article }} {{ lowtemp_dev }}
-                low temperature device and
+                    low temperature device and
                 {% endif %}
                 used {{ radiation }} radiation {% if wavelength %}(λ = {{ wavelength }} Å){% endif %}.
                 All data were integrated with {{ integration_progr }} yielding {{ cif._diffrn_reflns_number }}
@@ -91,7 +93,8 @@
                     n/a
                 {% endif %}
                 were greater than 2σ(<i>F</i><sup>2</sup>).<sup>[{{ literature.integration|ref_num }}]</sup> A
-                {{ abstype }} absorption correction using {{ abs_details }} was applied.<sup>[{{ literature.absorption|ref_num }}]</sup>
+                {{ abstype }} absorption correction using {{ abs_details }} was
+                applied.<sup>[{{ literature.absorption|ref_num }}]</sup>
                 The structure was solved by
                 {{ solution_method }} methods with {{ solution_program }} and refined by full-matrix
                 least-squares methods against
@@ -100,13 +103,13 @@
                 All non-hydrogen atoms
                 were refined with anisotropic displacement parameters.
                 {% if cif.hydrogen_atoms_present %}
-                {{ hydrogen_atoms }}
+                    {{ hydrogen_atoms }}
                 {% endif %}
                 Crystallographic data for the structures reported in this paper have been deposited
                 with the Cambridge Crystallographic Data Centre.<sup>[{{ literature.ccdc|ref_num }}]</sup> CCDC
                 {% if cif._database_code_depnum_ccdc_archive %}
-                {{ cif._database_code_depnum_ccdc_archive|replace('CCDC ', '') }}{% else %}
-                ??????
+                    {{ cif._database_code_depnum_ccdc_archive|replace('CCDC ', '') }}{% else %}
+                    ??????
                 {% endif %}
                 contain the supplementary crystallographic data for this paper.
                 These data can be obtained free of charge from The Cambridge Crystallographic Data

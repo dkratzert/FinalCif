@@ -440,7 +440,7 @@ class AppWindow(QMainWindow):
         self.ui.searchMainTableLineEdit.textChanged.connect(self.ui.cif_main_table.search)
         self.ui.textSizeSpinBox.valueChanged.connect(self.set_global_font)
         # video:
-        self.ui.SelectVideo_PushButton.clicked.connect(self._select_crystal_video)
+        self.ui.SelectVideo_PushButton.clicked.connect(lambda x: self._select_crystal_video())
         self.ui.videoRightToolButton.clicked.connect(self.video.next)
         self.ui.videoLeftToolButton.clicked.connect(self.video.previous)
         self.ui.setVideoPicturePushButton.clicked.connect(self.set_video_image_for_report)
@@ -1562,7 +1562,9 @@ class AppWindow(QMainWindow):
         # Enable to find widgets without parent:
         # QtCore.QTimer(self).singleShot(1000, self.find_widgets_without_parent)
 
-    def _find_video(self):
+    def _find_video(self) -> None:
+        self.video.reset()
+        self.ui.videoLineEdit.setText('')
         path = self.cif.fileobj.parent.parent
         videos = list(path.glob('*.vzs'))
         if videos:

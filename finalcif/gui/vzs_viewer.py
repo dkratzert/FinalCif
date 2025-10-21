@@ -45,6 +45,10 @@ class VZSImageViewer(QtWidgets.QWidget):
             self.image_names.sort()
             self._load_current_image()
 
+    def reset(self) -> None:
+        self.pixmap = None
+        self.update()
+
     def _load_current_image(self) -> None:
         if not self.image_names:
             self.pixmap = None
