@@ -574,6 +574,7 @@ predefined_property_templates = [
      'values': ['_diffrn_measurement_ambient_temperature_device_make',
                 ['',
                  'Oxford Cryostream',
+                 'Oxford Cryostream 1000',
                  'Oxford Cryostream 800',
                  'Oxford Cryostream 700',
                  'Oxford Cryostream 600',
