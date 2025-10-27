@@ -948,7 +948,10 @@ class AppWindow(QMainWindow):
         url = QtCore.QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
-        self.checkcif_browser.setHtml(self.htmlfile.resolve().read_text('utf-8', 'ignore'))
+        try:
+            self.checkcif_browser.setHtml(self.htmlfile.resolve().read_text('utf-8', 'ignore'))
+        except FileNotFoundError:
+            print(f'{self.htmlfile} not found')
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
         threading.Thread(target=self._display_structure_factor_report, args=(parser,)).start()
         # The picture file linked in the html file:
@@ -1165,10 +1168,12 @@ class AppWindow(QMainWindow):
                                                  caption='Open a Report Picture')
             self.set_report_picture_path(filename)
 
-    def set_report_picture_path(self, filename: str):
+    def set_report_picture_path(self, filename: str) -> None:
+        if not filename:
+            return None
         with suppress(Exception):
             self.report_picture_path = Path(filename)
-        if self.report_picture_path.exists() and self.report_picture_path.is_file():
+        if self.report_picture_path and self.report_picture_path.exists() and self.report_picture_path.is_file():
             with suppress(Exception):
                 self.set_picture_button_icon()
 
@@ -1238,10 +1243,11 @@ class AppWindow(QMainWindow):
             return
         except PermissionError:
             if DEBUG:
+                print('dbg> Unable to open report or CIF file')
                 raise
-            print('Unable to open cif file')
-            show_general_warning(self, f'The report document {report_filename.name} could not be opened.\n'
-                                       'Is the file already opened?')
+            show_general_warning(self,
+                                 f'The document {report_filename.name} could not be opened to '
+                                 f'write the report.\nIs the file already opened?')
             return
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
@@ -1521,12 +1527,12 @@ class AppWindow(QMainWindow):
         self.set_path_display_in_file_selector(str(filepath))
         try:
             if not self.able_to_open(filepath):
-                return
+                return None
         except (OSError, IndexError):
             print('Something failed during cif file opening...')
             if DEBUG:
                 raise
-            return
+            return None
         not_ok = None
         try:
             e = None
@@ -1540,7 +1546,7 @@ class AppWindow(QMainWindow):
         if not_ok:
             unable_to_open_message(self, filepath, not_ok)
             return None
-        if not self.cif.is_valid_structure_cif and not self.cif.doc.find_block('global'):
+        if not self.cif.is_valid_structure_cif:
             show_general_warning(self, "The CIF file you are about to open contains no structure.\n\n"
                                        "Use the Import button below to import metadata.")
             return None
