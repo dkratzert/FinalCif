@@ -465,7 +465,7 @@ class AppWindow(QMainWindow):
         self.make_loops_tables()
         self.ui.MainStackedWidget.go_to_loops_page()
 
-    def export_all_templates(self, filename: Path | None = None):
+    def export_all_templates(self, filename: Path | None = None) -> None:
         if not filename:
             filename, _ = compat.getsavefilename(parent=self,
                                                  basedir=str(Path(self.get_last_workdir()).joinpath(
@@ -488,7 +488,7 @@ class AppWindow(QMainWindow):
         except pickle.PickleError as e:
             self.status_bar.show_message(f'Saving templates failed: {e!s}')
 
-    def import_all_templates(self, filename: Path | None = None):
+    def import_all_templates(self, filename: Path | None = None) -> None:
         import pickle
         if not filename:
             filename, _ = compat.getopenfilename(parent=self,
