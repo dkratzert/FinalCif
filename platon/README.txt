@@ -1,3 +1,14 @@
+
+THIS RESEARCH PROGRAM MAY BE USED FREE OF CHARGE FOR USE WITHIN THE
+ACADEMIC COMMUNITY AND NOT FOR PROFIT WITHOUT EXPLICIT PERMISSION.
+COMMERCIAL USERS SHOULD APPLY BY FILLING OUT AN APPLICATION FORM.
+https://www.platonsoft.nl/platon/applform.pdf
+IT IS TO BE UNDERSTOOD THAT THE AUTHOR OR HIS UNIVERSITY CANNOT BE
+HELD RESPONSIBLE FOR ANY PROBLEMS CAUSED BY ERRORS IN THE CODE.
+PLEASE REPORT ENCOUNTERED ISSUES TO ITS AUTHOR WITH ASSOCIATED DATA
+
+
+
 This directory contains a special 'command-line only' PLATON version
 =====================================================================
 (not for general distribution ! useful only for structure validation

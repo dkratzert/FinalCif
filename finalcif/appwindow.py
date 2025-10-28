@@ -154,7 +154,9 @@ class AppWindow(QMainWindow):
             "            Spek, A.L. (2020). Acta Cryst. E76, 1-11.\n"
             "  \n"
             "  \n"
-            "  - Recent versions of PLATON may be obtained from: https://platonsoft.nl/xraysoft\n"
+            "  - Recent versions of PLATON may be obtained from: https://platonsoft.nl/xraysoft\n\n"
+            " PLATON is free of charge for Academics.\n"
+            " For-profit organisations should contact Anthony L. Spek, a.l.spek@uu.nl for a license." 
             "  "
         )
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
