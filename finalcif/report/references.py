@@ -340,7 +340,7 @@ class SAINTReference(Reference):
         # if '6.28' in self.year:
         #    self.year = '2001'
         self.volume = version
-        self.pages = 'Bruker AXS Inc., Madison, Wisconsin, USA'
+        self.pages = 'Bruker AXS SE, Karlsruhe, Germany'
 
 
 class XRedReference(Reference):

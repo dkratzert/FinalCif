@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=0.8">
     <title>Structure Tables</title>
-    {# <link href="bootstrap.min.css" rel="stylesheet">  #}
+
     <style>
         #bibliography {
             list-style-type: none;
@@ -42,9 +42,10 @@
 </head>
 
 <body>
-<div class="container">
+<div class="container mt-4">
 
     <div class="row">
+        {% set table_num = 1 %}
         {% if options.report_text %}
             <div class="col">
         {% else %}
@@ -114,7 +115,8 @@
                 contain the supplementary crystallographic data for this paper.
                 These data can be obtained free of charge from The Cambridge Crystallographic Data
                 Centre via <a href="www.ccdc.cam.ac.uk/structures">www.ccdc.cam.ac.uk/structures</a>.
-                This report and the CIF file were generated using FinalCif.<sup>[{{ literature.finalcif|ref_num }}]</sup>
+                This report and the CIF file were generated using
+                FinalCif.<sup>[{{ literature.finalcif|ref_num }}]</sup>
             </p>
             {% if refinement_details %}
                 <h4>
@@ -133,7 +135,8 @@
             <div class="col">
         {% endif %}
         <h4 id="residuals_table_header">
-            Table 1. Crystal data and structure refinement for {{ cif.block.name }}
+            Table {{ table_num }}. Crystal data and structure refinement for {{ cif.block.name }}
+            {% set table_num = table_num + 1 %}
         </h4>
         <table class="table table-sm table-condensed table-hover">
             <tbody>
@@ -231,7 +234,13 @@
             </tr>
             <tr>
                 <td>Reflections collected</td>
-                <td>{{ cif._diffrn_reflns_number }}</td>
+                <td>
+                    {% if cif._diffrn_reflns_bruker_twinabs_number %}
+                        {{ cif._diffrn_reflns_bruker_twinabs_number }}
+                    {% else %}
+                        {{ cif._diffrn_reflns_number }}
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <td>Independent reflections</td>
@@ -299,9 +308,10 @@
 
         {% if atomic_coordinates %}
             <h4>
-                Table 2. Atomic coordinates and <i>U</i><sub>eq</sub> [Å<sup>2</sup>]
+                Table {{ table_num }}. Atomic coordinates and <i>U</i><sub>eq</sub> [Å<sup>2</sup>]
                 for {{ cif.block.name }}
             </h4>
+            {% set table_num = table_num + 1 %}
 
             <div class="row">
                 <div class="col-8">
@@ -337,10 +347,11 @@
 
         {% if displacement_parameters and options.report_adp %}
             <h4>
-                Table 3. Anisotropic displacement parameters [Å<sup>2</sup>] for {{ cif.block.name }}.
+                Table {{ table_num }}. Anisotropic displacement parameters [Å<sup>2</sup>] for {{ cif.block.name }}.
                 The anisotropic displacement factor exponent takes the form:
                 −2π<sup>2</sup>[&thinsp;<i>h</i><sup>2</sup>(<i>a</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>11</sub>&thinsp;+&thinsp;<i>k</i><sup>2</sup>(<i>b</i><sup>*</sup>)<sup>2</sup><i>U</i><sub>22</sub>&thinsp;+&thinsp;…&thinsp;+&thinsp;2<i>hka</i><sup>*</sup><i>b</i><sup>*</sup><i>U</i><sub>12</sub>&thinsp;]
             </h4>
+            {% set table_num = table_num + 1 %}
 
             <div class="row">
                 <div class="col-8">
@@ -382,8 +393,9 @@
                 {# {% if options.bonds_table %} #}
                 {% if bonds %}
                     <h4>
-                        Table 4. Bond lengths and angles for {{ cif.block.name }}
+                        Table {{ table_num }}. Bond lengths and angles for {{ cif.block.name }}
                     </h4>
+                    {% set table_num = table_num + 1 %}
                     <table class="table table-sm table-condensed table-hover">
                         <caption>
                             {% if ba_symminfo %}
@@ -436,8 +448,9 @@
             <div class="col-5">
                 {% if torsions %}
                     <h4>
-                        Table 5. Torsion angles for {{ cif.block.name }}
+                        Table {{ table_num }}. Torsion angles for {{ cif.block.name }}
                     </h4>
+                    {% set table_num = table_num + 1 %}
                     <table class="table table-sm table-condensed table-hover">
                         <caption>
                             {% if torsion_symminfo %}
@@ -472,8 +485,9 @@
 
         {% if options.hydrogen_bonds and hydrogen_bonds %}
             <h4>
-                Table 6. Hydrogen bonds for {{ cif.block.name }}
+                Table {{ table_num }}. Hydrogen bonds for {{ cif.block.name }}
             </h4>
+            {% set table_num = table_num + 1 %}
 
             <div class="row">
                 <div class="col-9">

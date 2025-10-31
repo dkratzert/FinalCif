@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import abc
+import base64
 import dataclasses
 import enum
 import itertools
@@ -8,7 +9,6 @@ import pathlib
 import re
 import sys
 from collections import namedtuple
-from collections.abc import Iterator
 from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
@@ -513,21 +513,17 @@ class Formatter(abc.ABC):
         self._torsions = TorsionAngles(cif, without_h=options.without_h)
         self._hydrogens = HydrogenBonds(cif)
 
-    @abc.abstractmethod
     def get_bonds(self):
-        ...
+        raise NotImplementedError
 
-    @abc.abstractmethod
     def get_angles(self):
-        ...
+        raise NotImplementedError
 
-    @abc.abstractmethod
     def get_torsion_angles(self) -> list[dict[str, RichText]] | list[Torsion]:
-        ...
+        raise NotImplementedError
 
-    @abc.abstractmethod
     def get_hydrogen_bonds(self) -> list[dict[str, RichText]] | list[HydrogenBond]:
-        ...
+        raise NotImplementedError
 
     def get_bonds_angles_symminfo(self) -> str:
         return self._bonds_angles.symminfo
@@ -541,9 +537,8 @@ class Formatter(abc.ABC):
     def get_crystallization_method(self, cif: CifContainer) -> str:
         return string_to_utf8(gstr(cif['_exptl_crystal_recrystallization_method']))
 
-    @abc.abstractmethod
     def get_radiation(self, cif: CifContainer) -> str | RichText:
-        ...
+        raise NotImplementedError
 
     def get_wavelength(self, cif: CifContainer) -> str:
         try:
@@ -552,9 +547,8 @@ class Formatter(abc.ABC):
         except ValueError:
             return ''
 
-    @abc.abstractmethod
     def hkl_index_limits(self, cif: CifContainer) -> str:
-        ...
+        raise NotImplementedError
 
     def make_3d(self, cif: CifContainer, options: Options) -> str:
         raise NotImplementedError
@@ -565,9 +559,8 @@ class Formatter(abc.ABC):
     def make_picture(self, picfile: Path, options: Options, tpl_doc: DocxTemplate):
         raise NotImplementedError
 
-    @abc.abstractmethod
     def format_sum_formula(self, sum_formula: str) -> str:
-        ...
+        raise NotImplementedError
 
     def hydrogen_atoms_refinement(self, cif: CifContainer) -> RichText | str:
         """
@@ -921,11 +914,10 @@ class HtmlFormatter(Formatter):
             return '?'
         return f'{spgrxml} ({number})'
 
-    def make_picture(self, picfile: Path, options: Options, _: None) -> str:
-        picture_path = ''
-        if options and picfile and picfile.exists():
-            picture_path = str(picfile.resolve())
-        return picture_path
+    def make_picture(self, options: Options, picfile: Path, _: None) -> str:
+        if options.report_text and picfile and picfile.exists():
+            return base64.b64encode(picfile.resolve().read_bytes()).decode('utf-8')
+        return ''
 
     def format_sum_formula(self, sum_formula: str) -> str:
         sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
@@ -1065,7 +1057,7 @@ class RichTextFormatter(Formatter):
         return radiation
 
     def make_picture(self, picfile: Path, options: Options, tpl_doc: DocxTemplate) -> InlineImage | None:
-        if options and picfile and picfile.exists():
+        if options.report_text and picfile and picfile.exists():
             return InlineImage(tpl_doc, str(picfile.resolve()), width=Cm(options.picture_width))
         return None
 

@@ -105,6 +105,11 @@ additional_keywords = {
                                                 'The O(CH2CH3)2 solvent molecule (42 electrons) disordred around '
                                                 'an inverstion center was treated by SQUEEZE. '
                                                 '<br><p><h4>Type:</h4> string </p>\n',
+    '_exptl_bruker_absorpt_correction_T_ratio': '<pre><h2>_exptl_bruker_absorpt_correction_T_ratio</h2>'
+                                                'SADABS (and other scaling programs) can only determine the RATIO of '
+                                                'absorpt_correction_Tmin/Tmax, so this value determined by SHELXL is used to '
+                                                'scale the transmission values from SADABS.</pre>'
+                                                '<br><p><h4>Type:</h4> number (float) </p>\n',
 }
 
 cif_all_dict = {}
