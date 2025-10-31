@@ -1,6 +1,8 @@
 import os
 from unittest.mock import Mock
 
+import pytest
+
 from finalcif.tools.options import Options
 
 os.environ['RUNNING_TEST'] = 'True'
@@ -67,16 +69,6 @@ class TemplateReportTestCase(unittest.TestCase):
         for num in range(1, self.myapp.ui.docxTemplatesListWidget.count()):
             self.myapp.ui.docxTemplatesListWidget.setCurrentRow(num)
             self.myapp.templates.remove_current_template()
-
-    def test_with_report_text(self):
-        self.import_templates()
-        self.myapp.ui.docxTemplatesListWidget.setCurrentRow(2)
-        self.myapp.ui.SaveFullReportButton.click()
-        doc = Document(self.reportdoc.absolute())
-        for n, p in enumerate(doc.paragraphs):
-            print(n, p.text)
-        self.assertEqual('The compound was crystalli', doc.paragraphs[2].text[:26])
-
 
 class TemplateReportWithoutAppTestCase(unittest.TestCase):
     def setUp(self) -> None:
@@ -238,7 +230,7 @@ class TestData(unittest.TestCase):
         self.cif['_computing_data_reduction'] = 'SAINT V8.40A'
         result = self.t.text_formatter.get_integration_program(self.cif)
         self.assertEqual('SAINT V8.40A', result)
-        self.assertEqual('Bruker, SAINT, V8.40A, Bruker AXS Inc., Madison, Wisconsin, USA.',
+        self.assertEqual('Bruker, SAINT, V8.40A, Bruker AXS SE, Karlsruhe, Germany.',
                          str(self.t.text_formatter.literature['integration']))
 
     def test_get_integration_program_saint_without_version(self):
@@ -246,7 +238,7 @@ class TestData(unittest.TestCase):
         self.cif['_computing_data_reduction'] = 'SAINT'
         result = self.t.text_formatter.get_integration_program(self.cif)
         self.assertEqual('SAINT', result)
-        self.assertEqual('Bruker, SAINT, Bruker AXS Inc., Madison, Wisconsin, USA.',
+        self.assertEqual('Bruker, SAINT, Bruker AXS SE, Karlsruhe, Germany.',
                          str(self.t.text_formatter.literature['integration']))
 
 

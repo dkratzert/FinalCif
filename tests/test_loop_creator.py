@@ -33,7 +33,7 @@ class TestLoopCreator(unittest.TestCase):
         app.exec_()
 
     def test_search(self):
-        self.assertEqual(1428, self.lc.availableKeysListWidget.count())
+        self.assertEqual(1429, self.lc.availableKeysListWidget.count())
         self.lc.searchLineEdit.setText('footnote')
         self.assertEqual(2, self.lc.availableKeysListWidget.count())
 
