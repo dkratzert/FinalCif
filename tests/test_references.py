@@ -9,4 +9,4 @@ def test_nosphera2reference():
 
 
 def test_saint_reference():
-    assert str(SAINTReference('SAINT', 'V7.68a')) == "Bruker, SAINT, V7.68a, Bruker AXS Inc., Madison, Wisconsin, USA."
+    assert str(SAINTReference('SAINT', 'V7.68a')) == "Bruker, SAINT, V7.68a, Bruker AXS SE, Karlsruhe, Germany."
