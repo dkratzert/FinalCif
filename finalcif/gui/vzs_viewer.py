@@ -21,6 +21,7 @@ class VZSImageViewer(QtWidgets.QWidget):
         self.zoomed = False
         self.zoom_start = None
         self.zoom_end = None
+        self.rotation: float = 0.0
 
     def load_file(self, file_path: Path) -> None:
         if not file_path or not file_path.is_file():
@@ -43,7 +44,23 @@ class VZSImageViewer(QtWidgets.QWidget):
             self.image_names = [name for name in self.zipfile.namelist()
                                 if name.lower().endswith(".jpg")]
             self.image_names.sort()
+            self._load_orientation()
             self._load_current_image()
+
+    def _load_orientation(self) -> None:
+        parameters = 'params.txt'
+        if parameters in self.zipfile.namelist():
+            for line in self.zipfile.open(parameters):
+                if line.startswith(b'Microscope Rotation'):
+                    splitline = line.decode('latin1').rstrip().split('=')
+                    if len(splitline) > 1:
+                        _, rotation = splitline
+                        try:
+                            self.rotation = float(rotation)
+                        except ValueError:
+                            print(f'Rotation value invalid: {rotation}')
+                            self.rotation = 0.0
+                        return None
 
     def reset(self) -> None:
         self.pixmap = None
@@ -56,7 +73,9 @@ class VZSImageViewer(QtWidgets.QWidget):
         data = self._read_data()
         image = QtGui.QImage()
         image.loadFromData(data)
-        self.pixmap = QtGui.QPixmap().fromImage(image)
+        t = QtGui.QTransform().rotate(self.rotation)
+        rotated = image.transformed(t, QtCore.Qt.TransformationMode.SmoothTransformation)
+        self.pixmap = QtGui.QPixmap().fromImage(rotated)
         self.update()
 
     def save_image(self, file_path: Path) -> None:
@@ -79,7 +98,8 @@ class VZSImageViewer(QtWidgets.QWidget):
     def paintEvent(self, event):
         painter = QtGui.QPainter(self)
         if not self.pixmap:
-            painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, "No images found.\nSelect a crystal video file.")
+            painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter,
+                             "No images found.\nSelect a crystal video file.")
             return
         if self.zoomed and self.zoom_rect:
             cropped = self.pixmap.copy(self.zoom_rect)
