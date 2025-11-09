@@ -8,7 +8,6 @@ from __future__ import annotations
 #  ----------------------------------------------------------------------------
 import copy
 from contextlib import suppress
-from typing import Any
 
 import gemmi
 

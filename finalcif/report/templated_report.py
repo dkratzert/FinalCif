@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import abc
+import base64
 import dataclasses
 import enum
 import itertools
@@ -479,12 +480,6 @@ class Hydrogens:
         """
         return xml_to_html(self.rt)
 
-    def latex(self):
-        """
-        Transforms XML to Latex using XSLT.
-        """
-        return xml_to_latex(self.rt)
-
 
 class Disorder:
     def __init__(self, cif: CifContainer):
@@ -501,14 +496,11 @@ class Disorder:
     def richtext(self) -> RichText:
         return self.rt
 
-    def html(self) -> str:
+    def html(self):
         """
         Transforms XML to HTML using XSLT.
         """
         return xml_to_html(self.rt)
-
-    def latex(self) -> str:
-        return xml_to_latex(self.rt)
 
 
 class Formatter(abc.ABC):
@@ -525,21 +517,17 @@ class Formatter(abc.ABC):
         self._torsions = TorsionAngles(cif, without_h=options.without_h)
         self._hydrogens = HydrogenBonds(cif)
 
-    @abc.abstractmethod
     def get_bonds(self):
-        ...
+        raise NotImplementedError
 
-    @abc.abstractmethod
     def get_angles(self):
-        ...
+        raise NotImplementedError
 
-    @abc.abstractmethod
     def get_torsion_angles(self) -> list[dict[str, RichText]] | list[Torsion]:
-        ...
+        raise NotImplementedError
 
-    @abc.abstractmethod
     def get_hydrogen_bonds(self) -> list[dict[str, RichText]] | list[HydrogenBond]:
-        ...
+        raise NotImplementedError
 
     def get_bonds_angles_symminfo(self) -> str:
         return self._bonds_angles.symminfo
@@ -553,9 +541,8 @@ class Formatter(abc.ABC):
     def get_crystallization_method(self, cif: CifContainer) -> str:
         return string_to_utf8(gstr(cif['_exptl_crystal_recrystallization_method']))
 
-    @abc.abstractmethod
     def get_radiation(self, cif: CifContainer) -> str | RichText:
-        ...
+        raise NotImplementedError
 
     def get_wavelength(self, cif: CifContainer) -> str:
         try:
@@ -564,9 +551,8 @@ class Formatter(abc.ABC):
         except ValueError:
             return ''
 
-    @abc.abstractmethod
     def hkl_index_limits(self, cif: CifContainer) -> str:
-        ...
+        raise NotImplementedError
 
     def make_3d(self, cif: CifContainer, options: Options) -> str:
         raise NotImplementedError
@@ -577,9 +563,8 @@ class Formatter(abc.ABC):
     def make_picture(self, options: Options, picfile: Path, tpl_doc: DocxTemplate):
         raise NotImplementedError
 
-    @abc.abstractmethod
     def format_sum_formula(self, sum_formula: str) -> str:
-        ...
+        raise NotImplementedError
 
     def hydrogen_atoms_refinement(self, cif: CifContainer) -> RichText | str:
         """
@@ -618,7 +603,7 @@ class Formatter(abc.ABC):
             diff_density_min = f"{float(cif['_refine_diff_density_min']):.2f}"
         except ValueError:
             diff_density_min = '?'
-        return diff_density_min.replace('-', minus_sign)
+        return diff_density_min
 
     @staticmethod
     def get_diff_density_max(cif: CifContainer) -> str:
@@ -626,7 +611,7 @@ class Formatter(abc.ABC):
             diff_density_max = f"{float(cif['_refine_diff_density_max']):.2f}"
         except ValueError:
             diff_density_max = '?'
-        return diff_density_max.replace('-', minus_sign)
+        return diff_density_max
 
     @staticmethod
     def get_exti(cif: CifContainer) -> str:
@@ -816,7 +801,7 @@ class Formatter(abc.ABC):
                           )
         return result
 
-    def _value_format(self, value: str | None, string_format: str, multiply: bool = False) -> str:
+    def _value_format(self, value: str, string_format: str, multiply: bool = False) -> str:
         if value is None:
             value = 0.0
         if my_isnumeric(value):
@@ -879,123 +864,9 @@ class Formatter(abc.ABC):
             return ''
         return f'{redundancy:.2f}'
 
-    def refinement_details(self, cif: CifContainer) -> str:
+    def refinement_details(self, cif):
         details = ' '.join(cif['_refine_special_details'].splitlines(keepends=False)).strip()
         return string_to_utf8(details)
-
-
-class LatexFormatter(Formatter):
-
-    def __init__(self, options: Options, cif: CifContainer) -> None:
-        super().__init__(options, cif)
-
-    def get_bonds(self) -> list[Bond]:
-        return self._bonds_angles.bonds_as_string
-
-    def get_angles(self) -> list[Angle]:
-        return self._bonds_angles.angles_as_string
-
-    @staticmethod
-    def get_diff_density_min(cif: CifContainer) -> str:
-        try:
-            diff_density_min = f"{float(cif['_refine_diff_density_min']):.2f}"
-        except ValueError:
-            diff_density_min = '?'
-        return diff_density_min.replace('-', r'\textminus')
-
-    @staticmethod
-    def get_diff_density_max(cif: CifContainer) -> str:
-        try:
-            diff_density_max = f"{float(cif['_refine_diff_density_max']):.2f}"
-        except ValueError:
-            diff_density_max = '?'
-        return diff_density_max.replace('-', r'\textminus')
-
-    def get_torsion_angles(self) -> list[Torsion]:
-        return self._torsions.torsion_angles_as_string
-
-    def get_hydrogen_bonds(self) -> list[HydrogenBond]:
-        return self._hydrogens.hydrogen_bonds_as_str
-
-    def _format_symminfo(self, txt: str) -> str:
-        return escape_for_latex(txt)
-
-    def get_bonds_angles_symminfo(self) -> str:
-        return self._format_symminfo(self._bonds_angles.symminfo)
-
-    def get_torsion_symminfo(self) -> str:
-        return self._format_symminfo(self._torsions.symminfo)
-
-    def get_hydrogen_symminfo(self) -> str:
-        return self._format_symminfo(self._hydrogens.symminfo)
-
-    def make_3d(self, cif: CifContainer, options: Options) -> str:
-        return escape_for_latex('[3D representation of the structure in html/javascript not implemented]')
-
-    def space_group_formatted(self, cif: CifContainer, _: None) -> str:
-        s = SpaceGroups()
-        try:
-            spgrxml = s.to_latex(cif.space_group)
-            # Mathml doesn't work well in pyQt
-            # spgrxml = s.to_mathml(cif.space_group)
-        except KeyError:
-            spgrxml = '\\emph{?}'
-        return f'{spgrxml} ({cif.spgr_number})'
-
-    def make_picture(self, options: Options, picfile: Path, _: None):
-        picture_path = ''
-        if options.report_text and picfile and picfile.exists():
-            picture_path = str(picfile.resolve())
-        return picture_path
-
-    def format_sum_formula(self, sum_formula: str) -> str:
-        sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
-        tex_text = ''
-        if sum_formula_group:
-            for _, word in enumerate(sum_formula_group):
-                if isnumeric(word):
-                    tex_text += f'$_{{{word}}}$'
-                elif ')' in word:
-                    tex_text += f"{word.split(')')[0]})"
-                elif ']' in word:
-                    tex_text += f"{word.split(']')[0]})"
-                else:
-                    word = word.replace(',', ';\\nobreakspace')
-                    tex_text += word
-            return tex_text
-        else:
-            return 'no formula'
-
-    def hydrogen_atoms_refinement(self, cif: CifContainer) -> str:
-        return Hydrogens(cif).latex()
-
-    def atoms_refinement(self, cif: CifContainer) -> str:
-        return Atoms(cif).latex()
-
-    def disorder_description(self, cif: CifContainer) -> str:
-        self.literature['dsr'] = ref.DSRReference2018()
-        return Disorder(cif).latex()
-
-    def get_radiation(self, cif: CifContainer) -> str:
-        # TODO: Make test for this method
-        rad_element, radtype, radline = cif['_diffrn_radiation_type'].partition("K")
-        radline = string_to_latex(radline)
-        radiation = f'{rad_element}\\textit{{{radtype}}}$_{{{radline}}}$'
-        return radiation
-
-    def hkl_index_limits(self, cif: CifContainer) -> str:
-        limit_h_min = cif['_diffrn_reflns_limit_h_min']
-        limit_h_max = cif['_diffrn_reflns_limit_h_max']
-        limit_k_min = cif['_diffrn_reflns_limit_k_min']
-        limit_k_max = cif['_diffrn_reflns_limit_k_max']
-        limit_l_min = cif['_diffrn_reflns_limit_l_min']
-        limit_l_max = cif['_diffrn_reflns_limit_l_max']
-        return (f'{"$-$" if limit_h_min != "0" else ""}{limit_h_min.replace("-", "")} '
-                fr'$\leq$ h $\leq$ {limit_h_max}\\'
-                f'& {"$-$" if limit_k_min != "0" else ""}{limit_k_min.replace("-", "")} '
-                fr'$\leq$ k $\leq$ {limit_k_max}\\'
-                f'& {"$-$" if limit_l_min != "0" else ""}{limit_l_min.replace("-", "")} '
-                fr'$\leq$ l $\leq$ {limit_l_max}')
 
 
 class HtmlFormatter(Formatter):
@@ -1048,11 +919,9 @@ class HtmlFormatter(Formatter):
         return f'{spgrxml} ({number})'
 
     def make_picture(self, options: Options, picfile: Path, _: None) -> str:
-        picture_path = ''
         if options.report_text and picfile and picfile.exists():
-            picture_path = str(picfile.resolve())
-        return picture_path  # (f'<img src="{picture_path}" '
-        # f'alt="Structure View" style="width:20%;height:20%;">')
+            return base64.b64encode(picfile.resolve().read_bytes()).decode('utf-8')
+        return ''
 
     def format_sum_formula(self, sum_formula: str) -> str:
         sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
@@ -1215,7 +1084,6 @@ def text_factory(options: Options, cif: CifContainer) -> dict[ReportFormat, Form
     factory = {
         ReportFormat.RICHTEXT: RichTextFormatter(options, cif),
         ReportFormat.HTML    : HtmlFormatter(options, cif),
-        ReportFormat.LATEX   : LatexFormatter(options, cif),
         # 'plaintext': StringFormatter(),
     }
     return factory
@@ -1252,10 +1120,9 @@ class TemplatedReport:
 
     def make_templated_docx_report(self,
                                    output_filename: str,
-                                   picfile: Path | None,
                                    template_path: Path) -> bool:
         tpl_doc = DocxTemplate(template_path)
-        context, tpl_doc = self.prepare_report_data(self.cif, self.options, picfile, tpl_doc)
+        context, tpl_doc = self.prepare_report_data(self.cif, self.options, tpl_doc)
         # Filter definition for {{foobar|filter}} things:
         jinja_env = jinja2.Environment()
         jinja_env.globals.update(zip=zip)
@@ -1292,10 +1159,9 @@ class TemplatedReport:
 
     def make_templated_html_report(self,
                                    output_filename: str = 'test.html',
-                                   picfile: Path | None = None,
                                    template_path: Path = Path('.'),
                                    template_file: str = "report.tmpl") -> bool:
-        context = self.get_context(self.cif, self.options, picfile, None)
+        context = self.get_context(self.cif, self.options, None)
         jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath=template_path.resolve()),
                                        autoescape=select_autoescape(['html', 'htm', 'xml']))
         # Add zip() method to global namespace of the template:
@@ -1377,21 +1243,20 @@ class TemplatedReport:
 
     def prepare_report_data(self, cif: CifContainer,
                             options: Options,
-                            picfile: Path | None,
                             tpl_doc: DocxTemplate | None) -> tuple[dict[str, Any], DocxTemplate]:
         maincontext = {}
         if not cif.is_multi_cif:
-            maincontext = self.get_context(cif, options, picfile, tpl_doc)
+            maincontext = self.get_context(cif, options, tpl_doc)
         else:
             current_block = cif.block.name
             current_file = cif.fileobj
-            maincontext.update(self.get_context(cif, options, picfile, tpl_doc))
+            maincontext.update(self.get_context(cif, options, tpl_doc))
             block_list = []
             blocks = {}
             for block in cif.doc:
                 cif2 = CifContainer(file=current_file)
                 cif2.load_block_by_name(block.name)
-                context = self.get_context(cif2, options, picfile, tpl_doc)
+                context = self.get_context(cif2, options, tpl_doc)
                 block_list.append(context)
                 blocks[block.name] = context
             maincontext['blocklist'] = block_list
@@ -1399,13 +1264,17 @@ class TemplatedReport:
             cif.load_block_by_name(current_block)
         return maincontext, tpl_doc
 
-    def get_context(self, cif: CifContainer, options: Options, picfile: Path, tpl_doc: DocxTemplate = None):
+    def get_context(self, cif: CifContainer, options: Options, tpl_doc: DocxTemplate = None) -> dict[str, str | Any]:
         context = {'options'                : options,
                    'cif'                    : cif,
                    'name'                   : cif.block.name,
                    'space_group'            : self.text_formatter.space_group_formatted(cif, tpl_doc),
-                   'structure_figure'       : self.text_formatter.make_picture(options, picfile,
-                                                                               tpl_doc) if options else '',
+                   'structure_figure'       : self.text_formatter.make_picture(options,
+                                                                               options.structure_figure, tpl_doc) if (
+                       options and options.report_text) else '',
+                   'crystal_video'          : self.text_formatter.make_picture(options,
+                                                                               options.video_image, tpl_doc) if (
+                       options and options.report_text) else '',
                    '3d_structure'           : self.text_formatter.make_3d(cif, options) if options else '',
                    'crystallization_method' : self.text_formatter.get_crystallization_method(cif),
                    'sum_formula'            : self.text_formatter.format_sum_formula(
@@ -1520,6 +1389,8 @@ if __name__ == '__main__':
     pic = pathlib.Path("screenshots/finalcif_checkcif.png")
 
     options = Options()
+    options.structure_figure = pic
+    options.video_image = Path('test-data/rigaku_video/sample01.jpg')
     # Set options with leading underscore without settings parameter in Options:
     options._bonds_table = True
     # options._report_adp = True

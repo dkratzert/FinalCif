@@ -105,8 +105,6 @@ class Ui_LoopCreator(object):
 
 
         self.retranslateUi(LoopCreator)
-
-        QMetaObject.connectSlotsByName(LoopCreator)
     # setupUi
 
     def retranslateUi(self, LoopCreator):

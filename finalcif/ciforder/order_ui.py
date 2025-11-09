@@ -113,8 +113,6 @@ class Ui_CifOrderForm(object):
 
 
         self.retranslateUi(CifOrderForm)
-
-        QMetaObject.connectSlotsByName(CifOrderForm)
     # setupUi
 
     def retranslateUi(self, CifOrderForm):

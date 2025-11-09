@@ -5,14 +5,21 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import os
+import pickle
 import subprocess
 import sys
 import threading
 import time
+import warnings
 from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
+from typing import cast
+
+from finalcif.gui.vzs_viewer import VZSImageViewer
+
+warnings.filterwarnings("ignore", category=RuntimeWarning, module="shibokensupport.signature.parser")
 
 import gemmi
 
@@ -43,7 +50,8 @@ from finalcif.gui.custom_classes import Column, MyTableWidgetItem, light_green, 
     white
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
-    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question
+    bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question, \
+    video_file_open_dialog
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
 from finalcif.gui.loop_creator import LoopCreator
@@ -124,6 +132,9 @@ class AppWindow(QMainWindow):
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
+        self.video = VZSImageViewer(self)
+        self.ui.picturesTabWidget.setCurrentIndex(0)
+        self.ui.video_vLayout.addWidget(self.video)
         if file:
             self.load_cif_file(file)
         self.load_recent_cifs_list()
@@ -143,7 +154,9 @@ class AppWindow(QMainWindow):
             "            Spek, A.L. (2020). Acta Cryst. E76, 1-11.\n"
             "  \n"
             "  \n"
-            "  - Recent versions of PLATON may be obtained from: https://platonsoft.nl/xraysoft\n"
+            "  - Recent versions of PLATON may be obtained from: https://platonsoft.nl/xraysoft\n\n"
+            " PLATON is free of charge for Academics.\n"
+            " For-profit organisations should contact Anthony L. Spek, a.l.spek@uu.nl for a license." 
             "  "
         )
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
@@ -161,7 +174,7 @@ class AppWindow(QMainWindow):
         # self.set_font_sizes()
 
     def load_fontsize_from_settings(self):
-        fontsize = self.settings.load_value_of_key('global_font_size')
+        fontsize = cast(int, self.settings.load_value_of_key('global_font_size'))
         if fontsize is not None and fontsize >= 8:
             self.set_global_font(fontsize)
             self.ui.textSizeSpinBox.setValue(fontsize)
@@ -428,6 +441,23 @@ class AppWindow(QMainWindow):
         self.ui.ImportAllTemplatesPushButton.clicked.connect(self.import_all_templates)
         self.ui.searchMainTableLineEdit.textChanged.connect(self.ui.cif_main_table.search)
         self.ui.textSizeSpinBox.valueChanged.connect(self.set_global_font)
+        # video:
+        self.ui.SelectVideo_PushButton.clicked.connect(lambda x: self._select_crystal_video())
+        self.ui.videoRightToolButton.clicked.connect(self.video.next)
+        self.ui.videoLeftToolButton.clicked.connect(self.video.previous)
+        self.ui.setVideoPicturePushButton.clicked.connect(self.set_video_image_for_report)
+
+    def set_video_image_for_report(self):
+        image_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='_video-finalcif.png')
+        self.video.save_image(image_filename)
+        self.options.video_image = image_filename
+
+    def _select_crystal_video(self, video_file: Path | None = None) -> None:
+        if video_file is None:
+            video_file = Path(video_file_open_dialog(parent=self, last_dir=self.get_last_workdir()))
+        if video_file is not None and video_file.is_file() and video_file.exists():
+            self.ui.videoLineEdit.setText(str(video_file.resolve()))
+            self.video.load_file(video_file)
 
     @property
     def finalcif_changes_filename(self):
@@ -437,8 +467,7 @@ class AppWindow(QMainWindow):
         self.make_loops_tables()
         self.ui.MainStackedWidget.go_to_loops_page()
 
-    def export_all_templates(self, filename: Path | None = None):
-        import pickle
+    def export_all_templates(self, filename: Path | None = None) -> None:
         if not filename:
             filename, _ = compat.getsavefilename(parent=self,
                                                  basedir=str(Path(self.get_last_workdir()).joinpath(
@@ -461,7 +490,7 @@ class AppWindow(QMainWindow):
         except pickle.PickleError as e:
             self.status_bar.show_message(f'Saving templates failed: {e!s}')
 
-    def import_all_templates(self, filename: Path | None = None):
+    def import_all_templates(self, filename: Path | None = None) -> None:
         import pickle
         if not filename:
             filename, _ = compat.getopenfilename(parent=self,
@@ -921,7 +950,10 @@ class AppWindow(QMainWindow):
         url = QtCore.QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
-        self.checkcif_browser.setHtml(self.htmlfile.resolve().read_text('utf-8', 'ignore'))
+        try:
+            self.checkcif_browser.setHtml(self.htmlfile.resolve().read_text('utf-8', 'ignore'))
+        except FileNotFoundError:
+            print(f'{self.htmlfile} not found')
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
         threading.Thread(target=self._display_structure_factor_report, args=(parser,)).start()
         # The picture file linked in the html file:
@@ -1138,10 +1170,12 @@ class AppWindow(QMainWindow):
                                                  caption='Open a Report Picture')
             self.set_report_picture_path(filename)
 
-    def set_report_picture_path(self, filename: str):
+    def set_report_picture_path(self, filename: str) -> None:
+        if not filename:
+            return None
         with suppress(Exception):
             self.report_picture_path = Path(filename)
-        if self.report_picture_path.exists() and self.report_picture_path.is_file():
+        if self.report_picture_path and self.report_picture_path.exists() and self.report_picture_path.is_file():
             with suppress(Exception):
                 self.set_picture_button_icon()
 
@@ -1181,9 +1215,9 @@ class AppWindow(QMainWindow):
         self.cif.picometer = self.options.use_picometers
         # The picture after the header:
         if self.report_picture_path:
-            picfile = self.report_picture_path
+            self.options.structure_figure = self.report_picture_path
         else:
-            picfile = self.cif.finalcif_file.with_suffix('.gif')
+            self.options.structure_figure = self.cif.finalcif_file.with_suffix('.gif')
         try:
             print('Report with templates')
             template_path = Path(self.get_checked_templates_list_text())
@@ -1191,7 +1225,6 @@ class AppWindow(QMainWindow):
             if template_path.suffix in ('.docx',):
                 t = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
                 ok = t.make_templated_docx_report(output_filename=str(report_filename),
-                                                  picfile=picfile,
                                                   template_path=Path(self.get_checked_templates_list_text()))
                 if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
                     make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
@@ -1199,7 +1232,6 @@ class AppWindow(QMainWindow):
                 t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
                 report_filename = report_filename.with_suffix('.html')
                 ok = t.make_templated_html_report(output_filename=str(report_filename),
-                                                  picfile=picfile,
                                                   template_path=template_path.parent,
                                                   template_file=template_path.name)
             if not ok:
@@ -1213,10 +1245,11 @@ class AppWindow(QMainWindow):
             return
         except PermissionError:
             if DEBUG:
+                print('dbg> Unable to open report or CIF file')
                 raise
-            print('Unable to open cif file')
-            show_general_warning(self, f'The report document {report_filename.name} could not be opened.\n'
-                                       'Is the file already opened?')
+            show_general_warning(self,
+                                 f'The document {report_filename.name} could not be opened to '
+                                 f'write the report.\nIs the file already opened?')
             return
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
@@ -1496,12 +1529,12 @@ class AppWindow(QMainWindow):
         self.set_path_display_in_file_selector(str(filepath))
         try:
             if not self.able_to_open(filepath):
-                return
+                return None
         except (OSError, IndexError):
             print('Something failed during cif file opening...')
             if DEBUG:
                 raise
-            return
+            return None
         not_ok = None
         try:
             e = None
@@ -1515,7 +1548,7 @@ class AppWindow(QMainWindow):
         if not_ok:
             unable_to_open_message(self, filepath, not_ok)
             return None
-        if not self.cif.is_valid_structure_cif and not self.cif.doc.find_block('global'):
+        if not self.cif.is_valid_structure_cif:
             show_general_warning(self, "The CIF file you are about to open contains no structure.\n\n"
                                        "Use the Import button below to import metadata.")
             return None
@@ -1531,8 +1564,17 @@ class AppWindow(QMainWindow):
         if self.cif.is_multi_cif:
             self._flash_block_combobox()
         self.cif.set_order_keys(self.ui.cifOrderWidget.order_keys)
+        QtCore.QTimer().singleShot(0, self._find_video)
         # Enable to find widgets without parent:
         # QtCore.QTimer(self).singleShot(1000, self.find_widgets_without_parent)
+
+    def _find_video(self) -> None:
+        self.video.reset()
+        self.ui.videoLineEdit.setText('')
+        path = self.cif.fileobj.parent.parent
+        videos = list(path.glob('*.vzs'))
+        if videos:
+            self._select_crystal_video(videos[0])
 
     def find_widgets_without_parent(self) -> None:
         print('Finding parents...')

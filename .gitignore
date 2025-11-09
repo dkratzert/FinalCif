@@ -227,7 +227,11 @@ tests/examples/work/cu_BruecknerJK_153F40_0m.lxt
 finalcif_keys_order.cif
 !/.python-version
 /platon/*.mod
-work/test.aux
-work/test.pdf
-work/test.synctex.gz
-work/test.tex
+/work/test.aux
+/work/test.pdf
+/work/test.synctex.gz
+/work/test.tex
+/tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif-1.zip
+/tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif-2.zip
+/tests/examples/work/cu_BruecknerJK_153F40_0m_video-finalcif.png
+/tests/examples/work/report_cu_BruecknerJK_153F40_0m-finalcif.html

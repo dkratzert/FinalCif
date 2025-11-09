@@ -276,9 +276,9 @@ class Properties(QtCore.QObject):
         return properties_list
 
     def import_raw_data(self, properties_list: list[dict]) -> None:
-        for prop in properties_list:
-            self.settings.save_settings_list(property='property', name=prop.get("name"),
-                                             items=[prop.get('cif_key'), prop.get('data')])
+        for property in properties_list:
+            self.settings.save_settings_list(property='property', name=property.get("name"),
+                                             items=[property.get('cif_key'), property.get('data')])
         self.show_properties()
 
     @staticmethod

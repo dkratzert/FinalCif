@@ -88,8 +88,6 @@ class Ui_importSelectMainWindow(object):
         importSelectMainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(importSelectMainWindow)
-
-        QMetaObject.connectSlotsByName(importSelectMainWindow)
     # setupUi
 
     def retranslateUi(self, importSelectMainWindow):

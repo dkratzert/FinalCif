@@ -7,8 +7,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1446</width>
-    <height>860</height>
+    <width>1753</width>
+    <height>951</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -891,6 +891,12 @@
         </item>
         <item row="0" column="8">
          <widget class="QTextEdit" name="CCDCNumLineEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
           <property name="cursor" stdset="0">
            <cursorShape>IBeamCursor</cursorShape>
           </property>
@@ -942,6 +948,12 @@
         </item>
         <item row="0" column="11">
          <widget class="QTextEdit" name="SumFormMainLineEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
           <property name="cursor" stdset="0">
            <cursorShape>IBeamCursor</cursorShape>
           </property>
@@ -987,6 +999,12 @@
         </item>
         <item row="0" column="5">
          <widget class="QTextEdit" name="Spacegroup_top_LineEdit">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
           <property name="cursor" stdset="0">
            <cursorShape>IBeamCursor</cursorShape>
           </property>
@@ -1018,8 +1036,14 @@
         </item>
         <item row="2" column="0" colspan="13">
          <widget class="MyMainStackedWidget" name="MainStackedWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>99</verstretch>
+           </sizepolicy>
+          </property>
           <property name="currentIndex">
-           <number>6</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -1378,186 +1402,7 @@
           </widget>
           <widget class="QWidget" name="page_molinfo">
            <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="0">
-             <widget class="QGroupBox" name="molGroupBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>55</horstretch>
-                <verstretch>80</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Molecule</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_8">
-               <property name="leftMargin">
-                <number>6</number>
-               </property>
-               <property name="topMargin">
-                <number>3</number>
-               </property>
-               <property name="rightMargin">
-                <number>6</number>
-               </property>
-               <property name="bottomMargin">
-                <number>8</number>
-               </property>
-               <item>
-                <widget class="MoleculeWidget" name="render_widget" native="true">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_7">
-                 <property name="sizeConstraint">
-                  <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
-                 </property>
-                 <item>
-                  <widget class="QCheckBox" name="growCheckBox">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Grow Structure</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="labelsCheckBox">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Show Labels</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_5">
-                   <property name="orientation">
-                    <enum>Qt::Orientation::Horizontal</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Policy::Minimum</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="drawImagePushButton">
-                   <property name="text">
-                    <string>Use as Image for Report</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_23">
-                   <property name="orientation">
-                    <enum>Qt::Orientation::Horizontal</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>40</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QGroupBox" name="groupBox_9">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                <horstretch>45</horstretch>
-                <verstretch>80</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="title">
-               <string>Shelx File</string>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_41">
-               <item>
-                <widget class="QPlainTextEdit" name="shelx_TextEdit">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>90</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>Courier New</family>
-                  </font>
-                 </property>
-                 <property name="frameShape">
-                  <enum>QFrame::Shape::NoFrame</enum>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Shadow::Plain</enum>
-                 </property>
-                 <property name="undoRedoEnabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="lineWrapMode">
-                  <enum>QPlainTextEdit::LineWrapMode::NoWrap</enum>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                 <property name="plainText">
-                  <string>No Shelx file available</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QPlainTextEdit" name="shelx_warn_TextEdit">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>10</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="font">
-                  <font>
-                   <family>Courier New</family>
-                   <bold>true</bold>
-                  </font>
-                 </property>
-                 <property name="undoRedoEnabled">
-                  <bool>false</bool>
-                 </property>
-                 <property name="lineWrapMode">
-                  <enum>QPlainTextEdit::LineWrapMode::NoWrap</enum>
-                 </property>
-                 <property name="readOnly">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="3">
+            <item row="1" column="0" colspan="4">
              <widget class="QGroupBox" name="groupBox_3">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -2122,6 +1967,327 @@
                 </widget>
                </item>
               </layout>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QGroupBox" name="groupBox_9">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>45</horstretch>
+                <verstretch>80</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>Shelx File</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_41">
+               <item>
+                <widget class="QPlainTextEdit" name="shelx_TextEdit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>90</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Courier New</family>
+                  </font>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Shape::NoFrame</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Shadow::Plain</enum>
+                 </property>
+                 <property name="undoRedoEnabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="lineWrapMode">
+                  <enum>QPlainTextEdit::LineWrapMode::NoWrap</enum>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                 <property name="plainText">
+                  <string>No Shelx file available</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPlainTextEdit" name="shelx_warn_TextEdit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>10</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <family>Courier New</family>
+                   <bold>true</bold>
+                  </font>
+                 </property>
+                 <property name="undoRedoEnabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="lineWrapMode">
+                  <enum>QPlainTextEdit::LineWrapMode::NoWrap</enum>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="0" colspan="2">
+             <widget class="QTabWidget" name="picturesTabWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>55</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="currentIndex">
+               <number>1</number>
+              </property>
+              <widget class="QWidget" name="tab_structure">
+               <attribute name="title">
+                <string>Structure</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_42">
+                <property name="leftMargin">
+                 <number>3</number>
+                </property>
+                <property name="topMargin">
+                 <number>3</number>
+                </property>
+                <property name="rightMargin">
+                 <number>3</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>3</number>
+                </property>
+                <item>
+                 <widget class="QGroupBox" name="molGroupBox">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>55</horstretch>
+                    <verstretch>80</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="title">
+                   <string>Molecule</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_8">
+                   <property name="leftMargin">
+                    <number>6</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>3</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>6</number>
+                   </property>
+                   <item>
+                    <widget class="MoleculeWidget" name="render_widget" native="true">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_7">
+                     <property name="sizeConstraint">
+                      <enum>QLayout::SizeConstraint::SetDefaultConstraint</enum>
+                     </property>
+                     <item>
+                      <widget class="QCheckBox" name="growCheckBox">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Grow Structure</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="labelsCheckBox">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Show Labels</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_5">
+                       <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                       </property>
+                       <property name="sizeType">
+                        <enum>QSizePolicy::Policy::Minimum</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                     <item>
+                      <widget class="QPushButton" name="drawImagePushButton">
+                       <property name="text">
+                        <string>Use as Image for Report</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="horizontalSpacer_23">
+                       <property name="orientation">
+                        <enum>Qt::Orientation::Horizontal</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>40</width>
+                         <height>20</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="tab_video">
+               <attribute name="title">
+                <string>Video</string>
+               </attribute>
+               <layout class="QVBoxLayout" name="verticalLayout_44">
+                <property name="leftMargin">
+                 <number>3</number>
+                </property>
+                <property name="topMargin">
+                 <number>3</number>
+                </property>
+                <property name="rightMargin">
+                 <number>3</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>3</number>
+                </property>
+                <item>
+                 <widget class="QFrame" name="videoFrame">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>99</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::Shape::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Shadow::Raised</enum>
+                  </property>
+                  <layout class="QVBoxLayout" name="video_vLayout">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_17">
+                  <item>
+                   <widget class="QLineEdit" name="videoLineEdit">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                      <horstretch>3</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="readOnly">
+                     <bool>true</bool>
+                    </property>
+                    <property name="placeholderText">
+                     <string>*.vzs; *.jpg file</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="SelectVideo_PushButton">
+                    <property name="text">
+                     <string>Select File</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_14">
+                    <property name="orientation">
+                     <enum>Qt::Orientation::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>34</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="setVideoPicturePushButton">
+                    <property name="text">
+                     <string>Use Picture for Report</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="videoLeftToolButton">
+                    <property name="text">
+                     <string>&lt;-</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QToolButton" name="videoRightToolButton">
+                    <property name="text">
+                     <string>-&gt;</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
              </widget>
             </item>
            </layout>

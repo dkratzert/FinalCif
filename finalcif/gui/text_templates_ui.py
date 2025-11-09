@@ -166,8 +166,6 @@ class Ui_TextTemplatesWidget(object):
 
 
         self.retranslateUi(TextTemplatesWidget)
-
-        QMetaObject.connectSlotsByName(TextTemplatesWidget)
     # setupUi
 
     def retranslateUi(self, TextTemplatesWidget):

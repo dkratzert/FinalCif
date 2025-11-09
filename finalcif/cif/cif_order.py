@@ -14,6 +14,10 @@ special_keys = ['_iucr_refine_instructions_details',
                 '_refln_F_squared_sigma',
                 '_refln_F_calc',
                 '_refln_F_squared_calc',
+
+                '_shelx_include_file_name',
+                '_shelx_include_file',
+                '_shelx_include_file_checksum',
                 ]
 
 order = [
@@ -349,19 +353,19 @@ order = [
     '_geom_details',
     '_geom_special_details',
 
-    '_bruker_diffrn_runs_wavelength',
-    '_bruker_diffrn_runs_temperature',
-    '_bruker_diffrn_runs_current',
-    '_bruker_diffrn_runs_voltage',
+    '_bruker_diffrn_runs_axis',
+    '_bruker_diffrn_runs_distance',
+    '_bruker_diffrn_runs_theta',
+    '_bruker_diffrn_runs_omega',
+    '_bruker_diffrn_runs_phi',
+    '_bruker_diffrn_runs_chi',
+    '_bruker_diffrn_runs_width',
     '_bruker_diffrn_runs_images',
     '_bruker_diffrn_runs_time',
-    '_bruker_diffrn_runs_width',
-    '_bruker_diffrn_runs_axis',
-    '_bruker_diffrn_runs_chi',
-    '_bruker_diffrn_runs_phi',
-    '_bruker_diffrn_runs_omega',
-    '_bruker_diffrn_runs_theta',
-    '_bruker_diffrn_runs_distance',
+    '_bruker_diffrn_runs_wavelength',
+    '_bruker_diffrn_runs_voltage',
+    '_bruker_diffrn_runs_current',
+    '_bruker_diffrn_runs_temperature',
 ]
 
 

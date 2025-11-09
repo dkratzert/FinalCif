@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v156 Added a crystal video file viewer to add a video picture to the report in "show details".
 * v155 Added CSD dupluicate check option during CheckCif.
 * v154 A special version of PLATON (https://www.platonsoft.nl/platon/) is now distributed together with FinalCif
        for easier local CheckCIF. Fixed problems with the order of author name and adress if the CIF contained a loop
