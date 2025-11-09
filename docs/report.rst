@@ -34,13 +34,22 @@ FinalCif can add a picture of your structure to the report document.
 
 * Either by previously performing an html or local checkcif. Then it automatically adds a picture from the checkcif report, as in the example above.
 * Or you can add any other picture with the "Picture for Report" button.
-* A third possibility is the 'Show Details' page where you can use the current structure view as picture
+* A different possibility is the 'Show Details' page where you can use the current structure view as picture
   for the report:
 
 .. figure:: pics/finalcif_details.png
    :width: 600
 
    The Details page.
+
+* The details page also allows to select a picture of the crystal from a video file (either Bruker .vzs or Rigaku .jpg)
+  The crystal can be rotated with the mouse wheel and zoomed by left-click and drag of the mouse. A right-click restores the default zoom.
+
+.. figure:: pics/finalcif_details_video.png
+   :width: 600
+
+   The crystal video selection.
+
 
 
 Bonds and Angles Tables
