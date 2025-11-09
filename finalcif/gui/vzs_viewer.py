@@ -13,7 +13,7 @@ class VZSImageViewer(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.zipfile: zipfile.ZipFile
-        self.image_names: list[str] | None = None
+        self.image_names: list[Path] | None = None
         self.index = 0
         self.pixmap = None
         # self.setMinimumSize(300, 300)
@@ -53,16 +53,18 @@ class VZSImageViewer(QtWidgets.QWidget):
         if not self.image_names:
             self.pixmap = None
             return
-        try:
-            data = self._read_data()
-            image = QtGui.QImage()
-            image.loadFromData(data)
-            self.pixmap = QtGui.QPixmap().fromImage(image)
-            self.update()
-        except Exception as e:
-            print(e)
+        data = self._read_data()
+        image = QtGui.QImage()
+        image.loadFromData(data)
+        self.pixmap = QtGui.QPixmap().fromImage(image)
+        self.update()
 
     def save_image(self, file_path: Path) -> None:
+        size = self.pixmap.size()
+        cropped = self.pixmap.copy(self.zoom_rect)
+        scaled = cropped.scaled(size, Qt.AspectRatioMode.KeepAspectRatio,
+                                Qt.TransformationMode.SmoothTransformation)
+        self.pixmap = scaled
         self.pixmap.save(str(file_path))
 
     def _read_data(self) -> bytes:
@@ -70,8 +72,8 @@ class VZSImageViewer(QtWidgets.QWidget):
             with self.zipfile.open(self.image_names[self.index]) as f:
                 data = f.read()
         else:
-            with self.image_names[self.index] as f:
-                data = f.read_bytes()
+            with open(self.image_names[self.index], 'rb') as f:
+                data = f.read()
         return data
 
     def paintEvent(self, event):
