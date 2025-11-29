@@ -6,6 +6,8 @@ from qtpy.QtCore import QRect, QSize
 from qtpy.QtGui import QColor, QPainter, QTextFormat
 from qtpy.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
 
+from finalcif.gui import syntax_highlighter
+
 
 class QLineNumberArea(QWidget):
     def __init__(self, parent: QCodeEditor):
@@ -22,6 +24,7 @@ class QLineNumberArea(QWidget):
 class QCodeEditor(QPlainTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.highlighter = syntax_highlighter.CIFSyntaxHighlighter(self)
         self.lineNumberArea = QLineNumberArea(self)
         self.blockCountChanged.connect(self.update_line_number_area_width)
         self.updateRequest.connect(self.update_line_number_area)
@@ -95,13 +98,16 @@ class QCodeEditor(QPlainTextEdit):
 
 if __name__ == '__main__':
     from qtpy.QtWidgets import QApplication
-
+    import gemmi
     app = QApplication.instance()
     if app is None:
         app = QApplication([])
     import sys
 
     codeEditor = QCodeEditor()
-    codeEditor.setPlainText('Foo bar')
+    options = gemmi.cif.WriteOptions(gemmi.cif.Style(gemmi.cif.Style.Indent35))
+    ciftext = gemmi.cif.read('test-data/1000006.cif').sole_block().as_string(options)
+    codeEditor.setPlainText(ciftext)
+    codeEditor.highlighter.setDocument(codeEditor.document())
     codeEditor.show()
     sys.exit(app.exec())
