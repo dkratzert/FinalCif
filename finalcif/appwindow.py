@@ -1299,6 +1299,13 @@ class AppWindow(QMainWindow):
             recent.remove(filename)
         # file has to be str not Path():
         recent.insert(0, filename)
+        for file in recent:
+            try:
+                if not file or not os.path.exists(file):
+                    recent.remove(file)
+                    continue
+            except Exception:
+                pass
         recent = recent[:10]
         self.settings.settings.setValue('recent_files', recent)
 
@@ -1556,7 +1563,7 @@ class AppWindow(QMainWindow):
         if not self.cif.chars_ok:
             self.warn_about_bad_cif()
         # Do this only when sure we can load the file:
-        self.save_current_recent_files_list(filepath)
+        QtCore.QTimer.singleShot(0, lambda: self.save_current_recent_files_list(filepath))
         self._load_block(block, load_changes=load_changes)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
