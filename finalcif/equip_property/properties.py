@@ -55,7 +55,7 @@ class Properties(QtCore.QObject):
         self.app.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
         self.app.ui.cifKeywordLineEdit.textChanged.connect(self.check_for_duplicates)
 
-    def check_for_duplicates(self):
+    def check_for_duplicates(self) -> None:
         key = self.app.ui.cifKeywordLineEdit.text()
         props = self.export_raw_data()
         keys = [x['cif_key'] for x in props]
@@ -66,13 +66,12 @@ class Properties(QtCore.QObject):
             self.lb.setText(f'key {key} already exists')
             self.lb.move(self.app.ui.cifKeywordLineEdit.mapToGlobal(QtCore.QPoint(15, 25)))
             self.lb.show()
-            threading.Thread(target=self.hide_label).start()
+            QtCore.QTimer().singleShot(5000, self.hide_label)
         else:
             self.app.ui.SavePropertiesButton.setEnabled(True)
             self.lb.hide()
 
-    def hide_label(self):
-        time.sleep(5)
+    def hide_label(self) -> None:
         self.lb.hide()
 
     def show_properties(self) -> None:
