@@ -15,6 +15,7 @@ from pathlib import Path
 
 import requests
 from qtpy.QtCore import QThread, Signal
+from requests import Response
 from requests.exceptions import MissingSchema
 
 from finalcif.cif.cif_file_io import CifContainer
@@ -91,8 +92,10 @@ class CheckCif(QThread):
         with suppress(Exception):
             # parameter missing_ok=True is only available after 3.8
             Path('finalcif_checkcif_tmp.cif').unlink()
+        if self.pdf:
+            self.finished.connect(self._open_pdf_result)
 
-    def _do_the_server_request(self, headers: dict, temp_cif: bytes):
+    def _do_the_server_request(self, headers: dict, temp_cif: bytes) -> Response | None:
         req = None
         try:
             req = requests.post(self.checkcif_url, files={'file': temp_cif}, data=headers, timeout=900)

@@ -1062,7 +1062,6 @@ class AppWindow(QMainWindow):
     def _pdf_checkcif_finished(self) -> None:
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
-        self.ckf.show_pdf_report()
 
     def do_pdf_checkcif(self) -> None:
         """
