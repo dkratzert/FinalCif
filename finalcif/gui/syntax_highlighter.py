@@ -117,7 +117,7 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
 
         # Handle multiline values first
         if text.startswith(';'):
-            self.setFormat(0, len(text), self.multiline_format)
+            # self.setFormat(0, len(text), self.multiline_format)
             self.in_multiline = not self.in_multiline
             if self.in_multiline:
                 self.setCurrentBlockState(1)
@@ -125,8 +125,9 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
                 self.setCurrentBlockState(0)
             return
         elif self.in_multiline:
-            self.setFormat(0, len(text), self.multiline_format)
-            self.setCurrentBlockState(1)
+            # Disabled multiline value higlighting, because it is too slow for large hkl files.
+            # self.setFormat(0, len(text), self.multiline_format)
+            # self.setCurrentBlockState(1)
             return
 
         # Check for loop start
