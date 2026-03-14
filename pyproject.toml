@@ -33,7 +33,7 @@ dependencies = [
     "wheel",
     "certifi",
     "chardet",
-    "gemmi",
+    "gemmi>=0.7.5",
     "html2text",
     "lxml",
     "pefile",
@@ -59,12 +59,12 @@ dependencies = [
 dev = [
     "pytest",
     "ruff",
-    "pyrefly",
+    "ty",
     "pyside6-stubs",
 ]
 
 doc = [
-    "sphinx",
+    "sphinx>=8.1.3",
     "sphinx-rtd-theme",
 ]
 
