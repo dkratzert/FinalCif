@@ -111,6 +111,10 @@ class AppWindow(QMainWindow):
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
         self.ui.page_MainTable.setParent(self.ui.MainStackedWidget)
+        self.fixfont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
+        self.ui.shelx_TextEdit.setFont(self.fixfont)
+        self.ui.shelx_warn_TextEdit.setFont(self.fixfont)
+        self.ui.ckf_textedit.setFont(self.fixfont)
         self.settings = FinalCifSettings()
         self.load_fontsize_from_settings()
         self.options = Options(self.ui, self.settings)
@@ -1140,12 +1144,7 @@ class AppWindow(QMainWindow):
 
     def set_checkcif_output_font(self, ccpe: 'QPlainTextEdit') -> None:
         doc = ccpe.document()
-        font = doc.defaultFont()
-        font.setFamily("Courier New")
-        font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
-        # app.processEvents()
-        # font.setPointSize(14)
-        doc.setDefaultFont(font)
+        doc.setDefaultFont(self.fixfont)
 
     def load_recent_file(self, file_index: int) -> None:
         """
@@ -1462,13 +1461,10 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.go_to_cif_text_page()
         final_textedit = self.ui.FinalCifFilePlainTextEdit
         doc = final_textedit.document()
-        font = doc.defaultFont()
-        font.setFamily("Courier New")
-        font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
         # increases the pont size every time a bit more :)
         # size = font.pointSize()
         # font.setPointSize(14)
-        doc.setDefaultFont(font)
+        doc.setDefaultFont(self.fixfont)
         final_textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         final_textedit.setPlainText(self.cif.finalcif_file.read_text(encoding='utf-8', errors='ignore'))
         QtCore.QTimer().singleShot(0, lambda: final_textedit.highlighter.setDocument(doc))
@@ -2087,11 +2083,7 @@ class AppWindow(QMainWindow):
         self.ui.LoopsTabWidget.addTab(textedit, 'SHELX res file')
         textedit.setPlainText(self.cif.res_file_data[1:-1])
         doc = textedit.document()
-        font = doc.defaultFont()
-        font.setFamily("Courier New")
-        font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
-        # font.setPointSize(14)
-        doc.setDefaultFont(font)
+        doc.setDefaultFont(self.fixfont)
         textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         textedit.setReadOnly(True)
 

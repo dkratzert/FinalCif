@@ -50,8 +50,8 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
 
         # ---------- Formats ----------
 
-        self.data_format = QTextCharFormat()
-        self.data_format.setFontWeight(QFont.Weight.Bold)
+        self.bold_format = QTextCharFormat()
+        self.bold_format.setFontWeight(QFont.Weight.Bold)
 
         self.field_format = QTextCharFormat()
         self.field_format.setForeground(QColor("#0000FF"))
@@ -69,8 +69,8 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
         self.loop_field_format = QTextCharFormat()
         self.loop_field_format.setForeground(QColor("#CC6600"))
 
-        self.loop_data_format = QTextCharFormat()
-        self.loop_data_format.setForeground(QColor("#996600"))
+        self.loop_values_format = QTextCharFormat()
+        self.loop_values_format.setForeground(QColor("#996600"))
 
         self.field_re = re.compile(r'^_[A-Za-z][A-Za-z0-9_.\-\[\]()/]*')
         self.quoted_re = re.compile(r"'[^']*'")
@@ -87,6 +87,7 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
         # ---------- Multiline text blocks ----------
 
         if text.startswith(';'):
+            self.setFormat(0, 1, self.bold_format)
             # self.setFormat(0, len(text), self.multiline_format)
 
             if in_multiline:
@@ -121,7 +122,7 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
                 return
             elif stripped and not stripped.startswith('_'):
                 in_loop_data = True
-                self.setFormat(0, len(text), self.loop_data_format)
+                self.setFormat(0, len(text), self.loop_values_format)
                 self.setCurrentBlockState(self.LOOP_DATA)
                 return
             elif not stripped and in_loop_data:
@@ -131,7 +132,7 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
         # ---------- Data tags ----------
 
         if text.startswith("data_"):
-            self.setFormat(0, len(text), self.data_format)
+            self.setFormat(0, len(text), self.bold_format)
 
         # ---------- Field names ----------
 

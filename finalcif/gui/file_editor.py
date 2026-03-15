@@ -83,9 +83,7 @@ class QCodeEditor(QPlainTextEdit):
             if block.isVisible() and (bottom >= event.rect().top()):
                 number = f'{block_number + 1} '
                 painter.setPen(QtCore.Qt.GlobalColor.black)
-                font = painter.font()
-                font.setFamily("Courier")
-                font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
+                font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
                 painter.setFont(font)
                 painter.drawText(0, top, self.lineNumberArea.width(), height,
                                  QtCore.Qt.AlignmentFlag.AlignRight, number)
@@ -105,8 +103,11 @@ if __name__ == '__main__':
     import sys
 
     codeEditor = QCodeEditor()
+    codeEditor.setMinimumSize(800, 600)
+    font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
+    codeEditor.setFont(font)
     options = gemmi.cif.WriteOptions(gemmi.cif.Style(gemmi.cif.Style.Indent35))
-    ciftext = gemmi.cif.read('test-data/1000006.cif').sole_block().as_string(options)
+    ciftext = gemmi.cif.read('test-data/DK_Zucker2_0m.cif').sole_block().as_string(options)
     codeEditor.setPlainText(ciftext)
     codeEditor.highlighter.setDocument(codeEditor.document())
     codeEditor.show()
