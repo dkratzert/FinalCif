@@ -1989,11 +1989,6 @@
                    <verstretch>90</verstretch>
                   </sizepolicy>
                  </property>
-                 <property name="font">
-                  <font>
-                   <family>Courier New</family>
-                  </font>
-                 </property>
                  <property name="frameShape">
                   <enum>QFrame::Shape::NoFrame</enum>
                  </property>
@@ -2024,7 +2019,6 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Courier New</family>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -3582,11 +3576,6 @@ Contact authors should always also appear as regular authors.</string>
                 </property>
                 <item>
                  <widget class="QPlainTextEdit" name="ckf_textedit">
-                  <property name="font">
-                   <font>
-                    <family>Courier New</family>
-                   </font>
-                  </property>
                   <property name="readOnly">
                    <bool>true</bool>
                   </property>
