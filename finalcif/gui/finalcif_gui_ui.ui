@@ -2130,19 +2130,6 @@
                       </widget>
                      </item>
                      <item>
-                      <widget class="QCheckBox" name="adpCheckBox">
-                       <property name="minimumSize">
-                        <size>
-                         <width>0</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                       <property name="text">
-                        <string>Show ADP</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
                       <spacer name="horizontalSpacer_5">
                        <property name="orientation">
                         <enum>Qt::Orientation::Horizontal</enum>

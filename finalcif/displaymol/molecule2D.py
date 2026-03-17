@@ -1,7 +1,7 @@
 from __future__ import annotations
 import sys
 from collections import namedtuple
-from math import sqrt, cos, sin, dist, radians
+from math import sqrt, cos, sin, dist
 from pathlib import Path
 
 import numpy as np
@@ -11,8 +11,6 @@ from qtpy.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QI
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.tools.dsrmath import vol_unitcell
-from finalcif.tools.misc import to_float
 
 """
 A 2D molecule drawing widget. Feed it with a list (or generator) of atoms of this type:
@@ -33,9 +31,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.fontsize = 13
         self.bond_width = 2
         self.labels = False
-        self.show_adp_flag = False
-        # scaling factor for ADP ellipsoids in screen coordinates
-        self.adp_scale = 8.0
         self.molecule_center = np.array([0, 0, 0])
         self.molecule_radius = 10
         self.lastPos = self.pos()
@@ -72,25 +67,11 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.labels = value
         self.update()
 
-    def show_adp(self, value: bool):
-        self.show_adp_flag = value
-        self.update()
-
-    def open_molecule(self, atoms: list[Atomtuple], labels=False, adp_map: dict[str, tuple] | None = None,
-                      cell: tuple[float, float, float, float, float, float] | None = None):
+    def open_molecule(self, atoms: list[Atomtuple], labels=False):
         self.labels = labels
         self.atoms.clear()
         for at in atoms:
-            a = Atom(at.x, at.y, at.z, at.label, at.type, at.part)
-            if adp_map and cell and at.label in adp_map:
-                try:
-                    uvals = tuple(to_float(x) for x in adp_map[at.label])
-                    if any(v is None for v in uvals):
-                        raise ValueError('Invalid ADP values')
-                    a.u_cart = self._uij_to_cart(uvals, cell)
-                except Exception:
-                    a.u_cart = None
-            self.atoms.append(a)
+            self.atoms.append(Atom(at.x, at.y, at.z, at.label, at.type, at.part))
         if len(self.atoms) > 400:
             self.bond_width = 1
         self.connections = self.get_conntable_from_atoms()
@@ -146,32 +127,6 @@ class MoleculeWidget(QtWidgets.QWidget):
             [0, 1, 0],
             [-sin(self.y_angle), 0, cos(self.y_angle)],
         ], dtype=np.float32)
-
-    def _uij_to_cart(self, uvals: tuple[float, float, float, float, float, float], cell: tuple[float, float, float, float, float, float]) -> np.ndarray:
-        """Convert fractional Uij displacement parameters to Cartesian coordinates.
-
-        This is a lightweight port of the conversion used in `finalcif.tools.dsrmath.calc_ellipsoid_axes`.
-        """
-        U11, U22, U33, U23, U13, U12 = uvals
-        Uij = np.array([[U11, U12, U13],
-                        [U12, U22, U23],
-                        [U13, U23, U33]], dtype=float)
-        a, b, c, alpha, beta, gamma = cell
-        V = vol_unitcell(a, b, c, alpha, beta, gamma)
-        # reciprocal lattice vectors
-        astar = (b * c * sin(radians(alpha))) / V
-        bstar = (c * a * sin(radians(beta))) / V
-        cstar = (a * b * sin(radians(gamma))) / V
-        # orthogonalization matrix (fractional -> cartesian)
-        amatrix = np.array([
-            [a, b * cos(radians(gamma)), c * cos(radians(beta))],
-            [0, b * sin(radians(gamma)), 
-             c * (cos(radians(alpha)) - cos(radians(beta)) * cos(radians(gamma))) / sin(radians(gamma))],
-            [0, 0, V / (a * b * sin(radians(gamma)))]
-        ], dtype=float)
-        N = np.diag([astar, bstar, cstar])
-        Ucart = amatrix.dot(N).dot(Uij).dot(N.T).dot(amatrix.T)
-        return Ucart
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if event.buttons() == QtCore.Qt.MouseButton.LeftButton:
@@ -268,34 +223,6 @@ class MoleculeWidget(QtWidgets.QWidget):
                               at2.screenx + offset, at2.screeny + offset)
 
     def draw_atom(self, atom: Atom):
-        # Draw anisotropic displacement parameters (ellipsoids) if requested
-        if self.show_adp_flag and atom.u_cart is not None:
-            try:
-                cov = atom.u_cart[:2, :2]
-                # Ensure symmetric positive definite
-                eigvals, eigvecs = np.linalg.eigh(cov)
-                if np.all(eigvals > 0):
-                    # Scale to screen coordinates
-                    scale = self.factor * 150 * self.adp_scale
-                    r1 = sqrt(eigvals[0]) * scale
-                    r2 = sqrt(eigvals[1]) * scale
-                    # Eigenvector for largest axis
-                    idx = np.argmax(eigvals)
-                    vec = eigvecs[:, idx]
-                    angle = np.degrees(np.arctan2(vec[1], vec[0]))
-                    cx = atom.screenx + self.atoms_size / 2
-                    cy = atom.screeny + self.atoms_size / 2
-                    self.painter.save()
-                    self.painter.translate(cx, cy)
-                    self.painter.rotate(angle)
-                    brush = QBrush(QColor(0, 0, 0, 50), Qt.BrushStyle.SolidPattern)
-                    pen = QPen(QColor(0, 0, 0, 120), 1, Qt.PenStyle.SolidLine)
-                    self.painter.setBrush(brush)
-                    self.painter.setPen(pen)
-                    self.painter.drawEllipse(int(-r1), int(-r2), int(2 * r1), int(2 * r2))
-                    self.painter.restore()
-            except Exception:
-                pass
         self.painter.setPen(QPen(QtCore.Qt.GlobalColor.black, 1, Qt.PenStyle.SolidLine))
         self.painter.setBrush(QBrush(atom.color, Qt.BrushStyle.SolidPattern))
         self.painter.drawEllipse(int(atom.screenx), int(atom.screeny), int(self.atoms_size), int(self.atoms_size))
@@ -333,7 +260,7 @@ class MoleculeWidget(QtWidgets.QWidget):
 
 
 class Atom:
-    __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_', 'u_cart']
+    __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_']
 
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int):
         self.coordinate = np.array([x, y, z], dtype=np.float32)
@@ -343,7 +270,6 @@ class Atom:
         self.screenx = 0
         self.screeny = 0
         self.radius = get_radius_from_element(type_)
-        self.u_cart = None
 
     @property
     def color(self) -> QColor:

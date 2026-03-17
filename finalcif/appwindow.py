@@ -412,7 +412,6 @@ class AppWindow(QMainWindow):
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
         self.ui.growCheckBox.toggled.connect(self.redraw_molecule)
         self.ui.labelsCheckBox.toggled.connect(self.show_labels)
-        self.ui.adpCheckBox.toggled.connect(self.show_adp)
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
         self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
         self.ui.BackFromOptionspPushButton.clicked.connect(self.back_to_main_noload)
@@ -1875,40 +1874,24 @@ class AppWindow(QMainWindow):
             self.ui.shelx_TextEdit.setPlainText("No Shelx file available")
             self.ui.shelx_warn_TextEdit.hide()
 
-    def _build_adp_map(self) -> dict[str, tuple[float, float, float, float, float, float]]:
-        """Build a mapping of atom labels to anisotropic Uij tuples."""
-        adp_map = {}
-        try:
-            for adp in self.cif.displacement_parameters():
-                adp_map[adp.label] = (adp.U11, adp.U22, adp.U33, adp.U23, adp.U13, adp.U12)
-        except Exception:
-            pass
-        return adp_map
-
     def view_molecule(self) -> None:
-        adp_map = self._build_adp_map()
-        cell = tuple(self.cif.cell)[:6]
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
-            self.grow_molecule(adp_map=adp_map, cell=cell)
+            self.grow_molecule()
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
             with suppress(Exception):
                 self.ui.render_widget.open_molecule(list(self.cif.atoms_orth),
-                                                    labels=self.ui.labelsCheckBox.isChecked(),
-                                                    adp_map=adp_map,
-                                                    cell=cell)
+                                                    labels=self.ui.labelsCheckBox.isChecked())
 
-    def grow_molecule(self, adp_map: dict[str, tuple[float, float, float, float, float, float]] | None = None,
-                     cell: tuple[float, float, float, float, float, float] | None = None):
+    def grow_molecule(self):
         atoms = tuple(self.cif.atoms_fract)
         if atoms:
             sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
             with suppress(Exception):
                 needsymm = sdm.calc_sdm()
                 atoms = sdm.packer(sdm, needsymm)
-                self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked(),
-                                                    adp_map=adp_map, cell=cell)
+                self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
 
     def redraw_molecule(self) -> None:
         try:
@@ -1918,9 +1901,6 @@ class AppWindow(QMainWindow):
 
     def show_labels(self, value: bool):
         self.ui.render_widget.show_labels(value)
-
-    def show_adp(self, value: bool):
-        self.ui.render_widget.show_adp(value)
 
     def check_Z(self) -> None:
         """

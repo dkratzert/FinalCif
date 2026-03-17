@@ -1188,12 +1188,6 @@ class Ui_FinalCifWindow(object):
 
         self.horizontalLayout_7.addWidget(self.labelsCheckBox)
 
-        self.adpCheckBox = QCheckBox(self.molGroupBox)
-        self.adpCheckBox.setObjectName(u"adpCheckBox")
-        self.adpCheckBox.setMinimumSize(QSize(0, 20))
-
-        self.horizontalLayout_7.addWidget(self.adpCheckBox)
-
         self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_7.addItem(self.horizontalSpacer_5)
@@ -2707,8 +2701,7 @@ class Ui_FinalCifWindow(object):
         QWidget.setTabOrder(self.depositorPasswordLineEdit, self.SelectCif_LineEdit)
         QWidget.setTabOrder(self.SelectCif_LineEdit, self.growCheckBox)
         QWidget.setTabOrder(self.growCheckBox, self.labelsCheckBox)
-        QWidget.setTabOrder(self.labelsCheckBox, self.adpCheckBox)
-        QWidget.setTabOrder(self.adpCheckBox, self.FullNameLineEdit_cif)
+        QWidget.setTabOrder(self.labelsCheckBox, self.FullNameLineEdit_cif)
         QWidget.setTabOrder(self.FullNameLineEdit_cif, self.ContactAuthorCheckBox_cif)
         QWidget.setTabOrder(self.ContactAuthorCheckBox_cif, self.AddressTextedit_cif)
         QWidget.setTabOrder(self.AddressTextedit_cif, self.EMailLineEdit_cif)
@@ -2865,7 +2858,6 @@ class Ui_FinalCifWindow(object):
         self.molGroupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"Molecule", None))
         self.growCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Grow Structure", None))
         self.labelsCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Show Labels", None))
-        self.adpCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Show ADP", None))
         self.drawImagePushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Use as Image for Report", None))
         self.picturesTabWidget.setTabText(self.picturesTabWidget.indexOf(self.tab_structure), QCoreApplication.translate("FinalCifWindow", u"Structure", None))
         self.videoLineEdit.setPlaceholderText(QCoreApplication.translate("FinalCifWindow", u"*.vzs; *.jpg file", None))
