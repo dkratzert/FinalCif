@@ -154,6 +154,20 @@ wheels = [
 ]
 
 [[package]]
+name = "docxcompose"
+version = "2.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "babel" },
+    { name = "lxml" },
+    { name = "python-docx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d3/c7/4c1473b012da40ad58aa67a050e7350e95aa8f18a3e0ffc8b8e8e69ac6c1/docxcompose-2.1.0.tar.gz", hash = "sha256:2b19c3fa0a75905832c6518c302ab3a1fd4d41bf5aa58ad677fc83e4052ad7c0", size = 19572, upload-time = "2026-03-19T06:57:48.617Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/89/53/90824863ad89e267aadaef28a3a083b2cc7ddd5a0d8e7981cc89c2342c50/docxcompose-2.1.0-py3-none-any.whl", hash = "sha256:c8dbff4b7a24349b7766a474dae47930aba39379ba5ac57c6cf8d07c20d67581", size = 23610, upload-time = "2026-03-19T06:57:47.548Z" },
+]
+
+[[package]]
 name = "docxtpl"
 version = "0.20.2"
 source = { registry = "https://pypi.org/simple" }
@@ -165,6 +179,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/b2/b4/4435f3fcb1357ec441079c4af1dda3ea926fad6dcead4aed2d93b369944e/docxtpl-0.20.2.tar.gz", hash = "sha256:eddf3350d70b4d123208e801d585bcb313d21044a377a14f75a66d0965841de1", size = 17890, upload-time = "2025-11-13T12:47:15.943Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a4/ad/e07939d8e020e513d3860400413ba1e0e06102c469639b440d921337efef/docxtpl-0.20.2-py3-none-any.whl", hash = "sha256:626d5c570a46a62b2ca73b4d08f1c240fa031a5bc45371e1466a4fe184923d10", size = 17881, upload-time = "2025-11-13T12:47:13.704Z" },
+]
+
+[package.optional-dependencies]
+subdoc = [
+    { name = "docxcompose" },
 ]
 
 [[package]]
@@ -196,7 +215,7 @@ dependencies = [
     { name = "chardet" },
     { name = "charset-normalizer" },
     { name = "crossrefapi" },
-    { name = "docxtpl" },
+    { name = "docxtpl", extra = ["subdoc"] },
     { name = "gemmi" },
     { name = "hatchling" },
     { name = "html2text" },
@@ -237,7 +256,7 @@ requires-dist = [
     { name = "chardet" },
     { name = "charset-normalizer" },
     { name = "crossrefapi" },
-    { name = "docxtpl", specifier = ">=0.20.2" },
+    { name = "docxtpl", extras = ["subdoc"], specifier = ">=0.20.2" },
     { name = "gemmi", specifier = ">=0.7.5" },
     { name = "hatchling" },
     { name = "html2text" },
@@ -1047,7 +1066,7 @@ wheels = [
 
 [[package]]
 name = "requests"
-version = "2.32.4"
+version = "2.33.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "certifi" },
@@ -1055,9 +1074,9 @@ dependencies = [
     { name = "idna" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e1/0a/929373653770d8a0d7ea76c37de6e41f11eb07559b103b1c02cafb3f7cf8/requests-2.32.4.tar.gz", hash = "sha256:27d0316682c8a29834d3264820024b62a36942083d52caf2f14c0591336d3422", size = 135258, upload-time = "2025-06-09T16:43:07.34Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/34/64/8860370b167a9721e8956ae116825caff829224fbca0ca6e7bf8ddef8430/requests-2.33.0.tar.gz", hash = "sha256:c7ebc5e8b0f21837386ad0e1c8fe8b829fa5f544d8df3b2253bff14ef29d7652", size = 134232, upload-time = "2026-03-25T15:10:41.586Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7c/e4/56027c4a6b4ae70ca9de302488c5ca95ad4a39e190093d6c1a8ace08341b/requests-2.32.4-py3-none-any.whl", hash = "sha256:27babd3cda2a6d50b30443204ee89830707d396671944c998b5975b031ac2b2c", size = 64847, upload-time = "2025-06-09T16:43:05.728Z" },
+    { url = "https://files.pythonhosted.org/packages/56/5d/c814546c2333ceea4ba42262d8c4d55763003e767fa169adc693bd524478/requests-2.33.0-py3-none-any.whl", hash = "sha256:3324635456fa185245e24865e810cecec7b4caf933d7eb133dcde67d48cee69b", size = 65017, upload-time = "2026-03-25T15:10:40.382Z" },
 ]
 
 [[package]]
