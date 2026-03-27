@@ -3,7 +3,7 @@ certifi
 chardet
 gemmi>=0.7.5
 html2text
-lxml==6.0.2
+lxml>=6.0.2
 pefile
 pybind11
 pyside6
@@ -12,7 +12,7 @@ QtAwesome
 QtPy
 requests
 urllib3
-docxtpl>=0.20.2
+docxtpl[subdoc]>=0.20.2
 shelxfile
 crossrefapi
 numpy
