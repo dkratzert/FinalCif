@@ -24,7 +24,7 @@ type:    Atom type as string like 'C'
 x, y, z: Atom position in cartesian coordinates
 part:    Disorder part in SHELX notation like 1, 2, -1
 """
-Atomtuple = namedtuple('Atomtuple', ('label', 'type', 'x', 'y', 'z', 'part'))
+Atomtuple = namedtuple('Atomtuple', ('label', 'type', 'x', 'y', 'z', 'part', 'symm_matrix'), defaults=(None,))
 
 
 @dataclass(slots=True)
@@ -174,7 +174,10 @@ class MoleculeWidget(QtWidgets.QWidget):
             if self._adp_map and self._cell and at.label in self._adp_map:
                 try:
                     uvals = tuple(to_float(x) for x in self._adp_map[at.label])
-                    a.u_cart = self._uij_to_cart(uvals)
+                    symm_matrix = getattr(at, 'symm_matrix', None)
+                    if symm_matrix is not None:
+                        symm_matrix = np.array(symm_matrix, dtype=float)
+                    a.u_cart = self._uij_to_cart(uvals, symm_matrix)
                     a.u_iso = np.trace(a.u_cart) / 3.0
                 except Exception:
                     a.u_cart = None
@@ -229,12 +232,20 @@ class MoleculeWidget(QtWidgets.QWidget):
             [-sin(self.y_angle), 0, cos(self.y_angle)],
         ], dtype=np.float32)
 
-    def _uij_to_cart(self, uvals: tuple[float, float, float, float, float, float]) -> np.ndarray:
+    def _uij_to_cart(self, uvals: tuple[float, float, float, float, float, float],
+                     symm_matrix: np.ndarray | None = None) -> np.ndarray:
         """Convert fractional Uij displacement parameters to Cartesian coordinates."""
         U11, U22, U33, U23, U13, U12 = uvals
         Uij = np.array([[U11, U12, U13],
                         [U12, U22, U23],
                         [U13, U23, U33]], dtype=float)
+
+        # Apply the fractional rotation part of the symmetry operation.
+        # The symmetry matrices from sdm.py use row-vector convention (x' = x * m),
+        # so the contravariant tensor U transforms as U' = m.T @ U @ m
+        if symm_matrix is not None:
+            Uij = symm_matrix.T @ Uij @ symm_matrix
+
         N = np.diag([self._astar, self._bstar, self._cstar])
         Ucart = self._amatrix.dot(N).dot(Uij).dot(N.T).dot(self._amatrix.T)
         return Ucart

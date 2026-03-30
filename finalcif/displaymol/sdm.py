@@ -12,8 +12,15 @@
 
 import time
 from collections import namedtuple
-from math import sqrt, cos, radians, sin
+from math import sqrt, cos, radians, sin, floor
 from typing import TYPE_CHECKING
+
+try:
+    import sdm_cpp
+
+    HAS_CPP = True
+except ImportError:
+    HAS_CPP = False
 
 from finalcif.cif.atoms import get_radius_from_element
 from finalcif.tools.dsrmath import Array, SymmetryElement, Matrix, frac_to_cart
@@ -22,7 +29,7 @@ if TYPE_CHECKING:
     from finalcif.cif.cif_file_io import CifContainer
 
 DEBUG = False
-Atomtuple = namedtuple('Atomtuple', 'label, type, x, y, z, part')
+Atomtuple = namedtuple('Atomtuple', ('label', 'type', 'x', 'y', 'z', 'part', 'symm_matrix'), defaults=(None,))
 
 
 class SymmCards:
@@ -120,10 +127,9 @@ class SDM:
         self.maxmol = 1
         self.sdmtime = 0
 
-    def orthogonal_matrix(self):
+    def orthogonal_matrix(self) -> Matrix:
         """
-        Converts von fractional to cartesian by .
-        Invert the matrix to do the opposite.
+        Converts von fractional to cartesian.
         """
         return Matrix([[self.cell[0], self.cell[1] * cos(self.cell[5]), self.cell[2] * cos(self.cell[4])],
                        [0, self.cell[1] * sin(self.cell[5]),
@@ -135,50 +141,113 @@ class SDM:
         t1 = time.perf_counter()
         h = {'H', 'D'}
         nlen = len(self.symmcards)
-        at2_plushalf = [Array([j + 0.5 for j in x[2:5]]) for x in self.atoms]
-        for i, at1 in enumerate(self.atoms):
-            prime_array = [Array(at1[2:5]) * symop.matrix + symop.trans for symop in self.symmcards]
-            for j, at2 in enumerate(self.atoms):
-                mind = 1000000
-                hma = False
-                atp = at2_plushalf[j]
+
+        symm_m = []
+        symm_t = []
+        for s in self.symmcards:
+            symm_m.append(tuple(tuple(row) for row in s.matrix.values))
+            symm_t.append(tuple(s.trans))
+
+        # C++ Fast Path
+        if HAS_CPP:
+            coords = [[at[2], at[3], at[4]] for at in self.atoms]
+            radii = [get_radius_from_element(at[1]) for at in self.atoms]
+            is_h = [at[1] in h for at in self.atoms]
+            parts = [at[5] for at in self.atoms]
+
+            cpp_results = sdm_cpp.calc_sdm_cpp(
+                coords, symm_m, symm_t,
+                self.aga, self.bbe, self.cal,
+                self.asq, self.bsq, self.csq,
+                radii, is_h, parts
+            )
+
+            for (i, j, best_n, mind, dddd, covalent) in cpp_results:
                 sdm_item = SDMItem()
-                for n in range(nlen):
-                    D = prime_array[n] - atp
-                    dp = [v - 0.5 for v in D - D.floor]
-                    dk = self.vector_length(*dp)
-                    if n:
-                        dk += 0.0001
-                    if dk > 4.0:
+                sdm_item.dist = mind
+                sdm_item.atom1 = self.atoms[i]
+                sdm_item.atom2 = self.atoms[j]
+                sdm_item.a1 = i
+                sdm_item.a2 = j
+                sdm_item.symmetry_number = best_n
+                sdm_item.dddd = dddd
+                sdm_item.covalent = covalent
+                self.sdm_list.append(sdm_item)
+
+        # Pure Python Fallback Path
+        else:
+            at2_plushalf = [(x[2] + 0.5, x[3] + 0.5, x[4] + 0.5) for x in self.atoms]
+            aga, bbe, cal = self.aga, self.bbe, self.cal
+            asq, bsq, csq = self.asq, self.bsq, self.csq
+
+            for i, at1 in enumerate(self.atoms):
+                x1, y1, z1 = at1[2], at1[3], at1[4]
+
+                prime_array = []
+                for m, t in zip(symm_m, symm_t):
+                    px = x1 * m[0][0] + y1 * m[1][0] + z1 * m[2][0] + t[0]
+                    py = x1 * m[0][1] + y1 * m[1][1] + z1 * m[2][1] + t[1]
+                    pz = x1 * m[0][2] + y1 * m[1][2] + z1 * m[2][2] + t[2]
+                    prime_array.append((px, py, pz))
+
+                for j, at2 in enumerate(self.atoms):
+                    mind = 1000000.0
+                    hma = False
+                    atp_x, atp_y, atp_z = at2_plushalf[j]
+
+                    sdm_item = SDMItem()
+
+                    for n in range(nlen):
+                        px, py, pz = prime_array[n]
+
+                        dx = px - atp_x
+                        dy = py - atp_y
+                        dz = pz - atp_z
+
+                        dpx = dx - floor(dx) - 0.5
+                        dpy = dy - floor(dy) - 0.5
+                        dpz = dz - floor(dz) - 0.5
+
+                        A = 2.0 * (dpx * dpy * aga + dpx * dpz * bbe + dpy * dpz * cal)
+                        dk2 = dpx * dpx * asq + dpy * dpy * bsq + dpz * dpz * csq + A
+
+                        if dk2 > 16.0:
+                            continue
+
+                        dk = sqrt(dk2)
+                        if n:
+                            dk += 0.0001
+
+                        if (dk > 0.01) and (mind >= dk):
+                            mind = dk
+                            sdm_item.dist = mind
+                            sdm_item.atom1 = at1
+                            sdm_item.atom2 = at2
+                            sdm_item.a1 = i
+                            sdm_item.a2 = j
+                            sdm_item.symmetry_number = n
+                            hma = True
+
+                    if not sdm_item.atom1:
                         continue
-                    if (dk > 0.01) and (mind >= dk):
-                        mind = min(dk, mind)
-                        sdm_item.dist = mind
-                        sdm_item.atom1 = at1
-                        sdm_item.atom2 = at2
-                        sdm_item.a1 = i
-                        sdm_item.a2 = j
-                        sdm_item.symmetry_number = n
-                        hma = True
-                if not sdm_item.atom1:
-                    # Do not grow grown atoms:
-                    continue
-                if ((sdm_item.atom1[1] not in h and sdm_item.atom2[1] not in h) and
-                    sdm_item.atom1[5] * sdm_item.atom2[5] == 0) or sdm_item.atom1[5] == sdm_item.atom2[5]:
-                    dddd = (get_radius_from_element(at1[1]) + get_radius_from_element(at2[1])) * 1.2
-                    sdm_item.dddd = dddd
-                else:
-                    dddd = 0.0
-                if sdm_item.dist < dddd:
+                    if ((sdm_item.atom1[1] not in h and sdm_item.atom2[1] not in h) and
+                        sdm_item.atom1[5] * sdm_item.atom2[5] == 0) or sdm_item.atom1[5] == sdm_item.atom2[5]:
+                        dddd = (get_radius_from_element(at1[1]) + get_radius_from_element(at2[1])) * 1.2
+                        sdm_item.dddd = dddd
+                    else:
+                        dddd = 0.0
+                    if sdm_item.dist < dddd:
+                        if hma:
+                            sdm_item.covalent = True
+                    else:
+                        sdm_item.covalent = False
                     if hma:
-                        sdm_item.covalent = True
-                else:
-                    sdm_item.covalent = False
-                if hma:
-                    self.sdm_list.append(sdm_item)
+                        self.sdm_list.append(sdm_item)
+
         t2 = time.perf_counter()
         self.sdmtime = t2 - t1
-        print('Time for sdm:', round(self.sdmtime, 3), 's')
+        print(f'Time for sdm {"(C++)" if HAS_CPP else "(Python fallback)"}:', round(self.sdmtime, 3), 's')
+
         self.sdm_list.sort()
         self.calc_molindex(self.atoms)
         need_symm = self.collect_needed_symmetry()
@@ -189,30 +258,63 @@ class SDM:
     def collect_needed_symmetry(self) -> list:
         need_symm = []
         h = ('H', 'D')
+
+        symm_m = []
+        symm_t = []
+        for s in self.symmcards:
+            symm_m.append(tuple(tuple(row) for row in s.matrix.values))
+            symm_t.append(tuple(s.trans))
+
+        aga, bbe, cal = self.aga, self.bbe, self.cal
+        asq, bsq, csq = self.asq, self.bsq, self.csq
+
         # Collect needsymm list:
         for sdm_item in self.sdm_list:
             if sdm_item.covalent:
                 if sdm_item.atom1[-1] < 1 or sdm_item.atom1[-1] > 6:
                     continue
-                for n, symop in enumerate(self.symmcards):
+
+                x1, y1, z1 = sdm_item.atom1[2], sdm_item.atom1[3], sdm_item.atom1[4]
+                x2, y2, z2 = sdm_item.atom2[2], sdm_item.atom2[3], sdm_item.atom2[4]
+
+                for n, (m, t) in enumerate(zip(symm_m, symm_t)):
                     if sdm_item.atom1[5] * sdm_item.atom2[5] != 0 and \
                             sdm_item.atom1[5] != sdm_item.atom2[5]:
                         continue
                     # Both the same atomic number and number 0 (hydrogen)
                     if sdm_item.atom1[1] == sdm_item.atom2[1] and sdm_item.atom1[1] in h:
                         continue
-                    prime = Array(sdm_item.atom1[2:5]) * symop.matrix + symop.trans
-                    D = prime - Array(sdm_item.atom2[2:5]) + Array([0.5, 0.5, 0.5])
-                    floorD = D.floor
-                    dp = D - floorD - Array([0.5, 0.5, 0.5])
-                    if n == 0 and Array([0, 0, 0]) == floorD:
+
+                    px = x1 * m[0][0] + y1 * m[1][0] + z1 * m[2][0] + t[0]
+                    py = x1 * m[0][1] + y1 * m[1][1] + z1 * m[2][1] + t[1]
+                    pz = x1 * m[0][2] + y1 * m[1][2] + z1 * m[2][2] + t[2]
+
+                    Dx = px - x2 + 0.5
+                    Dy = py - y2 + 0.5
+                    Dz = pz - z2 + 0.5
+
+                    fDx, fDy, fDz = floor(Dx), floor(Dy), floor(Dz)
+
+                    dpx = Dx - fDx - 0.5
+                    dpy = Dy - fDy - 0.5
+                    dpz = Dz - fDz - 0.5
+
+                    if n == 0 and fDx == 0 and fDy == 0 and fDz == 0:
                         continue
-                    dk = self.vector_length(*dp)
+
+                    A = 2.0 * (dpx * dpy * aga + dpx * dpz * bbe + dpy * dpz * cal)
+                    dk2 = dpx * dpx * asq + dpy * dpy * bsq + dpz * dpz * csq + A
+
+                    if dk2 <= 0.000001:
+                        continue
+
+                    dk = sqrt(dk2)
                     dddd = sdm_item.dist + 0.2
                     if sdm_item.atom1[1] in h and sdm_item.atom2[1] in h:
                         dddd = 1.8
-                    if (dk > 0.001) and (dddd >= dk):
-                        bs = [n + 1, (5 - floorD[0]), (5 - floorD[1]), (5 - floorD[2]), sdm_item.atom1[-1]]
+
+                    if dk <= dddd:
+                        bs = [n + 1, int(5 - fDx), int(5 - fDy), int(5 - fDz), sdm_item.atom1[-1]]
                         if bs not in need_symm:
                             need_symm.append(bs)
         return need_symm
@@ -253,39 +355,61 @@ class SDM:
         """
         Packs atoms of the asymmetric unit to real molecules.
         """
-        showatoms = list(self.atoms)
+        showatoms = []
+        # Append base atoms with an identity matrix
+        identity_matrix = ((1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0))
+        for at in self.atoms:
+            showatoms.append(list(at) + ['base', identity_matrix])
+
         new_atoms = []
+
+        symm_m = []
+        symm_t = []
+        for s in self.symmcards:
+            symm_m.append(tuple(tuple(row) for row in s.matrix.values))
+            symm_t.append(tuple(s.trans))
+
         for symm in need_symm:
             s, h, k, l, symmgroup = symm
             h -= 5
             k -= 5
             l -= 5
             s -= 1
+
+            m = symm_m[s]
+            t = symm_t[s]
+
             for atom in self.atoms:
                 if atom[-1] == symmgroup:
-                    coords = Array(atom[2:5]) * self.symmcards[s].matrix \
-                             + Array(self.symmcards[s].trans) + Array([h, k, l])
-                    # The new atom:
-                    new = [atom[0], atom[1], *list(coords), atom[5], atom[6], atom[7], 'symmgen']
+                    x1, y1, z1 = atom[2], atom[3], atom[4]
+                    px = x1 * m[0][0] + y1 * m[1][0] + z1 * m[2][0] + t[0] + h
+                    py = x1 * m[0][1] + y1 * m[1][1] + z1 * m[2][1] + t[1] + k
+                    pz = x1 * m[0][2] + y1 * m[1][2] + z1 * m[2][2] + t[2] + l
+
+                    # The new atom with the symmetry matrix appended:
+                    new = [atom[0], atom[1], px, py, pz, atom[5], atom[6], atom[7], 'symmgen', m]
                     new_atoms.append(new)
                     isthere = False
                     # Only add atom if its occupancy (new[5]) is greater zero:
                     if new[5] >= 0:
-                        for atom in showatoms:
-                            if atom[5] != new[5]:
+                        for existing in showatoms:
+                            if existing[5] != new[5]:
                                 continue
-                            length = sdm.vector_length(new[2] - atom[2],
-                                                       new[3] - atom[3],
-                                                       new[4] - atom[4])
+                            length = sdm.vector_length(px - existing[2],
+                                                       py - existing[3],
+                                                       pz - existing[4])
                             if length < 0.2:
                                 isthere = True
+                                break
                     if not isthere:
                         showatoms.append(new)
+
         cart_atoms = []
         cell = self.cell[:6]
         for at in showatoms:
             x, y, z = frac_to_cart([at[2], at[3], at[4]], cell)
-            cart_atoms.append(Atomtuple(label=at[0], type=at[1], x=x, y=y, z=z, part=at[5]))
+            # at[-1] contains the symm_matrix
+            cart_atoms.append(Atomtuple(label=at[0], type=at[1], x=x, y=y, z=z, part=at[5], symm_matrix=at[-1]))
         return cart_atoms
 
 
@@ -305,5 +429,6 @@ if __name__ == "__main__":
 
     #cif = CifContainer(Path('test-data/4060314.cif'))
     cif = CifContainer(Path(r'D:\_DEV\GitHub\FinalCif\test-data\p31c.cif'))
+    #cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
     atoms = make_molecule(cif)
     display(atoms, cell=cif.cell[:6], adps=cif.displacement_parameters())
