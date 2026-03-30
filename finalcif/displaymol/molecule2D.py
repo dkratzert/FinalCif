@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import enum
 import sys
 from collections import namedtuple
 from dataclasses import dataclass
@@ -8,9 +9,11 @@ from pathlib import Path
 from typing import NoReturn
 
 import numpy as np
+from PySide6.QtGui import QLinearGradient
 from qtpy import QtWidgets, QtCore, QtGui
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent, QRadialGradient
+from qtpy.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent, \
+    QRadialGradient
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
@@ -50,6 +53,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.bond_width = 1
         self.labels = False
         self.show_adps = True
+        self.bond_drawer = self.draw_bond
 
         # scaling factor for ADP ellipsoids in screen coordinates
         # 1.5382 is the standard ORTEP scaling factor for 50% probability:
@@ -65,6 +69,11 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.bond_color = QColor('#555555')
         self.fallback_pen_color = QColor(QtCore.Qt.GlobalColor.black)
         self.adp_pen_color = QColor(0, 0, 0, 255)
+
+        # 3D Cylinder gradient colors for bonds
+        self.bond_grad_dark = QColor(60, 60, 60)
+        self.bond_grad_light = QColor(140, 140, 140)
+        self.bond_grad_shadow = QColor(10, 10, 10)
 
         pal = QPalette()
         pal.setColor(QtGui.QPalette.ColorRole.Window, QtCore.Qt.GlobalColor.white)
@@ -103,7 +112,15 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.show_adps = value
         self.update()
 
-    def open_molecule(self, atoms: list[Atomtuple], cell: list[float] | None = None, adps: list[float] | None = None) -> None:
+    def show_round_bonds(self, bond_type: bool = False):
+        if not bond_type:
+            self.bond_drawer = self.draw_bond
+        else:
+            self.bond_drawer = self.draw_bond_rounded
+        self.update()
+
+    def open_molecule(self, atoms: list[Atomtuple], cell: list[float] | None = None,
+                      adps: list[float] | None = None) -> None:
         if cell is not None and self.show_adps:
             self._cell = cell
             self.calc_amatrix()
@@ -313,7 +330,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.calculate_z_order()
         for item in self.objects:
             if item.is_bond:
-                self.draw_bond(item.atom1, item.atom2, offset=bond_offset)
+                self.bond_drawer(item.atom1, item.atom2, offset=bond_offset)
             else:
                 self.draw_atom(item.atom1)
                 if self.labels and item.atom1.type_ not in hydrogens:
@@ -348,11 +365,43 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.molecule_center = np.array(c, dtype=np.float32)
         self.molecule_radius = r or 10
 
+    def draw_bond_rounded(self, at1: Atom, at2: Atom, offset: int):
+        # Scale bond width with zoom factor, clamped between max and min
+        dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
+
+        x1 = at1.screenx + offset
+        y1 = at1.screeny + offset
+        x2 = at2.screenx + offset
+        y2 = at2.screeny + offset
+
+        # Vector of the bond
+        dx = x2 - x1
+        dy = y2 - y1
+        length = sqrt(dx * dx + dy * dy)
+        if length < 0.0001:
+            return
+
+        # Normal vector perpendicular to the bond
+        nx = -dy / length
+        ny = dx / length
+
+        w_half = dynamic_width / 2.0
+
+        # Set up linear gradient perpendicular to the bond to mimic 3D lighting
+        grad = QLinearGradient(x1 - nx * w_half, y1 - ny * w_half,
+                               x1 + nx * w_half, y1 + ny * w_half)
+        grad.setColorAt(0.0, self.bond_grad_dark)
+        grad.setColorAt(0.4, self.bond_grad_light)  # Highlight slightly off-center
+        grad.setColorAt(1.0, self.bond_grad_shadow)
+
+        pen = QPen(QBrush(grad), dynamic_width, Qt.PenStyle.SolidLine)
+        pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+        self._painter.setPen(pen)
+        self._painter.drawLine(int(x1), int(y1), int(x2), int(y2))
+
     def draw_bond(self, at1: Atom, at2: Atom, offset: int):
-        # Scale bond width with zoom factor, clamped between 1 and 8 pixels
         dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
         pen = QPen(self.bond_color, dynamic_width, Qt.PenStyle.SolidLine)
-        pen.setCapStyle(Qt.PenCapStyle.RoundCap)
         self._painter.setPen(pen)
         self._painter.drawLine(int(at1.screenx + offset), int(at1.screeny + offset),
                                int(at2.screenx + offset), int(at2.screeny + offset))
@@ -479,7 +528,8 @@ class MoleculeWidget(QtWidgets.QWidget):
 
 
 class Atom:
-    __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_', 'u_cart', 'color', 'color_light',
+    __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_', 'u_cart', 'color',
+                 'color_light',
                  'color_dark', 'u_iso', 'z']
 
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int):
@@ -515,11 +565,13 @@ def display(atoms: list[Atomtuple], cell: list[float] | None = None, adps: list[
     adp_checkbox = QtWidgets.QCheckBox("Show ADP")
     grow_checkbox = QtWidgets.QCheckBox("Grow")
     label_checkbox = QtWidgets.QCheckBox("Show Labels")
+    bond_type_checkbox = QtWidgets.QCheckBox("Round Bonds")
 
     adp_checkbox.setChecked(True)
 
     adp_checkbox.toggled.connect(lambda x: render_widget.show_adp(x))
     label_checkbox.toggled.connect(lambda x: render_widget.show_labels(x))
+    bond_type_checkbox.toggled.connect(lambda x: render_widget.show_round_bonds(x))
 
     def toggle_grow(checked: bool) -> None:
         if checked:
@@ -551,6 +603,7 @@ def display(atoms: list[Atomtuple], cell: list[float] | None = None, adps: list[
     hl.addWidget(adp_checkbox)
     hl.addWidget(label_checkbox)
     hl.addWidget(grow_checkbox)
+    hl.addWidget(bond_type_checkbox)
     hl.addStretch()
 
     vl.addLayout(hl)
