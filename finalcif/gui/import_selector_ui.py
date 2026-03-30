@@ -94,9 +94,9 @@ class Ui_importSelectMainWindow(object):
         importSelectMainWindow.setWindowTitle(QCoreApplication.translate("importSelectMainWindow", u"Select import items", None))
         self.importInfoLabel.setText("")
         ___qtablewidgetitem = self.importTable_keys.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("importSelectMainWindow", u"keys", None))
+        ___qtablewidgetitem.setText(QCoreApplication.translate("importSelectMainWindow", u"keys", None));
         ___qtablewidgetitem1 = self.importTable_loops.horizontalHeaderItem(0)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("importSelectMainWindow", u"loops", None))
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("importSelectMainWindow", u"loops", None));
         self.importSelectedPushbutton.setText(QCoreApplication.translate("importSelectMainWindow", u"Import Selected", None))
         self.selectOnlyNewPB.setText(QCoreApplication.translate("importSelectMainWindow", u"Select Only New Data", None))
         self.saveSelectionPushbutton.setText(QCoreApplication.translate("importSelectMainWindow", u"Save current Selection", None))

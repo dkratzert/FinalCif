@@ -160,7 +160,7 @@ class AppWindow(QMainWindow):
             "  \n"
             "  - Recent versions of PLATON may be obtained from: https://platonsoft.nl/xraysoft\n\n"
             " PLATON is free of charge for Academics.\n"
-            " For-profit organisations should contact Anthony L. Spek, a.l.spek@uu.nl for a license." 
+            " For-profit organisations should contact Anthony L. Spek, a.l.spek@uu.nl for a license."
             "  "
         )
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
@@ -412,6 +412,7 @@ class AppWindow(QMainWindow):
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
         self.ui.growCheckBox.toggled.connect(self.redraw_molecule)
         self.ui.labelsCheckBox.toggled.connect(self.show_labels)
+        self.ui.adpCheckBox.toggled.connect(self.show_adp)
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
         self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
         self.ui.BackFromOptionspPushButton.clicked.connect(self.back_to_main_noload)
@@ -1551,10 +1552,6 @@ class AppWindow(QMainWindow):
         if not_ok:
             unable_to_open_message(self, filepath, not_ok)
             return None
-        if not self.cif.is_valid_structure_cif:
-            show_general_warning(self, "The CIF file you are about to open contains no structure.\n\n"
-                                       "Use the Import button below to import metadata.")
-            return None
         if not self.cif.chars_ok:
             self.warn_about_bad_cif()
         # Do this only when sure we can load the file:
@@ -1882,7 +1879,8 @@ class AppWindow(QMainWindow):
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
             with suppress(Exception):
                 self.ui.render_widget.open_molecule(list(self.cif.atoms_orth),
-                                                    labels=self.ui.labelsCheckBox.isChecked())
+                                                    labels=self.ui.labelsCheckBox.isChecked(),
+                                                    cif=self.cif)
 
     def grow_molecule(self):
         atoms = tuple(self.cif.atoms_fract)
@@ -1891,7 +1889,8 @@ class AppWindow(QMainWindow):
             with suppress(Exception):
                 needsymm = sdm.calc_sdm()
                 atoms = sdm.packer(sdm, needsymm)
-                self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked())
+                self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked(),
+                                                    cif=self.cif)
 
     def redraw_molecule(self) -> None:
         try:
@@ -1901,6 +1900,9 @@ class AppWindow(QMainWindow):
 
     def show_labels(self, value: bool):
         self.ui.render_widget.show_labels(value)
+
+    def show_adp(self, value: bool):
+        self.ui.render_widget.show_adp(value)
 
     def check_Z(self) -> None:
         """

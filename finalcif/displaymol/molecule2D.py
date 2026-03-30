@@ -1,16 +1,20 @@
 from __future__ import annotations
+
 import sys
 from collections import namedtuple
-from math import sqrt, cos, sin, dist
+from dataclasses import dataclass
+from math import sqrt, cos, sin, dist, radians, atan2, degrees
 from pathlib import Path
 
 import numpy as np
 from qtpy import QtWidgets, QtCore, QtGui
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent
+from qtpy.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent, QRadialGradient
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.cif.cif_file_io import CifContainer
+from finalcif.tools.dsrmath import vol_unitcell
+from finalcif.tools.misc import to_float
 
 """
 A 2D molecule drawing widget. Feed it with a list (or generator) of atoms of this type:
@@ -22,21 +26,45 @@ part:    Disorder part in SHELX notation like 1, 2, -1
 Atomtuple = namedtuple('Atomtuple', ('label', 'type', 'x', 'y', 'z', 'part'))
 
 
+@dataclass(slots=True)
+class RenderItem:
+    is_bond: bool
+    atom1: Atom
+    atom2: Atom | None = None
+
+
 class MoleculeWidget(QtWidgets.QWidget):
 
     def __init__(self, parent):
         super().__init__(parent=parent)
-        self.factor = 1.0
+        self._astar = None
+        self._bstar = None
+        self._cstar = None
+        self._amatrix = None
+        self._adp_map = None
+        self._cell = None
+        self._factor = 1.0
         self.atoms_size = 12
         self.fontsize = 13
-        self.bond_width = 2
+        self.bond_width = 1
         self.labels = False
+        self.show_adps = True
+
+        # scaling factor for ADP ellipsoids in screen coordinates
+        # 1.5382 is the standard ORTEP scaling factor for 50% probability:
+        self.adp_scale = 1.5382
         self.molecule_center = np.array([0, 0, 0])
         self.molecule_radius = 10
-        self.lastPos = self.pos()
-        self.painter: None | QPainter = None
+        self._lastPos = self.pos()
+        self._painter: None | QPainter = None
         self.x_angle = 0
         self.y_angle = 0
+
+        # Color caches
+        self.bond_color = QColor('#555555')
+        self.fallback_pen_color = QColor(QtCore.Qt.GlobalColor.black)
+        self.adp_pen_color = QColor(0, 0, 0, 255)
+
         pal = QPalette()
         pal.setColor(QtGui.QPalette.ColorRole.Window, QtCore.Qt.GlobalColor.white)
         self.setAutoFillBackground(True)
@@ -44,15 +72,18 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
+
         self.atoms: list[Atom] = []
         self.connections = ()
-        # Takes all atoms and bonds
-        self.objects = []
+        self.objects: list[RenderItem] = []
+
         self.screen_center = [self.width() / 2, self.height() / 2]
-        self.projection_matrix = np.array([[1, 0, 0],
-                                           [0, 1, 0]], dtype=np.float32)
-        self.projected_points = []
         self.zoom = 1.1
+
+        # Numpy arrays for fast vectorized rotation
+        self._coords_array = np.empty((0, 3))
+        self._ucart_array = np.empty((0, 3, 3))
+        self._has_adp = np.empty(0, dtype=bool)
 
     def setLabelFont(self, font_size: int):
         if font_size < 0:
@@ -67,37 +98,107 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.labels = value
         self.update()
 
-    def open_molecule(self, atoms: list[Atomtuple], labels=False):
+    def show_adp(self, value: bool):
+        self.show_adps = value
+        self.update()
+
+    def open_molecule(self, atoms: list[Atomtuple], labels=False, cif: CifContainer | None = None):
         self.labels = labels
+        if cif is not None and self.show_adps:
+            self._cell = tuple(cif.cell)[:6] if cif.cell else None
+            self.calc_amatrix()
+            self._adp_map = {}
+            try:
+                for adp in cif.displacement_parameters():
+                    self._adp_map[adp.label] = (adp.U11, adp.U22, adp.U33, adp.U23, adp.U13, adp.U12)
+            except Exception:
+                pass  # will show up as circle
+        else:
+            self._cell = None
+            self._adp_map = None
+
         self.atoms.clear()
-        for at in atoms:
-            self.atoms.append(Atom(at.x, at.y, at.z, at.label, at.type, at.part))
-        if len(self.atoms) > 400:
-            self.bond_width = 1
+        self.make_adps(atoms)
         self.connections = self.get_conntable_from_atoms()
         self.get_center_and_radius()
-        self.factor = min(self.width(), self.height()) / 2 / self.molecule_radius * self.zoom / 100
-        self.atoms_size = self.factor * 70
+
+        # Cache objects array once to save allocation time during rotation
+        self.objects.clear()
+        for n1, n2 in self.connections:
+            at1 = self.atoms[n1]
+            at2 = self.atoms[n2]
+            if at1.type_ in ('H', 'D') and at2.u_iso is not None:
+                if at1.u_iso is None:
+                    at1.u_iso = at2.u_iso * 0.8
+            elif at2.type_ in ('H', 'D') and at1.u_iso is not None:
+                if at2.u_iso is None:
+                    at2.u_iso = at1.u_iso * 0.8
+            self.objects.append(RenderItem(is_bond=True, atom1=at1, atom2=at2))
+
+        for atom in self.atoms:
+            self.objects.append(RenderItem(is_bond=False, atom1=atom))
+
+        # Build numpy arrays for fully vectorized rotation
+        self._coords_array = np.array([at.coordinate for at in self.atoms])
+        self._ucart_array = np.zeros((len(self.atoms), 3, 3))
+        self._has_adp = np.zeros(len(self.atoms), dtype=bool)
+        for i, at in enumerate(self.atoms):
+            at.z = at.coordinate[2]
+            if at.u_cart is not None:
+                self._ucart_array[i] = at.u_cart
+                self._has_adp[i] = True
+
+        self._factor = min(self.width(), self.height()) / 2 / self.molecule_radius * self.zoom / 100
+        self.atoms_size = self._factor * 70
         self.update()
+
+    def calc_amatrix(self):
+        a, b, c, alpha, beta, gamma = self._cell
+        V = vol_unitcell(a, b, c, alpha, beta, gamma)
+        # reciprocal lattice vectors
+        self._astar = (b * c * sin(radians(alpha))) / V
+        self._bstar = (c * a * sin(radians(beta))) / V
+        self._cstar = (a * b * sin(radians(gamma))) / V
+        # orthogonalization matrix (fractional -> cartesian)
+        self._amatrix = np.array([
+            [a, b * cos(radians(gamma)), c * cos(radians(beta))],
+            [0, b * sin(radians(gamma)),
+             c * (cos(radians(alpha)) - cos(radians(beta)) * cos(radians(gamma))) / sin(radians(gamma))],
+            [0, 0, V / (a * b * sin(radians(gamma)))]
+        ], dtype=float)
+
+    def make_adps(self, atoms: list[Atomtuple]) -> None:
+        self.atoms.clear()
+        for at in atoms:
+            a = Atom(at.x, at.y, at.z, at.label, at.type, at.part)
+            if self._adp_map and self._cell and at.label in self._adp_map:
+                try:
+                    uvals = tuple(to_float(x) for x in self._adp_map[at.label])
+                    a.u_cart = self._uij_to_cart(uvals)
+                    a.u_iso = np.trace(a.u_cart) / 3.0
+                except Exception:
+                    a.u_cart = None
+                    a.u_iso = None
+            self.atoms.append(a)
 
     def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)
 
     def paintEvent(self, event):
         if self.atoms:
-            self.painter = QPainter(self)
-            self.painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-            font = self.painter.font()
+            self._painter = QPainter(self)
+            self._painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            font = self._painter.font()
             font.setPixelSize(self.fontsize)
-            self.painter.setFont(font)
+            self._painter.setFont(font)
             try:
                 self.draw()
             except (ValueError, IndexError) as e:
                 print(f'Draw structure crashed: {e}')
-                self.painter.end()
+                self._painter.end()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
-        self.lastPos = event.position()
+        self._lastPos = event.position()
 
     def wheelEvent(self, event: QWheelEvent):
         if event.angleDelta().y() > 0:
@@ -128,6 +229,16 @@ class MoleculeWidget(QtWidgets.QWidget):
             [-sin(self.y_angle), 0, cos(self.y_angle)],
         ], dtype=np.float32)
 
+    def _uij_to_cart(self, uvals: tuple[float, float, float, float, float, float]) -> np.ndarray:
+        """Convert fractional Uij displacement parameters to Cartesian coordinates."""
+        U11, U22, U33, U23, U13, U12 = uvals
+        Uij = np.array([[U11, U12, U13],
+                        [U12, U22, U23],
+                        [U13, U23, U33]], dtype=float)
+        N = np.diag([self._astar, self._bstar, self._cstar])
+        Ucart = self._amatrix.dot(N).dot(Uij).dot(N.T).dot(self._amatrix.T)
+        return Ucart
+
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if event.buttons() == QtCore.Qt.MouseButton.LeftButton:
             self.rotate_molecule(event)
@@ -135,67 +246,76 @@ class MoleculeWidget(QtWidgets.QWidget):
             self.zoom_molecule(event)
         elif event.buttons() == QtCore.Qt.MouseButton.MiddleButton:
             self.pan_molecule(event)
-        self.lastPos = event.position()
+        self._lastPos = event.position()
 
     def pan_molecule(self, event):
-        self.molecule_center[0] += (self.lastPos.x() - event.position().x()) / 50
-        self.molecule_center[1] += (self.lastPos.y() - event.position().y()) / 50
+        self.molecule_center[0] += (self._lastPos.x() - event.position().x()) / 50
+        self.molecule_center[1] += (self._lastPos.y() - event.position().y()) / 50
         self.update()
 
     def zoom_molecule(self, event: QMouseEvent):
-        self.factor += (self.lastPos.y() - event.position().y()) / 350
-        self.factor = max(0.005, self.factor)
-        self.zoom -= (self.lastPos.y() - event.position().y()) / 350
-        self.atoms_size = abs(self.factor * 70)
+        self._factor += (self._lastPos.y() - event.position().y()) / 350
+        self._factor = max(0.005, self._factor)
+        self.zoom -= (self._lastPos.y() - event.position().y()) / 350
+        self.atoms_size = abs(self._factor * 70)
         self.update()
 
     def rotate_molecule(self, event: QMouseEvent):
-        self.y_angle = -(event.position().x() - self.lastPos.x()) / 80
-        self.x_angle = (event.position().y() - self.lastPos.y()) / 80
-        for num, at in enumerate(self.atoms):
-            rotated2d = np.dot(self.rotate_y(), at.coordinate - self.molecule_center)
-            x, y, z = np.dot(self.rotate_x(), rotated2d) + self.molecule_center
-            self.atoms[num] = Atom(x, y, z, at.name, at.type_, at.part)
+        self.y_angle = -(event.position().x() - self._lastPos.x()) / 80
+        self.x_angle = (event.position().y() - self._lastPos.y()) / 80
+        R_y = self.rotate_y()
+        R_x = self.rotate_x()
+        R = np.dot(R_x, R_y)
+
+        # Single bulk vector rotation instead of individual loops
+        if self.atoms:
+            # 1) Rotate all atom coordinates
+            self._coords_array = np.dot(self._coords_array - self.molecule_center, R.T) + self.molecule_center
+
+            # 2) Rotate all matrices in one go via broadcasting
+            if np.any(self._has_adp):
+                self._ucart_array = np.matmul(R, np.matmul(self._ucart_array, R.T))
+
+            # 3) Assign values back to objects
+            for i, at in enumerate(self.atoms):
+                at.coordinate = self._coords_array[i]
+                at.z = at.coordinate[2]  # cache explicit z property for fast sorting
+                if self._has_adp[i]:
+                    at.u_cart = self._ucart_array[i]
+
         self.update()
 
-    def draw(self):
-        scale = self.factor * 150
+    def draw(self) -> None:
+        scale = self._factor * 150
         self.screen_center = [self.width() / 2, self.height() / 2]
         bond_offset = int(self.atoms_size / 2)
         hydrogens = ('H', 'D')
+
+        cx = self.screen_center[0] - self.molecule_center[0] * scale
+        cy = self.screen_center[1] - self.molecule_center[1] * scale
+
         for atom in self.atoms:
-            projected2d = np.dot(self.projection_matrix, atom.coordinate.reshape(3, 1))
-            atom.screenx = int(projected2d[0][0] * scale + self.screen_center[0] - self.molecule_center[0] * scale)
-            atom.screeny = int(projected2d[1][0] * scale + self.screen_center[1] - self.molecule_center[1] * scale)
+            c = atom.coordinate
+            atom.screenx = int(c[0] * scale + cx)
+            atom.screeny = int(c[1] * scale + cy)
+
         self.calculate_z_order()
         for item in self.objects:
-            # atoms
-            if item[0] == 0:
-                atom = item[1]
-                self.draw_atom(atom)
-                if self.labels and atom.type_ not in hydrogens:
-                    self.draw_label(atom)
-            # bonds:
-            if item[0] == 1:
-                self.draw_bond(item[1], item[2], offset=bond_offset)
-        self.painter.end()
+            if item.is_bond:
+                self.draw_bond(item.atom1, item.atom2, offset=bond_offset)
+            else:
+                self.draw_atom(item.atom1)
+                if self.labels and item.atom1.type_ not in hydrogens:
+                    self.draw_label(item.atom1)
+        self._painter.end()
 
     def calculate_z_order(self):
         """
-        Orders the atoms and bonds by z coordinates.
+        Orders the cached atoms and bonds by the explicit z coordinates.
         """
-        self.objects.clear()
-        for n1, n2 in self.connections:
-            # 1 means bond:
-            at1 = self.atoms[n1]
-            at2 = self.atoms[n2]
-            self.objects.append((1, at1, at2))
-        for atom in self.atoms:
-            # 0 means atom
-            self.objects.append((0, atom))
-        self.objects.sort(reverse=True, key=lambda atom: atom[1].coordinate[2])
+        self.objects.sort(reverse=True, key=lambda item: item.atom1.z)
 
-    def distance(self, vector1: np.array, vector2: np.array):
+    def distance(self, vector1: np.ndarray, vector2: np.ndarray):
         diff = vector2 - vector1
         return sqrt(np.dot(diff.T, diff))
 
@@ -218,18 +338,106 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.molecule_radius = r or 10
 
     def draw_bond(self, at1: Atom, at2: Atom, offset: int):
-        self.painter.setPen(QPen(QtCore.Qt.GlobalColor.darkGray, self.bond_width, Qt.PenStyle.SolidLine))
-        self.painter.drawLine(at1.screenx + offset, at1.screeny + offset,
-                              at2.screenx + offset, at2.screeny + offset)
+        # Scale bond width with zoom factor, clamped between 1 and 8 pixels
+        dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
+        pen = QPen(self.bond_color, dynamic_width, Qt.PenStyle.SolidLine)
+        pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+        self._painter.setPen(pen)
+        self._painter.drawLine(int(at1.screenx + offset), int(at1.screeny + offset),
+                               int(at2.screenx + offset), int(at2.screeny + offset))
 
     def draw_atom(self, atom: Atom):
-        self.painter.setPen(QPen(QtCore.Qt.GlobalColor.black, 1, Qt.PenStyle.SolidLine))
-        self.painter.setBrush(QBrush(atom.color, Qt.BrushStyle.SolidPattern))
-        self.painter.drawEllipse(int(atom.screenx), int(atom.screeny), int(self.atoms_size), int(self.atoms_size))
+        # Draw anisotropic displacement parameters (ellipsoids) if requested
+        if self.show_adps and atom.u_cart is not None:
+            # Analytical 2x2 eigen decomposition of the 2D projected covariance matrix
+            # Bypasses expensive np.linalg.eigh overhead
+            a = atom.u_cart[0, 0]
+            b = atom.u_cart[0, 1]
+            c = atom.u_cart[1, 1]
+
+            T = a + c
+            D = a * c - b * b
+            diff = T * T * 0.25 - D
+
+            if diff >= 0:
+                sq = sqrt(diff)
+                eig1 = T * 0.5 - sq
+                eig2 = T * 0.5 + sq
+
+                if eig1 > 0 and eig2 > 0:
+                    scale = self._factor * 150 * self.adp_scale
+                    r1 = sqrt(eig1) * scale
+                    r2 = sqrt(eig2) * scale
+
+                    if abs(b) > 1e-8:
+                        angle = degrees(atan2(eig1 - a, b))
+                    else:
+                        angle = 0.0 if a < c else 90.0
+
+                    cx = atom.screenx + self.atoms_size / 2
+                    cy = atom.screeny + self.atoms_size / 2
+                    self._painter.save()
+                    self._painter.translate(cx, cy)
+                    self._painter.rotate(angle)
+                    gradient = self.make_gradient(angle, atom, r1, r2)
+                    brush = QBrush(gradient)
+                    pen = QPen(self.adp_pen_color, 1, Qt.PenStyle.SolidLine)
+                    self._painter.setBrush(brush)
+                    self._painter.setPen(pen)
+                    self._painter.drawEllipse(int(-r1), int(-r2), int(2 * r1), int(2 * r2))
+
+                    # Draw an ORTEP-like center cross (slightly transparent to blend with 3D)
+                    cross_pen = QPen(QColor(0, 0, 0, 120), 1, Qt.PenStyle.SolidLine)
+                    self._painter.setPen(cross_pen)
+                    self._painter.drawLine(int(-r1), 0, int(r1), 0)
+                    self._painter.drawLine(0, int(-r2), 0, int(r2))
+
+                    self._painter.restore()
+                    # Return early to prevent drawing the standard circular atom
+                    return
+
+        # Standard circle fallback if ADPs are absent or calculation failed
+        circle_size = self.atoms_size
+        if self.show_adps and atom.u_iso is not None:
+            # Scale the radius exactly like the ellipsoids using U_iso
+            r = sqrt(atom.u_iso) * self._factor * 150 * self.adp_scale
+            circle_size = r * 2
+
+        cx = atom.screenx + self.atoms_size / 2
+        cy = atom.screeny + self.atoms_size / 2
+        radius = circle_size / 2
+
+        # 3D Gradient for the standard circle
+        gradient = QRadialGradient(cx - radius * 0.3, cy - radius * 0.3, circle_size)
+        gradient.setColorAt(0.0, atom.color_light)
+        gradient.setColorAt(0.4, atom.color)
+        gradient.setColorAt(1.0, atom.color_dark)
+
+        self._painter.setPen(QPen(self.fallback_pen_color, 1, Qt.PenStyle.SolidLine))
+        self._painter.setBrush(QBrush(gradient))
+        # Draw the circle centered perfectly with the bonds
+        self._painter.drawEllipse(int(cx - radius), int(cy - radius),
+                                  int(circle_size), int(circle_size))
+
+    def make_gradient(self, angle: float, atom: Atom, r1: float, r2: float) -> QRadialGradient:
+        # 3D Gradient for the ellipsoid with a fixed global light source
+        max_r = max(r1, r2)
+        # Desired screen-space offset (top-left)
+        sx, sy = -max_r * 0.3, -max_r * 0.3
+        # Un-rotate the gradient focal point against the painter's rotation
+        rad = radians(angle)
+        fx = sx * cos(rad) + sy * sin(rad)
+        fy = -sx * sin(rad) + sy * cos(rad)
+
+        gradient = QRadialGradient(fx, fy, max_r * 1.5)
+        gradient.setColorAt(0.0, atom.color_light)
+        gradient.setColorAt(0.4, atom.color)
+        gradient.setColorAt(1.0, atom.color_dark)
+        return gradient
 
     def draw_label(self, atom: Atom):
-        self.painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.PenStyle.SolidLine))
-        self.painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
+        self._painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.PenStyle.SolidLine))
+        self._painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
 
     def get_conntable_from_atoms(self, extra_param: float = 1.2) -> tuple:
         """
@@ -260,28 +468,31 @@ class MoleculeWidget(QtWidgets.QWidget):
 
 
 class Atom:
-    __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_']
+    __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_', 'u_cart', 'color', 'color_light',
+                 'color_dark', 'u_iso', 'z']
 
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int):
         self.coordinate = np.array([x, y, z], dtype=np.float32)
+        self.z = z
         self.name = name
         self.part = part
         self.type_ = type_
         self.screenx = 0
         self.screeny = 0
         self.radius = get_radius_from_element(type_)
-
-    @property
-    def color(self) -> QColor:
-        return QColor(element2color.get(self.type_))
+        self.u_cart = None
+        self.color = QColor(element2color.get(self.type_, '#000000'))  # Default to black if unknown
+        self.color_light = self.color.lighter(160)
+        self.color_dark = self.color.darker(160)
+        self.u_iso = None
 
     def __repr__(self) -> str:
         return str((self.name, self.type_, self.coordinate))
 
 
-def display(atoms: list[Atomtuple]):
+def display(atoms: list[Atomtuple], cif: CifContainer | None = None):
     """
-    This function is for testing purposes. 
+    This function is for testing purposes.
     """
     import time
     app = QtWidgets.QApplication(sys.argv)
@@ -289,12 +500,24 @@ def display(atoms: list[Atomtuple]):
     window = QtWidgets.QMainWindow()
     render_widget = MoleculeWidget(None)
     t1 = time.perf_counter()
-    render_widget.open_molecule(atoms, labels=False)
-    render_widget.labels = True
+    adp_checkbox = QtWidgets.QCheckBox(render_widget)
+    adp_checkbox.setText("Show ADP")
+    label_checkbox = QtWidgets.QCheckBox(render_widget)
+    label_checkbox.setText("Show Labels")
+    adp_checkbox.setChecked(True)
+    adp_checkbox.toggled.connect(lambda x: render_widget.show_adp(x))
+    label_checkbox.toggled.connect(lambda x: render_widget.show_labels(x))
+    render_widget.open_molecule(atoms, labels=False, cif=cif)
+    render_widget.labels = False
     print(f'Time to display molecule: {time.perf_counter() - t1:5.4} s')
-    # add and show
-    window.setCentralWidget(render_widget)
+    central_widget = QtWidgets.QWidget()
+    window.setCentralWidget(central_widget)
+
+    vl = QtWidgets.QVBoxLayout(central_widget)
     window.setMinimumSize(800, 600)
+    vl.addWidget(render_widget)
+    vl.addWidget(adp_checkbox)
+    vl.addWidget(label_checkbox)
     window.show()
     # render_widget.save_image(Path('myimage2.png'))
     # start the event loop
@@ -307,7 +530,9 @@ if __name__ == "__main__":
     # atoms = [x.cart_coords for x in shx.atoms]
     cif = CifContainer('test-data/p21c.cif')
     # cif = CifContainer(r'../41467_2015.cif')
+    # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
     # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     cif.load_this_block(len(cif.doc) - 1)
-    display(list(cif.atoms_orth))
+
+    display(cif.atoms_orth, cif=cif)

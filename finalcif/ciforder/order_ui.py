@@ -132,7 +132,7 @@ class Ui_CifOrderForm(object):
         self.restoreDefaultPushButton.setText(QCoreApplication.translate("CifOrderForm", u"Restore default order", None))
         self.deleteKeyPushButton.setText(QCoreApplication.translate("CifOrderForm", u"Delete selected key", None))
         ___qtablewidgetitem = self.cifOrderTableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("CifOrderForm", u"CIF key", None))
+        ___qtablewidgetitem.setText(QCoreApplication.translate("CifOrderForm", u"CIF key", None));
         self.helpTextLabel.setText(QCoreApplication.translate("CifOrderForm", u"Order of CIF keys in the output file. Enabled means they will be forced to remain in the output CIF.", None))
     # retranslateUi
 

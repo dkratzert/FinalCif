@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1753</width>
+    <width>1805</width>
     <height>951</height>
    </rect>
   </property>
@@ -2045,7 +2045,7 @@
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="tab_structure">
                <attribute name="title">
@@ -2126,6 +2126,16 @@
                        </property>
                        <property name="text">
                         <string>Show Labels</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="adpCheckBox">
+                       <property name="text">
+                        <string>ADPs</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>

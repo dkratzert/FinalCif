@@ -38,7 +38,7 @@ class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         if not FinalCifWindow.objectName():
             FinalCifWindow.setObjectName(u"FinalCifWindow")
-        FinalCifWindow.resize(1753, 951)
+        FinalCifWindow.resize(1805, 951)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -350,8 +350,8 @@ class Ui_FinalCifWindow(object):
         font = QFont()
         font.setItalic(True)
         __qlistwidgetitem = QListWidgetItem(self.docxTemplatesListWidget)
-        __qlistwidgetitem.setCheckState(Qt.Checked)
-        __qlistwidgetitem.setFont(font)
+        __qlistwidgetitem.setCheckState(Qt.Checked);
+        __qlistwidgetitem.setFont(font);
         self.docxTemplatesListWidget.setObjectName(u"docxTemplatesListWidget")
         self.docxTemplatesListWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.docxTemplatesListWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
@@ -1187,6 +1187,12 @@ class Ui_FinalCifWindow(object):
         self.labelsCheckBox.setMinimumSize(QSize(0, 20))
 
         self.horizontalLayout_7.addWidget(self.labelsCheckBox)
+
+        self.adpCheckBox = QCheckBox(self.molGroupBox)
+        self.adpCheckBox.setObjectName(u"adpCheckBox")
+        self.adpCheckBox.setChecked(True)
+
+        self.horizontalLayout_7.addWidget(self.adpCheckBox)
 
         self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
@@ -2736,7 +2742,7 @@ class Ui_FinalCifWindow(object):
         self.TemplatesStackedWidget.setCurrentIndex(0)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         self.MainStackedWidget.setCurrentIndex(2)
-        self.picturesTabWidget.setCurrentIndex(1)
+        self.picturesTabWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
         self.LoopsTabWidget.setCurrentIndex(0)
         self.authorEditTabWidget.setCurrentIndex(1)
@@ -2764,9 +2770,9 @@ class Ui_FinalCifWindow(object):
         self.EditEquipmentTemplateButton.setText(QCoreApplication.translate("FinalCifWindow", u"Edit Template", None))
         self.ImportEquipmentTemplateButton.setText(QCoreApplication.translate("FinalCifWindow", u"Import Template", None))
         ___qtablewidgetitem = self.EquipmentEditTableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("FinalCifWindow", u"key", None))
+        ___qtablewidgetitem.setText(QCoreApplication.translate("FinalCifWindow", u"key", None));
         ___qtablewidgetitem1 = self.EquipmentEditTableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("FinalCifWindow", u"value", None))
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("FinalCifWindow", u"value", None));
         self.DeleteEquipmentButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Template", None))
         self.SaveEquipmentButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save", None))
         self.CancelEquipmentButton.setText(QCoreApplication.translate("FinalCifWindow", u"Cancel", None))
@@ -2783,7 +2789,7 @@ class Ui_FinalCifWindow(object):
         __sortingEnabled = self.docxTemplatesListWidget.isSortingEnabled()
         self.docxTemplatesListWidget.setSortingEnabled(False)
         ___qlistwidgetitem = self.docxTemplatesListWidget.item(0)
-        ___qlistwidgetitem.setText(QCoreApplication.translate("FinalCifWindow", u"Use FinalCif default template", None))
+        ___qlistwidgetitem.setText(QCoreApplication.translate("FinalCifWindow", u"Use FinalCif default template", None));
         self.docxTemplatesListWidget.setSortingEnabled(__sortingEnabled)
 
         self.AddNewTemplPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Template", None))
@@ -2800,11 +2806,11 @@ class Ui_FinalCifWindow(object):
         self.datanameLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data Name", None))
         self.SumFormMainLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Sum Formula", None))
         ___qtablewidgetitem2 = self.cif_main_table.horizontalHeaderItem(0)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("FinalCifWindow", u"CIF Value", None))
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("FinalCifWindow", u"CIF Value", None));
         ___qtablewidgetitem3 = self.cif_main_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("FinalCifWindow", u"From Data Source", None))
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("FinalCifWindow", u"From Data Source", None));
         ___qtablewidgetitem4 = self.cif_main_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("FinalCifWindow", u"Own Data", None))
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("FinalCifWindow", u"Own Data", None));
         self.groupBox.setTitle("")
 #if QT_CONFIG(tooltip)
         self.SaveCifButton.setToolTip(QCoreApplication.translate("FinalCifWindow", u"Saves the CIF file to name-finalcif.cif", None))
@@ -2858,6 +2864,7 @@ class Ui_FinalCifWindow(object):
         self.molGroupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"Molecule", None))
         self.growCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Grow Structure", None))
         self.labelsCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Show Labels", None))
+        self.adpCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"ADPs", None))
         self.drawImagePushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Use as Image for Report", None))
         self.picturesTabWidget.setTabText(self.picturesTabWidget.indexOf(self.tab_structure), QCoreApplication.translate("FinalCifWindow", u"Structure", None))
         self.videoLineEdit.setPlaceholderText(QCoreApplication.translate("FinalCifWindow", u"*.vzs; *.jpg file", None))
@@ -2872,9 +2879,9 @@ class Ui_FinalCifWindow(object):
 "Uncheck items in order to ignore the respective data source.\n"
 "The data source will be ignored until next program restart.", None))
         ___qtablewidgetitem5 = self.SourcesTableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("FinalCifWindow", u"CIF Item", None))
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("FinalCifWindow", u"CIF Item", None));
         ___qtablewidgetitem6 = self.SourcesTableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("FinalCifWindow", u"Data Source", None))
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("FinalCifWindow", u"Data Source", None));
         self.BackSourcesPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.BackFromOptionspPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to Main Table", None))
         self.groupBox_COD.setTitle(QCoreApplication.translate("FinalCifWindow", u"Crystallography Open Database Server", None))
@@ -2990,11 +2997,11 @@ class Ui_FinalCifWindow(object):
         self.StructuresListGroupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"List of deposited structures", None))
         self.refreshDepositListPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Enter username and password", None))
         ___qtablewidgetitem7 = self.CODtableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("FinalCifWindow", u"ID", None))
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("FinalCifWindow", u"ID", None));
         ___qtablewidgetitem8 = self.CODtableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("FinalCifWindow", u"Date", None))
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("FinalCifWindow", u"Date", None));
         ___qtablewidgetitem9 = self.CODtableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("FinalCifWindow", u"Time", None))
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("FinalCifWindow", u"Time", None));
         self.BackFromDepositPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.depositCIFpushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Deposit CIF", None))
     # retranslateUi
