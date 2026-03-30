@@ -501,52 +501,74 @@ class Atom:
         return str((self.name, self.type_, self.coordinate))
 
 
-def display(atoms: list[Atomtuple], cell: list[float] | None = None, adps: list[float] | None = None) -> NoReturn:
+def display(atoms: list[Atomtuple], cell: list[float] | None = None, adps: list[float] | None = None,
+            cif: CifContainer | None = None) -> NoReturn:
     """
     This function is for testing purposes.
     """
     import time
     app = QtWidgets.QApplication(sys.argv)
-    # create our new Qt MainWindow
     window = QtWidgets.QMainWindow()
     render_widget = MoleculeWidget(None)
     t1 = time.perf_counter()
-    adp_checkbox = QtWidgets.QCheckBox(render_widget)
-    adp_checkbox.setText("Show ADP")
-    grow_checkbox = QtWidgets.QCheckBox(render_widget)
-    grow_checkbox.setText("Grow")
-    label_checkbox = QtWidgets.QCheckBox(render_widget)
-    label_checkbox.setText("Show Labels")
+
+    adp_checkbox = QtWidgets.QCheckBox("Show ADP")
+    grow_checkbox = QtWidgets.QCheckBox("Grow")
+    label_checkbox = QtWidgets.QCheckBox("Show Labels")
+
     adp_checkbox.setChecked(True)
+
     adp_checkbox.toggled.connect(lambda x: render_widget.show_adp(x))
     label_checkbox.toggled.connect(lambda x: render_widget.show_labels(x))
+
+    def toggle_grow(checked: bool) -> None:
+        if checked:
+            from sdm import SDM
+            t1 = time.perf_counter()
+            sdm = SDM(tuple(cif.atoms_fract), cif.symmops, cif.cell[:6], centric=cif.is_centrosymm)
+            needsymm = sdm.calc_sdm()
+            grown_atoms = sdm.packer(sdm, needsymm)
+            render_widget.open_molecule(atoms=grown_atoms, cell=cif.cell[:6], adps=cif.displacement_parameters())
+            print(f'Time to display grown molecule: {time.perf_counter() - t1:5.4} s')
+        else:
+            t1 = time.perf_counter()
+            render_widget.open_molecule(atoms=cif.atoms_orth, cell=cif.cell[:6], adps=cif.displacement_parameters())
+            print(f'Time to display molecule: {time.perf_counter() - t1:5.4} s')
+
+    grow_checkbox.toggled.connect(toggle_grow)
+
     render_widget.open_molecule(atoms=atoms, cell=cell, adps=adps)
     render_widget.labels = False
     print(f'Time to display molecule: {time.perf_counter() - t1:5.4} s')
+
     central_widget = QtWidgets.QWidget()
     window.setCentralWidget(central_widget)
-
     vl = QtWidgets.QVBoxLayout(central_widget)
     window.setMinimumSize(800, 600)
     vl.addWidget(render_widget)
-    vl.addWidget(adp_checkbox)
-    vl.addWidget(label_checkbox)
-    vl.addWidget(grow_checkbox)
+
+    hl = QtWidgets.QHBoxLayout()
+    hl.addWidget(adp_checkbox)
+    hl.addWidget(label_checkbox)
+    hl.addWidget(grow_checkbox)
+    hl.addStretch()
+
+    vl.addLayout(hl)
     window.show()
-    # render_widget.save_image(Path('myimage2.png'))
     # start the event loop
     sys.exit(app.exec())
 
 
 if __name__ == "__main__":
     # shx = Shelxfile()
-    #shx.read_file('tests/examples/1979688-finalcif.res')
+    # shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
-    cif = CifContainer('test-data/p21c.cif')
+    # cif = CifContainer('test-data/p21c.cif')
     # cif = CifContainer(r'../41467_2015.cif')
     # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
-    #cif = CifContainer('tests/examples/1979688.cif')
+    # cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
+    cif = CifContainer(Path('test-data/4060314.cif'))
     cif.load_this_block(len(cif.doc) - 1)
 
-    display(atoms=cif.atoms_orth, cell=cif.cell[:6], adps=cif.displacement_parameters())
+    display(atoms=cif.atoms_orth, cell=cif.cell[:6], adps=cif.displacement_parameters(), cif=cif)

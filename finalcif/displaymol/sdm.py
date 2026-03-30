@@ -246,7 +246,7 @@ class SDM:
 
         t2 = time.perf_counter()
         self.sdmtime = t2 - t1
-        print(f'Time for sdm {"(C++)" if HAS_CPP else "(Python fallback)"}:', round(self.sdmtime, 3), 's')
+        print(f'Time for sdm {"(C++)" if HAS_CPP else "(Python fallback)"}:', round(self.sdmtime, 4), 's')
 
         self.sdm_list.sort()
         self.calc_molindex(self.atoms)
@@ -419,7 +419,7 @@ if __name__ == "__main__":
     from finalcif.cif.cif_file_io import CifContainer
 
 
-    def make_molecule(cif: CifContainer) -> list[Atomtuple]:
+    def grow_structure(cif: CifContainer) -> list[Atomtuple]:
         atoms = tuple(cif.atoms_fract)
         sdm = SDM(atoms, cif.symmops, cif.cell[:6], centric=cif.is_centrosymm)
         needsymm = sdm.calc_sdm()
@@ -427,8 +427,8 @@ if __name__ == "__main__":
         return atoms
 
 
-    #cif = CifContainer(Path('test-data/4060314.cif'))
-    cif = CifContainer(Path(r'D:\_DEV\GitHub\FinalCif\test-data\p31c.cif'))
+    cif = CifContainer(Path('test-data/4060314.cif'))
+    #cif = CifContainer(Path(r'D:\_DEV\GitHub\FinalCif\test-data\p31c.cif'))
     #cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
-    atoms = make_molecule(cif)
+    atoms = grow_structure(cif)
     display(atoms, cell=cif.cell[:6], adps=cif.displacement_parameters())
