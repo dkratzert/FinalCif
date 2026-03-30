@@ -5,6 +5,7 @@ from collections import namedtuple
 from dataclasses import dataclass
 from math import sqrt, cos, sin, dist, radians, atan2, degrees
 from pathlib import Path
+from typing import NoReturn
 
 import numpy as np
 from qtpy import QtWidgets, QtCore, QtGui
@@ -91,7 +92,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.fontsize = font_size
         self.update()
 
-    def clear(self):
+    def clear(self) -> None:
         self.open_molecule(atoms=[])
 
     def show_labels(self, value: bool):
@@ -102,14 +103,13 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.show_adps = value
         self.update()
 
-    def open_molecule(self, atoms: list[Atomtuple], labels=False, cif: CifContainer | None = None):
-        self.labels = labels
-        if cif is not None and self.show_adps:
-            self._cell = tuple(cif.cell)[:6] if cif.cell else None
+    def open_molecule(self, atoms: list[Atomtuple], cell: list[float] | None = None, adps: list[float] | None = None) -> None:
+        if cell is not None and self.show_adps:
+            self._cell = cell
             self.calc_amatrix()
             self._adp_map = {}
             try:
-                for adp in cif.displacement_parameters():
+                for adp in adps:
                     self._adp_map[adp.label] = (adp.U11, adp.U22, adp.U33, adp.U23, adp.U13, adp.U12)
             except Exception:
                 pass  # will show up as circle
@@ -490,7 +490,7 @@ class Atom:
         return str((self.name, self.type_, self.coordinate))
 
 
-def display(atoms: list[Atomtuple], cif: CifContainer | None = None):
+def display(atoms: list[Atomtuple], cell: list[float] | None = None, adps: list[float] | None = None) -> NoReturn:
     """
     This function is for testing purposes.
     """
@@ -502,12 +502,14 @@ def display(atoms: list[Atomtuple], cif: CifContainer | None = None):
     t1 = time.perf_counter()
     adp_checkbox = QtWidgets.QCheckBox(render_widget)
     adp_checkbox.setText("Show ADP")
+    grow_checkbox = QtWidgets.QCheckBox(render_widget)
+    grow_checkbox.setText("Grow")
     label_checkbox = QtWidgets.QCheckBox(render_widget)
     label_checkbox.setText("Show Labels")
     adp_checkbox.setChecked(True)
     adp_checkbox.toggled.connect(lambda x: render_widget.show_adp(x))
     label_checkbox.toggled.connect(lambda x: render_widget.show_labels(x))
-    render_widget.open_molecule(atoms, labels=False, cif=cif)
+    render_widget.open_molecule(atoms=atoms, cell=cell, adps=adps)
     render_widget.labels = False
     print(f'Time to display molecule: {time.perf_counter() - t1:5.4} s')
     central_widget = QtWidgets.QWidget()
@@ -518,6 +520,7 @@ def display(atoms: list[Atomtuple], cif: CifContainer | None = None):
     vl.addWidget(render_widget)
     vl.addWidget(adp_checkbox)
     vl.addWidget(label_checkbox)
+    vl.addWidget(grow_checkbox)
     window.show()
     # render_widget.save_image(Path('myimage2.png'))
     # start the event loop
@@ -526,13 +529,13 @@ def display(atoms: list[Atomtuple], cif: CifContainer | None = None):
 
 if __name__ == "__main__":
     # shx = Shelxfile()
-    # shx.read_file('tests/examples/1979688-finalcif.res')
+    #shx.read_file('tests/examples/1979688-finalcif.res')
     # atoms = [x.cart_coords for x in shx.atoms]
     cif = CifContainer('test-data/p21c.cif')
     # cif = CifContainer(r'../41467_2015.cif')
     # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
-    # cif = CifContainer('tests/examples/1979688.cif')
+    #cif = CifContainer('tests/examples/1979688.cif')
     # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
     cif.load_this_block(len(cif.doc) - 1)
 
-    display(cif.atoms_orth, cif=cif)
+    display(atoms=cif.atoms_orth, cell=cif.cell[:6], adps=cif.displacement_parameters())

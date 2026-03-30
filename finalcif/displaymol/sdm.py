@@ -303,6 +303,7 @@ if __name__ == "__main__":
         return atoms
 
 
-    cif = CifContainer(Path('test-data/4060314.cif'))
+    #cif = CifContainer(Path('test-data/4060314.cif'))
+    cif = CifContainer(Path(r'D:\_DEV\GitHub\FinalCif\test-data\p31c.cif'))
     atoms = make_molecule(cif)
-    display(atoms)
+    display(atoms, cell=cif.cell[:6], adps=cif.displacement_parameters())

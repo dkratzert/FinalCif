@@ -1877,10 +1877,11 @@ class AppWindow(QMainWindow):
             self.grow_molecule()
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
+            self.ui.render_widget.show_labels(self.ui.labelsCheckBox.isChecked())
             with suppress(Exception):
-                self.ui.render_widget.open_molecule(list(self.cif.atoms_orth),
-                                                    labels=self.ui.labelsCheckBox.isChecked(),
-                                                    cif=self.cif)
+                self.ui.render_widget.open_molecule(self.cif.atoms_orth,
+                                                    cell=self.cif.cell[:6],
+                                                    adps=self.cif.displacement_parameters())
 
     def grow_molecule(self):
         atoms = tuple(self.cif.atoms_fract)
@@ -1889,8 +1890,8 @@ class AppWindow(QMainWindow):
             with suppress(Exception):
                 needsymm = sdm.calc_sdm()
                 atoms = sdm.packer(sdm, needsymm)
-                self.ui.render_widget.open_molecule(atoms, labels=self.ui.labelsCheckBox.isChecked(),
-                                                    cif=self.cif)
+                self.ui.render_widget.show_labels(self.ui.labelsCheckBox.isChecked())
+                self.ui.render_widget.open_molecule(atoms, cell=self.cif.cell[:6], adps=self.cif.displacement_parameters())
 
     def redraw_molecule(self) -> None:
         try:
