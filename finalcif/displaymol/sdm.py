@@ -428,7 +428,7 @@ if __name__ == "__main__":
 
 
     cif = CifContainer(Path('test-data/4060314.cif'))
-    #cif = CifContainer(Path(r'D:\_DEV\GitHub\FinalCif\test-data\p31c.cif'))
-    #cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
+    # cif = CifContainer(Path(r'D:\_DEV\GitHub\FinalCif\test-data\p31c.cif'))
+    # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
     atoms = grow_structure(cif)
     display(atoms, cell=cif.cell[:6], adps=cif.displacement_parameters())

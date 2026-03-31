@@ -15,7 +15,7 @@ from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
-from typing import cast
+from typing import cast, Any
 
 from finalcif.gui.vzs_viewer import VZSImageViewer
 
@@ -1881,7 +1881,7 @@ class AppWindow(QMainWindow):
             with suppress(Exception):
                 self.ui.render_widget.open_molecule(self.cif.atoms_orth,
                                                     cell=self.cif.cell[:6],
-                                                    adps=self.cif.displacement_parameters())
+                                                    adps=self.get_adps())
 
     def grow_molecule(self):
         atoms = tuple(self.cif.atoms_fract)
@@ -1891,7 +1891,15 @@ class AppWindow(QMainWindow):
                 needsymm = sdm.calc_sdm()
                 atoms = sdm.packer(sdm, needsymm)
                 self.ui.render_widget.show_labels(self.ui.labelsCheckBox.isChecked())
-                self.ui.render_widget.open_molecule(atoms, cell=self.cif.cell[:6], adps=self.cif.displacement_parameters())
+                adp_dict = self.get_adps()
+                self.ui.render_widget.open_molecule(atoms, cell=self.cif.cell[:6], adps=adp_dict)
+
+    def get_adps(self) -> dict[Any, Any]:
+        adp_dict = {}
+        for dp in self.cif.displacement_parameters():
+            adp_dict[dp.label] = (to_float(dp.U11), to_float(dp.U22), to_float(dp.U33),
+                                  to_float(dp.U23), to_float(dp.U13), to_float(dp.U12))
+        return adp_dict
 
     def redraw_molecule(self) -> None:
         try:

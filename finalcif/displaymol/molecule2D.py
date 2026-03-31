@@ -1,33 +1,34 @@
 from __future__ import annotations
 
-import enum
-import sys
-from collections import namedtuple
-from dataclasses import dataclass
-from math import sqrt, cos, sin, dist, radians, atan2, degrees
-from pathlib import Path
-from typing import NoReturn
-
-import numpy as np
-from PySide6.QtGui import QLinearGradient
-from qtpy import QtWidgets, QtCore, QtGui
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent, \
-    QRadialGradient
-
-from finalcif.cif.atoms import get_radius_from_element, element2color
-from finalcif.cif.cif_file_io import CifContainer
-from finalcif.tools.dsrmath import vol_unitcell
-from finalcif.tools.misc import to_float
-
 """
-A 2D molecule drawing widget. Feed it with a list (or generator) of atoms of this type:
+A versatile 2D/3D molecule drawing widget for PyQt/PySide. 
+Feed it with a list of atoms of this type:
 label:   Name of the atom like 'C3'
 type:    Atom type as string like 'C'
 x, y, z: Atom position in cartesian coordinates
 part:    Disorder part in SHELX notation like 1, 2, -1
+symm_matrix: Optional 3x3 symmetry matrix for ADP rotation
 """
-Atomtuple = namedtuple('Atomtuple', ('label', 'type', 'x', 'y', 'z', 'part', 'symm_matrix'), defaults=(None,))
+import sys
+from dataclasses import dataclass
+from math import sqrt, cos, sin, dist, radians, atan2, degrees
+from pathlib import Path
+from typing import NoReturn, Callable
+
+import numpy as np
+from qtpy import QtWidgets, QtCore, QtGui
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent, \
+    QRadialGradient, QLinearGradient
+
+from finalcif.cif.atoms import get_radius_from_element, element2color
+from finalcif.displaymol.sdm import Atomtuple
+from finalcif.tools.misc import to_float
+
+
+def calc_volume(a: float, b: float, c: float, alpha: float, beta: float, gamma: float) -> float:
+    ca, cb, cg = cos(radians(alpha)), cos(radians(beta)), cos(radians(gamma))
+    return a * b * c * sqrt(1 + 2 * ca * cb * cg - ca ** 2 - cb ** 2 - cg ** 2)
 
 
 @dataclass(slots=True)
@@ -39,7 +40,7 @@ class RenderItem:
 
 class MoleculeWidget(QtWidgets.QWidget):
 
-    def __init__(self, parent):
+    def __init__(self, parent=None):
         super().__init__(parent=parent)
         self._astar = None
         self._bstar = None
@@ -119,20 +120,20 @@ class MoleculeWidget(QtWidgets.QWidget):
             self.bond_drawer = self.draw_bond_rounded
         self.update()
 
-    def open_molecule(self, atoms: list[Atomtuple], cell: list[float] | None = None,
-                      adps: list[float] | None = None) -> None:
-        if cell is not None and self.show_adps:
-            self._cell = cell
+    def open_molecule(self, atoms: list[Atomtuple],
+                      cell: tuple[float, float, float, float, float, float] | None = None,
+                      adps: dict[str, tuple[float, float, float, float, float, float]] | None = None) -> None:
+        """
+        Populate the widget with molecule data.
+        :param atoms: List of Atomtuples.
+        :param cell: Optional unit cell (a, b, c, alpha, beta, gamma).
+        :param adps: Optional dict mapping atom label to (U11, U22, U33, U23, U13, U12).
+        """
+        self._cell = cell
+        self._adp_map = adps if adps is not None else {}
+
+        if self._cell is not None and self.show_adps:
             self.calc_amatrix()
-            self._adp_map = {}
-            try:
-                for adp in adps:
-                    self._adp_map[adp.label] = (adp.U11, adp.U22, adp.U33, adp.U23, adp.U13, adp.U12)
-            except Exception:
-                pass  # will show up as circle
-        else:
-            self._cell = None
-            self._adp_map = None
 
         self.atoms.clear()
         self.make_adps(atoms)
@@ -171,7 +172,7 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def calc_amatrix(self):
         a, b, c, alpha, beta, gamma = self._cell
-        V = vol_unitcell(a, b, c, alpha, beta, gamma)
+        V = calc_volume(a, b, c, alpha, beta, gamma)
         # reciprocal lattice vectors
         self._astar = (b * c * sin(radians(alpha))) / V
         self._bstar = (c * a * sin(radians(beta))) / V
@@ -190,7 +191,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             a = Atom(at.x, at.y, at.z, at.label, at.type, at.part)
             if self._adp_map and self._cell and at.label in self._adp_map:
                 try:
-                    uvals = tuple(to_float(x) for x in self._adp_map[at.label])
+                    uvals = self._adp_map[at.label]
                     symm_matrix = getattr(at, 'symm_matrix', None)
                     if symm_matrix is not None:
                         symm_matrix = np.array(symm_matrix, dtype=float)
@@ -258,8 +259,6 @@ class MoleculeWidget(QtWidgets.QWidget):
                         [U13, U23, U33]], dtype=float)
 
         # Apply the fractional rotation part of the symmetry operation.
-        # The symmetry matrices from sdm.py use row-vector convention (x' = x * m),
-        # so the contravariant tensor U transforms as U' = m.T @ U @ m
         if symm_matrix is not None:
             Uij = symm_matrix.T @ Uij @ symm_matrix
 
@@ -297,14 +296,11 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         # Single bulk vector rotation instead of individual loops
         if self.atoms:
-            # 1) Rotate all atom coordinates
             self._coords_array = np.dot(self._coords_array - self.molecule_center, R.T) + self.molecule_center
 
-            # 2) Rotate all matrices in one go via broadcasting
             if np.any(self._has_adp):
                 self._ucart_array = np.matmul(R, np.matmul(self._ucart_array, R.T))
 
-            # 3) Assign values back to objects
             for i, at in enumerate(self.atoms):
                 at.coordinate = self._coords_array[i]
                 at.z = at.coordinate[2]  # cache explicit z property for fast sorting
@@ -343,10 +339,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         """
         self.objects.sort(reverse=True, key=lambda item: item.atom1.z)
 
-    def distance(self, vector1: np.ndarray, vector2: np.ndarray):
-        diff = vector2 - vector1
-        return sqrt(np.dot(diff.T, diff))
-
     def get_center_and_radius(self):
         min_ = [999999, 999999, 999999]
         max_ = [-999999, -999999, -999999]
@@ -366,7 +358,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.molecule_radius = r or 10
 
     def draw_bond_rounded(self, at1: Atom, at2: Atom, offset: int):
-        # Scale bond width with zoom factor, clamped between max and min
         dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
 
         x1 = at1.screenx + offset
@@ -374,24 +365,20 @@ class MoleculeWidget(QtWidgets.QWidget):
         x2 = at2.screenx + offset
         y2 = at2.screeny + offset
 
-        # Vector of the bond
         dx = x2 - x1
         dy = y2 - y1
         length = sqrt(dx * dx + dy * dy)
         if length < 0.0001:
             return
 
-        # Normal vector perpendicular to the bond
         nx = -dy / length
         ny = dx / length
-
         w_half = dynamic_width / 2.0
 
-        # Set up linear gradient perpendicular to the bond to mimic 3D lighting
         grad = QLinearGradient(x1 - nx * w_half, y1 - ny * w_half,
                                x1 + nx * w_half, y1 + ny * w_half)
         grad.setColorAt(0.0, self.bond_grad_dark)
-        grad.setColorAt(0.4, self.bond_grad_light)  # Highlight slightly off-center
+        grad.setColorAt(0.4, self.bond_grad_light)
         grad.setColorAt(1.0, self.bond_grad_shadow)
 
         pen = QPen(QBrush(grad), dynamic_width, Qt.PenStyle.SolidLine)
@@ -399,14 +386,14 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._painter.setPen(pen)
         self._painter.drawLine(int(x1), int(y1), int(x2), int(y2))
 
-    def draw_bond(self, at1: Atom, at2: Atom, offset: int):
+    def draw_bond(self, at1: Atom, at2: Atom | None, offset: int) -> None:
         dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
         pen = QPen(self.bond_color, dynamic_width, Qt.PenStyle.SolidLine)
         self._painter.setPen(pen)
         self._painter.drawLine(int(at1.screenx + offset), int(at1.screeny + offset),
                                int(at2.screenx + offset), int(at2.screeny + offset))
 
-    def draw_atom(self, atom: Atom):
+    def draw_atom(self, atom: Atom) -> None:
         # Draw anisotropic displacement parameters (ellipsoids) if requested
         if self.show_adps and atom.u_cart is not None:
             # Analytical 2x2 eigen decomposition of the 2D projected covariance matrix
@@ -453,13 +440,10 @@ class MoleculeWidget(QtWidgets.QWidget):
                     self._painter.drawLine(0, int(-r2), 0, int(r2))
 
                     self._painter.restore()
-                    # Return early to prevent drawing the standard circular atom
                     return
 
-        # Standard circle fallback if ADPs are absent or calculation failed
         circle_size = self.atoms_size
         if self.show_adps and atom.u_iso is not None:
-            # Scale the radius exactly like the ellipsoids using U_iso
             r = sqrt(atom.u_iso) * self._factor * 150 * self.adp_scale
             circle_size = r * 2
 
@@ -467,7 +451,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         cy = atom.screeny + self.atoms_size / 2
         radius = circle_size / 2
 
-        # 3D Gradient for the standard circle
         gradient = QRadialGradient(cx - radius * 0.3, cy - radius * 0.3, circle_size)
         gradient.setColorAt(0.0, atom.color_light)
         gradient.setColorAt(0.4, atom.color)
@@ -475,16 +458,12 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         self._painter.setPen(QPen(self.fallback_pen_color, 1, Qt.PenStyle.SolidLine))
         self._painter.setBrush(QBrush(gradient))
-        # Draw the circle centered perfectly with the bonds
         self._painter.drawEllipse(int(cx - radius), int(cy - radius),
                                   int(circle_size), int(circle_size))
 
     def make_gradient(self, angle: float, atom: Atom, r1: float, r2: float) -> QRadialGradient:
-        # 3D Gradient for the ellipsoid with a fixed global light source
         max_r = max(r1, r2)
-        # Desired screen-space offset (top-left)
         sx, sy = -max_r * 0.3, -max_r * 0.3
-        # Un-rotate the gradient focal point against the painter's rotation
         rad = radians(angle)
         fx = sx * cos(rad) + sy * sin(rad)
         fy = -sx * sin(rad) + sy * cos(rad)
@@ -503,7 +482,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         """
         Returns a connectivity table from the atomic coordinates and the covalence
         radii of the atoms.
-        a bond is defined with less than the sum of the covalence radii plus the extra_param:
         """
         connections = []
         h = ('H', 'D')
@@ -511,16 +489,12 @@ class MoleculeWidget(QtWidgets.QWidget):
             for num2, at2 in enumerate(self.atoms, 0):
                 if (at1.part != 0 and at2.part != 0) and at1.part != at2.part:
                     continue
-                # at2 can be generated by symmetry from at1, so this is not good:
-                # if at1.name == at2.name:  # name1 = name2
-                #    continue
                 d = dist(at1.coordinate, at2.coordinate)
-                if d > 4.0:  # makes bonding faster (longer bonds do not exist)
+                if d > 4.0:
                     continue
                 if (at1.radius + at2.radius) * extra_param > d:
                     if at1.type_ in h and at2.type_ in h:
                         continue
-                    # The extra time for this is not too much:
                     if (num2, num1) in connections:
                         continue
                     connections.append((num1, num2))
@@ -529,8 +503,7 @@ class MoleculeWidget(QtWidgets.QWidget):
 
 class Atom:
     __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_', 'u_cart', 'color',
-                 'color_light',
-                 'color_dark', 'u_iso', 'z']
+                 'color_light', 'color_dark', 'u_iso', 'z']
 
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int):
         self.coordinate = np.array([x, y, z], dtype=np.float32)
@@ -551,19 +524,21 @@ class Atom:
         return str((self.name, self.type_, self.coordinate))
 
 
-def display(atoms: list[Atomtuple], cell: list[float] | None = None, adps: list[float] | None = None,
-            cif: CifContainer | None = None) -> NoReturn:
+def display(atoms: list[Atomtuple],
+            cell: tuple[float, float, float, float, float, float] | None = None,
+            adps: dict[str, tuple[float, float, float, float, float, float]] | None = None,
+            grow_callback: Callable | None = None) -> NoReturn:
     """
-    This function is for testing purposes.
+    Generic display function for testing the standalone viewer widget.
     """
     import time
     app = QtWidgets.QApplication(sys.argv)
     window = QtWidgets.QMainWindow()
     render_widget = MoleculeWidget(None)
+
     t1 = time.perf_counter()
 
     adp_checkbox = QtWidgets.QCheckBox("Show ADP")
-    grow_checkbox = QtWidgets.QCheckBox("Grow")
     label_checkbox = QtWidgets.QCheckBox("Show Labels")
     bond_type_checkbox = QtWidgets.QCheckBox("Round Bonds")
 
@@ -572,22 +547,6 @@ def display(atoms: list[Atomtuple], cell: list[float] | None = None, adps: list[
     adp_checkbox.toggled.connect(lambda x: render_widget.show_adp(x))
     label_checkbox.toggled.connect(lambda x: render_widget.show_labels(x))
     bond_type_checkbox.toggled.connect(lambda x: render_widget.show_round_bonds(x))
-
-    def toggle_grow(checked: bool) -> None:
-        if checked:
-            from sdm import SDM
-            t1 = time.perf_counter()
-            sdm = SDM(tuple(cif.atoms_fract), cif.symmops, cif.cell[:6], centric=cif.is_centrosymm)
-            needsymm = sdm.calc_sdm()
-            grown_atoms = sdm.packer(sdm, needsymm)
-            render_widget.open_molecule(atoms=grown_atoms, cell=cif.cell[:6], adps=cif.displacement_parameters())
-            print(f'Time to display grown molecule: {time.perf_counter() - t1:5.4} s')
-        else:
-            t1 = time.perf_counter()
-            render_widget.open_molecule(atoms=cif.atoms_orth, cell=cif.cell[:6], adps=cif.displacement_parameters())
-            print(f'Time to display molecule: {time.perf_counter() - t1:5.4} s')
-
-    grow_checkbox.toggled.connect(toggle_grow)
 
     render_widget.open_molecule(atoms=atoms, cell=cell, adps=adps)
     render_widget.labels = False
@@ -602,26 +561,57 @@ def display(atoms: list[Atomtuple], cell: list[float] | None = None, adps: list[
     hl = QtWidgets.QHBoxLayout()
     hl.addWidget(adp_checkbox)
     hl.addWidget(label_checkbox)
-    hl.addWidget(grow_checkbox)
     hl.addWidget(bond_type_checkbox)
-    hl.addStretch()
 
+    if grow_callback is not None:
+        grow_checkbox = QtWidgets.QCheckBox("Grow")
+
+        def handle_grow(checked: bool):
+            if checked:
+                grown_atoms = grow_callback()
+                render_widget.open_molecule(atoms=grown_atoms, cell=cell, adps=adps)
+            else:
+                render_widget.open_molecule(atoms=atoms, cell=cell, adps=adps)
+
+        grow_checkbox.toggled.connect(handle_grow)
+        hl.addWidget(grow_checkbox)
+
+    hl.addStretch()
     vl.addLayout(hl)
+
     window.show()
-    # start the event loop
     sys.exit(app.exec())
 
 
 if __name__ == "__main__":
-    # shx = Shelxfile()
-    # shx.read_file('tests/examples/1979688-finalcif.res')
-    # atoms = [x.cart_coords for x in shx.atoms]
-    # cif = CifContainer('test-data/p21c.cif')
-    # cif = CifContainer(r'../41467_2015.cif')
-    # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
-    # cif = CifContainer('tests/examples/1979688.cif')
-    # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
-    cif = CifContainer(Path('test-data/4060314.cif'))
-    cif.load_this_block(len(cif.doc) - 1)
 
-    display(atoms=cif.atoms_orth, cell=cif.cell[:6], adps=cif.displacement_parameters(), cif=cif)
+    try:
+        from finalcif.cif.cif_file_io import CifContainer
+        from sdm import SDM
+
+        # Load sample data
+        cif = CifContainer(Path('test-data/4060314.cif'))
+        cif.load_this_block(len(cif.doc) - 1)
+
+        # Build generic ADP dictionary
+        adp_dict = {}
+        for dp in cif.displacement_parameters():
+            adp_dict[dp.label] = (to_float(dp.U11), to_float(dp.U22), to_float(dp.U33),
+                                  to_float(dp.U23), to_float(dp.U13), to_float(dp.U12))
+
+
+        def build_grown_structure() -> list[Atomtuple]:
+            # optional callback for symmetry expansion
+            atoms_fract = tuple(cif.atoms_fract)
+            sdm = SDM(atoms_fract, cif.symmops, cif.cell[:6], centric=cif.is_centrosymm)
+            needsymm = sdm.calc_sdm()
+            return sdm.packer(sdm, needsymm)
+
+
+        display(atoms=list(cif.atoms_orth),
+                cell=cif.cell[:6],
+                adps=adp_dict,
+                grow_callback=build_grown_structure)
+
+    except ImportError:
+        print("FinalCif not found. Provide your own Atomtuples to run.")
