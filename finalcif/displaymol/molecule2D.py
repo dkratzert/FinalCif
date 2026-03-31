@@ -34,7 +34,8 @@ def calc_volume(a: float, b: float, c: float, alpha: float, beta: float, gamma: 
 @dataclass(slots=True)
 class RenderItem:
     is_bond: bool
-    atom1: Atom
+    z_order: float = 0.0
+    atom1: Atom = None
     atom2: Atom | None = None
 
 
@@ -65,6 +66,10 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._painter: None | QPainter = None
         self.x_angle = 0
         self.y_angle = 0
+
+        self.scale = 150.0
+        self.cx_global = 0.0
+        self.cy_global = 0.0
 
         # Color caches
         self.bond_color = QColor('#555555')
@@ -140,7 +145,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.connections = self.get_conntable_from_atoms()
         self.get_center_and_radius()
 
-        # Cache objects array once to save allocation time during rotation
         self.objects.clear()
         for n1, n2 in self.connections:
             at1 = self.atoms[n1]
@@ -151,6 +155,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             elif at2.type_ in ('H', 'D') and at1.u_iso is not None:
                 if at2.u_iso is None:
                     at2.u_iso = at1.u_iso * 0.8
+
             self.objects.append(RenderItem(is_bond=True, atom1=at1, atom2=at2))
 
         for atom in self.atoms:
@@ -309,24 +314,58 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         self.update()
 
+    def get_spherical_radius(self, atom: Atom) -> float:
+        """Returns a physical radius for basic UI measurements like labels"""
+        if self.show_adps and atom.u_iso is not None:
+            return sqrt(atom.u_iso) #* self.adp_scale
+        return 35.0 / 150.0
+
+    def get_directional_radius(self, atom: Atom, v: np.ndarray) -> float:
+        """
+        Calculates exact distance from the center of the atom to the surface of its
+        3D ellipsoid along the specific direction vector v.
+        """
+        d = np.linalg.norm(v)
+        if d < 1e-8:
+            return 0.0
+
+        if self.show_adps and atom.u_cart is not None:
+            u = v / d
+            try:
+                # Intersect ray with 3D Covariance Ellipsoid
+                # R = C / sqrt( u^T * U^-1 * u )
+                U_inv = np.linalg.inv(atom.u_cart)
+                val = np.dot(u, np.dot(U_inv, u))
+                if val > 0:
+                    return self.adp_scale / sqrt(val)
+            except np.linalg.LinAlgError:
+                pass
+
+        # Fallback to sphere
+        if self.show_adps and atom.u_iso is not None:
+            return sqrt(atom.u_iso) * self.adp_scale
+
+        return 35.0 / 150.0
+
     def draw(self) -> None:
-        scale = self._factor * 150
+        self.scale = self._factor * 150
         self.screen_center = [self.width() / 2, self.height() / 2]
-        bond_offset = int(self.atoms_size / 2)
+        self.cx_global = self.screen_center[0] - self.molecule_center[0] * self.scale
+        self.cy_global = self.screen_center[1] - self.molecule_center[1] * self.scale
+
         hydrogens = ('H', 'D')
 
-        cx = self.screen_center[0] - self.molecule_center[0] * scale
-        cy = self.screen_center[1] - self.molecule_center[1] * scale
-
+        # Precise 2D centers
         for atom in self.atoms:
             c = atom.coordinate
-            atom.screenx = int(c[0] * scale + cx)
-            atom.screeny = int(c[1] * scale + cy)
+            atom.screenx = c[0] * self.scale + self.cx_global
+            atom.screeny = c[1] * self.scale + self.cy_global
 
         self.calculate_z_order()
+
         for item in self.objects:
             if item.is_bond:
-                self.bond_drawer(item.atom1, item.atom2, offset=bond_offset)
+                self.bond_drawer(item.atom1, item.atom2)
             else:
                 self.draw_atom(item.atom1)
                 if self.labels and item.atom1.type_ not in hydrogens:
@@ -335,9 +374,15 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def calculate_z_order(self):
         """
-        Orders the cached atoms and bonds by the explicit z coordinates.
+        Orders the cached atoms and bonds by their explicit depth.
         """
-        self.objects.sort(reverse=True, key=lambda item: item.atom1.z)
+        for item in self.objects:
+            if item.is_bond:
+                item.z_order = (item.atom1.z + item.atom2.z) / 2.0
+            else:
+                item.z_order = item.atom1.z
+
+        self.objects.sort(reverse=True, key=lambda item: item.z_order)
 
     def get_center_and_radius(self):
         min_ = [999999, 999999, 999999]
@@ -357,13 +402,27 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.molecule_center = np.array(c, dtype=np.float32)
         self.molecule_radius = r or 10
 
-    def draw_bond_rounded(self, at1: Atom, at2: Atom, offset: int):
-        dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
+    def draw_bond_rounded(self, at1: Atom, at2: Atom):
+        c1 = at1.coordinate
+        c2 = at2.coordinate
+        v = c2 - c1
+        d = np.linalg.norm(v)
 
-        x1 = at1.screenx + offset
-        y1 = at1.screeny + offset
-        x2 = at2.screenx + offset
-        y2 = at2.screeny + offset
+        # Calculate precise bounding limits along the directional vector
+        r1 = self.get_directional_radius(at1, v)
+        r2 = self.get_directional_radius(at2, -v)
+
+        if d <= r1 + r2:
+            return
+
+        v_norm = v / d
+        p1 = c1 + v_norm * r1
+        p2 = c2 - v_norm * r2
+
+        x1 = p1[0] * self.scale + self.cx_global
+        y1 = p1[1] * self.scale + self.cy_global
+        x2 = p2[0] * self.scale + self.cx_global
+        y2 = p2[1] * self.scale + self.cy_global
 
         dx = x2 - x1
         dy = y2 - y1
@@ -371,33 +430,63 @@ class MoleculeWidget(QtWidgets.QWidget):
         if length < 0.0001:
             return
 
+        # 2D Normal vector
         nx = -dy / length
         ny = dx / length
+
+        # Align normal to point towards the global light source (Top-Left is approx -1, -1)
+        Lx, Ly = -1.0, -1.0
+        if (nx * Lx + ny * Ly) < 0:
+            nx = -nx
+            ny = -ny
+
+        dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
         w_half = dynamic_width / 2.0
 
-        grad = QLinearGradient(x1 - nx * w_half, y1 - ny * w_half,
-                               x1 + nx * w_half, y1 + ny * w_half)
-        grad.setColorAt(0.0, self.bond_grad_dark)
-        grad.setColorAt(0.4, self.bond_grad_light)
-        grad.setColorAt(1.0, self.bond_grad_shadow)
+        # Gradient from lit side (+n) to shadow side (-n)
+        grad = QLinearGradient(x1 + nx * w_half, y1 + ny * w_half,
+                               x1 - nx * w_half, y1 - ny * w_half)
+        grad.setColorAt(0.0, self.bond_grad_dark)      # Slight rim light/ambient
+        grad.setColorAt(0.2, self.bond_grad_light)     # Main specular highlight
+        grad.setColorAt(1.0, self.bond_grad_shadow)    # Core shadow
 
         pen = QPen(QBrush(grad), dynamic_width, Qt.PenStyle.SolidLine)
+        pen.setCapStyle(Qt.PenCapStyle.RoundCap)  # Creates perfect elliptical intersection blend
+        self._painter.setPen(pen)
+        self._painter.drawLine(int(x1), int(y1), int(x2), int(y2))
+
+    def draw_bond(self, at1: Atom, at2: Atom) -> None:
+        c1 = at1.coordinate
+        c2 = at2.coordinate
+        v = c2 - c1
+        d = np.linalg.norm(v)
+
+        r1 = self.get_directional_radius(at1, v)
+        r2 = self.get_directional_radius(at2, -v)
+
+        if d <= r1 + r2:
+            return
+
+        v_norm = v / d
+        p1 = c1 + v_norm * r1
+        p2 = c2 - v_norm * r2
+
+        x1 = p1[0] * self.scale + self.cx_global
+        y1 = p1[1] * self.scale + self.cy_global
+        x2 = p2[0] * self.scale + self.cx_global
+        y2 = p2[1] * self.scale + self.cy_global
+
+        dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
+        pen = QPen(self.bond_color, dynamic_width, Qt.PenStyle.SolidLine)
         pen.setCapStyle(Qt.PenCapStyle.RoundCap)
         self._painter.setPen(pen)
         self._painter.drawLine(int(x1), int(y1), int(x2), int(y2))
 
-    def draw_bond(self, at1: Atom, at2: Atom | None, offset: int) -> None:
-        dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
-        pen = QPen(self.bond_color, dynamic_width, Qt.PenStyle.SolidLine)
-        self._painter.setPen(pen)
-        self._painter.drawLine(int(at1.screenx + offset), int(at1.screeny + offset),
-                               int(at2.screenx + offset), int(at2.screeny + offset))
-
     def draw_atom(self, atom: Atom) -> None:
-        # Draw anisotropic displacement parameters (ellipsoids) if requested
+        cx = atom.screenx
+        cy = atom.screeny
+
         if self.show_adps and atom.u_cart is not None:
-            # Analytical 2x2 eigen decomposition of the 2D projected covariance matrix
-            # Bypasses expensive np.linalg.eigh overhead
             a = atom.u_cart[0, 0]
             b = atom.u_cart[0, 1]
             c = atom.u_cart[1, 1]
@@ -412,17 +501,14 @@ class MoleculeWidget(QtWidgets.QWidget):
                 eig2 = T * 0.5 + sq
 
                 if eig1 > 0 and eig2 > 0:
-                    scale = self._factor * 150 * self.adp_scale
-                    r1 = sqrt(eig1) * scale
-                    r2 = sqrt(eig2) * scale
+                    r1 = sqrt(eig1) * self.scale * self.adp_scale
+                    r2 = sqrt(eig2) * self.scale * self.adp_scale
 
                     if abs(b) > 1e-8:
                         angle = degrees(atan2(eig1 - a, b))
                     else:
                         angle = 0.0 if a < c else 90.0
 
-                    cx = atom.screenx + self.atoms_size / 2
-                    cy = atom.screeny + self.atoms_size / 2
                     self._painter.save()
                     self._painter.translate(cx, cy)
                     self._painter.rotate(angle)
@@ -433,7 +519,6 @@ class MoleculeWidget(QtWidgets.QWidget):
                     self._painter.setPen(pen)
                     self._painter.drawEllipse(int(-r1), int(-r2), int(2 * r1), int(2 * r2))
 
-                    # Draw an ORTEP-like center cross (slightly transparent to blend with 3D)
                     cross_pen = QPen(QColor(0, 0, 0, 120), 1, Qt.PenStyle.SolidLine)
                     self._painter.setPen(cross_pen)
                     self._painter.drawLine(int(-r1), 0, int(r1), 0)
@@ -444,11 +529,9 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         circle_size = self.atoms_size
         if self.show_adps and atom.u_iso is not None:
-            r = sqrt(atom.u_iso) * self._factor * 150 * self.adp_scale
+            r = sqrt(atom.u_iso) * self.scale * self.adp_scale
             circle_size = r * 2
 
-        cx = atom.screenx + self.atoms_size / 2
-        cy = atom.screeny + self.atoms_size / 2
         radius = circle_size / 2
 
         gradient = QRadialGradient(cx - radius * 0.3, cy - radius * 0.3, circle_size)
@@ -476,7 +559,8 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def draw_label(self, atom: Atom):
         self._painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.PenStyle.SolidLine))
-        self._painter.drawText(atom.screenx + 18, atom.screeny - 4, atom.name)
+        r_pix = self.get_spherical_radius(atom) * self.scale
+        self._painter.drawText(int(atom.screenx + r_pix + 2), int(atom.screeny - r_pix - 2), atom.name)
 
     def get_conntable_from_atoms(self, extra_param: float = 1.2) -> tuple:
         """
@@ -590,7 +674,12 @@ if __name__ == "__main__":
         from sdm import SDM
 
         # Load sample data
-        cif = CifContainer(Path('test-data/4060314.cif'))
+        cif = CifContainer('test-data/p21c.cif')
+        # cif = CifContainer(r'../41467_2015.cif') # huge
+        # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
+        # cif = CifContainer('tests/examples/1979688.cif')
+        #cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
+        #cif = CifContainer(Path('test-data/4060314.cif'))
         cif.load_this_block(len(cif.doc) - 1)
 
         # Build generic ADP dictionary
