@@ -1,14 +1,29 @@
 from __future__ import annotations
 
 """
-A versatile 2D/3D molecule drawing widget for PyQt/PySide. 
-Feed it with a list of atoms of this type:
-label:   Name of the atom like 'C3'
-type:    Atom type as string like 'C'
-x, y, z: Atom position in cartesian coordinates
-part:    Disorder part in SHELX notation like 1, 2, -1
-symm_matrix: Optional 3x3 symmetry matrix for ADP rotation
+A versatile 2D/3D molecule drawing widget for PyQt/PySide.
+Renders molecules as ORTEP-style thermal ellipsoid plots (when anisotropic
+displacement parameters are provided) or as simple ball-and-stick diagrams.
+The widget supports interactive mouse rotation, zooming, and panning.
+
+Feed it with a list of :class:`~finalcif.displaymol.sdm.Atomtuple` objects
+whose fields are:
+
+- **label**:       Atom name, e.g. ``'C3'``.
+- **type**:        Element symbol as string, e.g. ``'C'``.
+- **x, y, z**:    Atom position in Cartesian coordinates (Ångströms).
+- **part**:        Disorder part in SHELX notation (0 = all parts, ..., -1, -2, 1, 2, ...).
+- **symm_matrix**: Optional 3×3 fractional rotation matrix used to rotate
+  the ADP tensor for symmetry-generated atoms.
+
+Mouse controls (inside :class:`MoleculeWidget`):
+
+- **Left drag**:   Rotate the molecule.
+- **Right drag**:  Zoom in / out.
+- **Middle drag**: Pan the view.
+- **Scroll wheel**: Increase / decrease label font size.
 """
+
 import sys
 from dataclasses import dataclass
 from math import sqrt, cos, sin, dist, radians, atan2, degrees
@@ -33,6 +48,14 @@ def calc_volume(a: float, b: float, c: float, alpha: float, beta: float, gamma: 
 
 @dataclass(slots=True)
 class RenderItem:
+    """A single renderable element (atom or bond) in the z-ordered draw list.
+
+    :param is_bond: ``True`` for a bond, ``False`` for an atom.
+    :param z_order: Depth value used to sort back-to-front for the painter's algorithm.
+    :param atom1: The first (or only) atom involved.
+    :param atom2: The second atom of a bond, or ``None`` for an atom item.
+    """
+
     is_bond: bool
     z_order: float = 0.0
     atom1: Atom = None
@@ -40,6 +63,20 @@ class RenderItem:
 
 
 class MoleculeWidget(QtWidgets.QWidget):
+    """Interactive Qt widget that renders a molecule as a 2D projection.
+
+    Supports ORTEP-style anisotropic displacement parameter (ADP) ellipsoids
+    at 50 % probability level, isotropic spheres, and simple ball-and-stick
+    representations.  The molecule can be rotated (left-drag), zoomed
+    (right-drag), and panned (middle-drag) with the mouse.
+
+    Typical usage::
+
+        widget = MoleculeWidget(parent)
+        widget.open_molecule(atoms=atom_list, cell=cell_params, adps=adp_dict)
+
+    :param parent: Optional parent widget.
+    """
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -55,7 +92,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.bond_width = 1
         self.labels = False
         self.show_adps = True
-        self.bond_drawer = self.draw_bond
+        self.bond_drawer = self._draw_bond
 
         # scaling factor for ADP ellipsoids in screen coordinates
         # 1.5382 is the standard ORTEP scaling factor for 50% probability:
@@ -102,37 +139,68 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._has_adp = np.empty(0, dtype=bool)
 
     def setLabelFont(self, font_size: int):
+        """Set the pixel size used for atom labels and schedule a repaint.
+
+        :param font_size: Desired font size in pixels (clamped to a minimum of 1).
+        """
         if font_size < 0:
             font_size = 1
         self.fontsize = font_size
         self.update()
 
     def clear(self) -> None:
+        """Remove all atoms and bonds from the widget."""
         self.open_molecule(atoms=[])
 
     def show_labels(self, value: bool):
+        """Toggle the display of non-hydrogen atom labels.
+
+        :param value: ``True`` to show labels, ``False`` to hide them.
+        """
         self.labels = value
         self.update()
 
     def show_adp(self, value: bool):
+        """Toggle the display of ADP ellipsoids / isotropic spheres.
+
+        When disabled, all atoms are drawn as fixed-size circles.
+
+        :param value: ``True`` to show displacement parameters, ``False`` to hide them.
+        """
         self.show_adps = value
         self.update()
 
-    def show_round_bonds(self, bond_type: bool = False):
+    def show_round_bonds(self, bond_type: bool = True):
+        """Switch between flat and 3D-shaded (rounded) bond rendering.
+
+        :param bond_type: ``True`` for rounded/cylinder-shaded bonds,
+                          ``False`` for flat single-colour bonds.
+        """
         if not bond_type:
-            self.bond_drawer = self.draw_bond
+            self.bond_drawer = self._draw_bond
         else:
-            self.bond_drawer = self.draw_bond_rounded
+            self.bond_drawer = self._draw_bond_rounded
         self.update()
 
     def open_molecule(self, atoms: list[Atomtuple],
                       cell: tuple[float, float, float, float, float, float] | None = None,
                       adps: dict[str, tuple[float, float, float, float, float, float]] | None = None) -> None:
-        """
-        Populate the widget with molecule data.
-        :param atoms: List of Atomtuples.
-        :param cell: Optional unit cell (a, b, c, alpha, beta, gamma).
-        :param adps: Optional dict mapping atom label to (U11, U22, U33, U23, U13, U12).
+        """Populate the widget with molecule data and trigger a repaint.
+
+        Builds the internal atom list, connectivity table, and render objects.
+        When *cell* and *adps* are both provided, anisotropic displacement
+        parameter ellipsoids are computed; otherwise atoms fall back to
+        isotropic spheres or fixed-size circles.
+
+        Hydrogen atoms that lack a ``u_iso`` value automatically inherit
+        80 % of the ``u_iso`` of their bonded non-hydrogen neighbor.
+
+        :param atoms: Atom positions as a list of
+            :class:`~finalcif.displaymol.sdm.Atomtuple` instances.
+        :param cell: Optional unit-cell parameters
+            ``(a, b, c, alpha, beta, gamma)`` in Ångströms / degrees.
+        :param adps: Optional mapping of atom label to anisotropic
+            displacement parameters ``(U11, U22, U33, U23, U13, U12)``.
         """
         self._cell = cell
         self._adp_map = adps if adps is not None else {}
@@ -176,6 +244,13 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.update()
 
     def calc_amatrix(self):
+        """Compute the orthogonalisation matrix and reciprocal-lattice lengths.
+
+        Derives ``_amatrix`` (fractional → Cartesian transformation) and the
+        reciprocal-axis lengths ``_astar``, ``_bstar``, ``_cstar`` from the
+        current unit-cell parameters stored in ``_cell``.  These quantities
+        are required by :meth:`_uij_to_cart`.
+        """
         a, b, c, alpha, beta, gamma = self._cell
         V = calc_volume(a, b, c, alpha, beta, gamma)
         # reciprocal lattice vectors
@@ -191,6 +266,15 @@ class MoleculeWidget(QtWidgets.QWidget):
         ], dtype=float)
 
     def make_adps(self, atoms: list[Atomtuple]) -> None:
+        """Convert Atomtuples to internal :class:`Atom` objects with Cartesian ADPs.
+
+        Replaces the contents of :attr:`atoms`.  For each atom whose label
+        appears in :attr:`_adp_map`, the fractional *Uij* values are
+        transformed to a Cartesian tensor via :meth:`_uij_to_cart`, and the
+        equivalent isotropic displacement ``u_iso`` is set to the trace / 3.
+
+        :param atoms: Source atoms to convert.
+        """
         self.atoms.clear()
         for at in atoms:
             a = Atom(at.x, at.y, at.z, at.label, at.type, at.part)
@@ -210,7 +294,9 @@ class MoleculeWidget(QtWidgets.QWidget):
     def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)
 
-    def paintEvent(self, event):
+    def paintEvent(self, event: QtGui.QPaintEvent) -> None:
+        """Repaint the widget by re-rendering the molecule scene.
+        """
         if self.atoms:
             self._painter = QPainter(self)
             self._painter.setRenderHint(QPainter.RenderHint.Antialiasing)
@@ -224,15 +310,22 @@ class MoleculeWidget(QtWidgets.QWidget):
                 self._painter.end()
 
     def mousePressEvent(self, event: QMouseEvent) -> None:
+        """Record the initial cursor position for subsequent drag operations."""
         self._lastPos = event.position()
 
     def wheelEvent(self, event: QWheelEvent):
+        """Increase or decrease the label font size on scroll."""
         if event.angleDelta().y() > 0:
             self.setLabelFont(self.fontsize + 2)
         elif event.angleDelta().y() < 0:
             self.setLabelFont(self.fontsize - 2)
 
-    def save_image(self, filename: Path, image_scale=1.5):
+    def save_image(self, filename: Path, image_scale: float = 1.5) -> None:
+        """Render the current molecule view to an image file.
+
+        :param filename: Destination path (format inferred from suffix).
+        :param image_scale: Multiplicative resolution scale factor.
+        """
         image = QImage(self.size() * image_scale, QImage.Format.Format_RGB32)
         image.fill(Qt.GlobalColor.white)
         painter = QPainter(image)
@@ -241,14 +334,16 @@ class MoleculeWidget(QtWidgets.QWidget):
         painter.end()
         image.save(str(filename.resolve()))
 
-    def rotate_x(self):
+    def rotate_x(self) -> np.typing.NDArray[np.float32]:
+        """Return a 3×3 rotation matrix around the X axis by :attr:`x_angle` radians."""
         return np.array([
             [1, 0, 0],
             [0, cos(self.x_angle), -sin(self.x_angle)],
             [0, sin(self.x_angle), cos(self.x_angle)],
         ], dtype=np.float32)
 
-    def rotate_y(self):
+    def rotate_y(self) -> np.typing.NDArray[np.float32]:
+        """Return a 3×3 rotation matrix around the Y axis by :attr:`y_angle` radians."""
         return np.array([
             [cos(self.y_angle), 0, sin(self.y_angle)],
             [0, 1, 0],
@@ -257,7 +352,18 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def _uij_to_cart(self, uvals: tuple[float, float, float, float, float, float],
                      symm_matrix: np.ndarray | None = None) -> np.ndarray:
-        """Convert fractional Uij displacement parameters to Cartesian coordinates."""
+        """Convert fractional *Uij* displacement parameters to a Cartesian tensor.
+
+        Applies an optional fractional symmetry-rotation matrix before
+        transforming the 3×3 *Uij* tensor through the orthogonalisation
+        matrix and reciprocal-lattice scaling.
+
+        :param uvals: Anisotropic displacement parameters
+            ``(U11, U22, U33, U23, U13, U12)`` in fractional coordinates.
+        :param symm_matrix: Optional 3×3 fractional rotation matrix of the
+            symmetry operation that generated this atom.
+        :return: 3×3 numpy array of the Cartesian displacement tensor.
+        """
         U11, U22, U33, U23, U13, U12 = uvals
         Uij = np.array([[U11, U12, U13],
                         [U12, U22, U23],
@@ -272,6 +378,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         return Ucart
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        """Dispatch drag events to rotate, zoom, or pan depending on the mouse button."""
         if event.buttons() == QtCore.Qt.MouseButton.LeftButton:
             self.rotate_molecule(event)
         elif event.buttons() == QtCore.Qt.MouseButton.RightButton:
@@ -281,11 +388,19 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._lastPos = event.position()
 
     def pan_molecule(self, event):
+        """Translate the molecule center based on the middle-button drag delta.
+
+        :param event: The current mouse-move event.
+        """
         self.molecule_center[0] += (self._lastPos.x() - event.position().x()) / 50
         self.molecule_center[1] += (self._lastPos.y() - event.position().y()) / 50
         self.update()
 
     def zoom_molecule(self, event: QMouseEvent):
+        """Adjust the zoom / scale factor based on the right-button drag delta.
+
+        :param event: The current mouse-move event.
+        """
         self._factor += (self._lastPos.y() - event.position().y()) / 350
         self._factor = max(0.005, self._factor)
         self.zoom -= (self._lastPos.y() - event.position().y()) / 350
@@ -293,6 +408,13 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.update()
 
     def rotate_molecule(self, event: QMouseEvent):
+        """Rotate the molecule around X and Y axes using the left-button drag delta.
+
+        Applies a combined rotation matrix to all atom coordinates and ADP
+        tensors using vectorised numpy operations.
+
+        :param event: The current mouse-move event.
+        """
         self.y_angle = -(event.position().x() - self._lastPos.x()) / 80
         self.x_angle = (event.position().y() - self._lastPos.y()) / 80
         R_y = self.rotate_y()
@@ -315,15 +437,30 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.update()
 
     def get_spherical_radius(self, atom: Atom) -> float:
-        """Returns a physical radius for basic UI measurements like labels"""
+        """Return an approximate isotropic radius for UI purposes (e.g. label offset).
+
+        When ADP display is active and ``u_iso`` is available, the radius is
+        ``sqrt(u_iso)``; otherwise a fixed default is returned.
+
+        :param atom: The atom to query.
+        :return: Radius in model-space units.
+        """
         if self.show_adps and atom.u_iso is not None:
-            return sqrt(atom.u_iso) #* self.adp_scale
+            return sqrt(atom.u_iso)  # * self.adp_scale
         return 35.0 / 150.0
 
     def get_directional_radius(self, atom: Atom, v: np.ndarray) -> float:
-        """
-        Calculates exact distance from the center of the atom to the surface of its
-        3D ellipsoid along the specific direction vector v.
+        """Return the distance from the atom centre to its ellipsoid surface along *v*.
+
+        When the atom has an anisotropic displacement tensor, the ray–ellipsoid
+        intersection is computed exactly using the inverse of *U_cart*.
+        Falls back to an isotropic sphere (``sqrt(u_iso) * adp_scale``) or
+        a fixed default radius when no ADP data is available.
+
+        :param atom: The atom whose radius is queried.
+        :param v: Direction vector (need not be normalised) in Cartesian space.
+        :return: Radius along *v* in model-space units, or ``0.0`` if *v* is
+            near-zero.
         """
         d = np.linalg.norm(v)
         if d < 1e-8:
@@ -348,6 +485,12 @@ class MoleculeWidget(QtWidgets.QWidget):
         return 35.0 / 150.0
 
     def draw(self) -> None:
+        """Execute the main rendering pass.
+
+        Projects every atom to screen coordinates, sorts render objects
+        back-to-front by depth, then paints bonds and atoms (with optional
+        labels) using the active :attr:`_painter`.
+        """
         self.scale = self._factor * 150
         self.screen_center = [self.width() / 2, self.height() / 2]
         self.cx_global = self.screen_center[0] - self.molecule_center[0] * self.scale
@@ -373,8 +516,10 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._painter.end()
 
     def calculate_z_order(self):
-        """
-        Orders the cached atoms and bonds by their explicit depth.
+        """Sort :attr:`objects` back-to-front by depth for the painter's algorithm.
+
+        Bonds use the average depth of their two atoms; atom items use the
+        atom's own depth.
         """
         for item in self.objects:
             if item.is_bond:
@@ -385,6 +530,12 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.objects.sort(reverse=True, key=lambda item: item.z_order)
 
     def get_center_and_radius(self):
+        """Compute the bounding sphere of the current atom set.
+
+        Sets :attr:`molecule_center` to the midpoint of the axis-aligned
+        bounding box and :attr:`molecule_radius` to the maximum distance
+        from that centre to any atom (plus a small padding).
+        """
         min_ = [999999, 999999, 999999]
         max_ = [-999999, -999999, -999999]
         for at in self.atoms:
@@ -402,7 +553,17 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.molecule_center = np.array(c, dtype=np.float32)
         self.molecule_radius = r or 10
 
-    def draw_bond_rounded(self, at1: Atom, at2: Atom):
+    def _draw_bond_rounded(self, at1: Atom, at2: Atom):
+        """Draw a 3D-shaded (cylinder-like) bond between two atoms.
+
+        Uses a :class:`QLinearGradient` perpendicular to the bond axis to
+        simulate specular highlighting and shadow on a cylindrical surface.
+        The bond is clipped at the directional ADP radii of each atom so
+        that it does not overlap the ellipsoids.
+
+        :param at1: First atom of the bond.
+        :param at2: Second atom of the bond.
+        """
         c1 = at1.coordinate
         c2 = at2.coordinate
         v = c2 - c1
@@ -446,16 +607,24 @@ class MoleculeWidget(QtWidgets.QWidget):
         # Gradient from lit side (+n) to shadow side (-n)
         grad = QLinearGradient(x1 + nx * w_half, y1 + ny * w_half,
                                x1 - nx * w_half, y1 - ny * w_half)
-        grad.setColorAt(0.0, self.bond_grad_dark)      # Slight rim light/ambient
-        grad.setColorAt(0.2, self.bond_grad_light)     # Main specular highlight
-        grad.setColorAt(1.0, self.bond_grad_shadow)    # Core shadow
+        grad.setColorAt(0.0, self.bond_grad_dark)  # Slight rim light/ambient
+        grad.setColorAt(0.2, self.bond_grad_light)  # Main specular highlight
+        grad.setColorAt(1.0, self.bond_grad_shadow)  # Core shadow
 
         pen = QPen(QBrush(grad), dynamic_width, Qt.PenStyle.SolidLine)
         pen.setCapStyle(Qt.PenCapStyle.RoundCap)  # Creates perfect elliptical intersection blend
         self._painter.setPen(pen)
         self._painter.drawLine(int(x1), int(y1), int(x2), int(y2))
 
-    def draw_bond(self, at1: Atom, at2: Atom) -> None:
+    def _draw_bond(self, at1: Atom, at2: Atom) -> None:
+        """Draw a flat single-colour bond between two atoms.
+
+        The bond is clipped at the directional ADP radii of each atom so
+        that it does not overlap the ellipsoids.
+
+        :param at1: First atom of the bond.
+        :param at2: Second atom of the bond.
+        """
         c1 = at1.coordinate
         c2 = at2.coordinate
         v = c2 - c1
@@ -483,6 +652,15 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._painter.drawLine(int(x1), int(y1), int(x2), int(y2))
 
     def draw_atom(self, atom: Atom) -> None:
+        """Draw a single atom as an ADP ellipsoid, isotropic sphere, or fixed-size circle.
+
+        When an anisotropic displacement tensor is available, the 2D projected
+        ellipse is computed from the xy-block of *u_cart*.  Otherwise the atom
+        is rendered as a radial-gradient circle whose size depends on *u_iso*
+        (if present) or a fixed fallback radius.
+
+        :param atom: The atom to render.
+        """
         cx = atom.screenx
         cy = atom.screeny
 
@@ -545,6 +723,17 @@ class MoleculeWidget(QtWidgets.QWidget):
                                   int(circle_size), int(circle_size))
 
     def make_gradient(self, angle: float, atom: Atom, r1: float, r2: float) -> QRadialGradient:
+        """Create a radial gradient for an ADP ellipsoid with a simulated light source.
+
+        The gradient focal point is offset to produce a 3D shading effect,
+        and the colours are derived from the atom's element colour.
+
+        :param angle: Rotation angle of the ellipse in degrees.
+        :param atom: The atom whose colour is used.
+        :param r1: Semi-axis along the first eigenvector (screen pixels).
+        :param r2: Semi-axis along the second eigenvector (screen pixels).
+        :return: Configured :class:`QRadialGradient`.
+        """
         max_r = max(r1, r2)
         sx, sy = -max_r * 0.3, -max_r * 0.3
         rad = radians(angle)
@@ -558,14 +747,27 @@ class MoleculeWidget(QtWidgets.QWidget):
         return gradient
 
     def draw_label(self, atom: Atom):
+        """Draw the atom's name next to its ellipsoid/sphere.
+
+        The label is offset from the atom centre by its spherical radius so
+        that it does not overlap the drawn shape.
+
+        :param atom: The atom whose label is drawn.
+        """
         self._painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.PenStyle.SolidLine))
         r_pix = self.get_spherical_radius(atom) * self.scale
         self._painter.drawText(int(atom.screenx + r_pix + 2), int(atom.screeny - r_pix - 2), atom.name)
 
     def get_conntable_from_atoms(self, extra_param: float = 1.2) -> tuple:
-        """
-        Returns a connectivity table from the atomic coordinates and the covalence
-        radii of the atoms.
+        """Build a connectivity table from atomic coordinates and covalent radii.
+
+        Two atoms are considered bonded when their distance is less than
+        ``(r1 + r2) * extra_param``.  Hydrogen–hydrogen bonds are excluded,
+        and atoms belonging to different non-zero disorder parts are skipped.
+
+        :param extra_param: Tolerance factor applied to the sum of covalent
+            radii (default 1.2).
+        :return: Tuple of ``(index1, index2)`` pairs referencing :attr:`atoms`.
         """
         connections = []
         h = ('H', 'D')
@@ -586,10 +788,24 @@ class MoleculeWidget(QtWidgets.QWidget):
 
 
 class Atom:
+    """Internal representation of a single atom for rendering.
+
+    Stores Cartesian coordinates, element-derived color and radius, screen
+    projection coordinates, and optional displacement parameters (anisotropic
+    tensor ``u_cart`` and isotropic equivalent ``u_iso``).
+
+    :param x: Cartesian X coordinate (Å).
+    :param y: Cartesian Y coordinate (Å).
+    :param z: Cartesian Z coordinate (Å).
+    :param name: Atom label, e.g. ``'C3'``.
+    :param type_: Element symbol, e.g. ``'C'``.
+    :param part: SHELX disorder part number (0 = all parts).
+    """
+
     __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_', 'u_cart', 'color',
                  'color_light', 'color_dark', 'u_iso', 'z']
 
-    def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int):
+    def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int) -> None:
         self.coordinate = np.array([x, y, z], dtype=np.float32)
         self.z = z
         self.name = name
@@ -612,8 +828,20 @@ def display(atoms: list[Atomtuple],
             cell: tuple[float, float, float, float, float, float] | None = None,
             adps: dict[str, tuple[float, float, float, float, float, float]] | None = None,
             grow_callback: Callable | None = None) -> NoReturn:
-    """
-    Generic display function for testing the standalone viewer widget.
+    """Launch a standalone :class:`MoleculeWidget` viewer window for testing.
+
+    Opens a :class:`QMainWindow` containing the molecule widget together with
+    checkboxes to toggle ADP display, labels, rounded bonds, and an optional
+    symmetry-grow control.
+
+    :param atoms: Atom positions as a list of
+        :class:`~finalcif.displaymol.sdm.Atomtuple` instances.
+    :param cell: Optional unit-cell parameters
+        ``(a, b, c, alpha, beta, gamma)`` in Ångströms / degrees.
+    :param adps: Optional mapping of atom label to anisotropic displacement
+        parameters ``(U11, U22, U33, U23, U13, U12)``.
+    :param grow_callback: Optional callable that returns a grown atom list
+        when the *Grow* checkbox is toggled on.
     """
     import time
     app = QtWidgets.QApplication(sys.argv)
@@ -634,6 +862,7 @@ def display(atoms: list[Atomtuple],
 
     render_widget.open_molecule(atoms=atoms, cell=cell, adps=adps)
     render_widget.labels = False
+    render_widget.show_round_bonds(True)
     print(f'Time to display molecule: {time.perf_counter() - t1:5.4} s')
 
     central_widget = QtWidgets.QWidget()
@@ -678,8 +907,8 @@ if __name__ == "__main__":
         # cif = CifContainer(r'../41467_2015.cif') # huge
         # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
         # cif = CifContainer('tests/examples/1979688.cif')
-        #cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
-        #cif = CifContainer(Path('test-data/4060314.cif'))
+        # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
+        # cif = CifContainer(Path('test-data/4060314.cif'))
         cif.load_this_block(len(cif.doc) - 1)
 
         # Build generic ADP dictionary
