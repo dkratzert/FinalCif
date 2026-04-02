@@ -80,7 +80,7 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     atomClicked = QtCore.Signal(str)
 
-    def __init__(self, parent: QWidget = None):
+    def __init__(self, parent: QtGui.QWidget = None):
         super().__init__(parent)
         self._astar = None
         self._bstar = None
@@ -154,15 +154,15 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         self.mouse_pressed = False
         self.labels = True
-        self.setFocusPolicy(Qt.StrongFocus)
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.atomClicked.connect(lambda x: print(x))
 
     def set_background_color(self, color: QColor):
         """Set the background color of the widget."""
         self.bg_color = color
         palette = self.palette()
-        palette.setColor(QPalette.Window, color)
+        palette.setColor(QPalette.ColorRole.Window, color)
         self.setPalette(palette)
 
     def set_bond_width(self, width: int):
