@@ -118,6 +118,12 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.bond_grad_light = QColor(140, 140, 140)
         self.bond_grad_shadow = QColor(10, 10, 10)
 
+        bg = QLinearGradient(0, 1, 0, -1)
+        bg.setColorAt(0.0, self.bond_grad_dark)
+        bg.setColorAt(0.2, self.bond_grad_light)
+        bg.setColorAt(1.0, self.bond_grad_shadow)
+        self.bond_brush = QBrush(bg)
+
         pal = QPalette()
         pal.setColor(QtGui.QPalette.ColorRole.Window, QtCore.Qt.GlobalColor.white)
         self.setAutoFillBackground(True)
@@ -625,14 +631,10 @@ class MoleculeWidget(QtWidgets.QWidget):
         dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
         w_half = dynamic_width / 2.0
 
-        # Gradient from lit side (+n) to shadow side (-n)
-        grad = QLinearGradient(x1 + nx * w_half, y1 + ny * w_half,
-                               x1 - nx * w_half, y1 - ny * w_half)
-        grad.setColorAt(0.0, self.bond_grad_dark)  # Slight rim light/ambient
-        grad.setColorAt(0.2, self.bond_grad_light)  # Main specular highlight
-        grad.setColorAt(1.0, self.bond_grad_shadow)  # Core shadow
+        t = QTransform(ny * w_half, -nx * w_half, nx * w_half, ny * w_half, x1, y1)
+        self.bond_brush.setTransform(t)
 
-        pen = QPen(QBrush(grad), dynamic_width, Qt.PenStyle.SolidLine)
+        pen = QPen(self.bond_brush, dynamic_width, Qt.PenStyle.SolidLine)
         pen.setCapStyle(Qt.PenCapStyle.RoundCap)  # Creates perfect elliptical intersection blend
         self._painter.setPen(pen)
         self._painter.drawLine(int(x1), int(y1), int(x2), int(y2))
@@ -768,7 +770,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         """Draw a single atom as an ADP ellipsoid, isotropic sphere, or fixed-size circle.
 
         When an anisotropic displacement tensor is available, the 2D projected
-        ellipse is computed from the xy-block of *u_cart*.  Otherwise the atom
+        ellipse is computed from the xy-block of *u_cart*.  Otherwise, the atom
         is rendered as a radial-gradient circle whose size depends on *u_iso*
         (if present) or a fixed fallback radius.
 
@@ -803,10 +805,20 @@ class MoleculeWidget(QtWidgets.QWidget):
                     self._painter.save()
                     self._painter.translate(cx, cy)
                     self._painter.rotate(angle)
-                    gradient = self.make_gradient(angle, atom, r1, r2)
-                    brush = QBrush(gradient)
+
+                    max_r = max(r1, r2)
+                    sx, sy = -max_r * 0.3, -max_r * 0.3
+                    rad = radians(angle)
+                    fx = sx * cos(rad) + sy * sin(rad)
+                    fy = -sx * sin(rad) + sy * cos(rad)
+
+                    t = QTransform()
+                    t.translate(fx, fy)
+                    t.scale(max_r * 1.5, max_r * 1.5)
+                    atom.adp_brush.setTransform(t)
+
                     pen = QPen(self.adp_pen_color, 1, Qt.PenStyle.SolidLine)
-                    self._painter.setBrush(brush)
+                    self._painter.setBrush(atom.adp_brush)
                     self._painter.setPen(pen)
                     self._painter.drawEllipse(QRectF(-r1, -r2, 2 * r1, 2 * r2))
 
@@ -824,38 +836,9 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         radius = circle_size / 2
 
-        gradient = QRadialGradient(cx - radius * 0.3, cy - radius * 0.3, circle_size)
-        gradient.setColorAt(0.0, atom.color_light)
-        gradient.setColorAt(0.4, atom.color)
-        gradient.setColorAt(1.0, atom.color_dark)
-
         self._painter.setPen(QPen(self.fallback_pen_color, 1, Qt.PenStyle.SolidLine))
-        self._painter.setBrush(QBrush(gradient))
+        self._painter.setBrush(atom.sphere_brush)
         self._painter.drawEllipse(QRectF(cx - radius, cy - radius, circle_size, circle_size))
-
-    def make_gradient(self, angle: float, atom: Atom, r1: float, r2: float) -> QRadialGradient:
-        """Create a radial gradient for an ADP ellipsoid with a simulated light source.
-
-        The gradient focal point is offset to produce a 3D shading effect,
-        and the colours are derived from the atom's element colour.
-
-        :param angle: Rotation angle of the ellipse in degrees.
-        :param atom: The atom whose colour is used.
-        :param r1: Semi-axis along the first eigenvector (screen pixels).
-        :param r2: Semi-axis along the second eigenvector (screen pixels).
-        :return: Configured :class:`QRadialGradient`.
-        """
-        max_r = max(r1, r2)
-        sx, sy = -max_r * 0.3, -max_r * 0.3
-        rad = radians(angle)
-        fx = sx * cos(rad) + sy * sin(rad)
-        fy = -sx * sin(rad) + sy * cos(rad)
-
-        gradient = QRadialGradient(fx, fy, max_r * 1.5)
-        gradient.setColorAt(0.0, atom.color_light)
-        gradient.setColorAt(0.4, atom.color)
-        gradient.setColorAt(1.0, atom.color_dark)
-        return gradient
 
     def draw_label(self, atom: Atom):
         """Draw the atom's name next to its ellipsoid/sphere.
@@ -914,7 +897,8 @@ class Atom:
     """
 
     __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_', 'u_cart', 'color',
-                 'color_light', 'color_dark', 'u_iso', 'z', 'u_eigvals', 'u_eigvecs', 'u_inv']
+                 'color_light', 'color_dark', 'u_iso', 'z', 'u_eigvals', 'u_eigvecs', 'u_inv',
+                 'sphere_brush', 'adp_brush']
 
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int) -> None:
         self.coordinate = np.array([x, y, z], dtype=np.float32)
@@ -933,6 +917,20 @@ class Atom:
         self.u_eigvals = None
         self.u_eigvecs = None
         self.u_inv = None
+
+        self.sphere_brush = QBrush()
+        sg = QRadialGradient(0.35, 0.35, 1.0)
+        sg.setCoordinateMode(QRadialGradient.CoordinateMode.ObjectBoundingMode)
+        sg.setColorAt(0.0, self.color_light)
+        sg.setColorAt(0.4, self.color)
+        sg.setColorAt(1.0, self.color_dark)
+        self.sphere_brush = QBrush(sg)
+
+        ag = QRadialGradient(0.0, 0.0, 1.0)
+        ag.setColorAt(0.0, self.color_light)
+        ag.setColorAt(0.4, self.color)
+        ag.setColorAt(1.0, self.color_dark)
+        self.adp_brush = QBrush(ag)
 
     def __repr__(self) -> str:
         return str((self.name, self.type_, self.coordinate))
@@ -1019,7 +1017,7 @@ if __name__ == "__main__":
         # Load sample data
         cif = CifContainer('test-data/p21c.cif')
         #cif = CifContainer(r'../41467_2015.cif') # huge
-        cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
+        #cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
         # cif = CifContainer('tests/examples/1979688.cif')
         # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
         # cif = CifContainer(Path('test-data/4060314.cif'))
