@@ -137,6 +137,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._coords_array = np.empty((0, 3))
         self._ucart_array = np.empty((0, 3, 3))
         self._has_adp = np.empty(0, dtype=bool)
+        self._u_inv_array = np.empty((0, 3, 3))
 
     def setLabelFont(self, font_size: int):
         """Set the pixel size used for atom labels and schedule a repaint.
@@ -233,11 +234,29 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._coords_array = np.array([at.coordinate for at in self.atoms])
         self._ucart_array = np.zeros((len(self.atoms), 3, 3))
         self._has_adp = np.zeros(len(self.atoms), dtype=bool)
+        self._eigenvalues_array = np.zeros((len(self.atoms), 3))
+        self._eigenvectors_array = np.zeros((len(self.atoms), 3, 3))
+        self._u_inv_array = np.zeros((len(self.atoms), 3, 3))
+
         for i, at in enumerate(self.atoms):
             at.z = at.coordinate[2]
             if at.u_cart is not None:
-                self._ucart_array[i] = at.u_cart
-                self._has_adp[i] = True
+                try:
+                    evals, evecs = np.linalg.eigh(at.u_cart)
+                    u_invers = np.linalg.inv(at.u_cart)
+
+                    self._ucart_array[i] = at.u_cart
+                    self._eigenvalues_array[i] = evals
+                    self._eigenvectors_array[i] = evecs
+                    self._u_inv_array[i] = u_invers
+                    self._has_adp[i] = True
+
+                    at.u_eigvals = evals
+                    at.u_eigvecs = evecs
+                    at.u_inv = u_invers
+                except np.linalg.LinAlgError:
+                    at.u_cart = None
+                    at.u_iso = None
 
         self._factor = min(self.width(), self.height()) / 2 / self.molecule_radius * self.zoom / 100
         self.atoms_size = self._factor * 70
@@ -427,12 +446,16 @@ class MoleculeWidget(QtWidgets.QWidget):
 
             if np.any(self._has_adp):
                 self._ucart_array = np.matmul(R, np.matmul(self._ucart_array, R.T))
+                self._eigenvectors_array = np.matmul(R, self._eigenvectors_array)
+                self._u_inv_array = np.matmul(R, np.matmul(self._u_inv_array, R.T))
 
             for i, at in enumerate(self.atoms):
                 at.coordinate = self._coords_array[i]
                 at.z = at.coordinate[2]  # cache explicit z property for fast sorting
                 if self._has_adp[i]:
                     at.u_cart = self._ucart_array[i]
+                    at.u_eigvecs = self._eigenvectors_array[i]
+                    at.u_inv = self._u_inv_array[i]
 
         self.update()
 
@@ -466,17 +489,13 @@ class MoleculeWidget(QtWidgets.QWidget):
         if d < 1e-8:
             return 0.0
 
-        if self.show_adps and atom.u_cart is not None:
+        if self.show_adps and getattr(atom, 'u_inv', None) is not None:
             u = v / d
-            try:
-                # Intersect ray with 3D Covariance Ellipsoid
-                # R = C / sqrt( u^T * U^-1 * u )
-                U_inv = np.linalg.inv(atom.u_cart)
-                val = np.dot(u, np.dot(U_inv, u))
-                if val > 0:
-                    return self.adp_scale / sqrt(val)
-            except np.linalg.LinAlgError:
-                pass
+            # Intersect ray with 3D Covariance Ellipsoid
+            # R = C / sqrt( u^T * U^-1 * u )
+            val = np.dot(u, np.dot(atom.u_inv, u))
+            if val > 0:
+                return self.adp_scale / sqrt(val)
 
         # Fallback to sphere
         if self.show_adps and atom.u_iso is not None:
@@ -673,17 +692,13 @@ class MoleculeWidget(QtWidgets.QWidget):
         :param r2: Major semi-axis of the 2-D projected ellipse (screen pixels).
         :param angle: Rotation angle of the 2-D ellipse in degrees.
         """
-        try:
-            eigenvalues, eigenvectors = np.linalg.eigh(atom.u_cart)
-        except np.linalg.LinAlgError:
+        if getattr(atom, 'u_eigvals', None) is None or np.any(atom.u_eigvals <= 0):
             self._painter.drawLine(int(-r1), 0, int(r1), 0)
             self._painter.drawLine(0, int(-r2), 0, int(r2))
             return
 
-        if np.any(eigenvalues <= 0):
-            self._painter.drawLine(int(-r1), 0, int(r1), 0)
-            self._painter.drawLine(0, int(-r2), 0, int(r2))
-            return
+        eigenvalues = atom.u_eigvals
+        eigenvectors = atom.u_eigvecs
 
         angle_rad = radians(angle)
         cos_a = cos(angle_rad)
@@ -897,7 +912,7 @@ class Atom:
     """
 
     __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_', 'u_cart', 'color',
-                 'color_light', 'color_dark', 'u_iso', 'z']
+                 'color_light', 'color_dark', 'u_iso', 'z', 'u_eigvals', 'u_eigvecs', 'u_inv']
 
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int) -> None:
         self.coordinate = np.array([x, y, z], dtype=np.float32)
@@ -913,6 +928,9 @@ class Atom:
         self.color_light = self.color.lighter(160)
         self.color_dark = self.color.darker(160)
         self.u_iso = None
+        self.u_eigvals = None
+        self.u_eigvecs = None
+        self.u_inv = None
 
     def __repr__(self) -> str:
         return str((self.name, self.type_, self.coordinate))
@@ -999,7 +1017,7 @@ if __name__ == "__main__":
         # Load sample data
         cif = CifContainer('test-data/p21c.cif')
         #cif = CifContainer(r'../41467_2015.cif') # huge
-        #cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
+        cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
         # cif = CifContainer('tests/examples/1979688.cif')
         # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
         # cif = CifContainer(Path('test-data/4060314.cif'))
