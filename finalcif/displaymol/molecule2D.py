@@ -1081,12 +1081,18 @@ def display(atoms: list[Atomtuple],
     label_checkbox = QtWidgets.QCheckBox("Show Labels")
     bond_type_checkbox = QtWidgets.QCheckBox("Round Bonds")
 
+    bw_label = QtWidgets.QLabel("Bond Width:")
+    bond_width_spinbox = QtWidgets.QSpinBox()
+    bond_width_spinbox.setRange(1, 15)
+    bond_width_spinbox.setValue(3)
+
     adp_checkbox.setChecked(True)
     bond_type_checkbox.setChecked(True)
 
     adp_checkbox.toggled.connect(lambda x: render_widget.show_adp(x))
     label_checkbox.toggled.connect(lambda x: render_widget.show_labels(x))
     bond_type_checkbox.toggled.connect(lambda x: render_widget.show_round_bonds(x))
+    bond_width_spinbox.valueChanged.connect(lambda x: render_widget.set_bond_width(x))
     render_widget.set_bond_width(3)
     render_widget.open_molecule(atoms=atoms, cell=cell, adps=adps)
     render_widget.labels = False
@@ -1103,6 +1109,8 @@ def display(atoms: list[Atomtuple],
     hl.addWidget(adp_checkbox)
     hl.addWidget(label_checkbox)
     hl.addWidget(bond_type_checkbox)
+    hl.addWidget(bw_label)
+    hl.addWidget(bond_width_spinbox)
 
     if grow_callback is not None:
         grow_checkbox = QtWidgets.QCheckBox("Grow")
