@@ -22,7 +22,8 @@ Mouse controls (inside :class:`MoleculeWidget`):
 - **Right drag**:  Zoom in / out.
 - **Middle drag**: Pan the view.
 - **Scroll wheel**: Increase / decrease label font size.
-- **Left click**:  Select an atom (highlights it).
+- **Left click**:  Select a single atom (clears previous selection).
+- **Ctrl + Left click**: Toggle selection of multiple atoms.
 """
 
 import sys
@@ -99,8 +100,8 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         self.show_hydrogens_flag = True
 
-        # Track selected atom for selection
-        self.selected_atoms: str | None = None
+        # Track selected atoms as a set of labels for multi-selection
+        self.selected_atoms: set[str] = set()
 
         # scaling factor for ADP ellipsoids in screen coordinates
         # 1.5382 is the standard ORTEP scaling factor for 50% probability:
@@ -290,7 +291,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         if not keep_view:
             self.get_center_and_radius()
             self.cumulative_R = np.eye(3, dtype=np.float32)
-            self.selected_atoms = None
+            self.selected_atoms.clear()
 
         self.objects.clear()
         for n1, n2 in self.connections:
@@ -444,13 +445,29 @@ class MoleculeWidget(QtWidgets.QWidget):
                             clicked_atom = atom
 
                 # Update selection state
-                new_selection = clicked_atom.name if clicked_atom else None
-                if self.selected_atoms != new_selection:
-                    self.selected_atoms = new_selection
-                    self.update()
+                modifiers = event.modifiers()
+                ctrl_pressed = bool(modifiers & Qt.KeyboardModifier.ControlModifier)
+                selection_changed = False
 
                 if clicked_atom:
+                    if ctrl_pressed:
+                        if clicked_atom.name in self.selected_atoms:
+                            self.selected_atoms.remove(clicked_atom.name)
+                        else:
+                            self.selected_atoms.add(clicked_atom.name)
+                    else:
+                        self.selected_atoms = {clicked_atom.name}
+
+                    selection_changed = True
                     self.atomClicked.emit(clicked_atom.name)
+                else:
+                    if not ctrl_pressed and self.selected_atoms:
+                        self.selected_atoms.clear()
+                        selection_changed = True
+
+                if selection_changed:
+                    self.update()
+
         super().mouseReleaseEvent(event)
 
     def is_point_inside_atom(self, atom: Atom, px: float, py: float) -> bool:
@@ -938,7 +955,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         Assumes the painter is already translated and rotated to the atom's local coordinate system.
         """
         padding = 4.0  # pixels
-        pen = QPen(QColor(0, 190, 255), 15*self._factor, Qt.PenStyle.SolidLine)
+        pen = QPen(QColor(0, 190, 255), 15 * self._factor, Qt.PenStyle.SolidLine)
         pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
         self._painter.setPen(pen)
         self._painter.setBrush(Qt.BrushStyle.NoBrush)
@@ -979,7 +996,7 @@ class MoleculeWidget(QtWidgets.QWidget):
                     self._painter.rotate(angle)
 
                     # Draw selection outline matching the ellipsoid shape
-                    if self.selected_atoms == atom.name:
+                    if atom.name in self.selected_atoms:
                         self._draw_selection(r1, r2)
 
                     max_r = max(r1, r2)
@@ -1016,7 +1033,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._painter.translate(cx, cy)
 
         # Draw selection outline for spheres
-        if self.selected_atoms == atom.name:
+        if atom.name in self.selected_atoms:
             self._draw_selection(radius, radius)
 
         self._painter.setPen(QPen(self.fallback_pen_color, 1, Qt.PenStyle.SolidLine))
