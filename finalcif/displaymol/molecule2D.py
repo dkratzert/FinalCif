@@ -240,7 +240,8 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def open_molecule(self, atoms: list[Atomtuple],
                       cell: tuple[float, float, float, float, float, float] | None = None,
-                      adps: dict[str, tuple[float, float, float, float, float, float]] | None = None) -> None:
+                      adps: dict[str, tuple[float, float, float, float, float, float]] | None = None,
+                      keep_view: bool = False) -> None:
         """
         Loads a new molecule and completely resets the view (zoom, pan, rotation).
 
@@ -259,7 +260,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         :param adps: Optional mapping of atom label to anisotropic
             displacement parameters ``(U11, U22, U33, U23, U13, U12)``.
         """
-        self._load_molecule(atoms, cell, adps, keep_view=False)
+        self._load_molecule(atoms, cell, adps, keep_view=keep_view)
 
     def grow_molecule(self, atoms: list[Atomtuple],
                       cell: tuple[float, float, float, float, float, float] | None = None,
@@ -1178,10 +1179,10 @@ if __name__ == "__main__":
         from sdm import SDM
 
         # Load sample data
-        #cif = CifContainer('test-data/p21c.cif')
-        #cif = CifContainer(r'../41467_2015.cif') # huge
-        #cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
-        #cif = CifContainer('tests/examples/1979688.cif')
+        # cif = CifContainer('test-data/p21c.cif')
+        # cif = CifContainer(r'../41467_2015.cif') # huge
+        # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
+        # cif = CifContainer('tests/examples/1979688.cif')
         cif = CifContainer('test-data/p31c.cif')
         # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
         # cif = CifContainer(Path('test-data/4060314.cif'))

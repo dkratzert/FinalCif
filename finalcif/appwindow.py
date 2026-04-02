@@ -410,7 +410,7 @@ class AppWindow(QMainWindow):
         save_shortcut.activated.connect(self.do_pdf_checkcif)
         self.ui.DetailsPushButton.clicked.connect(self.show_residuals)
         self.ui.BackpushButtonDetails.clicked.connect(self.back_to_main_noload)
-        self.ui.growCheckBox.toggled.connect(self.redraw_molecule)
+        self.ui.growCheckBox.toggled.connect(lambda: self.redraw_molecule(reset_view=False))
         self.ui.labelsCheckBox.toggled.connect(self.show_labels)
         self.ui.adpCheckBox.toggled.connect(self.show_adp)
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
@@ -1850,7 +1850,7 @@ class AppWindow(QMainWindow):
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
         self._show_shelx_file()
         try:
-            QtCore.QTimer(self).singleShot(0, self.view_molecule)
+            QtCore.QTimer(self).singleShot(0, lambda: self.view_molecule(reset_view=True))
             # threading.Thread(target=self.view_molecule).start()
         except Exception:
             print('Molecule view crashed!')
@@ -1871,41 +1871,48 @@ class AppWindow(QMainWindow):
             self.ui.shelx_TextEdit.setPlainText("No Shelx file available")
             self.ui.shelx_warn_TextEdit.hide()
 
-    def view_molecule(self) -> None:
+    def view_molecule(self, reset_view: bool = False) -> None:
+        self.ui.render_widget.show_labels(self.ui.labelsCheckBox.isChecked())
+
         if self.ui.growCheckBox.isChecked():
             self.ui.molGroupBox.setTitle('Completed Molecule')
-            self.grow_molecule()
+            atoms = self._calc_grown_atoms()
         else:
             self.ui.molGroupBox.setTitle('Asymmetric Unit')
-            self.ui.render_widget.show_labels(self.ui.labelsCheckBox.isChecked())
-            with suppress(Exception):
-                self.ui.render_widget.open_molecule(self.cif.atoms_orth,
+            atoms = self.cif.atoms_orth
+
+        with suppress(Exception):
+            if reset_view:
+                self.ui.render_widget.open_molecule(atoms,
+                                                    cell=self.cif.cell[:6],
+                                                    adps=self.get_adps(), keep_view=not reset_view)
+            else:
+                self.ui.render_widget.grow_molecule(atoms,
                                                     cell=self.cif.cell[:6],
                                                     adps=self.get_adps())
 
-    def grow_molecule(self):
-        atoms = tuple(self.cif.atoms_fract)
-        if atoms:
-            sdm = SDM(atoms, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
-            with suppress(Exception):
-                needsymm = sdm.calc_sdm()
-                atoms = sdm.packer(sdm, needsymm)
-                self.ui.render_widget.show_labels(self.ui.labelsCheckBox.isChecked())
-                adp_dict = self.get_adps()
-                self.ui.render_widget.open_molecule(atoms, cell=self.cif.cell[:6], adps=adp_dict)
+    def _calc_grown_atoms(self):
+        """Helper to generate the symmetry expanded atoms without drawing them."""
+        atoms_fract = tuple(self.cif.atoms_fract)
+        if not atoms_fract:
+            return []
 
-    def get_adps(self) -> dict[Any, Any]:
+        sdm = SDM(atoms_fract, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
+        needsymm = sdm.calc_sdm()
+        return sdm.packer(sdm, needsymm)
+
+    def get_adps(self) -> dict:
         adp_dict = {}
         for dp in self.cif.displacement_parameters():
             adp_dict[dp.label] = (to_float(dp.U11), to_float(dp.U22), to_float(dp.U33),
                                   to_float(dp.U23), to_float(dp.U13), to_float(dp.U12))
         return adp_dict
 
-    def redraw_molecule(self) -> None:
+    def redraw_molecule(self, reset_view: bool = False) -> None:
         try:
-            self.view_molecule()
-        except Exception:
-            print('Molecule view crashed!!')
+            self.view_molecule(reset_view=reset_view)
+        except Exception as e:
+            print(f'Molecule view crashed: {e}')
 
     def show_labels(self, value: bool):
         self.ui.render_widget.show_labels(value)
