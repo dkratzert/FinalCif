@@ -22,6 +22,7 @@ Mouse controls (inside :class:`MoleculeWidget`):
 - **Right drag**:  Zoom in / out.
 - **Middle drag**: Pan the view.
 - **Scroll wheel**: Increase / decrease label font size.
+- **Left click**:  Select an atom (highlights it).
 """
 
 import sys
@@ -97,6 +98,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.bond_drawer = self._draw_bond
 
         self.show_hydrogens_flag = True
+
+        # Track selected atom for selection
+        self.selected_atoms: str | None = None
 
         # scaling factor for ADP ellipsoids in screen coordinates
         # 1.5382 is the standard ORTEP scaling factor for 50% probability:
@@ -286,6 +290,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         if not keep_view:
             self.get_center_and_radius()
             self.cumulative_R = np.eye(3, dtype=np.float32)
+            self.selected_atoms = None
 
         self.objects.clear()
         for n1, n2 in self.connections:
@@ -437,6 +442,13 @@ class MoleculeWidget(QtWidgets.QWidget):
                         if atom.z > front_z:
                             front_z = atom.z
                             clicked_atom = atom
+
+                # Update selection state
+                new_selection = clicked_atom.name if clicked_atom else None
+                if self.selected_atoms != new_selection:
+                    self.selected_atoms = new_selection
+                    self.update()
+
                 if clicked_atom:
                     self.atomClicked.emit(clicked_atom.name)
         super().mouseReleaseEvent(event)
@@ -921,16 +933,21 @@ class MoleculeWidget(QtWidgets.QWidget):
         # Restore the original painter transform
         self._painter.setTransform(base_transform)
 
-    def draw_atom(self, atom: Atom) -> None:
-        """Draw a single atom as an ADP ellipsoid, isotropic sphere, or fixed-size circle.
-
-        When an anisotropic displacement tensor is available, the 2D projected
-        ellipse is computed from the xy-block of *u_cart*.  Otherwise, the atom
-        is rendered as a radial-gradient circle whose size depends on *u_iso*
-        (if present) or a fixed fallback radius.
-
-        :param atom: The atom to render.
+    def _draw_selection(self, r1: float, r2: float):
+        """Draws a crisp, thick cyan outline to indicate selection.
+        Assumes the painter is already translated and rotated to the atom's local coordinate system.
         """
+        padding = 4.0  # pixels
+        pen = QPen(QColor(0, 190, 255), 15*self._factor, Qt.PenStyle.SolidLine)
+        pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+        self._painter.setPen(pen)
+        self._painter.setBrush(Qt.BrushStyle.NoBrush)
+
+        # Draw the outline slightly larger than the atom itself
+        self._painter.drawEllipse(QRectF(-r1 - padding, -r2 - padding, (r1 + padding) * 2, (r2 + padding) * 2))
+
+    def draw_atom(self, atom: Atom) -> None:
+        """Draw a single atom as an ADP ellipsoid, isotropic sphere, or fixed-size circle."""
         cx = atom.screenx
         cy = atom.screeny
 
@@ -960,6 +977,10 @@ class MoleculeWidget(QtWidgets.QWidget):
                     self._painter.save()
                     self._painter.translate(cx, cy)
                     self._painter.rotate(angle)
+
+                    # Draw selection outline matching the ellipsoid shape
+                    if self.selected_atoms == atom.name:
+                        self._draw_selection(r1, r2)
 
                     max_r = max(r1, r2)
                     sx, sy = -max_r * 0.3, -max_r * 0.3
@@ -991,9 +1012,18 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         radius = circle_size / 2
 
+        self._painter.save()
+        self._painter.translate(cx, cy)
+
+        # Draw selection outline for spheres
+        if self.selected_atoms == atom.name:
+            self._draw_selection(radius, radius)
+
         self._painter.setPen(QPen(self.fallback_pen_color, 1, Qt.PenStyle.SolidLine))
         self._painter.setBrush(atom.sphere_brush)
-        self._painter.drawEllipse(QRectF(cx - radius, cy - radius, circle_size, circle_size))
+        self._painter.drawEllipse(QRectF(-radius, -radius, circle_size, circle_size))
+
+        self._painter.restore()
 
     def draw_label(self, atom: Atom):
         """Draw the atom's name next to its ellipsoid/sphere.
