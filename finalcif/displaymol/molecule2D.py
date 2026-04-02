@@ -137,6 +137,8 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._coords_array = np.empty((0, 3))
         self._ucart_array = np.empty((0, 3, 3))
         self._has_adp = np.empty(0, dtype=bool)
+        self._eigenvalues_array = np.empty((0, 3))
+        self._eigenvectors_array = np.empty((0, 3, 3))
         self._u_inv_array = np.empty((0, 3, 3))
 
     def setLabelFont(self, font_size: int):
