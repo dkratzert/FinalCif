@@ -396,30 +396,27 @@ class MoleculeWidget(QtWidgets.QWidget):
 
                 clicked_atom = None
                 clicked_bond = None
+                front_z = float('inf')
 
-                # Check atoms first
-                front_z = float('-inf')
-                for atom in self.atoms:
-                    if not self.show_hydrogens_flag and atom.type_ in ('H', 'D'):
-                        continue
-                    if self.is_point_inside_atom(atom, x, y):
-                        if atom.z > front_z:
-                            front_z = atom.z
-                            clicked_atom = atom
+                # Check all objects to find the single one that is most in front
+                for item in self.objects:
+                    # Skip hidden hydrogens
+                    if not self.show_hydrogens_flag:
+                        if item.atom1.type_ in ('H', 'D') or (item.is_bond and item.atom2.type_ in ('H', 'D')):
+                            continue
 
-                # If no atom clicked, check bonds
-                if not clicked_atom:
-                    front_z = float('-inf')
-                    for item in self.objects:
-                        if not item.is_bond:
-                            continue
-                        if not self.show_hydrogens_flag and (
-                            item.atom1.type_ in ('H', 'D') or item.atom2.type_ in ('H', 'D')):
-                            continue
+                    if item.is_bond:
                         if self.is_point_near_bond(item.atom1, item.atom2, x, y):
-                            if item.z_order > front_z:
+                            if item.z_order < front_z:
                                 front_z = item.z_order
                                 clicked_bond = tuple(sorted((item.atom1.name, item.atom2.name)))
+                                clicked_atom = None
+                    else:
+                        if self.is_point_inside_atom(item.atom1, x, y):
+                            if item.z_order < front_z:
+                                front_z = item.z_order
+                                clicked_atom = item.atom1
+                                clicked_bond = None
 
                 # Update selection state
                 modifiers = event.modifiers()
@@ -533,7 +530,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         proj = np.array([x1, y1]) + t * line_vec
         dist_sq = (px - proj[0]) ** 2 + (py - proj[1]) ** 2
 
-        # Add 4 extra padding pixels of hit area tolerance around the bond
+        # Add 4 extra pixels of hit area tolerance around the bond
         tolerance = max(5.0, dynamic_width / 2.0 + 4.0)
         return dist_sq <= tolerance ** 2
 
