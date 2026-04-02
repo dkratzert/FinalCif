@@ -348,11 +348,23 @@ class MoleculeWidget(QtWidgets.QWidget):
     def make_adps(self, atoms: list[Atomtuple]) -> None:
         """Convert Atomtuples to internal :class:`Atom` objects with Cartesian ADPs."""
         self.atoms.clear()
+        name_counts = {}
+
         for at in atoms:
-            a = Atom(at.x, at.y, at.z, at.label, at.type, at.part)
-            if self._adp_map and self._cell and at.label in self._adp_map:
+            base_name = at.label
+            count = name_counts.get(base_name, 0)
+
+            if count == 0:
+                internal_name = base_name
+            else:
+                internal_name = f"{base_name}>>{count}"
+
+            name_counts[base_name] = count + 1
+
+            a = Atom(at.x, at.y, at.z, internal_name, at.type, at.part)
+            if self._adp_map and self._cell and base_name in self._adp_map:
                 try:
-                    uvals = self._adp_map[at.label]
+                    uvals = self._adp_map[base_name]
                     symm_matrix = getattr(at, 'symm_matrix', None)
                     if symm_matrix is not None:
                         symm_matrix = np.array(symm_matrix, dtype=float)
@@ -974,6 +986,8 @@ class MoleculeWidget(QtWidgets.QWidget):
         h = ('H', 'D')
         for num1, at1 in enumerate(self.atoms, 0):
             for num2, at2 in enumerate(self.atoms, 0):
+                if num1 == num2:
+                    continue
                 if (at1.part != 0 and at2.part != 0) and at1.part != at2.part:
                     continue
                 d = dist(at1.coordinate, at2.coordinate)
@@ -1110,7 +1124,13 @@ if __name__ == "__main__":
         from sdm import SDM
 
         # Load sample data
+        #cif = CifContainer('test-data/p21c.cif')
+        #cif = CifContainer(r'../41467_2015.cif')  # huge
+        # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
+        # cif = CifContainer('tests/examples/1979688.cif')
         cif = CifContainer('test-data/p31c.cif')
+        # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
+        # cif = CifContainer(Path('test-data/4060314.cif'))
         cif.load_this_block(len(cif.doc) - 1)
 
         # Build generic ADP dictionary
