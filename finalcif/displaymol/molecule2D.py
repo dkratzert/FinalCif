@@ -26,15 +26,15 @@ Mouse controls (inside :class:`MoleculeWidget`):
 
 import sys
 from dataclasses import dataclass
-from math import sqrt, cos, sin, dist, radians, atan2, degrees
+from math import sqrt, cos, sin, dist, radians, atan2, degrees, pi
 from pathlib import Path
 from typing import NoReturn, Callable
 
 import numpy as np
 from qtpy import QtWidgets, QtCore, QtGui
-from qtpy.QtCore import Qt
+from qtpy.QtCore import Qt, QRectF
 from qtpy.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent, \
-    QRadialGradient, QLinearGradient, QPainterPath
+    QRadialGradient, QLinearGradient, QTransform
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.displaymol.sdm import Atomtuple
@@ -651,20 +651,18 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._painter.setPen(pen)
         self._painter.drawLine(int(x1), int(y1), int(x2), int(y2))
 
-    # Precomputed sample angles for principal-plane arc rendering (5° steps)
-    _ARC_N = 61
-    _ARC_THETA = np.linspace(0, 2.0 * np.pi, _ARC_N, endpoint=False)
-    _ARC_COS = np.cos(_ARC_THETA)
-    _ARC_SIN = np.sin(_ARC_THETA)
+    # Bounding rect for a unit circle, used by _draw_principal_arcs with QTransform
+    _UNIT_RECT = QRectF(-1.0, -1.0, 2.0, 2.0)
 
     def _draw_principal_arcs(self, atom: Atom, r1: float, r2: float, angle: float) -> None:
         """Draw ORTEP-style curved arcs for the three principal planes of the ADP ellipsoid.
 
         Each principal plane (spanned by two eigenvectors of *u_cart*) intersects
-        the ellipsoid surface as an ellipse.  This method projects that 3-D curve
-        onto the screen, keeps only the front-facing half (closest to the viewer),
-        clips it to the 2-D projected ellipse boundary, and draws the resulting
-        arc segments.
+        the ellipsoid surface as an ellipse.  This method projects that 3-D
+        curve onto the 2-D screen, retains only the front-facing half (the half
+        closest to the viewer), and renders it via :meth:`QPainter.drawArc`
+        using a :class:`QTransform` that maps the unit circle to the projected
+        ellipse.
 
         The method operates in the painter's local coordinate system, which is
         already translated to the ellipse centre and rotated by *angle* so that
@@ -678,7 +676,6 @@ class MoleculeWidget(QtWidgets.QWidget):
         try:
             eigenvalues, eigenvectors = np.linalg.eigh(atom.u_cart)
         except np.linalg.LinAlgError:
-            # Fallback: draw simple axis-aligned cross
             self._painter.drawLine(int(-r1), 0, int(r1), 0)
             self._painter.drawLine(0, int(-r2), 0, int(r2))
             return
@@ -691,13 +688,19 @@ class MoleculeWidget(QtWidgets.QWidget):
         angle_rad = radians(angle)
         cos_a = cos(angle_rad)
         sin_a = sin(angle_rad)
-        scale = self.scale
+        c = self.adp_scale
+        s = self.scale
 
-        # Pairs of spanning axes for each principal plane (plane k is normal to eigenvector k)
+        # Use cosmetic pen so line width is independent of the QTransform scale
+        pen = self._painter.pen()
+        pen.setCosmetic(True)
+        self._painter.setPen(pen)
+        self._painter.setBrush(Qt.BrushStyle.NoBrush)
+
+        base_transform = self._painter.transform()
+
+        # Each principal plane is normal to one eigenvector and spanned by the other two
         plane_pairs = ((1, 2), (0, 2), (0, 1))
-
-        cos_t = self._ARC_COS
-        sin_t = self._ARC_SIN
 
         for i_ax, j_ax in plane_pairs:
             li = eigenvalues[i_ax]
@@ -705,77 +708,44 @@ class MoleculeWidget(QtWidgets.QWidget):
             if li <= 0 or lj <= 0:
                 continue
 
-            ri = self.adp_scale * sqrt(li)
-            rj = self.adp_scale * sqrt(lj)
+            ri_3d = c * sqrt(li)
+            rj_3d = c * sqrt(lj)
 
-            vi = eigenvectors[:, i_ax]  # 3-D eigenvector
+            vi = eigenvectors[:, i_ax]
             vj = eigenvectors[:, j_ax]
 
-            # Parametric 3-D curve: P(θ) = ri·vi·cos(θ) + rj·vj·sin(θ)
-            # x-components
-            px = (ri * vi[0]) * cos_t + (rj * vj[0]) * sin_t
-            # y-components
-            py = (ri * vi[1]) * cos_t + (rj * vj[1]) * sin_t
-            # z-components (depth)
-            pz = (ri * vi[2]) * cos_t + (rj * vj[2]) * sin_t
+            # Mapping coefficients: unit circle (cos θ, sin θ) → painter local (lx, ly)
+            # lx(θ) = Ax·cos θ + Bx·sin θ
+            # ly(θ) = Ay·cos θ + By·sin θ
+            Ax = s * ri_3d * (vi[0] * cos_a + vi[1] * sin_a)
+            Bx = s * rj_3d * (vj[0] * cos_a + vj[1] * sin_a)
+            Ay = s * ri_3d * (-vi[0] * sin_a + vi[1] * cos_a)
+            By = s * rj_3d * (-vj[0] * sin_a + vj[1] * cos_a)
 
-            # Scale to screen pixels
-            sx = px * scale
-            sy = py * scale
+            # QTransform maps drawArc's (cos t, −sin t) to (lx, ly) with t = −θ.
+            # QTransform(m11, m12, m21, m22, dx, dy) gives:
+            #   x' = m11·x + m21·y,  y' = m12·x + m22·y
+            # drawArc point: (cos t, −sin t) → (Ax·cos t + Bx·sin t, Ay·cos t + By·sin t)
+            arc_xform = QTransform(Ax, Ay, Bx, By, 0.0, 0.0)
+            self._painter.setTransform(arc_xform * base_transform)
 
-            # Transform into the painter's local frame (undo painter rotation by -angle)
-            lx = sx * cos_a + sy * sin_a
-            ly = -sx * sin_a + sy * cos_a
+            # Depth: z(θ) = Az·cos θ + Bz·sin θ.  Front face: z ≤ 0.
+            Az = ri_3d * vi[2]
+            Bz = rj_3d * vj[2]
+            z_amp = sqrt(Az * Az + Bz * Bz)
 
-            # Determine front vs back: front = smaller z (closer to viewer)
-            # Also clip to the boundary ellipse: (lx/r1)² + (ly/r2)² ≤ 1
-            inside = (lx / r1) ** 2 + (ly / r2) ** 2 <= 1.02
-            front = pz <= 0  # smaller z = front
-            visible = inside & front
-
-            # If the plane is nearly parallel to the screen, show the full in-ellipse portion
-            z_amplitude = sqrt((ri * vi[2]) ** 2 + (rj * vj[2]) ** 2)
-            if z_amplitude < 1e-6:
-                visible = inside
-
-            # Draw contiguous visible segments as QPainterPath
-            self._draw_arc_segments(lx, ly, visible)
-
-    def _draw_arc_segments(self, lx: np.ndarray, ly: np.ndarray, visible: np.ndarray) -> None:
-        """Draw contiguous visible arc segments from sampled points.
-
-        :param lx: X-coordinates in the painter's local frame (array of length N).
-        :param ly: Y-coordinates in the painter's local frame (array of length N).
-        :param visible: Boolean mask indicating which sample points are visible.
-        """
-        n = len(lx)
-        if not np.any(visible):
-            return
-
-        path = QPainterPath()
-        in_segment = False
-
-        for idx in range(n):
-            if visible[idx]:
-                if not in_segment:
-                    path.moveTo(lx[idx], ly[idx])
-                    in_segment = True
-                else:
-                    path.lineTo(lx[idx], ly[idx])
+            if z_amp < 1e-8:
+                # Plane parallel to screen → draw full ellipse
+                self._painter.drawArc(self._UNIT_RECT, 0, 5760)
             else:
-                in_segment = False
+                # Front half: θ ∈ [φ_z + π/2, φ_z + 3π/2]
+                # drawArc angle t = −θ  →  start at t = −(φ_z + 3π/2), span = +π
+                phi_z = atan2(Bz, Az)
+                start_deg = degrees(-(phi_z + 1.5 * pi))
+                self._painter.drawArc(self._UNIT_RECT, int(start_deg * 16), 2880)
 
-        # Handle wrap-around: if both the first and last points are visible,
-        # connect the last segment back to the first visible point
-        if visible[0] and visible[-1]:
-            # Find the first visible index to connect to
-            for idx in range(n):
-                if visible[idx]:
-                    path.lineTo(lx[idx], ly[idx])
-                    break
-
-        self._painter.setBrush(Qt.BrushStyle.NoBrush)
-        self._painter.drawPath(path)
+        # Restore the original painter transform
+        self._painter.setTransform(base_transform)
 
     def draw_atom(self, atom: Atom) -> None:
         """Draw a single atom as an ADP ellipsoid, isotropic sphere, or fixed-size circle.
