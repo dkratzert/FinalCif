@@ -78,8 +78,10 @@ class MoleculeWidget(QtWidgets.QWidget):
     :param parent: Optional parent widget.
     """
 
-    def __init__(self, parent=None):
-        super().__init__(parent=parent)
+    atomClicked = QtCore.Signal(str)
+
+    def __init__(self, parent: QWidget = None):
+        super().__init__(parent)
         self._astar = None
         self._bstar = None
         self._cstar = None
@@ -90,9 +92,11 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.atoms_size = 12
         self.fontsize = 13
         self.bond_width = 1
-        self.labels = False
+        self.labels = True
         self.show_adps = True
         self.bond_drawer = self._draw_bond
+
+        self.show_hydrogens_flag = True
 
         # scaling factor for ADP ellipsoids in screen coordinates
         # 1.5382 is the standard ORTEP scaling factor for 50% probability:
@@ -100,6 +104,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.molecule_center = np.array([0, 0, 0])
         self.molecule_radius = 10
         self._lastPos = self.pos()
+        self._pressPos = self.pos()
         self._painter: None | QPainter = None
         self.x_angle = 0
         self.y_angle = 0
@@ -146,6 +151,44 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._eigenvalues_array = np.empty((0, 3))
         self._eigenvectors_array = np.empty((0, 3, 3))
         self._u_inv_array = np.empty((0, 3, 3))
+
+        self.mouse_pressed = False
+        self.labels = True
+        self.setFocusPolicy(Qt.StrongFocus)
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.atomClicked.connect(lambda x: print(x))
+
+    def set_background_color(self, color: QColor):
+        """Set the background color of the widget."""
+        self.bg_color = color
+        palette = self.palette()
+        palette.setColor(QPalette.Window, color)
+        self.setPalette(palette)
+
+    def set_bond_width(self, width: int):
+        """Set the width of the bonds."""
+        self.bond_width = width
+        self.update()
+
+    def set_labels_visible(self, visible: bool):
+        """Toggle visibility of atom labels."""
+        self.labels = visible
+        self.update()
+
+    def show_hydrogens(self, value: bool):
+        """Toggle display of hydrogen atoms and their bonds."""
+        self.show_hydrogens_flag = value
+        self.update()
+
+    def reset_view(self):
+        """Reset zoom and rotation to defaults."""
+        self.zoom = 1.0
+        self.x_angle = 180.0
+        self.y_angle = 180.0
+        self.z_angle = 0.0
+        self.x_shift_screen = 0
+        self.y_shift_screen = 0
+        self.update()
 
     def setLabelFont(self, font_size: int):
         """Set the pixel size used for atom labels and schedule a repaint.
@@ -339,6 +382,79 @@ class MoleculeWidget(QtWidgets.QWidget):
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """Record the initial cursor position for subsequent drag operations."""
         self._lastPos = event.position()
+        self._pressPos = event.position()
+
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        """Detect clicks on atoms and emit atomClicked signal."""
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
+            dx = event.position().x() - self._pressPos.x()
+            dy = event.position().y() - self._pressPos.y()
+            if abs(dx) < 5 and abs(dy) < 5:
+                x = event.position().x()
+                y = event.position().y()
+                clicked_atom = None
+                front_z = float('-inf')
+                for atom in self.atoms:
+                    if not self.show_hydrogens_flag and atom.type_ in ('H', 'D'):
+                        continue
+                    if self.is_point_inside_atom(atom, x, y):
+                        if atom.z > front_z:
+                            front_z = atom.z
+                            clicked_atom = atom
+                if clicked_atom:
+                    self.atomClicked.emit(clicked_atom.name)
+        super().mouseReleaseEvent(event)
+
+    def is_point_inside_atom(self, atom: Atom, px: float, py: float) -> bool:
+        """Check if a screen coordinate is inside the atom's drawn 2D projection."""
+        cx = atom.screenx
+        cy = atom.screeny
+        dx = px - cx
+        dy = py - cy
+
+        if self.show_adps and atom.u_cart is not None:
+            a = atom.u_cart[0, 0]
+            b = atom.u_cart[0, 1]
+            c = atom.u_cart[1, 1]
+
+            T = a + c
+            D = a * c - b * b
+            diff = T * T * 0.25 - D
+
+            if diff >= 0:
+                sq = sqrt(diff)
+                eig1 = T * 0.5 - sq
+                eig2 = T * 0.5 + sq
+
+                if eig1 > 0 and eig2 > 0:
+                    r1 = sqrt(eig1) * self.scale * self.adp_scale
+                    r2 = sqrt(eig2) * self.scale * self.adp_scale
+
+                    if abs(b) > 1e-8:
+                        angle = degrees(atan2(eig1 - a, b))
+                    else:
+                        angle = 0.0 if a < c else 90.0
+
+                    rad = radians(angle)
+                    cos_a = cos(rad)
+                    sin_a = sin(rad)
+
+                    # Transform to ellipse local coordinates
+                    local_x = dx * cos_a + dy * sin_a
+                    local_y = -dx * sin_a + dy * cos_a
+
+                    if (local_x**2 / r1**2) + (local_y**2 / r2**2) <= 1.0:
+                        return True
+                    return False
+
+        # Fallback for isotropic spheres or fixed-size circles
+        circle_size = self.atoms_size
+        if self.show_adps and atom.u_iso is not None:
+            r = sqrt(atom.u_iso) * self.scale * self.adp_scale
+            circle_size = r * 2
+
+        radius = circle_size / 2
+        return dx**2 + dy**2 <= radius**2
 
     def wheelEvent(self, event: QWheelEvent):
         """Increase or decrease the label font size on scroll."""
@@ -534,6 +650,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.calculate_z_order()
 
         for item in self.objects:
+            if not self.show_hydrogens_flag:
+                if item.atom1.type_ in hydrogens or (item.is_bond and item.atom2.type_ in hydrogens):
+                    continue
             if item.is_bond:
                 self.bond_drawer(item.atom1, item.atom2)
             else:
@@ -628,7 +747,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             nx = -nx
             ny = -ny
 
-        dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
+        dynamic_width = max(1, int(self.bond_width * self._factor * 5))
         w_half = dynamic_width / 2.0
 
         t = QTransform(ny * w_half, -nx * w_half, nx * w_half, ny * w_half, x1, y1)
@@ -971,7 +1090,7 @@ def display(atoms: list[Atomtuple],
     adp_checkbox.toggled.connect(lambda x: render_widget.show_adp(x))
     label_checkbox.toggled.connect(lambda x: render_widget.show_labels(x))
     bond_type_checkbox.toggled.connect(lambda x: render_widget.show_round_bonds(x))
-
+    render_widget.set_bond_width(4)
     render_widget.open_molecule(atoms=atoms, cell=cell, adps=adps)
     render_widget.labels = False
     render_widget.show_round_bonds(True)
@@ -980,7 +1099,7 @@ def display(atoms: list[Atomtuple],
     central_widget = QtWidgets.QWidget()
     window.setCentralWidget(central_widget)
     vl = QtWidgets.QVBoxLayout(central_widget)
-    window.setMinimumSize(1800, 1600)
+    window.setMinimumSize(1800, 1000)
     vl.addWidget(render_widget)
 
     hl = QtWidgets.QHBoxLayout()
