@@ -113,6 +113,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.cx_global = 0.0
         self.cy_global = 0.0
 
+        # Cumulative rotation matrix to preserve orientation during grow
+        self.cumulative_R = np.eye(3, dtype=np.float32)
+
         # Color caches
         self.bond_color = QColor('#555555')
         self.fallback_pen_color = QColor(QtCore.Qt.GlobalColor.black)
@@ -188,6 +191,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.z_angle = 0.0
         self.x_shift_screen = 0
         self.y_shift_screen = 0
+        self.cumulative_R = np.eye(3, dtype=np.float32)
         self.update()
 
     def setLabelFont(self, font_size: int):
@@ -237,7 +241,8 @@ class MoleculeWidget(QtWidgets.QWidget):
     def open_molecule(self, atoms: list[Atomtuple],
                       cell: tuple[float, float, float, float, float, float] | None = None,
                       adps: dict[str, tuple[float, float, float, float, float, float]] | None = None) -> None:
-        """Populate the widget with molecule data and trigger a repaint.
+        """
+        Loads a new molecule and completely resets the view (zoom, pan, rotation).
 
         Builds the internal atom list, connectivity table, and render objects.
         When *cell* and *adps* are both provided, anisotropic displacement
@@ -254,6 +259,19 @@ class MoleculeWidget(QtWidgets.QWidget):
         :param adps: Optional mapping of atom label to anisotropic
             displacement parameters ``(U11, U22, U33, U23, U13, U12)``.
         """
+        self._load_molecule(atoms, cell, adps, keep_view=False)
+
+    def grow_molecule(self, atoms: list[Atomtuple],
+                      cell: tuple[float, float, float, float, float, float] | None = None,
+                      adps: dict[str, tuple[float, float, float, float, float, float]] | None = None) -> None:
+        """Updates the molecule while preserving the current view (zoom, pan, rotation)."""
+        self._load_molecule(atoms, cell, adps, keep_view=True)
+
+    def _load_molecule(self, atoms: list[Atomtuple],
+                       cell: tuple[float, float, float, float, float, float] | None = None,
+                       adps: dict[str, tuple[float, float, float, float, float, float]] | None = None,
+                       keep_view: bool = False) -> None:
+
         self._cell = cell
         self._adp_map = adps if adps is not None else {}
 
@@ -263,7 +281,10 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.atoms.clear()
         self.make_adps(atoms)
         self.connections = self.get_conntable_from_atoms()
-        self.get_center_and_radius()
+
+        if not keep_view:
+            self.get_center_and_radius()
+            self.cumulative_R = np.eye(3, dtype=np.float32)
 
         self.objects.clear()
         for n1, n2 in self.connections:
@@ -289,9 +310,21 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._eigenvectors_array = np.zeros((len(self.atoms), 3, 3))
         self._u_inv_array = np.zeros((len(self.atoms), 3, 3))
 
+        # Apply accumulated rotation to the new coordinates
+        if keep_view and not np.allclose(self.cumulative_R, np.eye(3)):
+            self._coords_array = np.dot(self._coords_array - self.molecule_center,
+                                        self.cumulative_R.T) + self.molecule_center
+
         for i, at in enumerate(self.atoms):
+            if keep_view and not np.allclose(self.cumulative_R, np.eye(3)):
+                at.coordinate = self._coords_array[i]
+
             at.z = at.coordinate[2]
             if at.u_cart is not None:
+                if keep_view and not np.allclose(self.cumulative_R, np.eye(3)):
+                    # Rotate the ADP tensor before computing eigenvectors/values
+                    at.u_cart = np.matmul(self.cumulative_R, np.matmul(at.u_cart, self.cumulative_R.T))
+
                 try:
                     evals, evecs = np.linalg.eigh(at.u_cart)
                     u_invers = np.linalg.inv(at.u_cart)
@@ -309,8 +342,10 @@ class MoleculeWidget(QtWidgets.QWidget):
                     at.u_cart = None
                     at.u_iso = None
 
-        self._factor = min(self.width(), self.height()) / 2 / self.molecule_radius * self.zoom / 100
-        self.atoms_size = self._factor * 70
+        if not keep_view:
+            self._factor = min(self.width(), self.height()) / 2 / self.molecule_radius * self.zoom / 100
+            self.atoms_size = self._factor * 70
+
         self.update()
 
     def calc_amatrix(self):
@@ -564,6 +599,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         R_x = self.rotate_x()
         R = np.dot(R_x, R_y)
 
+        # Track the cumulative rotation matrix
+        self.cumulative_R = np.dot(R, self.cumulative_R)
+
         # Single bulk vector rotation instead of individual loops
         if self.atoms:
             self._coords_array = np.dot(self._coords_array - self.molecule_center, R.T) + self.molecule_center
@@ -760,7 +798,8 @@ class MoleculeWidget(QtWidgets.QWidget):
             nx = -nx
             ny = -ny
 
-        t = QTransform(ny * dynamic_width / 2.0, -nx * dynamic_width / 2.0, nx * dynamic_width / 2.0, ny * dynamic_width / 2.0,
+        t = QTransform(ny * dynamic_width / 2.0, -nx * dynamic_width / 2.0, nx * dynamic_width / 2.0,
+                       ny * dynamic_width / 2.0,
                        x1, y1)
         self.bond_brush.setTransform(t)
 
@@ -1102,7 +1141,7 @@ def display(atoms: list[Atomtuple],
     central_widget = QtWidgets.QWidget()
     window.setCentralWidget(central_widget)
     vl = QtWidgets.QVBoxLayout(central_widget)
-    window.setMinimumSize(1600, 1000)
+    window.setMinimumSize(1400, 900)
     vl.addWidget(render_widget)
 
     hl = QtWidgets.QHBoxLayout()
@@ -1118,9 +1157,9 @@ def display(atoms: list[Atomtuple],
         def handle_grow(checked: bool):
             if checked:
                 grown_atoms = grow_callback()
-                render_widget.open_molecule(atoms=grown_atoms, cell=cell, adps=adps)
+                render_widget.grow_molecule(atoms=grown_atoms, cell=cell, adps=adps)
             else:
-                render_widget.open_molecule(atoms=atoms, cell=cell, adps=adps)
+                render_widget.grow_molecule(atoms=atoms, cell=cell, adps=adps)
 
         grow_checkbox.toggled.connect(handle_grow)
         hl.addWidget(grow_checkbox)
@@ -1139,10 +1178,11 @@ if __name__ == "__main__":
         from sdm import SDM
 
         # Load sample data
-        cif = CifContainer('test-data/p21c.cif')
-        # cif = CifContainer(r'../41467_2015.cif') # huge
-        # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
-        # cif = CifContainer('tests/examples/1979688.cif')
+        #cif = CifContainer('test-data/p21c.cif')
+        #cif = CifContainer(r'../41467_2015.cif') # huge
+        #cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
+        #cif = CifContainer('tests/examples/1979688.cif')
+        cif = CifContainer('test-data/p31c.cif')
         # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
         # cif = CifContainer(Path('test-data/4060314.cif'))
         cif.load_this_block(len(cif.doc) - 1)
