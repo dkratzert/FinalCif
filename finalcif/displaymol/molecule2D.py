@@ -34,7 +34,7 @@ import numpy as np
 from qtpy import QtWidgets, QtCore, QtGui
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QPainter, QPen, QBrush, QColor, QMouseEvent, QPalette, QImage, QResizeEvent, QWheelEvent, \
-    QRadialGradient, QLinearGradient
+    QRadialGradient, QLinearGradient, QPainterPath
 
 from finalcif.cif.atoms import get_radius_from_element, element2color
 from finalcif.displaymol.sdm import Atomtuple
@@ -651,6 +651,132 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._painter.setPen(pen)
         self._painter.drawLine(int(x1), int(y1), int(x2), int(y2))
 
+    # Precomputed sample angles for principal-plane arc rendering (5° steps)
+    _ARC_N = 61
+    _ARC_THETA = np.linspace(0, 2.0 * np.pi, _ARC_N, endpoint=False)
+    _ARC_COS = np.cos(_ARC_THETA)
+    _ARC_SIN = np.sin(_ARC_THETA)
+
+    def _draw_principal_arcs(self, atom: Atom, r1: float, r2: float, angle: float) -> None:
+        """Draw ORTEP-style curved arcs for the three principal planes of the ADP ellipsoid.
+
+        Each principal plane (spanned by two eigenvectors of *u_cart*) intersects
+        the ellipsoid surface as an ellipse.  This method projects that 3-D curve
+        onto the screen, keeps only the front-facing half (closest to the viewer),
+        clips it to the 2-D projected ellipse boundary, and draws the resulting
+        arc segments.
+
+        The method operates in the painter's local coordinate system, which is
+        already translated to the ellipse centre and rotated by *angle* so that
+        the projected ellipse is axis-aligned.
+
+        :param atom: The atom whose *u_cart* tensor provides the 3-D ellipsoid.
+        :param r1: Minor semi-axis of the 2-D projected ellipse (screen pixels).
+        :param r2: Major semi-axis of the 2-D projected ellipse (screen pixels).
+        :param angle: Rotation angle of the 2-D ellipse in degrees.
+        """
+        try:
+            eigenvalues, eigenvectors = np.linalg.eigh(atom.u_cart)
+        except np.linalg.LinAlgError:
+            # Fallback: draw simple axis-aligned cross
+            self._painter.drawLine(int(-r1), 0, int(r1), 0)
+            self._painter.drawLine(0, int(-r2), 0, int(r2))
+            return
+
+        if np.any(eigenvalues <= 0):
+            self._painter.drawLine(int(-r1), 0, int(r1), 0)
+            self._painter.drawLine(0, int(-r2), 0, int(r2))
+            return
+
+        angle_rad = radians(angle)
+        cos_a = cos(angle_rad)
+        sin_a = sin(angle_rad)
+        scale = self.scale
+
+        # Pairs of spanning axes for each principal plane (plane k is normal to eigenvector k)
+        plane_pairs = ((1, 2), (0, 2), (0, 1))
+
+        cos_t = self._ARC_COS
+        sin_t = self._ARC_SIN
+
+        for i_ax, j_ax in plane_pairs:
+            li = eigenvalues[i_ax]
+            lj = eigenvalues[j_ax]
+            if li <= 0 or lj <= 0:
+                continue
+
+            ri = self.adp_scale * sqrt(li)
+            rj = self.adp_scale * sqrt(lj)
+
+            vi = eigenvectors[:, i_ax]  # 3-D eigenvector
+            vj = eigenvectors[:, j_ax]
+
+            # Parametric 3-D curve: P(θ) = ri·vi·cos(θ) + rj·vj·sin(θ)
+            # x-components
+            px = (ri * vi[0]) * cos_t + (rj * vj[0]) * sin_t
+            # y-components
+            py = (ri * vi[1]) * cos_t + (rj * vj[1]) * sin_t
+            # z-components (depth)
+            pz = (ri * vi[2]) * cos_t + (rj * vj[2]) * sin_t
+
+            # Scale to screen pixels
+            sx = px * scale
+            sy = py * scale
+
+            # Transform into the painter's local frame (undo painter rotation by -angle)
+            lx = sx * cos_a + sy * sin_a
+            ly = -sx * sin_a + sy * cos_a
+
+            # Determine front vs back: front = smaller z (closer to viewer)
+            # Also clip to the boundary ellipse: (lx/r1)² + (ly/r2)² ≤ 1
+            inside = (lx / r1) ** 2 + (ly / r2) ** 2 <= 1.02
+            front = pz <= 0  # smaller z = front
+            visible = inside & front
+
+            # If the plane is nearly parallel to the screen, show the full in-ellipse portion
+            z_amplitude = sqrt((ri * vi[2]) ** 2 + (rj * vj[2]) ** 2)
+            if z_amplitude < 1e-6:
+                visible = inside
+
+            # Draw contiguous visible segments as QPainterPath
+            self._draw_arc_segments(lx, ly, visible)
+
+    def _draw_arc_segments(self, lx: np.ndarray, ly: np.ndarray, visible: np.ndarray) -> None:
+        """Draw contiguous visible arc segments from sampled points.
+
+        :param lx: X-coordinates in the painter's local frame (array of length N).
+        :param ly: Y-coordinates in the painter's local frame (array of length N).
+        :param visible: Boolean mask indicating which sample points are visible.
+        """
+        n = len(lx)
+        if not np.any(visible):
+            return
+
+        path = QPainterPath()
+        in_segment = False
+
+        for idx in range(n):
+            if visible[idx]:
+                if not in_segment:
+                    path.moveTo(lx[idx], ly[idx])
+                    in_segment = True
+                else:
+                    path.lineTo(lx[idx], ly[idx])
+            else:
+                in_segment = False
+
+        # Handle wrap-around: if both the first and last points are visible,
+        # connect the last segment back to the first visible point
+        if visible[0] and visible[-1]:
+            # Find the first visible index to connect to
+            for idx in range(n):
+                if visible[idx]:
+                    path.lineTo(lx[idx], ly[idx])
+                    break
+
+        self._painter.setBrush(Qt.BrushStyle.NoBrush)
+        self._painter.drawPath(path)
+
     def draw_atom(self, atom: Atom) -> None:
         """Draw a single atom as an ADP ellipsoid, isotropic sphere, or fixed-size circle.
 
@@ -699,8 +825,7 @@ class MoleculeWidget(QtWidgets.QWidget):
 
                     cross_pen = QPen(QColor(0, 0, 0, 120), 1, Qt.PenStyle.SolidLine)
                     self._painter.setPen(cross_pen)
-                    self._painter.drawLine(int(-r1), 0, int(r1), 0)
-                    self._painter.drawLine(0, int(-r2), 0, int(r2))
+                    self._draw_principal_arcs(atom, r1, r2, angle)
 
                     self._painter.restore()
                     return
@@ -903,9 +1028,9 @@ if __name__ == "__main__":
         from sdm import SDM
 
         # Load sample data
-        cif = CifContainer('test-data/p21c.cif')
-        # cif = CifContainer(r'../41467_2015.cif') # huge
-        # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
+        #cif = CifContainer('test-data/p21c.cif')
+        #cif = CifContainer(r'../41467_2015.cif') # huge
+        cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
         # cif = CifContainer('tests/examples/1979688.cif')
         # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
         # cif = CifContainer(Path('test-data/4060314.cif'))
