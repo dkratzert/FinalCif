@@ -791,7 +791,7 @@ class MoleculeWidget(QtWidgets.QWidget):
                     pen = QPen(self.adp_pen_color, 1, Qt.PenStyle.SolidLine)
                     self._painter.setBrush(brush)
                     self._painter.setPen(pen)
-                    self._painter.drawEllipse(int(-r1), int(-r2), int(2 * r1), int(2 * r2))
+                    self._painter.drawEllipse(QRectF(-r1, -r2, 2 * r1, 2 * r2))
 
                     cross_pen = QPen(QColor(0, 0, 0, 120), 1, Qt.PenStyle.SolidLine)
                     self._painter.setPen(cross_pen)
@@ -814,8 +814,7 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         self._painter.setPen(QPen(self.fallback_pen_color, 1, Qt.PenStyle.SolidLine))
         self._painter.setBrush(QBrush(gradient))
-        self._painter.drawEllipse(int(cx - radius), int(cy - radius),
-                                  int(circle_size), int(circle_size))
+        self._painter.drawEllipse(QRectF(cx - radius, cy - radius, circle_size, circle_size))
 
     def make_gradient(self, angle: float, atom: Atom, r1: float, r2: float) -> QRadialGradient:
         """Create a radial gradient for an ADP ellipsoid with a simulated light source.
@@ -963,7 +962,7 @@ def display(atoms: list[Atomtuple],
     central_widget = QtWidgets.QWidget()
     window.setCentralWidget(central_widget)
     vl = QtWidgets.QVBoxLayout(central_widget)
-    window.setMinimumSize(800, 600)
+    window.setMinimumSize(1800, 1600)
     vl.addWidget(render_widget)
 
     hl = QtWidgets.QHBoxLayout()
@@ -998,9 +997,9 @@ if __name__ == "__main__":
         from sdm import SDM
 
         # Load sample data
-        #cif = CifContainer('test-data/p21c.cif')
+        cif = CifContainer('test-data/p21c.cif')
         #cif = CifContainer(r'../41467_2015.cif') # huge
-        cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
+        #cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
         # cif = CifContainer('tests/examples/1979688.cif')
         # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
         # cif = CifContainer(Path('test-data/4060314.cif'))
