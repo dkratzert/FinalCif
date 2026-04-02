@@ -91,7 +91,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._factor = 1.0
         self.atoms_size = 12
         self.fontsize = 13
-        self.bond_width = 1
+        self.bond_width = 3
         self.labels = True
         self.show_adps = True
         self.bond_drawer = self._draw_bond
@@ -443,7 +443,7 @@ class MoleculeWidget(QtWidgets.QWidget):
                     local_x = dx * cos_a + dy * sin_a
                     local_y = -dx * sin_a + dy * cos_a
 
-                    if (local_x**2 / r1**2) + (local_y**2 / r2**2) <= 1.0:
+                    if (local_x ** 2 / r1 ** 2) + (local_y ** 2 / r2 ** 2) <= 1.0:
                         return True
                     return False
 
@@ -454,7 +454,7 @@ class MoleculeWidget(QtWidgets.QWidget):
             circle_size = r * 2
 
         radius = circle_size / 2
-        return dx**2 + dy**2 <= radius**2
+        return dx ** 2 + dy ** 2 <= radius ** 2
 
     def wheelEvent(self, event: QWheelEvent):
         """Increase or decrease the label font size on scroll."""
@@ -699,6 +699,34 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.molecule_center = np.array(c, dtype=np.float32)
         self.molecule_radius = r or 10
 
+    def _get_bond_line(self, at1: Atom, at2: Atom) -> tuple[float, float, float, float, int] | None:
+        """Calculate the 2D projected line segment and width for a bond.
+
+        Returns (x1, y1, x2, y2, dynamic_width) or None if the bond is fully occluded.
+        """
+        c1 = at1.coordinate
+        c2 = at2.coordinate
+        v = c2 - c1
+        d = np.linalg.norm(v)
+
+        r1 = self.get_directional_radius(at1, v)
+        r2 = self.get_directional_radius(at2, -v)
+
+        if d <= r1 + r2:
+            return None
+
+        v_norm = v / d
+        p1 = c1 + v_norm * r1
+        p2 = c2 - v_norm * r2
+
+        x1 = p1[0] * self.scale + self.cx_global
+        y1 = p1[1] * self.scale + self.cy_global
+        x2 = p2[0] * self.scale + self.cx_global
+        y2 = p2[1] * self.scale + self.cy_global
+
+        dynamic_width = max(1, int(self.bond_width * self._factor * 5))
+        return x1, y1, x2, y2, dynamic_width
+
     def _draw_bond_rounded(self, at1: Atom, at2: Atom):
         """Draw a 3D-shaded (cylinder-like) bond between two atoms.
 
@@ -710,26 +738,11 @@ class MoleculeWidget(QtWidgets.QWidget):
         :param at1: First atom of the bond.
         :param at2: Second atom of the bond.
         """
-        c1 = at1.coordinate
-        c2 = at2.coordinate
-        v = c2 - c1
-        d = np.linalg.norm(v)
-
-        # Calculate precise bounding limits along the directional vector
-        r1 = self.get_directional_radius(at1, v)
-        r2 = self.get_directional_radius(at2, -v)
-
-        if d <= r1 + r2:
+        line_data = self._get_bond_line(at1, at2)
+        if not line_data:
             return
 
-        v_norm = v / d
-        p1 = c1 + v_norm * r1
-        p2 = c2 - v_norm * r2
-
-        x1 = p1[0] * self.scale + self.cx_global
-        y1 = p1[1] * self.scale + self.cy_global
-        x2 = p2[0] * self.scale + self.cx_global
-        y2 = p2[1] * self.scale + self.cy_global
+        x1, y1, x2, y2, dynamic_width = line_data
 
         dx = x2 - x1
         dy = y2 - y1
@@ -747,10 +760,8 @@ class MoleculeWidget(QtWidgets.QWidget):
             nx = -nx
             ny = -ny
 
-        dynamic_width = max(1, int(self.bond_width * self._factor * 5))
-        w_half = dynamic_width / 2.0
-
-        t = QTransform(ny * w_half, -nx * w_half, nx * w_half, ny * w_half, x1, y1)
+        t = QTransform(ny * dynamic_width / 2.0, -nx * dynamic_width / 2.0, nx * dynamic_width / 2.0, ny * dynamic_width / 2.0,
+                       x1, y1)
         self.bond_brush.setTransform(t)
 
         pen = QPen(self.bond_brush, dynamic_width, Qt.PenStyle.SolidLine)
@@ -767,27 +778,12 @@ class MoleculeWidget(QtWidgets.QWidget):
         :param at1: First atom of the bond.
         :param at2: Second atom of the bond.
         """
-        c1 = at1.coordinate
-        c2 = at2.coordinate
-        v = c2 - c1
-        d = np.linalg.norm(v)
-
-        r1 = self.get_directional_radius(at1, v)
-        r2 = self.get_directional_radius(at2, -v)
-
-        if d <= r1 + r2:
+        line_data = self._get_bond_line(at1, at2)
+        if not line_data:
             return
 
-        v_norm = v / d
-        p1 = c1 + v_norm * r1
-        p2 = c2 - v_norm * r2
+        x1, y1, x2, y2, dynamic_width = line_data
 
-        x1 = p1[0] * self.scale + self.cx_global
-        y1 = p1[1] * self.scale + self.cy_global
-        x2 = p2[0] * self.scale + self.cx_global
-        y2 = p2[1] * self.scale + self.cy_global
-
-        dynamic_width = max(self.bond_width, min(15, int(self.bond_width * self._factor * 11)))
         pen = QPen(self.bond_color, dynamic_width, Qt.PenStyle.SolidLine)
         pen.setCapStyle(Qt.PenCapStyle.RoundCap)
         self._painter.setPen(pen)
@@ -1086,11 +1082,12 @@ def display(atoms: list[Atomtuple],
     bond_type_checkbox = QtWidgets.QCheckBox("Round Bonds")
 
     adp_checkbox.setChecked(True)
+    bond_type_checkbox.setChecked(True)
 
     adp_checkbox.toggled.connect(lambda x: render_widget.show_adp(x))
     label_checkbox.toggled.connect(lambda x: render_widget.show_labels(x))
     bond_type_checkbox.toggled.connect(lambda x: render_widget.show_round_bonds(x))
-    render_widget.set_bond_width(4)
+    render_widget.set_bond_width(3)
     render_widget.open_molecule(atoms=atoms, cell=cell, adps=adps)
     render_widget.labels = False
     render_widget.show_round_bonds(True)
@@ -1099,7 +1096,7 @@ def display(atoms: list[Atomtuple],
     central_widget = QtWidgets.QWidget()
     window.setCentralWidget(central_widget)
     vl = QtWidgets.QVBoxLayout(central_widget)
-    window.setMinimumSize(1800, 1000)
+    window.setMinimumSize(1600, 1000)
     vl.addWidget(render_widget)
 
     hl = QtWidgets.QHBoxLayout()
@@ -1135,8 +1132,8 @@ if __name__ == "__main__":
 
         # Load sample data
         cif = CifContainer('test-data/p21c.cif')
-        #cif = CifContainer(r'../41467_2015.cif') # huge
-        #cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
+        # cif = CifContainer(r'../41467_2015.cif') # huge
+        # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
         # cif = CifContainer('tests/examples/1979688.cif')
         # cif = CifContainer('/Users/daniel/Documents/GitHub/StructureFinder/test-data/668839.cif')
         # cif = CifContainer(Path('test-data/4060314.cif'))
