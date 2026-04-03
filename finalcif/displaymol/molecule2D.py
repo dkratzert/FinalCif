@@ -308,6 +308,10 @@ class MoleculeWidget(QtWidgets.QWidget):
 
                 try:
                     evals, evecs = np.linalg.eigh(at.u_cart)
+                    if np.any(evals <= 0):
+                        at.adp_valid = False
+                    else:
+                        at.adp_valid = True
                     u_invers = np.linalg.inv(at.u_cart)
 
                     self._ucart_array[i] = at.u_cart
@@ -320,6 +324,7 @@ class MoleculeWidget(QtWidgets.QWidget):
                     at.u_eigvecs = evecs
                     at.u_inv = u_invers
                 except np.linalg.LinAlgError:
+                    at.adp_valid = False
                     at.u_cart = None
                     at.u_iso = None
 
@@ -653,15 +658,15 @@ class MoleculeWidget(QtWidgets.QWidget):
         """Return an approximate isotropic radius for UI purposes (e.g. label offset)."""
         if self.show_adps and atom.u_iso is not None:
             return sqrt(atom.u_iso)  # * self.adp_scale
-        return 35.0 / 150.0
+        return 0.23
 
     def get_directional_radius(self, atom: Atom, v: np.ndarray) -> float:
         """Return the distance from the atom centre to its ellipsoid surface along *v*."""
         d = np.linalg.norm(v)
         if d < 1e-8:
-            return 0.0
+            return 0.23
 
-        if self.show_adps and getattr(atom, 'u_inv', None) is not None:
+        if self.show_adps and atom.u_inv is not None:
             u = v / d
             val = np.dot(u, np.dot(atom.u_inv, u))
             if val > 0:
@@ -671,7 +676,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         if self.show_adps and atom.u_iso is not None:
             return sqrt(atom.u_iso) * self.adp_scale
 
-        return 35.0 / 150.0
+        return 0.23
 
     def draw(self) -> None:
         """Execute the main rendering pass."""
@@ -897,6 +902,10 @@ class MoleculeWidget(QtWidgets.QWidget):
 
     def draw_atom(self, atom: Atom) -> None:
         """Draw a single atom as an ADP ellipsoid, isotropic sphere, or fixed-size circle."""
+        if self.show_adps and atom.u_cart is not None:
+            if not atom.adp_valid:
+                self._draw_invalid_adp(atom)
+                return
         cx = atom.screenx
         cy = atom.screeny
 
@@ -974,6 +983,48 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         self._painter.restore()
 
+    def _draw_invalid_adp(self, atom: Atom) -> None:
+        cx = atom.screenx
+        cy = atom.screeny
+
+        size = self.atoms_size
+
+        self._painter.save()
+        self._painter.translate(cx, cy)
+
+        # Selection highlight
+        if atom.name in self.selected_atoms:
+            self._draw_selection(size / 2, size / 2)
+
+        # Pyramid points (simple perspective projection)
+        top = QtCore.QPointF(0, -size * 0.7)
+        left = QtCore.QPointF(-size * 0.6, size * 0.5)
+        right = QtCore.QPointF(size * 0.6, size * 0.5)
+        back = QtCore.QPointF(0, size * 0.2)
+
+        # Faces (front, left, right)
+        front_face = [top, right, left]
+        left_face = [top, left, back]
+        right_face = [top, back, right]
+
+        # Colors for shading
+        color_base = QColor(220, 80, 80)
+        color_light = color_base.lighter(140)
+        color_dark = color_base.darker(160)
+
+        pen = QPen(QColor(80, 0, 0), 1)
+        self._painter.setPen(pen)
+
+        # Draw faces with simple shading
+        self._painter.setBrush(QBrush(color_light))
+        self._painter.setBrush(QBrush(color_base))
+        self._painter.setBrush(QBrush(color_dark))
+        self._painter.drawPolygon(QtGui.QPolygonF(front_face))
+        self._painter.drawPolygon(QtGui.QPolygonF(left_face))
+        self._painter.drawPolygon(QtGui.QPolygonF(right_face))
+
+        self._painter.restore()
+
     def draw_label(self, atom: Atom):
         """Draw the atom's name next to its ellipsoid/sphere."""
         self._painter.setPen(QPen(QColor(100, 50, 5), 2, Qt.PenStyle.SolidLine))
@@ -1005,12 +1056,14 @@ class MoleculeWidget(QtWidgets.QWidget):
 class Atom:
     """Internal representation of a single atom for rendering."""
 
+
     __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_', 'u_cart', 'color',
                  'color_light', 'color_dark', 'u_iso', 'z', 'u_eigvals', 'u_eigvecs', 'u_inv',
-                 'sphere_brush', 'adp_brush']
+                 'sphere_brush', 'adp_brush', 'adp_valid']
 
     def __init__(self, x: float, y: float, z: float, name: str, type_: str, part: int) -> None:
         self.coordinate = np.array([x, y, z], dtype=np.float32)
+        self.adp_valid = True
         self.z = z
         self.name = name
         self.part = part
