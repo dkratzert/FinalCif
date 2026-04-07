@@ -97,7 +97,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self.bond_width = 3
         self.labels = True
         self.show_adps = True
-        self.bond_drawer = self._draw_bond
+        self.bond_drawer = self._draw_bond_rounded
 
         self.show_hydrogens_flag = True
 
