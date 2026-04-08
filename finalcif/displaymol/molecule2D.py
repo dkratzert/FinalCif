@@ -666,6 +666,9 @@ class MoleculeWidget(QtWidgets.QWidget):
         if d < 1e-8:
             return 0.23
 
+        if not atom.adp_valid:
+            return 0.23
+
         if self.show_adps and atom.u_inv is not None:
             u = v / d
             val = np.dot(u, np.dot(atom.u_inv, u))
@@ -1056,7 +1059,6 @@ class MoleculeWidget(QtWidgets.QWidget):
 class Atom:
     """Internal representation of a single atom for rendering."""
 
-
     __slots__ = ['coordinate', 'name', 'part', 'radius', 'screenx', 'screeny', 'type_', 'u_cart', 'color',
                  'color_light', 'color_dark', 'u_iso', 'z', 'u_eigvals', 'u_eigvecs', 'u_inv',
                  'sphere_brush', 'adp_brush', 'adp_valid']
@@ -1177,8 +1179,8 @@ if __name__ == "__main__":
         from sdm import SDM
 
         # Load sample data
-        #cif = CifContainer('test-data/p21c.cif')
-        #cif = CifContainer(r'../41467_2015.cif')  # huge
+        # cif = CifContainer('test-data/p21c.cif')
+        # cif = CifContainer(r'../41467_2015.cif')  # huge
         # cif = CifContainer(r"D:\frames\Workordner\huge_structure\p-1-finalcif.cif")
         # cif = CifContainer('tests/examples/1979688.cif')
         cif = CifContainer('test-data/p31c.cif')
