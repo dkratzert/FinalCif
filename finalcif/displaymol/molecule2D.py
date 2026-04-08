@@ -1020,11 +1020,21 @@ class MoleculeWidget(QtWidgets.QWidget):
 
         # Draw faces with simple shading
         self._painter.setBrush(QBrush(color_light))
-        self._painter.setBrush(QBrush(color_base))
-        self._painter.setBrush(QBrush(color_dark))
         self._painter.drawPolygon(QtGui.QPolygonF(front_face))
+        self._painter.setBrush(QBrush(color_base))
         self._painter.drawPolygon(QtGui.QPolygonF(left_face))
+        self._painter.setBrush(QBrush(color_dark))
         self._painter.drawPolygon(QtGui.QPolygonF(right_face))
+
+        # Draw "NPD" text
+        self._painter.setPen(QPen(Qt.GlobalColor.white))
+        font = self._painter.font()
+        old_size = font.pixelSize()
+        font.setPixelSize(max(int(size * 0.3), 1))
+        self._painter.setFont(font)
+        self._painter.drawText(QRectF(-size, -size * 0.5, size * 2.0, size), Qt.AlignmentFlag.AlignCenter, "NPD")
+        font.setPixelSize(old_size)
+        self._painter.setFont(font)
 
         self._painter.restore()
 
