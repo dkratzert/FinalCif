@@ -999,44 +999,55 @@ class MoleculeWidget(QtWidgets.QWidget):
         if atom.name in self.selected_atoms:
             self._draw_selection(size / 2, size / 2)
 
-        # Pyramid points (simple perspective projection)
-        top = QtCore.QPointF(0, -size * 0.7)
-        left = QtCore.QPointF(-size * 0.6, size * 0.5)
-        right = QtCore.QPointF(size * 0.6, size * 0.5)
-        back = QtCore.QPointF(0, size * 0.2)
+        # Cube points (isometric projection)
+        s = size * 0.4
+        dx = size * 0.3
+        dy = -size * 0.3
 
-        # Faces (front, left, right)
-        front_face = [top, right, left]
-        left_face = [top, left, back]
-        right_face = [top, back, right]
+        # Front face
+        fl = QtCore.QPointF(-s - dx/2, s - dy/2)
+        fr = QtCore.QPointF(s - dx/2, s - dy/2)
+        tl = QtCore.QPointF(-s - dx/2, -s - dy/2)
+        tr = QtCore.QPointF(s - dx/2, -s - dy/2)
 
-        # Colors for shading
-        color_base = QColor(220, 80, 80)
-        color_light = color_base.lighter(140)
-        color_dark = color_base.darker(160)
+        # Back face visible corners
+        btl = QtCore.QPointF(-s + dx/2, -s + dy/2)
+        btr = QtCore.QPointF(s + dx/2, -s + dy/2)
+        bbr = QtCore.QPointF(s + dx/2, s + dy/2)
 
-        pen = QPen(QColor(80, 0, 0), 1)
+        # Faces
+        front_face = [tl, tr, fr, fl]
+        top_face = [tl, btl, btr, tr]
+        right_face = [tr, btr, bbr, fr]
+
+        # Colors for shading (light source top-left)
+        color_base = atom.color
+        color_light = atom.color_light
+        color_dark = atom.color_dark
+
+        pen = QPen(self.fallback_pen_color, 1)
         self._painter.setPen(pen)
 
         # Draw faces with simple shading
         self._painter.setBrush(QBrush(color_light))
-        self._painter.drawPolygon(QtGui.QPolygonF(front_face))
+        self._painter.drawPolygon(QtGui.QPolygonF(top_face))
         self._painter.setBrush(QBrush(color_base))
-        self._painter.drawPolygon(QtGui.QPolygonF(left_face))
+        self._painter.drawPolygon(QtGui.QPolygonF(front_face))
         self._painter.setBrush(QBrush(color_dark))
         self._painter.drawPolygon(QtGui.QPolygonF(right_face))
+        #self.draw_npd_text(dx, dy, s)
+        self._painter.restore()
 
-        # Draw "NPD" text
+    def draw_npd_text(self, dx: float, dy: float, s: float):
         self._painter.setPen(QPen(Qt.GlobalColor.white))
         font = self._painter.font()
         old_size = font.pixelSize()
-        font.setPixelSize(max(int(size * 0.3), 1))
+        font.setPixelSize(max(int(self.atoms_size * 0.3), 1))
         self._painter.setFont(font)
-        self._painter.drawText(QRectF(-size, -size * 0.5, size * 2.0, size), Qt.AlignmentFlag.AlignCenter, "NPD")
+        front_rect = QRectF(-s - dx / 2, -s - dy / 2, 2 * s, 2 * s)
+        self._painter.drawText(front_rect, Qt.AlignmentFlag.AlignCenter, "NPD")
         font.setPixelSize(old_size)
         self._painter.setFont(font)
-
-        self._painter.restore()
 
     def draw_label(self, atom: Atom):
         """Draw the atom's name next to its ellipsoid/sphere."""
