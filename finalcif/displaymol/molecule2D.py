@@ -271,16 +271,12 @@ class MoleculeWidget(QtWidgets.QWidget):
         for n1, n2 in self.connections:
             at1 = self.atoms[n1]
             at2 = self.atoms[n2]
-            if at1.type_ in ('H', 'D') and at2.u_iso is not None:
-                if at1.u_iso is None:
-                    at1.u_iso = at2.u_iso * 0.8
-            elif at2.type_ in ('H', 'D') and at1.u_iso is not None:
-                if at2.u_iso is None:
-                    at2.u_iso = at1.u_iso * 0.8
 
             self.objects.append(RenderItem(is_bond=True, atom1=at1, atom2=at2))
 
         for atom in self.atoms:
+            if atom.type_ in ('H', 'D'):
+                atom.u_iso = 0.01
             self.objects.append(RenderItem(is_bond=False, atom1=atom))
 
         # Build numpy arrays for fully vectorized rotation
@@ -1005,15 +1001,15 @@ class MoleculeWidget(QtWidgets.QWidget):
         dy = -size * 0.3
 
         # Front face
-        fl = QtCore.QPointF(-s - dx/2, s - dy/2)
-        fr = QtCore.QPointF(s - dx/2, s - dy/2)
-        tl = QtCore.QPointF(-s - dx/2, -s - dy/2)
-        tr = QtCore.QPointF(s - dx/2, -s - dy/2)
+        fl = QtCore.QPointF(-s - dx / 2, s - dy / 2)
+        fr = QtCore.QPointF(s - dx / 2, s - dy / 2)
+        tl = QtCore.QPointF(-s - dx / 2, -s - dy / 2)
+        tr = QtCore.QPointF(s - dx / 2, -s - dy / 2)
 
         # Back face visible corners
-        btl = QtCore.QPointF(-s + dx/2, -s + dy/2)
-        btr = QtCore.QPointF(s + dx/2, -s + dy/2)
-        bbr = QtCore.QPointF(s + dx/2, s + dy/2)
+        btl = QtCore.QPointF(-s + dx / 2, -s + dy / 2)
+        btr = QtCore.QPointF(s + dx / 2, -s + dy / 2)
+        bbr = QtCore.QPointF(s + dx / 2, s + dy / 2)
 
         # Faces
         front_face = [tl, tr, fr, fl]
@@ -1035,7 +1031,7 @@ class MoleculeWidget(QtWidgets.QWidget):
         self._painter.drawPolygon(QtGui.QPolygonF(front_face))
         self._painter.setBrush(QBrush(color_dark))
         self._painter.drawPolygon(QtGui.QPolygonF(right_face))
-        #self.draw_npd_text(dx, dy, s)
+        # self.draw_npd_text(dx, dy, s)
         self._painter.restore()
 
     def draw_npd_text(self, dx: float, dy: float, s: float):
@@ -1097,7 +1093,7 @@ class Atom:
         self.u_cart = None
         self.color = QColor(element2color.get(self.type_, '#000000'))  # Default to black if unknown
         self.color_light = self.color.lighter(160)
-        self.color_dark = self.color.darker(160)
+        self.color_dark = self.color.darker(180)
         self.u_iso = None
         self.u_eigvals = None
         self.u_eigvecs = None
