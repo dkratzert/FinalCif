@@ -26,7 +26,7 @@ from qtpy.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication
     QToolButton, QVBoxLayout, QWidget)
 
 from finalcif.ciforder.order import CifOrder
-from finalcif.displaymol.molecule2D import MoleculeWidget
+from fastmolwidget.molecule2D import MoleculeWidget
 from finalcif.gui.block_combobox import ComboBoxWithContextMenu
 from finalcif.gui.custom_classes import MyCifTable
 from finalcif.gui.equipmenttable import MyEQTableWidget

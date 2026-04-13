@@ -4543,7 +4543,7 @@ please add a publication author:</string>
   <customwidget>
    <class>MoleculeWidget</class>
    <extends>QWidget</extends>
-   <header>finalcif.displaymol.molecule2D.h</header>
+   <header>fastmolwidget.molecule2D.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

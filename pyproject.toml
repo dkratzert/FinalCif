@@ -48,6 +48,7 @@ dependencies = [
     "shelxfile",
     "crossrefapi",
     "numpy",
+    "fastmolwidget",
     "pyenchant",
     "hatchling",
     "charset-normalizer",

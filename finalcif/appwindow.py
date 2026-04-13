@@ -17,6 +17,7 @@ from math import sin, radians
 from pathlib import Path, WindowsPath
 from typing import cast, Any
 
+from fastmolwidget.sdm import SDM
 from finalcif.gui.vzs_viewer import VZSImageViewer
 
 warnings.filterwarnings("ignore", category=RuntimeWarning, module="shibokensupport.signature.parser")
@@ -41,7 +42,6 @@ from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
 from finalcif.datafiles.ccdc_mail import CCDCMail
-from finalcif.displaymol.sdm import SDM
 from finalcif.equip_property.author_loop_templates import AuthorLoops
 from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
@@ -1918,7 +1918,7 @@ class AppWindow(QMainWindow):
         self.ui.render_widget.show_labels(value)
 
     def show_adp(self, value: bool):
-        self.ui.render_widget.show_adp(value)
+        self.ui.render_widget.show_adps(value)
 
     def check_Z(self) -> None:
         """

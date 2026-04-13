@@ -1,7 +1,7 @@
 import pytest
+from fastmolwidget.sdm import Atomtuple
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.displaymol.molecule2D import calc_volume, MoleculeWidget, RenderItem
-from finalcif.displaymol.sdm import Atomtuple
+from fastmolwidget.molecule2D import calc_volume, MoleculeWidget, RenderItem
 from qtpy import QtWidgets
 
 app = QtWidgets.QApplication.instance()
@@ -32,7 +32,7 @@ def test_molecule_widget_creation():
     assert widget.fontsize == 13
     assert widget.bond_width == 3
     assert widget.labels is True
-    assert widget.show_adps is True
+    assert widget._show_adps is True
     assert widget.bond_drawer == widget._draw_bond_rounded
 
 
@@ -58,7 +58,7 @@ def test_molecule_widget_with_cif():
 
     # Test setting parameters and re-drawing
     widget.labels = False
-    widget.show_adps = False
+    widget._show_adps = False
     widget.atoms_size = 15
     widget.bond_width = 4
     widget.repaint()
@@ -89,8 +89,8 @@ def test_molecule_widget_toggles():
     assert widget.show_hydrogens_flag is False
 
     # Test ADP visibility
-    widget.show_adp(False)
-    assert widget.show_adps is False
+    widget.show_adps(False)
+    assert widget._show_adps is False
 
     # Test bond type toggle
     widget.show_round_bonds(False)
@@ -148,7 +148,7 @@ def test_mouse_events_record_position():
     from qtpy.QtCore import QPointF
     from qtpy import QtCore
 
-    event = QMouseEvent(QtCore.QEvent.Type.MouseButtonPress, QPointF(10.0, 20.0),
+    event = QMouseEvent(QtCore.QEvent.Type.MouseButtonPress, QPointF(10.0, 20.0), QPointF(10.0, 20.0),
                         QtCore.Qt.MouseButton.LeftButton, QtCore.Qt.MouseButton.LeftButton, QtCore.Qt.KeyboardModifier.NoModifier)
     widget.mousePressEvent(event)
 
