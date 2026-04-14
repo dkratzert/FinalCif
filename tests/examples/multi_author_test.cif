@@ -1,0 +1,9 @@
+data_test
+_publ_contact_author_name 'Contact Author'
+_publ_contact_author_email 'single@contact.de'
+
+loop_
+_publ_author_name
+_publ_author_email
+'Author One' 'one@test.de'
+'Author Two' ?

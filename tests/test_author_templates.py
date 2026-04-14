@@ -51,11 +51,8 @@ class MyTestCase(unittest.TestCase):
         for row in range(listWidget.count()):
             item = listWidget.item(row)
             if item is not None and item.text().startswith(name):
-                item_widget = listWidget.itemWidget(item)
-                if item_widget is not None:
-                    QTest.mouseClick(item_widget, QtCore.Qt.LeftButton, QtCore.Qt.NoModifier,
-                                     item_widget.rect().center())
-                    break
+                listWidget.setCurrentRow(row)
+                break
 
     def test_export_selected_author(self):
         self.authorexport_file.unlink(missing_ok=True)
@@ -148,6 +145,30 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual('', self.app.ui.PhoneLineEdit.text())
         self.assertEqual(False, self.app.ui.ContactAuthorCheckBox.isChecked())
 
+    def test_import_multiple_authors(self):
+        multi_author_cif = data / 'examples/multi_author_test.cif'
+        self.app.authors.import_author(str(multi_author_cif))
+
+        self._select_row_of_author('Contact Author')
+        self.app.authors.load_selected_loop()
+        self.assertEqual('Contact Author (contact author)', self.app.authors.get_selected_loop_name())
+        self.assertEqual('single@contact.de', self.app.authors.get_author_info().email)
+        self.assertEqual(True, self.app.authors.get_author_info().contact_author)
+        self._delete_test_author('Contact Author (contact author)')
+
+        self._select_row_of_author('Author One')
+        self.app.authors.load_selected_loop()
+        self.assertEqual('Author One', self.app.authors.get_selected_loop_name())
+        self.assertEqual('one@test.de', self.app.authors.get_author_info().email)
+        self.assertEqual(False, self.app.authors.get_author_info().contact_author)
+        self._delete_test_author('Author One')
+
+        self._select_row_of_author('Author Two')
+        self.app.authors.load_selected_loop()
+        self.assertEqual('Author Two', self.app.authors.get_selected_loop_name())
+        self.assertEqual("''", self.app.authors.get_author_info().email)
+        self.assertEqual(False, self.app.authors.get_author_info().contact_author)
+        self._delete_test_author('Author Two')
 
 if __name__ == '__main__':
     unittest.main()

@@ -324,24 +324,61 @@ class AuthorLoops:
         doc = read_document_from_cif_file(filename)
         if not doc:
             return
-        block: gemmi.cif.Block = doc.sole_block()
-        if block.find_value('_publ_author_name'):
-            self.cif_key = '_publ_author'
-        else:
-            self.cif_key = '_publ_contact_author'
-        author = Author(name=block.find_value(self.keys_list[0]),
-                        address=block.find_value(self.keys_list[1]),
-                        email=block.find_value(self.keys_list[2]),
-                        phone=block.find_value(self.keys_list[3]),
-                        orcid=block.find_value(self.keys_list[4]),
-                        iucr_id=block.find_value(self.keys_list[5]),
-                        footnote=block.find_value(self.keys_list[6]),
-                        author_type=AuthorType.audit,
+
+        for block in doc:
+            contact_name = block.find_value('_publ_contact_author_name')
+            contact_address = block.find_value('_publ_contact_author_address')
+
+            if not contact_name or contact_name in ('?', '.'):
+                contact_author_combined = block.find_value('_publ_contact_author')
+                if contact_author_combined and contact_author_combined not in ('?', '.'):
+                    ca_str = as_string(contact_author_combined).strip()
+                    if ca_str:
+                        lines = [ln.strip() for ln in ca_str.splitlines() if ln.strip()]
+                        if lines:
+                            contact_name = quote(lines[0])
+                            if not contact_address and len(lines) > 1:
+                                contact_address = quote('\n'.join(lines[1:]))
+
+            if contact_name and contact_name not in ('?', '.'):
+                author = Author(
+                    name=contact_name,
+                    address=contact_address or '',
+                    email=block.find_value('_publ_contact_author_email') or '',
+                    phone=block.find_value('_publ_contact_author_phone') or '',
+                    orcid=block.find_value('_publ_contact_author_id_orcid') or '',
+                    iucr_id=block.find_value('_publ_contact_author_id_iucr') or '',
+                    footnote=block.find_value('_publ_contact_author_footnote') or '',
+                    author_type=AuthorType.publ,
+                    contact_author=True
+                )
+                self.general_author_save(author)
+
+            names = list(block.find_values('_publ_author_name'))
+            if names:
+                addresses = list(block.find_values('_publ_author_address'))
+                emails = list(block.find_values('_publ_author_email'))
+                phones = list(block.find_values('_publ_author_phone'))
+                orcids = list(block.find_values('_publ_author_id_orcid'))
+                iucrs = list(block.find_values('_publ_author_id_iucr'))
+                footnotes = list(block.find_values('_publ_author_footnote'))
+
+                for i, name in enumerate(names):
+                    if not name or name in ('?', '.'):
+                        continue
+                    author = Author(
+                        name=name,
+                        address=addresses[i] if i < len(addresses) and addresses[i] not in ('?', '.') else '',
+                        email=emails[i] if i < len(emails) and emails[i] not in ('?', '.') else '',
+                        phone=phones[i] if i < len(phones) and phones[i] not in ('?', '.') else '',
+                        orcid=orcids[i] if i < len(orcids) and orcids[i] not in ('?', '.') else '',
+                        iucr_id=iucrs[i] if i < len(iucrs) and iucrs[i] not in ('?', '.') else '',
+                        footnote=footnotes[i] if i < len(footnotes) and footnotes[i] not in ('?', '.') else '',
+                        author_type=AuthorType.publ,
                         contact_author=False
-                        )
-        if not author.name:
-            return None
-        self.general_author_save(author)
+                    )
+                    self.general_author_save(author)
+
         self.show_authors_list()
 
     def delete_current_author(self) -> None:
@@ -360,6 +397,7 @@ class AuthorLoops:
         return self.ui.LoopTemplatesListWidget.currentIndex().data()
 
     def load_selected_loop(self) -> None:
+        self.clear_fields()
         self.set_author_info(self.author_loopdata(author_name=self.get_selected_loop_name()))
         self.ui.LoopsTabWidget.setCurrentIndex(0)
 
@@ -437,3 +475,4 @@ if __name__ == '__main__':
     l = AuthorLoops(Ui_FinalCifWindow(), CifContainer('test-data/1000007.cif'), None)
     data = l.export_raw_data()
     pprint.pprint(data)
+
