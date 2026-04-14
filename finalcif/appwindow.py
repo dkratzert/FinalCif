@@ -1292,7 +1292,7 @@ class AppWindow(QMainWindow):
             filename: str = str(WindowsPath(filename.resolve()).absolute())
         else:
             filename: str = str(Path(filename.resolve()).absolute())
-        recent = list(self.settings.settings.value('recent_files', type=list))
+        recent = self.settings.load_recent_files()
         # delete possible previous occurrence of new file:
         while filename in recent:
             recent.remove(filename)
@@ -1306,11 +1306,11 @@ class AppWindow(QMainWindow):
             except Exception:
                 pass
         recent = recent[:10]
-        self.settings.settings.setValue('recent_files', recent)
+        self.settings.save_recent_files(recent)
 
     def load_recent_cifs_list(self) -> None:
         self.ui.RecentComboBox.clear()
-        recent = list(self.settings.settings.value('recent_files', type=list))
+        recent = self.settings.load_recent_files()
         self.ui.RecentComboBox.addItem('Recent Files')
         for n, file in enumerate(recent):
             if not isinstance(file, str):
