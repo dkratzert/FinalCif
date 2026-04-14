@@ -115,3 +115,13 @@ class TestSettingsSaveLoad(TestCase):
         self.assertTrue(opts['report_text'])
         self.assertEqual(7.5, opts['picture_width'])
         self.assertTrue(opts['atoms_table'])
+
+    def test_saved_options_override_defaults(self):
+        """Saved option values should be returned instead of defaults."""
+        self.s.save_options({'report_text': False, 'picture_width': 3.0, 'without_h': True})
+        opts = self.s.load_options()
+        self.assertFalse(opts['report_text'])
+        self.assertEqual(3.0, opts['picture_width'])
+        self.assertTrue(opts['without_h'])
+        # Hard-coded overrides should still be present
+        self.assertTrue(opts['atoms_table'])
