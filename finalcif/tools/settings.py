@@ -372,7 +372,9 @@ class FinalCifSettings:
 
     def load_settings_list(self, property: str = '', item_name: str = '') -> list:
         settings = self._load_settings(property, item_name)
-        return settings if isinstance(settings, list) else (list(settings) if settings else [])
+        if isinstance(settings, list):
+            return settings
+        return []
 
     def load_settings_list_as_dict(self, property: str, item_name: str):
         setting = self.load_settings_list(property, item_name)
