@@ -109,6 +109,19 @@ class TestSettingsSaveLoad(TestCase):
         result = self.s.load_settings_dict('authors_list', 'Jane')
         self.assertEqual({'name': 'Jane', 'email': 'j@e.com'}, result)
 
+    def test_load_settings_dict_returns_non_dict_values(self):
+        """Non-dict stored values (e.g. Author dataclass) must not be discarded."""
+        # Simulate storing a non-dict value (e.g. a list) – load_settings_dict
+        # must return it unchanged rather than returning an empty dict.
+        self.s.save_settings_dict('misc', 'key', ['a', 'b', 'c'])
+        result = self.s.load_settings_dict('misc', 'key')
+        self.assertEqual(['a', 'b', 'c'], result)
+
+    def test_load_settings_dict_returns_empty_dict_when_missing(self):
+        """Missing key should still return {}."""
+        result = self.s.load_settings_dict('authors_list', 'NonExistent')
+        self.assertEqual({}, result)
+
     def test_default_options(self):
         """When no options are saved, defaults should be returned."""
         opts = self.s.load_options()

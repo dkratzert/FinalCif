@@ -401,7 +401,9 @@ class FinalCifSettings:
 
     def load_settings_dict(self, property: str = '', item_name: str = '') -> dict:
         settings = self._load_settings(property, item_name)
-        return settings if isinstance(settings, dict) else {}
+        if settings is None:
+            return {}
+        return settings
 
     def load_settings_list(self, property: str = '', item_name: str = '') -> list:
         settings = self._load_settings(property, item_name)
