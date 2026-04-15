@@ -504,7 +504,7 @@ class AppWindow(QMainWindow):
                                                  basedir=self.get_last_workdir(),
                                                  selectedfilter="Template File (*.json *.dat)",
                                                  filters="Template File (*.json *.dat)",
-                                                 caption='Open templates')
+                                                 caption='Load templates')
         if not filename:
             return
         try:
