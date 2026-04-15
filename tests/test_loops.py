@@ -8,6 +8,7 @@ import os
 
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
+from tests.helpers import AppWindowTestCase
 from pathlib import Path
 
 from qtpy.QtCore import Qt
@@ -21,7 +22,7 @@ from finalcif.tools.misc import unify_line_endings
 data = Path('tests')
 
 
-class TestLoops(unittest.TestCase):
+class TestLoops(AppWindowTestCase):
 
     def setUp(self) -> None:
         self.testcif = (data / 'examples/1979688_small.cif').resolve()
@@ -96,7 +97,7 @@ class TestLoops(unittest.TestCase):
 
 
 # noinspection PyMissingTypeHints
-class TestLoopsMove(unittest.TestCase):
+class TestLoopsMove(AppWindowTestCase):
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
         self.testcif = (data / 'examples/1979688_small.cif').resolve()

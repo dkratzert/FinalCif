@@ -9,6 +9,7 @@ import os
 os.environ["RUNNING_TEST"] = 'True'
 import time
 import unittest
+from tests.helpers import AppWindowTestCase
 from pathlib import Path
 
 from qtpy.QtCore import Qt
@@ -18,7 +19,7 @@ from finalcif.appwindow import AppWindow
 from finalcif.gui.custom_classes import Column
 
 
-class TestCheckCifHTML(unittest.TestCase):
+class TestCheckCifHTML(AppWindowTestCase):
 
     def setUp(self) -> None:
         if os.environ.get('NO_NETWORK'):

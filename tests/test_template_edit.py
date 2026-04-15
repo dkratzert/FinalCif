@@ -2,6 +2,7 @@ import os
 
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
+from tests.helpers import AppWindowTestCase
 from pathlib import Path
 
 from qtpy.QtCore import Qt
@@ -10,7 +11,7 @@ from qtpy.QtTest import QTest
 from finalcif.appwindow import AppWindow
 
 
-class EquipmentTestCase(unittest.TestCase):
+class EquipmentTestCase(AppWindowTestCase):
     def setUp(self) -> None:
         self.app = AppWindow(Path('test-data/1000006.cif'))
         self.app.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
@@ -43,7 +44,7 @@ class EquipmentTestCase(unittest.TestCase):
         # and so on...
 
 
-class PropertiesTestCase(unittest.TestCase):
+class PropertiesTestCase(AppWindowTestCase):
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
         self.app = AppWindow(file=Path('test-data/1000006.cif'))

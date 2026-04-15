@@ -2,6 +2,7 @@ import os
 
 os.environ['RUNNING_TEST'] = 'True'
 import unittest
+from tests.helpers import AppWindowTestCase
 from pathlib import Path
 
 from qtpy.QtCore import Qt
@@ -18,7 +19,7 @@ from tests.helpers import addr
 data = Path('tests')
 
 
-class TestFileIsOpened(unittest.TestCase):
+class TestFileIsOpened(AppWindowTestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
@@ -35,14 +36,14 @@ class TestFileIsOpened(unittest.TestCase):
         Path('foo.cif').unlink(missing_ok=True)
         Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
-        self.myapp.close()
+        super().tearDown()
 
     def test_save_action(self):
         self.myapp.save_current_cif_file()
         self.assertEqual(True, (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
 
 
-class TestWorkfolder(unittest.TestCase):
+class TestWorkfolder(AppWindowTestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
@@ -65,7 +66,7 @@ class TestWorkfolder(unittest.TestCase):
         (data / 'testcif_file.cif').unlink(missing_ok=True)
         (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
-        self.myapp.close()
+        super().tearDown()
 
     def key_row(self, key: str) -> int:
         return self.myapp.ui.cif_main_table.row_from_key(key)
@@ -273,7 +274,7 @@ class TestWorkfolder(unittest.TestCase):
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
 
 
-class TestWorkfolderOtherCifName(unittest.TestCase):
+class TestWorkfolderOtherCifName(AppWindowTestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:

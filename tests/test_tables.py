@@ -1,5 +1,6 @@
 import os
 import unittest
+from tests.helpers import AppWindowTestCase
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -20,7 +21,7 @@ data = Path('tests')
 test_data = Path('test-data')
 
 
-class TablesTestCase(unittest.TestCase):
+class TablesTestCase(AppWindowTestCase):
 
     def setUp(self) -> None:
         self.testcif = (data / 'examples/1979688_small.cif').absolute()
@@ -61,7 +62,7 @@ class TablesTestCase(unittest.TestCase):
         self.assertEqual(Cm(7.5).emu, shapes[0].width)
 
 
-class TemplateReportWithoutAppTestCase(unittest.TestCase):
+class TemplateReportWithoutAppTestCase(AppWindowTestCase):
     def setUp(self) -> None:
         self.testcif = (data / 'examples/1979688.cif').absolute()
         self.cif = CifContainer(self.testcif)
@@ -129,7 +130,7 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         self.assertEqual(result, '\n'.join([x.text for x in doc.paragraphs]))
 
 
-class TablesNoPictureTestCase(unittest.TestCase):
+class TablesNoPictureTestCase(AppWindowTestCase):
     def setUp(self) -> None:
         self.testcif = (data / 'examples/1979688.cif').absolute()
         self.cif = CifContainer(self.testcif)
@@ -166,7 +167,7 @@ class TablesNoPictureTestCase(unittest.TestCase):
         self.assertEqual(1, len(shapes))
 
 
-class ReportWithsymmetryTestCase(unittest.TestCase):
+class ReportWithsymmetryTestCase(AppWindowTestCase):
     def setUp(self) -> None:
         self.testcif = (test_data / 'p31c.cif').resolve()
         self.cif = CifContainer(self.testcif)
