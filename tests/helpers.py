@@ -7,7 +7,6 @@
 import sys
 from shutil import which
 import unittest
-from qtpy.QtWidgets import QApplication
 
 addr = """Albert-Ludwigs-Universität Freiburg
 Institut für Anorganische und Analytische Chemie
@@ -29,21 +28,13 @@ class AppWindowTestCase(unittest.TestCase):
         if hasattr(self, 'myapp') and getattr(self, 'myapp') is not None:
             try:
                 self.myapp.close()
-                self.myapp.deleteLater()
             except RuntimeError:
                 pass
             self.myapp = None
         if hasattr(self, 'app') and getattr(self, 'app') is not None and type(self.app).__name__ == 'AppWindow':
             try:
                 self.app.close()
-                self.app.deleteLater()
             except RuntimeError:
                 pass
             self.app = None
-        try:
-            qt_app = QApplication.instance()
-            if qt_app is not None:
-                qt_app.processEvents()
-        except RuntimeError:
-            pass
         super().tearDown()
