@@ -276,7 +276,24 @@ class AuthorLoops:
             show_general_warning(self, f'No permission to write file to {Path(filename).resolve()}')
 
     def put_author_in_cif_object(self, blockname: str, filename: str) -> CifContainer:
-        author = self.author_loopdata(author_name=self.get_selected_loop_name())
+        author_data = self.author_loopdata(author_name=self.get_selected_loop_name())
+
+        # Convert dict to Author object if needed
+        if isinstance(author_data, dict):
+            author = Author(
+                name=author_data.get('name'),
+                address=author_data.get('address'),
+                email=author_data.get('email'),
+                phone=author_data.get('phone'),
+                orcid=author_data.get('orcid'),
+                footnote=author_data.get('footnote'),
+                contact_author=author_data.get('contact', False),
+                author_type=AuthorType.publ,
+                iucr_id=author_data.get('iucr_id', '')
+            )
+        else:
+            author = author_data
+
         data = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id,
                 author.footnote]
         author_cif = CifContainer(filename, new_block=blockname)
