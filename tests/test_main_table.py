@@ -8,6 +8,7 @@ import os
 
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
+from tests.helpers import AppWindowTestCase
 from pathlib import Path
 
 from qtpy.QtCore import Qt
@@ -21,7 +22,7 @@ data = Path('tests')
 
 
 # noinspection PyMissingTypeHints
-class TestMainTableFieldBehavior(unittest.TestCase):
+class TestMainTableFieldBehavior(AppWindowTestCase):
 
     def setUp(self) -> None:
         self.testcif = (data / 'examples/1979688.cif').absolute()

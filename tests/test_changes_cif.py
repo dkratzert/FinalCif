@@ -2,6 +2,7 @@ import os
 
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
+from tests.helpers import AppWindowTestCase
 from pathlib import Path
 
 from qtpy.QtGui import QIcon
@@ -13,7 +14,7 @@ data = Path('tests')
 
 
 # noinspection PyMissingTypeHints
-class TestChangesTrackingActive(unittest.TestCase):
+class TestChangesTrackingActive(AppWindowTestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:

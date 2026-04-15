@@ -2,6 +2,7 @@ import os
 
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
+from tests.helpers import AppWindowTestCase
 
 from qtpy.QtGui import QIcon
 
@@ -10,7 +11,7 @@ from finalcif.tools.statusbar import StatusBar
 from finalcif import VERSION
 
 
-class TestStausBarWithGraphics(unittest.TestCase):
+class TestStausBarWithGraphics(AppWindowTestCase):
 
     def setUp(self) -> None:
         self.myapp = AppWindow()
@@ -36,7 +37,7 @@ class TestStausBarWithGraphics(unittest.TestCase):
         # I am not sure how to test this really
 
 
-class TestStausBarConsole(unittest.TestCase):
+class TestStausBarConsole(AppWindowTestCase):
 
     def setUp(self) -> None:
         self.status = StatusBar()

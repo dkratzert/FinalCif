@@ -3,6 +3,7 @@ import os
 os.environ["RUNNING_TEST"] = 'True'
 import time
 import unittest
+from tests.helpers import AppWindowTestCase
 from pathlib import Path
 
 from finalcif import VERSION
@@ -31,7 +32,7 @@ filenames = (
 
 
 @unittest.skip('time')
-class TestPlatonCheckCIF(unittest.TestCase):
+class TestPlatonCheckCIF(AppWindowTestCase):
 
     def setUp(self) -> None:
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
@@ -65,7 +66,7 @@ class TestPlatonCheckCIF(unittest.TestCase):
 
 
 @unittest.skip('time')
-class TestPlatonCheckCIFwithCIFwithoutHKLdata(unittest.TestCase):
+class TestPlatonCheckCIFwithCIFwithoutHKLdata(AppWindowTestCase):
 
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
