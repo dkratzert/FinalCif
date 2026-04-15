@@ -1,5 +1,5 @@
 ![Lates Release](https://img.shields.io/github/v/tag/dkratzert/FinalCif?label=Release)
-[![Unit Tests](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml/badge.svg?branch=master)](https://github.com/dkratzert/FinalCif/actions/workflows/python-app_windows.yml)
+[![Unit Tests](https://github.com/dkratzert/FinalCif/actions/workflows/python_tests.yml/badge.svg?branch=master)](https://github.com/dkratzert/FinalCif/actions/workflows/python_tests.yml)
 ![Contributions](https://img.shields.io/badge/contributions-welcome-blue)
 [![PyPI package](https://repology.org/badge/version-for-repo/pypi/python:finalcif.svg)](https://repology.org/project/python:finalcif/versions)
 <a href="https://repology.org/project/finalcif/versions">
