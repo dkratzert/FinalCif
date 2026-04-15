@@ -1877,7 +1877,7 @@ class AppWindow(QMainWindow):
             self.ui.shelx_TextEdit.setPlainText("No Shelx file available")
             self.ui.shelx_warn_TextEdit.hide()
 
-    def view_molecule(self):
+    def view_molecule(self, reset_view: bool = False) -> None:
         self.ui.render_widget.show_labels(self.ui.labelsCheckBox.isChecked())
 
         if self.ui.growCheckBox.isChecked():
