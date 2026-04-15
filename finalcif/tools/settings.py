@@ -110,9 +110,10 @@ def load_template_file(filepath: Path) -> dict | None:
     if filepath.suffix.lower() == '.json':
         with open(filepath, 'r', encoding='utf-8') as f:
             return json.load(f, object_hook=_custom_decoder)
-    # For .dat files, sniff whether the content is JSON or pickle
+    # For .dat files, try JSON first then fall back to legacy pickle
     raw = filepath.read_bytes()
-    if raw and raw[:1] in (b'{', b'['):
+    stripped = raw.lstrip()
+    if stripped and stripped[:1] in (b'{', b'['):
         return json.loads(raw.decode('utf-8'), object_hook=_custom_decoder)
     # Legacy pickle fallback
     import pickle  # only used to read legacy .dat files
