@@ -2,8 +2,12 @@
 
 REM This script builds a working Python environment into ..\dist of the current file location.
 
-REM Set the Python version here:
-set PYTHON_VERSION=3.14.3
+REM Accept PYTHON_VERSION as first argument, with a default fallback
+if "%~1"=="" (
+    set PYTHON_VERSION=3.14.3
+) else (
+    set PYTHON_VERSION=%~1
+)
 
 set PYTHON_URL=https://www.python.org/ftp/python/%PYTHON_VERSION%/python-%PYTHON_VERSION%-embed-amd64.zip
 
@@ -11,6 +15,13 @@ for %%A in ("%~dp0.") do set "SCRIPT_DIR=%%~fA"
 set BUILD_DIR=%SCRIPT_DIR%\..\dist
 set PACKAGE_DIR=%BUILD_DIR%\python_dist
 
+REM Check if uv is available
+where uv >NUL 2>&1
+if %errorlevel% neq 0 (
+    echo uv not found, installing...
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+    set "PATH=%USERPROFILE%\.local\bin;%PATH%"
+)
 
 setlocal enabledelayedexpansion
 for %%a in (!PYTHON_VERSION!) do (
@@ -45,30 +56,20 @@ endlocal
 del vc_redist.x64.exe
 
 curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o vc_redist.x64.exe
-rem vc_redist.x64.exe /passive /quiet /install
-
-cd %PACKAGE_DIR%
-
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-python get-pip.py
-del get-pip.py
-
-set PYTHONPATH=%PACKAGE_DIR%
-mkdir %PACKAGE_DIR%\Lib\site-packages > NUL
-
-REM Not needed, because it just installs in local python path without venv:
-rem python -m pip install virtualenv
-rem python -m virtualenv venv --clear --no-periodic-update
-rem call venv\Scripts\activate.bat
-
-call Scripts\pip install -r %SCRIPT_DIR%\..\requirements.txt --no-warn-script-location
-if %errorlevel% neq 0 (
-    echo pip failed to install all packages. Stopping now.
-    exit /b %errorlevel%
-)
 
 cd %SCRIPT_DIR%\..
 
-echo - compiling python packages
-%PACKAGE_DIR%\python.exe -m compileall -q .
+REM Create a venv for the release build
+uv venv --python %PYTHON_VERSION% .venv
+
+REM Install all dependencies from pyproject.toml into the embedded Python
+uv pip install --python %PACKAGE_DIR%\python.exe %SCRIPT_DIR%\..
+if %errorlevel% neq 0 (
+    echo uv pip install failed. Stopping now.
+    exit /b %errorlevel%
+)
+
+REM Remove the FinalCif package itself (it's provided in-tree, not as an installed package)
+uv pip uninstall --python %PACKAGE_DIR%\python.exe finalcif
+
 echo - finished!

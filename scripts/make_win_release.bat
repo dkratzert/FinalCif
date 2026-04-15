@@ -1,15 +1,26 @@
+@echo on
 
-REM execute me from the main directory
+REM Execute me from the main directory
 
-rmdir /S dist /Q
-rmdir /S build /Q
+set PYTHON_VERSION=3.14.3
 
-rem git restore *
-rem git switch master
-rem git pull
+REM Check if uv is available, install if missing
+where uv >NUL 2>&1
+if %errorlevel% neq 0 (
+    echo uv not found, installing...
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+    set "PATH=%USERPROFILE%\.local\bin;%PATH%"
+)
 
-call scripts\_create_dist.bat
+rmdir /S /Q dist 2>NUL
+rmdir /S /Q build 2>NUL
+
+call scripts\_create_dist.bat %PYTHON_VERSION%
+if %errorlevel% neq 0 (
+    echo _create_dist.bat failed. Stopping now.
+    exit /b %errorlevel%
+)
 
 CALL .venv\Scripts\activate.bat
-.venv\Scripts\python.exe scripts\make_win_release.py
+.venv\Scripts\python.exe scripts\_make_win_release.py
 CALL .venv\Scripts\deactivate.bat
