@@ -793,7 +793,7 @@ class AppWindow(QMainWindow):
         # parent must be None, otherwise it can't be moved to a thread:
         self.worker = MyDownloader(mainurl, parent=None)
         self.worker.loaded.connect(self.is_update_necessary)
-        self.thread_version = threading.Thread(target=self.worker.download)
+        self.thread_version = threading.Thread(target=self.worker.download, daemon=True)
         self.thread_version.start()
 
     def is_update_necessary(self, content: bytes) -> None:
@@ -863,7 +863,7 @@ class AppWindow(QMainWindow):
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
         self.worker = MyDownloader(url, parent=None)
         self.worker.loaded.connect(self._save_checkdef)
-        self.thread_download = threading.Thread(target=self.worker.download)
+        self.thread_download = threading.Thread(target=self.worker.download, daemon=True)
         self.thread_download.start()
 
     def _save_checkdef(self, reply: bytes) -> None:
@@ -966,9 +966,9 @@ class AppWindow(QMainWindow):
         except FileNotFoundError:
             print(f'{self.htmlfile} not found')
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
-        threading.Thread(target=self._display_structure_factor_report, args=(parser,)).start()
+        threading.Thread(target=self._display_structure_factor_report, args=(parser,), daemon=True).start()
         # The picture file linked in the html file:
-        threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),)).start()
+        threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),), daemon=True).start()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
         forms = parser.response_forms
         # makes all gray:
@@ -1527,7 +1527,7 @@ class AppWindow(QMainWindow):
             for row in self.import_selector.import_cif.block.find(loop):
                 new_loop.add_row(list(row))
 
-    def load_cif_file(self, filepath: Path, block=0, load_changes: bool = True) -> None:
+    def load_cif_file(self, filepath: Path, block= 0, load_changes: bool = True) -> None:
         """
         Opens the cif file and fills information into the main table.
         """
@@ -1877,7 +1877,7 @@ class AppWindow(QMainWindow):
             self.ui.shelx_TextEdit.setPlainText("No Shelx file available")
             self.ui.shelx_warn_TextEdit.hide()
 
-    def view_molecule(self, reset_view: bool = False) -> None:
+    def view_molecule(self):
         self.ui.render_widget.show_labels(self.ui.labelsCheckBox.isChecked())
 
         if self.ui.growCheckBox.isChecked():

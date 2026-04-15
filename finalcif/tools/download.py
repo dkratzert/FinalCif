@@ -65,6 +65,6 @@ if __name__ == "__main__":
 
     worker = MyDownloader("https://dkratzert.de/files/finalcif/version.txt")
     worker.loaded.connect(foo)
-    thread = threading.Thread(target=worker.download)
+    thread = threading.Thread(target=worker.download, daemon=True)
     thread.start()
     sys.exit(app.exec())
