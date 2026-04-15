@@ -43,8 +43,8 @@ class MainWindow(QMainWindow):
         self.class2.resultReady.connect(self.updateLabel)
 
         # Create threads for each class and start them
-        self.thread1 = threading.Thread(target=self.class1.run)
-        self.thread2 = threading.Thread(target=self.class2.run)
+        self.thread1 = threading.Thread(target=self.class1.run, daemon=True)
+        self.thread2 = threading.Thread(target=self.class2.run, daemon=True)
         self.thread1.start()
         self.thread2.start()
 
