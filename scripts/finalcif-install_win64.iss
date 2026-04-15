@@ -111,8 +111,8 @@ var
 begin
   if CurStep=ssPostInstall then
   begin
-    ExtractTemporaryFile('pyqt5_minimal.7z');
-    Extract7ZipArchive(ExpandConstant('{tmp}\pyqt5_minimal.7z'), ExpandConstant('{app}\Lib\site-packages'), True, nil);
+    //ExtractTemporaryFile('pyqt5_minimal.7z');
+    //Extract7ZipArchive(ExpandConstant('{tmp}\pyqt5_minimal.7z'), ExpandConstant('{app}\Lib\site-packages'), True, nil);
   end;
   // Pos == str.contains(x)
   if Pos('update-finalcif.exe', ExpandConstant('{srcexe}')) > 0 then
