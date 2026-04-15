@@ -27,14 +27,23 @@ def get_platon_exe() -> str:
 class AppWindowTestCase(unittest.TestCase):
     def tearDown(self) -> None:
         if hasattr(self, 'myapp') and getattr(self, 'myapp') is not None:
-            self.myapp.close()
-            self.myapp.deleteLater()
+            try:
+                self.myapp.close()
+                self.myapp.deleteLater()
+            except RuntimeError:
+                pass
             self.myapp = None
         if hasattr(self, 'app') and getattr(self, 'app') is not None and type(self.app).__name__ == 'AppWindow':
-            self.app.close()
-            self.app.deleteLater()
+            try:
+                self.app.close()
+                self.app.deleteLater()
+            except RuntimeError:
+                pass
             self.app = None
-        qt_app = QApplication.instance()
-        if qt_app is not None:
-            qt_app.processEvents()
+        try:
+            qt_app = QApplication.instance()
+            if qt_app is not None:
+                qt_app.processEvents()
+        except RuntimeError:
+            pass
         super().tearDown()
