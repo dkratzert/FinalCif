@@ -7,6 +7,7 @@ from finalcif.tools.options import Options
 
 os.environ['RUNNING_TEST'] = 'True'
 import unittest
+from tests.helpers import AppWindowTestCase
 from pathlib import Path
 
 from docx import Document
@@ -24,7 +25,7 @@ test_data = Path('test-data')
 
 
 # noinspection PyMissingTypeHints
-class TemplateReportTestCase(unittest.TestCase):
+class TemplateReportTestCase(AppWindowTestCase):
     def setUp(self) -> None:
         self.testcif = (data / 'examples/1979688.cif').absolute()
         self.myapp = AppWindow(file=self.testcif)
@@ -70,7 +71,7 @@ class TemplateReportTestCase(unittest.TestCase):
             self.myapp.ui.docxTemplatesListWidget.setCurrentRow(num)
             self.myapp.templates.remove_current_template()
 
-class TemplateReportWithoutAppTestCase(unittest.TestCase):
+class TemplateReportWithoutAppTestCase(AppWindowTestCase):
     def setUp(self) -> None:
         self.testcif = (data / 'examples/1979688.cif').absolute()
         cif = CifContainer(self.testcif)
@@ -127,7 +128,7 @@ class TemplateReportWithoutAppTestCase(unittest.TestCase):
         self.assertTrue('Bibliography' in paragraphs)
 
 
-class TestReportFromMultiCif(unittest.TestCase):
+class TestReportFromMultiCif(AppWindowTestCase):
     def setUp(self):
         self.reportdoc = Path('test.docx')
         self.reportdoc.unlink(missing_ok=True)
@@ -138,6 +139,8 @@ class TestReportFromMultiCif(unittest.TestCase):
 
     def tearDown(self):
         self.reportdoc.unlink(missing_ok=True)
+        super().tearDown()
+
 
     def test_get_distance_from_atoms(self):
         self.options._without_h = False
@@ -152,7 +155,7 @@ class TestReportFromMultiCif(unittest.TestCase):
         self.assertEqual('C1-C2 in p21c distance: 1.544(3)', doc.paragraphs[1].text)
 
 
-class TestCIFwithOneAtom(unittest.TestCase):
+class TestCIFwithOneAtom(AppWindowTestCase):
 
     def setUp(self) -> None:
         # creating a new CIF with a new block:
@@ -187,7 +190,7 @@ class TestCIFwithOneAtom(unittest.TestCase):
                           '(227)'), context.get('space_group'))
 
 
-class TestData(unittest.TestCase):
+class TestData(AppWindowTestCase):
 
     def setUp(self) -> None:
         # creating a new CIF with a new block:
@@ -242,7 +245,7 @@ class TestData(unittest.TestCase):
                          str(self.t.text_formatter.literature['integration']))
 
 
-class TestHydrogenText(unittest.TestCase):
+class TestHydrogenText(AppWindowTestCase):
     def setUp(self) -> None:
         self.cif = CifContainer('test-data/p21c.cif')
         self.h = Hydrogens(self.cif)

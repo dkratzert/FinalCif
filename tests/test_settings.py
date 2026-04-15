@@ -91,6 +91,7 @@ class TestSettingsSaveLoad(TestCase):
         self.assertEqual(['/a.cif', '/b.cif'], self.s.load_recent_files())
 
     def test_empty_recent_files(self):
+        self.s.save_recent_files([])
         self.assertEqual([], self.s.load_recent_files())
 
     def test_property_list(self):

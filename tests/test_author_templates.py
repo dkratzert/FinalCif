@@ -2,6 +2,7 @@ import os
 
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
+from tests.helpers import AppWindowTestCase
 from pathlib import Path
 
 from qtpy import QtCore
@@ -11,7 +12,7 @@ from finalcif.appwindow import AppWindow
 data = Path('tests')
 
 
-class MyTestCase(unittest.TestCase):
+class MyTestCase(AppWindowTestCase):
 
     def setUp(self) -> None:
         self.testcif = data / 'examples/1979688.cif'
