@@ -62,6 +62,13 @@ cd %SCRIPT_DIR%\..
 REM Create a venv for the release build
 uv venv --python %PYTHON_VERSION% .venv
 
+REM Install the project and its dependencies into the venv used by the release scripts
+REM (uv pip install <dir> installs the project defined by pyproject.toml in that directory)
+uv pip install --python .venv\Scripts\python.exe %SCRIPT_DIR%\..
+if %errorlevel% neq 0 (
+    echo uv pip install into .venv failed. Stopping now.
+    exit /b %errorlevel%
+)
 REM Install all dependencies from pyproject.toml into the embedded Python
 REM (uv pip install <dir> installs the project defined by pyproject.toml in that directory)
 uv pip install --python %PACKAGE_DIR%\python.exe %SCRIPT_DIR%\..
