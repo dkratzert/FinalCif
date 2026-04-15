@@ -37,7 +37,7 @@ def _default_config_dir() -> Path:
         base = Path.home() / 'Library' / 'Application Support'
     else:
         base = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config'))
-    return base / 'DK' / 'FinalCif'
+    return base / 'FinalCif'
 
 
 _SETTINGS_FILENAME = 'settings.json'
@@ -217,9 +217,9 @@ class FinalCifSettings:
                 self._data = _migrate_qsettings_to_json(self._path)
                 if self._data:
                     self._flush()
-                    logger.info("Migrated QSettings to %s", self._path)
+                    logger.warning("Migrated QSettings to %s", self._path)
             except Exception:
-                logger.debug("No QSettings data to migrate (or Qt not available).", exc_info=True)
+                logger.warning("No QSettings data to migrate (or Qt not available).", exc_info=True)
                 self._data = {}
 
         # Cached property helpers (same semantics as before)
