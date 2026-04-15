@@ -71,6 +71,6 @@ if %errorlevel% neq 0 (
 )
 
 REM Remove the FinalCif package itself (it's provided in-tree, not as an installed package)
-uv pip uninstall --python %PACKAGE_DIR%\python.exe finalcif
+uv pip uninstall -y --python %PACKAGE_DIR%\python.exe finalcif
 
 echo - finished!
