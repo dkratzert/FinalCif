@@ -4,8 +4,9 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
+import json
+import logging
 import os
-import pickle
 import subprocess
 import sys
 import threading
@@ -473,12 +474,13 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.go_to_loops_page()
 
     def export_all_templates(self, filename: Path | None = None) -> None:
+        from finalcif.tools.settings import _custom_encoder
         if not filename:
             filename, _ = compat.getsavefilename(parent=self,
                                                  basedir=str(Path(self.get_last_workdir()).joinpath(
-                                                     f'finalcif_templates_{time.strftime("%Y-%m-%d")}.dat')),
-                                                 selectedfilter="Template File (*.dat)",
-                                                 filters="Template File (*.dat)",
+                                                     f'finalcif_templates_{time.strftime("%Y-%m-%d")}.json')),
+                                                 selectedfilter="Template File (*.json)",
+                                                 filters="Template File (*.json)",
                                                  caption='Save templates')
         if not filename:
             return
@@ -490,24 +492,28 @@ class AppWindow(QMainWindow):
                      'cif_order_essential': self.ui.cifOrderWidget.order_essentials,
                      }
         try:
-            with open(filename, "wb") as f:
-                pickle.dump(templates, f)
-        except pickle.PickleError as e:
+            with open(filename, "w", encoding="utf-8") as f:
+                json.dump(templates, f, default=_custom_encoder, ensure_ascii=False, indent=2)
+        except (TypeError, ValueError) as e:
             self.status_bar.show_message(f'Saving templates failed: {e!s}')
 
     def import_all_templates(self, filename: Path | None = None) -> None:
-        import pickle
+        from finalcif.tools.settings import load_template_file
         if not filename:
             filename, _ = compat.getopenfilename(parent=self,
                                                  basedir=self.get_last_workdir(),
-                                                 selectedfilter="Template File (*.dat)",
-                                                 filters="Template File (*.dat)",
-                                                 caption='Save templates')
+                                                 selectedfilter="Template File (*.json *.dat)",
+                                                 filters="Template File (*.json *.dat)",
+                                                 caption='Open templates')
         if not filename:
             return
         try:
-            templates = pickle.load(open(filename, "rb"))
-        except pickle.PickleError:
+            templates = load_template_file(Path(filename))
+        except Exception as e:
+            logging.warning("Failed to load template file %s: %s", filename, e)
+            self.status_bar.show_message(f'Loading templates failed: {e!s}')
+            return
+        if templates is None:
             return
         self.import_raw_text_templates(templates.get('text'))
         self.equipment.import_raw_data(templates.get('equipment'))
