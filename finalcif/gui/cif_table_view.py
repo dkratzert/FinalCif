@@ -192,7 +192,7 @@ class CifTableView(QTableView):
             return
 
         if isinstance(existing, MyQPlainTextEdit):
-            existing.setText(txt, color=color)
+            existing.setText(txt, color=color, column=column)
             existing.cif_key = key
         else:
             textedit = MyQPlainTextEdit(self)
@@ -210,8 +210,14 @@ class CifTableView(QTableView):
             if w and hasattr(w, 'setBackground'):
                 w.setBackground(color)
 
-        # Keep model in sync (for headerData, search, save round-trip)
-        self._model.set_cell_text(row, column, txt)
+        # Keep model in sync — store the widget's actual display text so that
+        # the delegate's sizeHint (which reads from the model) matches the
+        # truncated content shown for large values like HKL files.
+        widget = self.indexWidget(idx)
+        if widget and hasattr(widget, 'toPlainText'):
+            self._model.set_cell_text(row, column, widget.toPlainText())
+        else:
+            self._model.set_cell_text(row, column, txt)
         if color:
             self._model.set_cell_color(row, column, color)
 

@@ -123,6 +123,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def setUneditable(self):
         self.setReadOnly(True)
 
+    MAX_DISPLAY_LINES = 5
+
     def setText(self, text: str, color: QColor = None, column: int | None = None):
         """
         Set text of a Plaintextfield with lines wrapped at newline characters.
@@ -132,7 +134,11 @@ class MyQPlainTextEdit(QPlainTextEdit):
         if not text:
             return
         if column == Column.CIF and self.cif_key in self.to_be_shortened:
-            self.setPlainText(f'{text[:300]} [...]')
+            lines = text.splitlines(keepends=True)
+            if len(lines) > self.MAX_DISPLAY_LINES:
+                self.setPlainText(''.join(lines[:self.MAX_DISPLAY_LINES]).rstrip() + '\n[...]')
+            else:
+                self.setPlainText(text)
         else:
             self.setPlainText(text)
 
