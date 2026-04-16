@@ -53,9 +53,6 @@ class TestMainTableFieldBehavior(AppWindowTestCase):
         self.app.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
         self.app.equipment.load_selected_equipment()
 
-    def get_background_color(self, key: str, col: int) -> QColor:
-        return self.app.ui.cif_main_table.itemFromKey(key, col).background().color()
-
     ######
 
     def test_delete_row(self):
@@ -81,9 +78,7 @@ class TestMainTableFieldBehavior(AppWindowTestCase):
                          self.app.ui.cif_main_table.getTextFromKey('_audit_contact_author_email', Column.EDIT))
 
     def test_field_types(self):
-        self.assertEqual("<class 'NoneType'>",
-                         str(self.app.ui.cif_main_table.itemFromKey('_atom_sites_solution_hydrogens',
-                                                                      Column.CIF).__class__))
+        # In the model/view architecture, all cells have persistent widgets (no QTableWidgetItem).
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
                          str(self.app.ui.cif_main_table.widget_from_key('_atom_sites_solution_hydrogens',
                                                                           Column.CIF).__class__))

@@ -45,7 +45,7 @@ class MyComboBox(QComboBox):
 
     @property
     def row(self) -> int:
-        return self.parent.vheaderitems.index(self.cif_key)
+        return self.parent.row_from_key(self.cif_key)
 
     def _delete_row(self) -> None:
         self.parent.delete_row(self.row)

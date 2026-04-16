@@ -89,10 +89,10 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def copy_vhead_item(self, row):
         """
-        Copies the content of a field.
+        Copies the CIF key of the row to clipboard.
         """
         from qtpy import QtWidgets
-        if hasattr(self.parent, 'vheaderitems'):
+        if self.cif_key:
             clipboard = QtWidgets.QApplication.clipboard()
             clipboard.setText(self.cif_key)
 

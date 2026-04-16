@@ -104,7 +104,13 @@ class TestWorkfolder(AppWindowTestCase):
         self.app.equipment.load_selected_equipment()
 
     def get_background_color(self, key: str, col: int) -> QColor:
-        return self.app.ui.cif_main_table.itemFromKey(key, col).background().color()
+        widget = self.app.ui.cif_main_table.widget_from_key(key, col)
+        if widget and hasattr(widget, 'color') and widget.color:
+            return widget.color
+        return self.app.ui.cif_main_table.model().data(
+            self.app.ui.cif_main_table.model().index(
+                self.app.ui.cif_main_table.row_from_key(key), col),
+            Qt.ItemDataRole.BackgroundRole) or QColor(255, 255, 255)
 
     def testDataColumn(self):
         # test of ccdc number added from email during load:
@@ -246,7 +252,7 @@ class TestWorkfolder(AppWindowTestCase):
         # self.app.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='test4ß')
         self.app.ui.cif_main_table.setText(key='_diffrn_measurement_method', column=2, txt='test 12 Å')
         self.app.save_current_cif_file()
-        self.app.ui.cif_main_table.setRowCount(0)
+        self.app.ui.cif_main_table.delete_content()
         self.app.load_cif_file(self.app.cif.finalcif_file)
         # test if data is still the same:
         # The character is quoted in the cif file:

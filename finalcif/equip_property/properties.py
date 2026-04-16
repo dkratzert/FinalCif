@@ -19,7 +19,6 @@ from finalcif.tools.settings import FinalCifSettings
 
 if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
-    from finalcif.gui.custom_classes import MyCifTable
 
 class Properties(QtCore.QObject):
     def __init__(self, parent: AppWindow, settings: FinalCifSettings):
@@ -293,7 +292,7 @@ class Properties(QtCore.QObject):
         key_item.setPlainText(value)
         table.setCellWidget(row_num, 0, key_item)
 
-    def save_property(self, table: QTableWidget | MyCifTable,
+    def save_property(self, table: QTableWidget,
                       stackwidget: QStackedWidget,
                       keyword: str = '') -> None:
         """

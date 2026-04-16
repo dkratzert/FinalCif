@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from enum import IntEnum
 
 from qtpy import QtCore
 from qtpy.QtCore import QAbstractTableModel, QModelIndex, Qt
@@ -17,6 +18,12 @@ yellow = QColor(250, 247, 150)
 light_red = QColor(254, 191, 189)
 
 COLUMN_HEADERS = ['CIF Value', 'From Data Source', 'Own Data']
+
+
+class Column(IntEnum):
+    CIF = 0
+    DATA = 1
+    EDIT = 2
 
 
 @dataclass
