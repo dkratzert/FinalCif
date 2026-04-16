@@ -2095,7 +2095,7 @@ class AppWindow(QMainWindow):
         # ------------------------------------------------------------------
         # Phase 2 – bulk-load the model (single reset instead of N inserts)
         # ------------------------------------------------------------------
-        table._model.bulk_load(model_rows)
+        table.bulk_load(model_rows)
 
         # ------------------------------------------------------------------
         # Phase 3 – create widgets (with view repaints suspended)

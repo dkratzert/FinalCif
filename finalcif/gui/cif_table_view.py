@@ -140,6 +140,10 @@ class CifTableView(QTableView):
         """Remove all rows."""
         self._model.clear_all()
 
+    def bulk_load(self, rows) -> None:
+        """Load all rows at once — much faster than per-row add_row."""
+        self._model.bulk_load(rows)
+
     def has_key(self, key: str) -> bool:
         return self._model.has_key(key)
 
