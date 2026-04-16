@@ -205,15 +205,15 @@ class CifTableView(QTableView):
             if column in (Column.CIF, Column.DATA):
                 textedit.setUneditable()
 
+        widget = self.indexWidget(idx)
+
         if color:
-            w = self.indexWidget(idx)
-            if w and hasattr(w, 'setBackground'):
-                w.setBackground(color)
+            if widget and hasattr(widget, 'setBackground'):
+                widget.setBackground(color)
 
         # Keep model in sync — store the widget's actual display text so that
         # the delegate's sizeHint (which reads from the model) matches the
         # truncated content shown for large values like HKL files.
-        widget = self.indexWidget(idx)
         if widget and hasattr(widget, 'toPlainText'):
             self._model.set_cell_text(row, column, widget.toPlainText())
         else:
