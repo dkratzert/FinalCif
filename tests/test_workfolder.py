@@ -25,21 +25,21 @@ class TestFileIsOpened(AppWindowTestCase):
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
         self.testcif = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
-        self.myapp = AppWindow(file=self.testcif)
-        self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
-        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
+        self.app = AppWindow(file=self.testcif)
+        self.app.ui.trackChangesCifCheckBox.setChecked(True)
+        self.app.setWindowIcon(QIcon('./icon/multitable.png'))
+        self.app.setWindowTitle(f'FinalCif v{VERSION}')
         (data / 'examples/work/foo.cif').unlink(missing_ok=True)
         (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
 
     def tearDown(self) -> None:
         Path('foo.cif').unlink(missing_ok=True)
         Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
-        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
+        self.app.ui.trackChangesCifCheckBox.setChecked(False)
         super().tearDown()
 
     def test_save_action(self):
-        self.myapp.save_current_cif_file()
+        self.app.save_current_cif_file()
         self.assertEqual(True, (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').exists())
 
 
@@ -51,13 +51,13 @@ class TestWorkfolder(AppWindowTestCase):
         self.testcif = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
         # TODO: Adapt this to the bahavior with the changes file:
         (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp = AppWindow(file=self.testcif)
-        self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
-        self.myapp.equipment.import_equipment_from_file(str(data.parent / 'test-data/Crystallographer_Details.cif'))
-        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
-        self.myapp.settings.save_settings_list('cif_order', 'order', [])
-        self.myapp.settings.save_settings_list('cif_order', 'essentials', [])
+        self.app = AppWindow(file=self.testcif)
+        self.app.ui.trackChangesCifCheckBox.setChecked(True)
+        self.app.equipment.import_equipment_from_file(str(data.parent / 'test-data/Crystallographer_Details.cif'))
+        self.app.setWindowIcon(QIcon('./icon/multitable.png'))
+        self.app.setWindowTitle(f'FinalCif v{VERSION}')
+        self.app.settings.save_settings_list('cif_order', 'order', [])
+        self.app.settings.save_settings_list('cif_order', 'essentials', [])
 
     def tearDown(self) -> None:
         self.testcif.with_suffix('.ins').unlink(missing_ok=True)
@@ -65,18 +65,18 @@ class TestWorkfolder(AppWindowTestCase):
         self.testcif.with_suffix('.2fcf').unlink(missing_ok=True)
         (data / 'testcif_file.cif').unlink(missing_ok=True)
         (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
-        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
+        self.app.ui.trackChangesCifCheckBox.setChecked(False)
         super().tearDown()
 
     def key_row(self, key: str) -> int:
-        return self.myapp.ui.cif_main_table.row_from_key(key)
+        return self.app.ui.cif_main_table.row_from_key(key)
 
     def cell_widget(self, row: int, col: int) -> QWidget:
-        return self.myapp.ui.cif_main_table.cellWidget(row, col)
+        return self.app.ui.cif_main_table.cellWidget(row, col)
 
     def cell_widget_class(self, row: int, col: int) -> str:
         try:
-            return str(self.myapp.ui.cif_main_table.cellWidget(row, col).__class__)
+            return str(self.app.ui.cif_main_table.cellWidget(row, col).__class__)
         except Exception:
             return ''
 
@@ -86,26 +86,26 @@ class TestWorkfolder(AppWindowTestCase):
 
     def cell_text(self, key: str, col: int) -> str:
         try:
-            return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
+            return unify_line_endings(self.app.ui.cif_main_table.getTextFromKey(key, col))
         except ValueError:
             return ''
 
     def equipment_click(self, field: str):
-        listw = self.myapp.ui.EquipmentTemplatesListWidget
-        self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        listw = self.app.ui.EquipmentTemplatesListWidget
+        self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         item = listw.findItems(field, Qt.MatchFlag.MatchStartsWith)[0]
         listw.setCurrentItem(item)
         self.assertEqual(field.upper(), item.text().upper())
         rect = listw.visualItemRect(item)
         QTest.mouseDClick(listw.viewport(), Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier, rect.center())
         # This is necessary:
-        self.myapp.equipment.load_selected_equipment()
+        self.app.equipment.load_selected_equipment()
 
     def get_background_color(self, key: str, col: int) -> QColor:
-        return self.myapp.ui.cif_main_table.itemFromKey(key, col).background().color()
+        return self.app.ui.cif_main_table.itemFromKey(key, col).background().color()
 
     def testDataColumn(self):
-        self.myapp.hide()
+        self.app.hide()
         # test of ccdc number added from email during load:
         self.assertEqual('1979688', self.cell_text('_database_code_depnum_ccdc_archive', Column.DATA))
         # '_computing_structure_solution:'
@@ -125,7 +125,7 @@ class TestWorkfolder(AppWindowTestCase):
         # _exptl_crystal_recrystallization_method Yellow:
         self.assertEqual('', self.cell_text('_exptl_crystal_recrystallization_method', Column.DATA))
         # self.assertEqual('QPlainTextEdit {background-color: #faf796;}',
-        #                 self.myapp.ui.cif_main_table.cellWidget(41, 1).styleSheet())
+        #                 self.app.ui.cif_main_table.cellWidget(41, 1).styleSheet())
         self.assertEqual(
             """Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, G.M. (2015). Acta Cryst. C71, 3-8.""",
             self.cell_text('_publ_section_references', Column.DATA))
@@ -179,24 +179,24 @@ class TestWorkfolder(AppWindowTestCase):
 
     def test_background_color_data(self):
         self.assertEqual('#d9ffc9',
-                         self.myapp.ui.cif_main_table.widget_from_key('_computing_cell_refinement',
+                         self.app.ui.cif_main_table.widget_from_key('_computing_cell_refinement',
                                                                       Column.DATA).getBackgroundColor().name())
         self.assertEqual('#d9ffc9',
-                         self.myapp.ui.cif_main_table.widget_from_key('_computing_data_collection',
+                         self.app.ui.cif_main_table.widget_from_key('_computing_data_collection',
                                                                       Column.DATA).getBackgroundColor().name())
         self.assertEqual('#d9ffc9',
-                         self.myapp.ui.cif_main_table.widget_from_key('_computing_data_reduction',
+                         self.app.ui.cif_main_table.widget_from_key('_computing_data_reduction',
                                                                       Column.DATA).getBackgroundColor().name())
 
-        self.assertEqual('#ffffff', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
+        self.assertEqual('#ffffff', self.app.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
                                                                                  Column.CIF).getBackgroundColor().name())
         self.assertEqual('#d9ffc9',
-                         self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
+                         self.app.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
                                                                       Column.DATA).getBackgroundColor().name())
-        self.assertEqual('#ffffff', self.myapp.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
+        self.assertEqual('#ffffff', self.app.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
                                                                                  Column.EDIT).getBackgroundColor().name())
 
-        self.assertEqual('#ffffff', self.myapp.ui.cif_main_table.widget_from_key('_computing_molecular_graphics',
+        self.assertEqual('#ffffff', self.app.ui.cif_main_table.widget_from_key('_computing_molecular_graphics',
                                                                                  Column.DATA).getBackgroundColor().name())
 
     def test_exptl_crystal_size(self):
@@ -215,12 +215,12 @@ class TestWorkfolder(AppWindowTestCase):
         self.assertEqual('', self.cell_text('_chemical_absolute_configuration', Column.DATA))
         self.assertEqual('', self.cell_text('_chemical_absolute_configuration', Column.EDIT))
         self.assertIn('#faf796',
-                      self.myapp.ui.cif_main_table.widget_from_key('_chemical_absolute_configuration',
+                      self.app.ui.cif_main_table.widget_from_key('_chemical_absolute_configuration',
                                                                    1).getBackgroundColor().name())
 
     def allrows_test_key(self, key: str = '', results: list = None):
         # The results list is a list with three items for each data column in the main table.
-        self.myapp.hide()
+        self.app.hide()
         for n, r in enumerate(results):
             # print(self.cell_text(key, n))
             self.assertEqual(r, self.cell_text(key, n))
@@ -238,40 +238,40 @@ class TestWorkfolder(AppWindowTestCase):
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', Column.CIF))
 
     def test_edit_values_and_save(self):
-        self.myapp.hide()
-        self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
-        self.myapp.ui.cif_main_table.setText(key='_atom_sites_solution_secondary', column=2, txt='test2ö')
+        self.app.hide()
+        self.app.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
+        self.app.ui.cif_main_table.setText(key='_atom_sites_solution_secondary', column=2, txt='test2ö')
         # Not there anymore
-        # self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_address', column=2, txt='test3ü')
-        # self.myapp.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='test4ß')
-        self.myapp.ui.cif_main_table.setText(key='_diffrn_measurement_method', column=2, txt='test 12 Å')
-        self.myapp.save_current_cif_file()
-        self.myapp.ui.cif_main_table.setRowCount(0)
-        self.myapp.load_cif_file(self.myapp.cif.finalcif_file)
+        # self.app.ui.cif_main_table.setText(key='_audit_contact_author_address', column=2, txt='test3ü')
+        # self.app.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='test4ß')
+        self.app.ui.cif_main_table.setText(key='_diffrn_measurement_method', column=2, txt='test 12 Å')
+        self.app.save_current_cif_file()
+        self.app.ui.cif_main_table.setRowCount(0)
+        self.app.load_cif_file(self.app.cif.finalcif_file)
         # test if data is still the same:
         # The character is quoted in the cif file:
-        self.assertEqual(r'test 12 \%A', self.myapp.cif['_diffrn_measurement_method'])
+        self.assertEqual(r'test 12 \%A', self.app.cif['_diffrn_measurement_method'])
         # And unquoted in the application:
         self.assertEqual(r'test 12 Å', self.cell_text(key='_diffrn_measurement_method', col=0))
         self.assertEqual('test1ä', self.cell_text(key='_atom_sites_solution_primary', col=0))
-        self.assertEqual(r'test1\"a', self.myapp.cif['_atom_sites_solution_primary'])
+        self.assertEqual(r'test1\"a', self.app.cif['_atom_sites_solution_primary'])
         self.assertEqual('test2ö', self.cell_text(key='_atom_sites_solution_secondary', col=0))
         # Not there anymore
         # self.assertEqual('test3ü', self.cell_text(key='_audit_contact_author_address', col=0))
         # self.assertEqual('test4ß', self.cell_text(key='_audit_contact_author_email', col=0))
 
     def test_rename_data_tag(self):
-        self.myapp.hide()
-        self.myapp.ui.datanameComboBox.setEditText('foo_bar_yes')
-        self.myapp.ui.SaveCifButton.click()
-        self.myapp.ui.BackPushButton.click()
-        pair = self.myapp.cif.block.find_pair('_vrf_PLAT307_foo_bar_yes')
+        self.app.hide()
+        self.app.ui.datanameComboBox.setEditText('foo_bar_yes')
+        self.app.ui.SaveCifButton.click()
+        self.app.ui.BackPushButton.click()
+        pair = self.app.cif.block.find_pair('_vrf_PLAT307_foo_bar_yes')
         erg = ['_vrf_PLAT307_foo_bar_yes',
                ';\r\nPROBLEM: Isolated Metal Atom found in Structure (Unusual) Ga1 Check\r\nRESPONSE: foobar\r\n;']
         erg = [x.replace("\n", "").replace("\r", "") for x in erg]
         pair = [x.replace("\n", "").replace("\r", "") for x in pair]
         self.assertEqual(erg, pair)
-        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
+        self.app.cif.finalcif_file.unlink(missing_ok=True)
 
 
 class TestWorkfolderOtherCifName(AppWindowTestCase):
@@ -280,28 +280,29 @@ class TestWorkfolderOtherCifName(AppWindowTestCase):
     def setUp(self) -> None:
         os.environ["RUNNING_TEST"] = 'True'
         self.testcif = (data / 'examples/work/p21c.cif').resolve()
-        self.myapp = AppWindow(file=self.testcif)
-        self.myapp.ui.trackChangesCifCheckBox.setChecked(True)
-        self.myapp.equipment.import_equipment_from_file(data.parent / 'test-data/Crystallographer_Details.cif')
-        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
+        self.app = AppWindow(file=self.testcif)
+        self.app.ui.trackChangesCifCheckBox.setChecked(True)
+        self.app.equipment.import_equipment_from_file(data.parent / 'test-data/Crystallographer_Details.cif')
+        self.app.setWindowIcon(QIcon('./icon/multitable.png'))
+        self.app.setWindowTitle(f'FinalCif v{VERSION}')
 
     def tearDown(self) -> None:
         self.testcif.with_suffix('.ins').unlink(missing_ok=True)
         self.testcif.with_suffix('.lst').unlink(missing_ok=True)
         self.testcif.with_suffix('.2fcf').unlink(missing_ok=True)
         (data / 'testcif_file.cif').unlink(missing_ok=True)
-        self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
-        self.myapp.close()
+        self.app.ui.trackChangesCifCheckBox.setChecked(False)
+        self.app.close()
+        super().tearDown()
 
     def cell_text(self, key: str, col: int) -> str:
-        return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))
+        return unify_line_endings(self.app.ui.cif_main_table.getTextFromKey(key, col))
 
     def key_row(self, key: str) -> int:
-        return self.myapp.ui.cif_main_table.row_from_key(key)
+        return self.app.ui.cif_main_table.row_from_key(key)
 
     def testDataColumn(self):
-        self.myapp.hide()
+        self.app.hide()
         # test of ccdc number added from email during load:
         self.assertEqual('1979688', self.cell_text('_database_code_depnum_ccdc_archive', Column.DATA))
         # '_computing_structure_solution:'
@@ -321,11 +322,11 @@ class TestWorkfolderOtherCifName(AppWindowTestCase):
         # _exptl_crystal_recrystallization_method Yellow:
         self.assertEqual('', self.cell_text('_exptl_crystal_recrystallization_method', Column.DATA))
         self.assertEqual('',
-                         self.myapp.ui.cif_main_table.cellWidget(
+                         self.app.ui.cif_main_table.cellWidget(
                              self.key_row('_exptl_crystal_recrystallization_method'), Column.DATA).styleSheet())
         # This can fail if the cif order is not correctly saved/loaded:
         self.assertEqual('#faf796',
-                         self.myapp.ui.cif_main_table.cellWidget(
+                         self.app.ui.cif_main_table.cellWidget(
                              self.key_row('_exptl_crystal_recrystallization_method'), Column.DATA).getBackgroundColor().name())
         self.assertEqual("Sheldrick, G.M. (2015). Acta Cryst. A71, 3-8.\nSheldrick, "
                          "G.M. (2015). Acta Cryst. C71, 3-8.", self.cell_text('_publ_section_references', Column.DATA))

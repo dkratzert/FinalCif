@@ -37,31 +37,32 @@ class TestPlatonCheckCIF(AppWindowTestCase):
     def setUp(self) -> None:
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
             self.skipTest('No PLATON executable found or no network. Skipping test!')
-        self.myapp = AppWindow(file=Path('tests/examples/1979688.cif').resolve())
-        self.myapp.hide()
+        self.app = AppWindow(file=Path('tests/examples/1979688.cif').resolve())
+        self.app.hide()
 
     def tearDown(self) -> None:
         for file in filenames:
             Path(file).unlink(missing_ok=True)
-        self.myapp.close()
+        self.app.close()
+        super().tearDown()
 
     def test_checkcif_offline(self):
-        self.myapp.hide()
-        self.myapp.ui.CheckcifButton.click()
+        self.app.hide()
+        self.app.ui.CheckcifButton.click()
         timediff = int(Path('tests/examples/1979688-finalcif.chk').stat().st_mtime) - int(time.time())
         self.assertLess(timediff, 5)  # .chk file was modified less than 5 seconds ago
 
     def test_checkdef_contains_text(self):
-        self.myapp.hide()
-        self.myapp.ui.CheckcifButton.click()
+        self.app.hide()
+        self.app.ui.CheckcifButton.click()
         time.sleep(0.3)
         self.assertEqual('FINALCIF V{}'.format(VERSION) in Path('tests/examples/1979688-finalcif.chk').read_text(),
                          True)
         self.assertEqual('SumFormula C77 H80 O25' in Path('tests/examples/1979688-finalcif.chk').read_text(), True)
 
     def test_offline_checkcif_writes_gif(self):
-        self.myapp.hide()
-        self.myapp.ui.CheckcifButton.click()
+        self.app.hide()
+        self.app.ui.CheckcifButton.click()
         self.assertFalse(Path('1979688-finalcif.gif').exists())
 
 
@@ -72,17 +73,18 @@ class TestPlatonCheckCIFwithCIFwithoutHKLdata(AppWindowTestCase):
         os.environ["RUNNING_TEST"] = 'True'
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
             self.skipTest('No PLATON executable found or NO_NETWORK is set. Skipping test!')
-        self.myapp = AppWindow(file=Path('./test-data/1000007.cif').resolve())
-        self.myapp.hide()
-        self.myapp.ui.structfactCheckBox.setChecked(True)
+        self.app = AppWindow(file=Path('./test-data/1000007.cif').resolve())
+        self.app.hide()
+        self.app.ui.structfactCheckBox.setChecked(True)
 
     def tearDown(self) -> None:
         for file in filenames:
             Path(file).unlink(missing_ok=True)
-        self.myapp.close()
+        self.app.close()
+        super().tearDown()
 
     def test_checkcif_offline(self):
-        self.myapp.hide()
-        self.myapp.ui.CheckcifButton.click()
+        self.app.hide()
+        self.app.ui.CheckcifButton.click()
         timediff = int(Path('./test-data/1000007-finalcif.chk').resolve().stat().st_mtime) - int(time.time())
         self.assertLess(timediff, 5)  # .chk file was modified less than 5 seconds ago

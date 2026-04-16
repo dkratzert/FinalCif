@@ -19,6 +19,7 @@ class EquipmentTestCase(AppWindowTestCase):
 
     def tearDown(self) -> None:
         self.app.close()
+        super().tearDown()
 
     def equipment_edit_click(self, field: str):
         listw = self.app.ui.EquipmentTemplatesListWidget

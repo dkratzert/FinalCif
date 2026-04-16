@@ -28,6 +28,7 @@ class MyTestCase(AppWindowTestCase):
         self.authorexport_file.unlink(missing_ok=True)
         self._delete_test_author()
         self.app.close()
+        super().tearDown()
 
     def _import_testauthor(self):
         # To be used in other tests
