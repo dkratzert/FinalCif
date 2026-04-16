@@ -208,7 +208,7 @@ class Properties(QtCore.QObject):
         self.show_properties()
 
     def _import_block(self, block: cif.Block) -> None:
-        property_list = self.settings.settings.value('property_list')
+        property_list = self.settings.load_property_list()
         if not property_list:
             property_list = ['']
         template_list = []

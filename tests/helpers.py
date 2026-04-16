@@ -6,6 +6,7 @@
 #   ----------------------------------------------------------------------------
 import sys
 from shutil import which
+import unittest
 
 addr = """Albert-Ludwigs-Universität Freiburg
 Institut für Anorganische und Analytische Chemie
@@ -21,3 +22,22 @@ def get_platon_exe() -> str:
     else:
         platon_exe = which('platon')
     return platon_exe
+
+class AppWindowTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        import gc
+        gc.collect()
+        from qtpy.QtWidgets import QApplication
+        app = QApplication.instance()
+        if app is not None:
+            app.processEvents()
+        super().setUp()
+
+    def tearDown(self) -> None:
+        if hasattr(self, 'app') and getattr(self, 'app') is not None:
+            try:
+                self.app.close()
+            except RuntimeError:
+                pass
+            self.app = None
+        super().tearDown()

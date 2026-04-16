@@ -4,8 +4,9 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
+import json
+import logging
 import os
-import pickle
 import subprocess
 import sys
 import threading
@@ -166,7 +167,8 @@ class AppWindow(QMainWindow):
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
-        self.show()
+        if not self.running_inside_unit_test:
+            self.show()
         self.templates = ReportTemplates(self, self.settings)
         if not self.running_inside_unit_test:
             self.check_for_update_version()
@@ -473,12 +475,13 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.go_to_loops_page()
 
     def export_all_templates(self, filename: Path | None = None) -> None:
+        from finalcif.tools.settings import _custom_encoder
         if not filename:
             filename, _ = compat.getsavefilename(parent=self,
                                                  basedir=str(Path(self.get_last_workdir()).joinpath(
-                                                     f'finalcif_templates_{time.strftime("%Y-%m-%d")}.dat')),
-                                                 selectedfilter="Template File (*.dat)",
-                                                 filters="Template File (*.dat)",
+                                                     f'finalcif_templates_{time.strftime("%Y-%m-%d")}.json')),
+                                                 selectedfilter="Template File (*.json)",
+                                                 filters="Template File (*.json)",
                                                  caption='Save templates')
         if not filename:
             return
@@ -490,24 +493,28 @@ class AppWindow(QMainWindow):
                      'cif_order_essential': self.ui.cifOrderWidget.order_essentials,
                      }
         try:
-            with open(filename, "wb") as f:
-                pickle.dump(templates, f)
-        except pickle.PickleError as e:
+            with open(filename, "w", encoding="utf-8") as f:
+                json.dump(templates, f, default=_custom_encoder, ensure_ascii=False, indent=2)
+        except (TypeError, ValueError) as e:
             self.status_bar.show_message(f'Saving templates failed: {e!s}')
 
     def import_all_templates(self, filename: Path | None = None) -> None:
-        import pickle
+        from finalcif.tools.settings import load_template_file
         if not filename:
             filename, _ = compat.getopenfilename(parent=self,
                                                  basedir=self.get_last_workdir(),
-                                                 selectedfilter="Template File (*.dat)",
-                                                 filters="Template File (*.dat)",
-                                                 caption='Save templates')
+                                                 selectedfilter="Template File (*.json *.dat)",
+                                                 filters="Template File (*.json *.dat)",
+                                                 caption='Load templates')
         if not filename:
             return
         try:
-            templates = pickle.load(open(filename, "rb"))
-        except pickle.PickleError:
+            templates = load_template_file(Path(filename))
+        except Exception as e:
+            logging.warning("Failed to load template file %s: %s", filename, e)
+            self.status_bar.show_message(f'Loading templates failed: {e!s}')
+            return
+        if templates is None:
             return
         self.import_raw_text_templates(templates.get('text'))
         self.equipment.import_raw_data(templates.get('equipment'))
@@ -787,7 +794,7 @@ class AppWindow(QMainWindow):
         # parent must be None, otherwise it can't be moved to a thread:
         self.worker = MyDownloader(mainurl, parent=None)
         self.worker.loaded.connect(self.is_update_necessary)
-        self.thread_version = threading.Thread(target=self.worker.download)
+        self.thread_version = threading.Thread(target=self.worker.download, daemon=True)
         self.thread_version.start()
 
     def is_update_necessary(self, content: bytes) -> None:
@@ -857,7 +864,7 @@ class AppWindow(QMainWindow):
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
         self.worker = MyDownloader(url, parent=None)
         self.worker.loaded.connect(self._save_checkdef)
-        self.thread_download = threading.Thread(target=self.worker.download)
+        self.thread_download = threading.Thread(target=self.worker.download, daemon=True)
         self.thread_download.start()
 
     def _save_checkdef(self, reply: bytes) -> None:
@@ -960,9 +967,9 @@ class AppWindow(QMainWindow):
         except FileNotFoundError:
             print(f'{self.htmlfile} not found')
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
-        threading.Thread(target=self._display_structure_factor_report, args=(parser,)).start()
+        threading.Thread(target=self._display_structure_factor_report, args=(parser,), daemon=True).start()
         # The picture file linked in the html file:
-        threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),)).start()
+        threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),), daemon=True).start()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
         forms = parser.response_forms
         # makes all gray:
@@ -1292,7 +1299,7 @@ class AppWindow(QMainWindow):
             filename: str = str(WindowsPath(filename.resolve()).absolute())
         else:
             filename: str = str(Path(filename.resolve()).absolute())
-        recent = list(self.settings.settings.value('recent_files', type=list))
+        recent = self.settings.load_recent_files()
         # delete possible previous occurrence of new file:
         while filename in recent:
             recent.remove(filename)
@@ -1306,11 +1313,11 @@ class AppWindow(QMainWindow):
             except Exception:
                 pass
         recent = recent[:10]
-        self.settings.settings.setValue('recent_files', recent)
+        self.settings.save_recent_files(recent)
 
     def load_recent_cifs_list(self) -> None:
         self.ui.RecentComboBox.clear()
-        recent = list(self.settings.settings.value('recent_files', type=list))
+        recent = self.settings.load_recent_files()
         self.ui.RecentComboBox.addItem('Recent Files')
         for n, file in enumerate(recent):
             if not isinstance(file, str):
@@ -1521,7 +1528,7 @@ class AppWindow(QMainWindow):
             for row in self.import_selector.import_cif.block.find(loop):
                 new_loop.add_row(list(row))
 
-    def load_cif_file(self, filepath: Path, block=0, load_changes: bool = True) -> None:
+    def load_cif_file(self, filepath: Path, block= 0, load_changes: bool = True) -> None:
         """
         Opens the cif file and fills information into the main table.
         """

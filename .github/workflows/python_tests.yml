@@ -28,15 +28,7 @@ jobs:
         python-version: [ "3.12",
                           "3.13",
                           "3.14"]
-        os: [ windows-latest ]
-        # , ubuntu-latest ]
-        #include:
-          #- os: ubuntu-latest
-          #  path: ~/.cache/pip
-          #- os: macos-latest
-          #  path: ~/Library/Caches/pip
-          #- os: windows-latest
-          #  path: ~\AppData\Local\pip\Cache
+        os: [ windows-latest, ubuntu-latest ]
 
     steps:
       - uses: actions/checkout@v4
@@ -62,13 +54,7 @@ jobs:
       - name: Test with pytest
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
-            # Ubuntu needs this to be able to start pyqt5
-            sudo apt-get update 
-            sudo apt-get -qq install libxcb-xinerama0 pyqt6-dev-tools
-            # There is no enchant?
-            # sudo apt-get -qq install enchant
-            xvfb-run --auto-servernum pytest
-          else
-            uv run pytest tests
+            sudo apt-get install -y libegl1 libgl1 libxkbcommon0
           fi
+          QT_QPA_PLATFORM=offscreen uv run pytest tests/
 
