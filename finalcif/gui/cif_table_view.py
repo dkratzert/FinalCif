@@ -225,12 +225,7 @@ class CifTableView(QTableView):
             self._model.set_cell_text(row, column, txt)
         if color:
             self._model.set_cell_color(row, column, color)
-
-        # Resize explicitly — widget signals are blocked during setText to avoid
-        # per-keystroke resizes during programmatic population.
-        # Skip when updates are disabled (bulk loading) — the caller resizes at the end.
-        if self.updatesEnabled():
-            self.resizeRowToContents(row)
+        self.resizeRowToContents(row)
 
     def text(self, row: int, column: int) -> str:
         """Read text from a cell, preferring the live widget content."""
