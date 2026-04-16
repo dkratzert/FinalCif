@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 from fastmolwidget.sdm import Atomtuple
 from finalcif.cif.cif_file_io import CifContainer
 from fastmolwidget.molecule2D import calc_volume, MoleculeWidget, RenderItem
@@ -37,7 +38,7 @@ def test_molecule_widget_creation():
 
 
 def test_molecule_widget_with_cif():
-    cif = CifContainer(r'tests\examples\1979688_small.cif')
+    cif = CifContainer(Path('tests/examples/1979688_small.cif'))
     adp_dict = {dp.label: (dp.U11, dp.U22, dp.U33, dp.U23, dp.U13, dp.U12) for dp in cif.displacement_parameters()}
 
     widget = MoleculeWidget()
