@@ -23,19 +23,24 @@ def get_platon_exe() -> str:
         platon_exe = which('platon')
     return platon_exe
 
+
+def processevents() -> None:
+    from qtpy.QtWidgets import QApplication
+    app = QApplication.instance()
+    if app is not None:
+        app.processEvents()
+
+
 class AppWindowTestCase(unittest.TestCase):
     def setUp(self) -> None:
         import gc
         gc.collect()
-        from qtpy.QtWidgets import QApplication
-        app = QApplication.instance()
-        if app is not None:
-            app.processEvents()
         super().setUp()
 
     def tearDown(self) -> None:
         if hasattr(self, 'app') and getattr(self, 'app') is not None:
             try:
+                self.app.deleteLater()
                 self.app.close()
             except RuntimeError:
                 pass

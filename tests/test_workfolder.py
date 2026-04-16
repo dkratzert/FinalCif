@@ -2,7 +2,7 @@ import os
 
 os.environ['RUNNING_TEST'] = 'True'
 import unittest
-from tests.helpers import AppWindowTestCase
+from tests.helpers import AppWindowTestCase, processevents
 from pathlib import Path
 
 from qtpy.QtCore import Qt
@@ -17,6 +17,8 @@ from finalcif.tools.misc import unify_line_endings
 from tests.helpers import addr
 
 data = Path('tests')
+
+unittest.addModuleCleanup(processevents)
 
 
 class TestFileIsOpened(AppWindowTestCase):
@@ -105,7 +107,6 @@ class TestWorkfolder(AppWindowTestCase):
         return self.app.ui.cif_main_table.itemFromKey(key, col).background().color()
 
     def testDataColumn(self):
-        self.app.hide()
         # test of ccdc number added from email during load:
         self.assertEqual('1979688', self.cell_text('_database_code_depnum_ccdc_archive', Column.DATA))
         # '_computing_structure_solution:'
@@ -180,24 +181,24 @@ class TestWorkfolder(AppWindowTestCase):
     def test_background_color_data(self):
         self.assertEqual('#d9ffc9',
                          self.app.ui.cif_main_table.widget_from_key('_computing_cell_refinement',
-                                                                      Column.DATA).getBackgroundColor().name())
+                                                                    Column.DATA).getBackgroundColor().name())
         self.assertEqual('#d9ffc9',
                          self.app.ui.cif_main_table.widget_from_key('_computing_data_collection',
-                                                                      Column.DATA).getBackgroundColor().name())
+                                                                    Column.DATA).getBackgroundColor().name())
         self.assertEqual('#d9ffc9',
                          self.app.ui.cif_main_table.widget_from_key('_computing_data_reduction',
-                                                                      Column.DATA).getBackgroundColor().name())
+                                                                    Column.DATA).getBackgroundColor().name())
 
         self.assertEqual('#ffffff', self.app.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                                 Column.CIF).getBackgroundColor().name())
+                                                                               Column.CIF).getBackgroundColor().name())
         self.assertEqual('#d9ffc9',
                          self.app.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                      Column.DATA).getBackgroundColor().name())
+                                                                    Column.DATA).getBackgroundColor().name())
         self.assertEqual('#ffffff', self.app.ui.cif_main_table.widget_from_key('_cell_measurement_theta_max',
-                                                                                 Column.EDIT).getBackgroundColor().name())
+                                                                               Column.EDIT).getBackgroundColor().name())
 
         self.assertEqual('#ffffff', self.app.ui.cif_main_table.widget_from_key('_computing_molecular_graphics',
-                                                                                 Column.DATA).getBackgroundColor().name())
+                                                                               Column.DATA).getBackgroundColor().name())
 
     def test_exptl_crystal_size(self):
         self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', Column.DATA))
@@ -216,11 +217,11 @@ class TestWorkfolder(AppWindowTestCase):
         self.assertEqual('', self.cell_text('_chemical_absolute_configuration', Column.EDIT))
         self.assertIn('#faf796',
                       self.app.ui.cif_main_table.widget_from_key('_chemical_absolute_configuration',
-                                                                   1).getBackgroundColor().name())
+                                                                 1).getBackgroundColor().name())
 
     def allrows_test_key(self, key: str = '', results: list = None):
         # The results list is a list with three items for each data column in the main table.
-        self.app.hide()
+
         for n, r in enumerate(results):
             # print(self.cell_text(key, n))
             self.assertEqual(r, self.cell_text(key, n))
@@ -238,7 +239,6 @@ class TestWorkfolder(AppWindowTestCase):
         self.assertEqual('?', self.cell_text('_audit_contact_author_address', Column.CIF))
 
     def test_edit_values_and_save(self):
-        self.app.hide()
         self.app.ui.cif_main_table.setText(key='_atom_sites_solution_primary', column=2, txt='test1ä')
         self.app.ui.cif_main_table.setText(key='_atom_sites_solution_secondary', column=2, txt='test2ö')
         # Not there anymore
@@ -261,7 +261,6 @@ class TestWorkfolder(AppWindowTestCase):
         # self.assertEqual('test4ß', self.cell_text(key='_audit_contact_author_email', col=0))
 
     def test_rename_data_tag(self):
-        self.app.hide()
         self.app.ui.datanameComboBox.setEditText('foo_bar_yes')
         self.app.ui.SaveCifButton.click()
         self.app.ui.BackPushButton.click()
@@ -302,7 +301,6 @@ class TestWorkfolderOtherCifName(AppWindowTestCase):
         return self.app.ui.cif_main_table.row_from_key(key)
 
     def testDataColumn(self):
-        self.app.hide()
         # test of ccdc number added from email during load:
         self.assertEqual('1979688', self.cell_text('_database_code_depnum_ccdc_archive', Column.DATA))
         # '_computing_structure_solution:'

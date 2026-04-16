@@ -5,8 +5,6 @@ import unittest
 from tests.helpers import AppWindowTestCase
 from pathlib import Path
 
-from qtpy import QtCore
-from qtpy.QtTest import QTest
 from finalcif.appwindow import AppWindow
 
 data = Path('tests')
