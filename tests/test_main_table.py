@@ -430,7 +430,17 @@ class TestCifTableViewIsolated(unittest.TestCase):
     # --- add_property_combobox TypeError ---
 
     def test_add_property_combobox_bad_value_does_not_raise(self):
-        """TypeError from retranslate_delimiter(None) is caught and logged."""
+        """TypeError from retranslate_delimiter(None) is caught; bad item is skipped."""
         bad_data = [(0, None)]
-        # Should not propagate the TypeError
+        # Should not propagate the TypeError; the bad item is silently skipped.
         self.view.add_property_combobox(bad_data, 0, '_key_a')
+        combobox = self.view.cellWidget(0, Column.EDIT)
+        # The bad item was skipped, so the combobox has no items from bad_data.
+        self.assertEqual(0, combobox.count())
+
+    def test_add_property_combobox_good_items_added_despite_bad_ones(self):
+        """Good items are still added when bad ones are interspersed."""
+        mixed_data = [(0, 'good_value'), (1, None), (2, 'another_good')]
+        self.view.add_property_combobox(mixed_data, 0, '_key_a')
+        combobox = self.view.cellWidget(0, Column.EDIT)
+        self.assertEqual(2, combobox.count())
