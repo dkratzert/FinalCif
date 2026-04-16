@@ -84,7 +84,7 @@ def compile_python_files():
 if __name__ == '__main__':
     iss_file = 'scripts/finalcif-install_win64.iss'
 
-    compile_ui()
+    compile_ui(uic_path=application_path / 'dist/python_dist/Scripts')
     compile_python_files()
     disable_debug('finalcif/appwindow.py')
 
@@ -92,9 +92,13 @@ if __name__ == '__main__':
 
     make_installer(iss_file)
 
-    make_shasum(f"scripts/Output/FinalCif-setup-x64-v{VERSION}.exe")
+    exe_output_file = f"scripts/Output/FinalCif-setup-x64-v{VERSION}.exe"
+    if Path(exe_output_file).exists():
+        make_shasum(exe_output_file)
 
-    print(f'Created version: {VERSION}')
-    print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
+        print(f'Created version: {VERSION}')
+        print(datetime.now().strftime("%d.%m.%Y %H:%M:%S"))
 
-    subprocess.call([f"scripts/Output/FinalCif-setup-x64-v{VERSION}.exe", '/SILENT'])
+        subprocess.call([exe_output_file, '/SILENT'])
+    else:
+        print(f"Error: Installer not found at {exe_output_file}. Please check the Inno Setup compilation step.")

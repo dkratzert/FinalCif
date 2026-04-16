@@ -2,7 +2,7 @@
 
 REM Execute me from the main directory
 
-set PYTHON_VERSION=3.14.3
+set PYTHON_VERSION=3.14.4
 
 REM Check if uv is available, install if missing
 where uv >NUL 2>&1
@@ -21,6 +21,6 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
-CALL .venv\Scripts\activate.bat
+rem CALL .venv\Scripts\activate.bat
 .venv\Scripts\python.exe scripts\_make_win_release.py
 CALL .venv\Scripts\deactivate.bat

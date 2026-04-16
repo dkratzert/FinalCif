@@ -2,12 +2,8 @@
 
 REM This script builds a working Python environment into ..\dist of the current file location.
 
-REM Accept PYTHON_VERSION as first argument, with a default fallback
-if "%~1"=="" (
-    set PYTHON_VERSION=3.14.3
-) else (
-    set PYTHON_VERSION=%~1
-)
+REM Accept PYTHON_VERSION as first argument, see make_win_release.bat
+set PYTHON_VERSION=%~1
 
 set PYTHON_URL=https://www.python.org/ftp/python/%PYTHON_VERSION%/python-%PYTHON_VERSION%-embed-amd64.zip
 
@@ -20,7 +16,7 @@ where uv >NUL 2>&1
 if %errorlevel% neq 0 (
     echo uv not found, installing...
     powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-    set "PATH=%USERPROFILE%\.local\bin;%PATH%"
+    set "PATH=%USERPROFILE%\.local\bin;%PATH%;%PACKAGE_DIR%\Scripts"
 )
 
 setlocal enabledelayedexpansion
@@ -60,18 +56,18 @@ curl -L https://aka.ms/vs/17/release/vc_redist.x64.exe -o vc_redist.x64.exe
 cd %SCRIPT_DIR%\..
 
 REM Create a venv for the release build
-uv venv --python %PYTHON_VERSION% .venv --clear
+rem uv venv --python %PYTHON_VERSION% .venv --clear
 
 REM Install the project and its dependencies into the venv used by the release scripts
 REM (uv pip install <dir> installs the project defined by pyproject.toml in that directory)
-uv pip install --python .venv\Scripts\python.exe %SCRIPT_DIR%\..
-if %errorlevel% neq 0 (
-    echo uv pip install into .venv failed. Stopping now.
-    exit /b %errorlevel%
-)
+REM uv pip install --python .venv\Scripts\python.exe %SCRIPT_DIR%\..
+REM if %errorlevel% neq 0 (
+REM     echo uv pip install into .venv failed. Stopping now.
+REM     exit /b %errorlevel%
+REM )
 REM Install all dependencies from pyproject.toml into the embedded Python
 REM (uv pip install <dir> installs the project defined by pyproject.toml in that directory)
-uv pip install --python "%PACKAGE_DIR%\python.exe" "%SCRIPT_DIR%\.."
+uv pip install --python "%PACKAGE_DIR%\python.exe" "%SCRIPT_DIR%\.." --link-mode=copy
 if %errorlevel% neq 0 (
     echo uv pip install failed. Stopping now.
     exit /b %errorlevel%
@@ -80,4 +76,6 @@ if %errorlevel% neq 0 (
 REM Remove the FinalCif package itself (it's provided in-tree, not as an installed package)
 uv pip uninstall --python "%PACKAGE_DIR%\python.exe" finalcif ipython ruff ty
 
-echo - finished!
+echo - finished environment install!
+
+CALL "%PACKAGE_DIR%\python.exe" "%SCRIPT_DIR%\_make_win_release.py"
