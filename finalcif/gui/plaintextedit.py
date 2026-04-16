@@ -49,7 +49,13 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapMode.WordWrap)
         self.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-        self.textChanged.connect(lambda: self.parent.resizeRowToContents(self.row))
+        self.textChanged.connect(self._on_text_changed)
+
+    def _on_text_changed(self) -> None:
+        # Skip expensive indexAt lookup while the table is being bulk-populated
+        # (updates are disabled).  The caller will resize all rows at the end.
+        if self.parent.updatesEnabled():
+            self.parent.resizeRowToContents(self.row)
 
     def increse_font_size(self):
         font = QFont()
@@ -169,7 +175,9 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def event(self, e: QtCore.QEvent):
         if e.type() == QtCore.QEvent.Type.InputMethodQuery:
-            self.parent.setCurrentCell(self.row, self.column)
+            # Skip expensive indexAt lookup while the table is being bulk-populated.
+            if self.parent.updatesEnabled():
+                self.parent.setCurrentCell(self.row, self.column)
         return super().event(e)
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):

@@ -179,7 +179,8 @@ class CifTableView(QTableView):
     def setText(self, key: str, column: int, txt: str,
                 row: int | None = None, color: QColor | None = None) -> None:
         """Set text in a cell, creating a :class:`MyQPlainTextEdit` if needed."""
-        txt = retranslate_delimiter(txt)
+        if txt:
+            txt = retranslate_delimiter(txt)
 
         if row is None:
             row = self._model.row_from_key(key)

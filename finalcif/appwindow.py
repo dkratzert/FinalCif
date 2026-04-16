@@ -49,6 +49,7 @@ from finalcif.equip_property.properties import Properties
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.custom_classes import Column, light_green, yellow, light_blue, \
     white
+from finalcif.gui.cif_table_model import CifRowData
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question, \
@@ -2029,27 +2030,104 @@ class AppWindow(QMainWindow):
     def fill_cif_table(self) -> None:
         """
         Adds the cif content to the main table. also add reference to FinalCif.
+
+        Phase 1: collect all key/value data into plain Python lists (no GUI work).
+        Phase 2: bulk-load the model in one shot (single beginResetModel / endResetModel).
+        Phase 3: create persistent cell widgets with view updates suspended.
+        Phase 4: data-source enrichment, combo boxes, etc.
         """
-        # Suspend view updates while populating to avoid per-row repaints.
-        self.ui.cif_main_table.setUpdatesEnabled(False)
+        table = self.ui.cif_main_table
+
+        # ------------------------------------------------------------------
+        # Phase 1 – prepare data (pure Python, no GUI)
+        # ------------------------------------------------------------------
+        self.cif.set_essential_keys(self.ui.cifOrderWidget.essential_keys)
+        saved_items = self.settings.list_saved_items('text_templates')
+
+        prepared: list[dict] = []  # lightweight dicts for each row
+        model_rows: list[CifRowData] = []
+        audit_creation_index: int | None = None
+
+        for key, raw_value in self.cif.key_value_pairs():
+            if not raw_value or raw_value in {'?', "'?'"}:
+                self.missing_data.add(key)
+                raw_value = '?'
+
+            is_sep = (key == "These below are already in:")
+            if raw_value is None or raw_value == '?':
+                strval = '?'
+            else:
+                strval = gemmi.cif.as_string(raw_value).strip('\n\r\t')
+            if not key:
+                strval = ''
+
+            color = None
+            if not is_sep:
+                load_key = self.get_vrf_errortype(key)
+                if load_key in saved_items:
+                    color = light_blue
+
+            row_data = CifRowData(
+                key=key,
+                is_separator=is_sep,
+                edit_color=color,
+            )
+            model_rows.append(row_data)
+            prepared.append({
+                'key': key,
+                'raw_value': raw_value,
+                'strval': strval,
+                'color': color,
+                'is_sep': is_sep,
+            })
+
+            if key == '_audit_creation_method':
+                audit_creation_index = len(prepared) - 1
+
+            # Keep cif.order and cif block in sync (non-GUI)
+            row_num = len(prepared) - 1
+            if key.startswith('_'):
+                if key not in self.cif.order:
+                    self.cif.order.insert(row_num, key)
+                if not self.cif.block.find_value(key):
+                    self.cif[key] = raw_value
+
+        # ------------------------------------------------------------------
+        # Phase 2 – bulk-load the model (single reset instead of N inserts)
+        # ------------------------------------------------------------------
+        table._model.bulk_load(model_rows)
+
+        # ------------------------------------------------------------------
+        # Phase 3 – create widgets (with view repaints suspended)
+        # ------------------------------------------------------------------
+        table.setUpdatesEnabled(False)
         try:
-            self.cif.set_essential_keys(self.ui.cifOrderWidget.essential_keys)
-            for key, value in self.cif.key_value_pairs():
-                if not value or value in {'?', "'?'"}:
-                    self.missing_data.add(key)
-                    value = '?'
-                self.add_row(key, value)
-                if key == '_audit_creation_method':
-                    self.add_audit_creation_method(key)
+            for row_num, item in enumerate(prepared):
+                if item['is_sep']:
+                    table.add_separation_line(row_num)
+                    self.complete_data_row = row_num
+                else:
+                    table.setText(row=row_num, key=item['key'], column=Column.CIF,
+                                  txt=item['strval'])
+                    table.setText(row=row_num, key=item['key'], column=Column.DATA, txt='')
+                    table.setText(row=row_num, key=item['key'], column=Column.EDIT,
+                                  color=item['color'], txt='')
+
+            if audit_creation_index is not None:
+                self.add_audit_creation_method('_audit_creation_method')
+
+            # ------------------------------------------------------------------
+            # Phase 4 – data sources, combo boxes, disabled items
+            # ------------------------------------------------------------------
             if self.cif.is_multi_cif:
                 self.refresh_combo_boxes()
             else:
                 self.get_data_sources()
             self.erase_disabled_items()
         finally:
-            self.ui.cif_main_table.setUpdatesEnabled(True)
-        self.ui.cif_main_table.resizeRowsToContents()
-        self.ui.cif_main_table.clearSelection()
+            table.setUpdatesEnabled(True)
+        table.resizeRowsToContents()
+        table.clearSelection()
 
     def check_cecksums(self):
         if "RUNNING_TEST" in os.environ:

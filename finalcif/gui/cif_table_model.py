@@ -44,6 +44,7 @@ class CifTableModel(QAbstractTableModel):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._rows: list[CifRowData] = []
+        self._key_index: dict[str, int] = {}  # key → row for O(1) lookup
 
     # --- Core QAbstractTableModel interface ---
 
@@ -141,14 +142,14 @@ class CifTableModel(QAbstractTableModel):
         return [r.key for r in self._rows]
 
     def row_from_key(self, key: str) -> int:
-        """Return row index for a given CIF keyword."""
-        for i, r in enumerate(self._rows):
-            if r.key == key:
-                return i
-        raise ValueError(f'Key {key!r} not found in model')
+        """Return row index for a given CIF keyword (O(1) via index cache)."""
+        try:
+            return self._key_index[key]
+        except KeyError:
+            raise ValueError(f'Key {key!r} not found in model')
 
     def has_key(self, key: str) -> bool:
-        return any(r.key == key for r in self._rows)
+        return key in self._key_index
 
     def add_row(self, key: str, cif_value: str = '', data_value: str = '',
                 edit_value: str = '', position: int | None = None,
@@ -165,8 +166,22 @@ class CifTableModel(QAbstractTableModel):
         )
         self.beginInsertRows(QModelIndex(), position, position)
         self._rows.insert(position, row_data)
+        # Rebuild key index for rows at and after the insertion point.
+        for i in range(position, len(self._rows)):
+            self._key_index[self._rows[i].key] = i
         self.endInsertRows()
         return position
+
+    def bulk_load(self, rows: list[CifRowData]) -> None:
+        """Replace all rows at once — much faster than per-row add_row.
+
+        Uses a single ``beginResetModel``/``endResetModel`` pair instead
+        of N ``beginInsertRows``/``endInsertRows`` calls.
+        """
+        self.beginResetModel()
+        self._rows = list(rows)
+        self._key_index = {r.key: i for i, r in enumerate(self._rows)}
+        self.endResetModel()
 
     def remove_row(self, row: int) -> str:
         """Remove a row by index. Returns the key of the removed row."""
@@ -174,6 +189,10 @@ class CifTableModel(QAbstractTableModel):
             key = self._rows[row].key
             self.beginRemoveRows(QModelIndex(), row, row)
             del self._rows[row]
+            # Rebuild index for shifted rows.
+            self._key_index.pop(key, None)
+            for i in range(row, len(self._rows)):
+                self._key_index[self._rows[i].key] = i
             self.endRemoveRows()
             return key
         return ''
@@ -205,6 +224,7 @@ class CifTableModel(QAbstractTableModel):
         if self._rows:
             self.beginResetModel()
             self._rows.clear()
+            self._key_index.clear()
             self.endResetModel()
 
     def set_separator(self, row: int) -> None:
