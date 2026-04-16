@@ -136,11 +136,13 @@ class MyQPlainTextEdit(QPlainTextEdit):
         if column == Column.CIF and self.cif_key in self.to_be_shortened:
             lines = text.splitlines(keepends=True)
             if len(lines) > self.MAX_DISPLAY_LINES:
-                self.setPlainText(''.join(lines[:self.MAX_DISPLAY_LINES]).rstrip() + '\n[...]')
-            else:
-                self.setPlainText(text)
-        else:
-            self.setPlainText(text)
+                text = ''.join(lines[:self.MAX_DISPLAY_LINES]).rstrip() + '\n[...]'
+        # Block signals to prevent textChanged → resizeRowToContents per call.
+        # The caller (CifTableView.setText) handles resizing explicitly.
+        was_blocked = self.signalsBlocked()
+        self.blockSignals(True)
+        self.setPlainText(text)
+        self.blockSignals(was_blocked)
 
     def eventFilter(self, widget: QWidget, event: QEvent):
         """

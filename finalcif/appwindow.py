@@ -2030,6 +2030,8 @@ class AppWindow(QMainWindow):
         """
         Adds the cif content to the main table. also add reference to FinalCif.
         """
+        # Suspend view updates while populating to avoid per-row repaints.
+        self.ui.cif_main_table.setUpdatesEnabled(False)
         self.cif.set_essential_keys(self.ui.cifOrderWidget.essential_keys)
         for key, value in self.cif.key_value_pairs():
             if not value or value in {'?', "'?'"}:
@@ -2038,13 +2040,13 @@ class AppWindow(QMainWindow):
             self.add_row(key, value)
             if key == '_audit_creation_method':
                 self.add_audit_creation_method(key)
-                # QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
-            # print(key, value)
         if self.cif.is_multi_cif:
             self.refresh_combo_boxes()
         else:
             self.get_data_sources()
         self.erase_disabled_items()
+        self.ui.cif_main_table.setUpdatesEnabled(True)
+        self.ui.cif_main_table.resizeRowsToContents()
         self.ui.cif_main_table.clearSelection()
 
     def check_cecksums(self):
