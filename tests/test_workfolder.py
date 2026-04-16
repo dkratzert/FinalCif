@@ -293,6 +293,7 @@ class TestWorkfolderOtherCifName(AppWindowTestCase):
         (data / 'testcif_file.cif').unlink(missing_ok=True)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
         self.myapp.close()
+        super().tearDown()
 
     def cell_text(self, key: str, col: int) -> str:
         return unify_line_endings(self.myapp.ui.cif_main_table.getTextFromKey(key, col))

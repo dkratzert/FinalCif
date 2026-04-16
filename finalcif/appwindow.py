@@ -167,7 +167,8 @@ class AppWindow(QMainWindow):
         self.set_checkcif_output_font(self.ui.CheckcifPlaintextEdit)
         # To make file drag&drop working:
         self.setAcceptDrops(True)
-        self.show()
+        if not self.running_inside_unit_test:
+            self.show()
         self.templates = ReportTemplates(self, self.settings)
         if not self.running_inside_unit_test:
             self.check_for_update_version()

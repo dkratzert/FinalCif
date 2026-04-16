@@ -44,6 +44,7 @@ class TestPlatonCheckCIF(AppWindowTestCase):
         for file in filenames:
             Path(file).unlink(missing_ok=True)
         self.myapp.close()
+        super().tearDown()
 
     def test_checkcif_offline(self):
         self.myapp.hide()
@@ -80,6 +81,7 @@ class TestPlatonCheckCIFwithCIFwithoutHKLdata(AppWindowTestCase):
         for file in filenames:
             Path(file).unlink(missing_ok=True)
         self.myapp.close()
+        super().tearDown()
 
     def test_checkcif_offline(self):
         self.myapp.hide()

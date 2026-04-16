@@ -56,6 +56,7 @@ class TemplateReportTestCase(AppWindowTestCase):
         self._clean_templates()
         self.myapp.ui.docxTemplatesListWidget.blockSignals(False)
         self.myapp.close()
+        super().tearDown()
 
     def import_templates(self):
         # blocking signals, because signal gets fired after delete and crashes: 

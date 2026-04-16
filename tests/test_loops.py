@@ -36,6 +36,7 @@ class TestLoops(AppWindowTestCase):
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
         (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        super().tearDown()
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget
@@ -110,6 +111,7 @@ class TestLoopsMove(AppWindowTestCase):
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
         (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        super().tearDown()
 
     def get_index_of(self, loopkey: str = ''):
         tabw: QTabWidget = self.myapp.ui.LoopsTabWidget

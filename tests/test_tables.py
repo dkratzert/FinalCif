@@ -45,6 +45,7 @@ class TablesTestCase(AppWindowTestCase):
         self.myapp.ui.HAtomsCheckBox.setChecked(False)
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
         self.myapp.close()
+        super().tearDown()
 
     def test_picture_has_correct_size(self):
         self.myapp.ui.SaveFullReportButton.click()

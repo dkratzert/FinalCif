@@ -26,6 +26,7 @@ class TestOptions(AppWindowTestCase):
         self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         self.myapp.ui.trackChangesCifCheckBox.setChecked(False)
         self.myapp.close()
+        super().tearDown()
 
     def test_save_picture_with(self):
         self.assertEqual(self.myapp.ui.PictureWidthDoubleSpinBox.value(), 0.0)

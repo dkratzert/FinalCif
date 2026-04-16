@@ -41,6 +41,7 @@ class TestCheckCifHTML(AppWindowTestCase):
         Path('checkcif-cu_BruecknerJK_153F40_0m-finalcif.pdf').unlink(missing_ok=True)
         Path('checkpdf-cu_BruecknerJK_153F40_0m-finalcif.html').unlink(missing_ok=True)
         self.myapp.close()
+        super().tearDown()
 
     def equipment_click(self, field: str):
         self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)

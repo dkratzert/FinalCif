@@ -24,6 +24,15 @@ def get_platon_exe() -> str:
     return platon_exe
 
 class AppWindowTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        import gc
+        gc.collect()
+        from qtpy.QtWidgets import QApplication
+        app = QApplication.instance()
+        if app is not None:
+            app.processEvents()
+        super().setUp()
+
     def tearDown(self) -> None:
         if hasattr(self, 'myapp') and getattr(self, 'myapp') is not None:
             try:

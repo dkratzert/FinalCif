@@ -22,6 +22,7 @@ class TestStausBarWithGraphics(AppWindowTestCase):
 
     def tearDown(self) -> None:
         self.myapp.close()
+        super().tearDown()
 
     def test_show_hello(self):
         self.status.show_message('Hello!')

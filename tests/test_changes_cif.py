@@ -34,6 +34,7 @@ class TestChangesTrackingActive(AppWindowTestCase):
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.finalcif_changes_filename.unlink(missing_ok=True)
         self.myapp.close()
+        super().tearDown()
 
     def test_save_with_keys(self):
         self.myapp.ui.cif_main_table.setText(key='_chemical_formula_moiety', column=2, txt='testauthoradress')

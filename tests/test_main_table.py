@@ -36,6 +36,7 @@ class TestMainTableFieldBehavior(AppWindowTestCase):
         self.myapp.cif.finalcif_file.unlink(missing_ok=True)
         self.myapp.close()
         (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        super().tearDown()
 
     def key_row(self, key: str) -> int:
         return self.myapp.ui.cif_main_table.row_from_key(key)
