@@ -2032,20 +2032,22 @@ class AppWindow(QMainWindow):
         """
         # Suspend view updates while populating to avoid per-row repaints.
         self.ui.cif_main_table.setUpdatesEnabled(False)
-        self.cif.set_essential_keys(self.ui.cifOrderWidget.essential_keys)
-        for key, value in self.cif.key_value_pairs():
-            if not value or value in {'?', "'?'"}:
-                self.missing_data.add(key)
-                value = '?'
-            self.add_row(key, value)
-            if key == '_audit_creation_method':
-                self.add_audit_creation_method(key)
-        if self.cif.is_multi_cif:
-            self.refresh_combo_boxes()
-        else:
-            self.get_data_sources()
-        self.erase_disabled_items()
-        self.ui.cif_main_table.setUpdatesEnabled(True)
+        try:
+            self.cif.set_essential_keys(self.ui.cifOrderWidget.essential_keys)
+            for key, value in self.cif.key_value_pairs():
+                if not value or value in {'?', "'?'"}:
+                    self.missing_data.add(key)
+                    value = '?'
+                self.add_row(key, value)
+                if key == '_audit_creation_method':
+                    self.add_audit_creation_method(key)
+            if self.cif.is_multi_cif:
+                self.refresh_combo_boxes()
+            else:
+                self.get_data_sources()
+            self.erase_disabled_items()
+        finally:
+            self.ui.cif_main_table.setUpdatesEnabled(True)
         self.ui.cif_main_table.resizeRowsToContents()
         self.ui.cif_main_table.clearSelection()
 
