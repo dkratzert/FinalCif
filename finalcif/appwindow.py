@@ -48,7 +48,7 @@ from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.custom_classes import Column, light_green, yellow, light_blue, \
-    white
+    white, MyTableWidgetItem
 from finalcif.gui.cif_table_model import CifRowData
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
