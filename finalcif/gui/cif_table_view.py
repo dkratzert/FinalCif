@@ -11,7 +11,7 @@ from qtpy.QtWidgets import (
 )
 
 from finalcif.cif.text import retranslate_delimiter
-from finalcif.gui.cif_table_model import CifTableModel, Column, blue
+from finalcif.gui.cif_table_model import CifTableModel, Column, blue, CifRowData
 from finalcif.gui.combobox import MyComboBox
 from finalcif.gui.dialogs import show_keyword_help
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
@@ -366,3 +366,12 @@ class CifTableView(QTableView):
     def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
         QtCore.QTimer(self).singleShot(0, self.resizeRowsToContents)
         super().resizeEvent(e)
+
+
+if __name__ == '__main__':
+    app = QApplication([])
+    tabv = CifTableView()
+    tabv.bulk_load(
+        [CifRowData(key=f'key{i}', cif_value='cifval', data_value='dataval', edit_value='editval') for i in range(20)])
+    tabv.show()
+    app.exec()
