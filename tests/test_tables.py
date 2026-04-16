@@ -25,38 +25,38 @@ class TablesTestCase(AppWindowTestCase):
 
     def setUp(self) -> None:
         self.testcif = (data / 'examples/1979688_small.cif').absolute()
-        self.myapp = AppWindow(file=self.testcif)
-        self.myapp.ui.HAtomsCheckBox.setChecked(False)
-        self.myapp.ui.ReportTextCheckBox.setChecked(False)
-        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
+        self.app = AppWindow(file=self.testcif)
+        self.app.ui.HAtomsCheckBox.setChecked(False)
+        self.app.ui.ReportTextCheckBox.setChecked(False)
+        self.app.ui.PictureWidthDoubleSpinBox.setValue(0.0)
         # make sure to use no template:
-        self.myapp.ui.docxTemplatesListWidget.setCurrentRow(0)
-        # self.myapp.show()
-        self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
-        self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
-        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
-        self.myapp.select_report_picture(Path('finalcif/icon/finalcif.png'))
+        self.app.ui.docxTemplatesListWidget.setCurrentRow(0)
+        # self.app.show()
+        self.reportdoc = self.app.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+        self.report_zip = self.app.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
+        self.app.ui.PictureWidthDoubleSpinBox.setValue(7.43)
+        self.app.select_report_picture(Path('finalcif/icon/finalcif.png'))
 
     def tearDown(self) -> None:
-        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
+        self.app.cif.finalcif_file.unlink(missing_ok=True)
         self.reportdoc.unlink(missing_ok=True)
         self.report_zip.unlink(missing_ok=True)
-        self.myapp.ui.ReportTextCheckBox.setChecked(False)
-        self.myapp.ui.HAtomsCheckBox.setChecked(False)
-        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
-        self.myapp.close()
+        self.app.ui.ReportTextCheckBox.setChecked(False)
+        self.app.ui.HAtomsCheckBox.setChecked(False)
+        self.app.ui.PictureWidthDoubleSpinBox.setValue(7.5)
+        self.app.close()
         super().tearDown()
 
     def test_picture_has_correct_size(self):
-        self.myapp.ui.SaveFullReportButton.click()
+        self.app.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.absolute())
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)
         self.assertEqual(Cm(7.43).emu, shapes[0].width)
 
     def test_default_picture_width(self):
-        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(0.0)
-        self.myapp.ui.SaveFullReportButton.click()
+        self.app.ui.PictureWidthDoubleSpinBox.setValue(0.0)
+        self.app.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.resolve())
         shapes: InlineShapes = doc.inline_shapes
         self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)

@@ -14,14 +14,14 @@ from finalcif import VERSION
 class TestStausBarWithGraphics(AppWindowTestCase):
 
     def setUp(self) -> None:
-        self.myapp = AppWindow()
-        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
-        self.status = StatusBar(self.myapp.ui)
-        self.myapp.hide()
+        self.app = AppWindow()
+        self.app.setWindowIcon(QIcon('./icon/multitable.png'))
+        self.app.setWindowTitle(f'FinalCif v{VERSION}')
+        self.status = StatusBar(self.app.ui)
+        self.app.hide()
 
     def tearDown(self) -> None:
-        self.myapp.close()
+        self.app.close()
         super().tearDown()
 
     def test_show_hello(self):

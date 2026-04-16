@@ -28,10 +28,10 @@ test_data = Path('test-data')
 class TemplateReportTestCase(AppWindowTestCase):
     def setUp(self) -> None:
         self.testcif = (data / 'examples/1979688.cif').absolute()
-        self.myapp = AppWindow(file=self.testcif)
-        self.myapp.ui.HAtomsCheckBox.setChecked(False)
-        self.myapp.ui.ReportTextCheckBox.setChecked(False)
-        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.43)
+        self.app = AppWindow(file=self.testcif)
+        self.app.ui.HAtomsCheckBox.setChecked(False)
+        self.app.ui.ReportTextCheckBox.setChecked(False)
+        self.app.ui.PictureWidthDoubleSpinBox.setValue(7.43)
         self.options = Mock()
         self.options.picture_width = 7.43
         self.options.without_h = False
@@ -39,38 +39,38 @@ class TemplateReportTestCase(AppWindowTestCase):
         self.text_template = Path('finalcif/template/report_default.docx').absolute()
         self.template_without_text = Path('finalcif/template/template_without_text.docx').absolute()
         self.import_templates()
-        self.myapp.ui.docxTemplatesListWidget.setCurrentRow(2)
-        self.reportdoc = self.myapp.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
-        self.report_zip = self.myapp.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
+        self.app.ui.docxTemplatesListWidget.setCurrentRow(2)
+        self.reportdoc = self.app.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+        self.report_zip = self.app.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
         self.report_pic = Path('finalcif/icon/finalcif.png')
-        self.myapp.select_report_picture(self.report_pic)
+        self.app.select_report_picture(self.report_pic)
 
     def tearDown(self) -> None:
-        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
+        self.app.cif.finalcif_file.unlink(missing_ok=True)
         self.reportdoc.unlink(missing_ok=True)
         self.report_zip.unlink(missing_ok=True)
-        self.myapp.ui.ReportTextCheckBox.setChecked(False)
-        self.myapp.ui.HAtomsCheckBox.setChecked(False)
-        self.myapp.ui.PictureWidthDoubleSpinBox.setValue(7.5)
-        self.myapp.ui.docxTemplatesListWidget.blockSignals(True)
+        self.app.ui.ReportTextCheckBox.setChecked(False)
+        self.app.ui.HAtomsCheckBox.setChecked(False)
+        self.app.ui.PictureWidthDoubleSpinBox.setValue(7.5)
+        self.app.ui.docxTemplatesListWidget.blockSignals(True)
         self._clean_templates()
-        self.myapp.ui.docxTemplatesListWidget.blockSignals(False)
-        self.myapp.close()
+        self.app.ui.docxTemplatesListWidget.blockSignals(False)
+        self.app.close()
         super().tearDown()
 
     def import_templates(self):
         # blocking signals, because signal gets fired after delete and crashes: 
-        self.myapp.ui.docxTemplatesListWidget.blockSignals(True)
+        self.app.ui.docxTemplatesListWidget.blockSignals(True)
         self._clean_templates()
-        self.myapp.templates.add_new_template(str(self.text_template))
-        self.myapp.templates.add_new_template(str(self.template_without_text))
+        self.app.templates.add_new_template(str(self.text_template))
+        self.app.templates.add_new_template(str(self.template_without_text))
         print('imported templates')
-        self.myapp.ui.docxTemplatesListWidget.blockSignals(False)
+        self.app.ui.docxTemplatesListWidget.blockSignals(False)
 
     def _clean_templates(self):
-        for num in range(1, self.myapp.ui.docxTemplatesListWidget.count()):
-            self.myapp.ui.docxTemplatesListWidget.setCurrentRow(num)
-            self.myapp.templates.remove_current_template()
+        for num in range(1, self.app.ui.docxTemplatesListWidget.count()):
+            self.app.ui.docxTemplatesListWidget.setCurrentRow(num)
+            self.app.templates.remove_current_template()
 
 class TemplateReportWithoutAppTestCase(AppWindowTestCase):
     def setUp(self) -> None:
@@ -104,7 +104,7 @@ class TemplateReportWithoutAppTestCase(AppWindowTestCase):
 
     def test_picture_has_correct_size(self):
         """
-        For this test, self.myapp.set_report_picture(Path('finalcif/icon/finalcif.png'))
+        For this test, self.app.set_report_picture(Path('finalcif/icon/finalcif.png'))
         has to be set correctly.
         """
         t = TemplatedReport(options=self.options,

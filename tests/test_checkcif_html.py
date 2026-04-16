@@ -24,13 +24,13 @@ class TestCheckCifHTML(AppWindowTestCase):
     def setUp(self) -> None:
         if os.environ.get('NO_NETWORK'):
             self.skipTest('No network available.')
-        self.myapp = AppWindow(file=Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve())
-        self.myapp.hide()  # For full screen view
-        self.resobj = self.myapp.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.html')
+        self.app = AppWindow(file=Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve())
+        self.app.hide()  # For full screen view
+        self.resobj = self.app.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.html')
 
     def tearDown(self) -> None:
         self.resobj.unlink(missing_ok=True)
-        self.myapp.cif.finalcif_file.unlink(missing_ok=True)
+        self.app.cif.finalcif_file.unlink(missing_ok=True)
         Path('platon.out').unlink(missing_ok=True)
         Path('check.def').unlink(missing_ok=True)
         Path('cu_BruecknerJK_153F40_0m-finalcif.chk').unlink(missing_ok=True)
@@ -40,14 +40,14 @@ class TestCheckCifHTML(AppWindowTestCase):
         Path('checkcif-cu_BruecknerJK_153F40_0m-finalcif.html').unlink(missing_ok=True)
         Path('checkcif-cu_BruecknerJK_153F40_0m-finalcif.pdf').unlink(missing_ok=True)
         Path('checkpdf-cu_BruecknerJK_153F40_0m-finalcif.html').unlink(missing_ok=True)
-        self.myapp.close()
+        self.app.close()
         super().tearDown()
 
     def equipment_click(self, field: str):
-        self.myapp.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        item = self.myapp.ui.EquipmentTemplatesListWidget.findItems(field, Qt.MatchFlag.MatchStartsWith)[0]
-        self.myapp.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
-        self.myapp.equipment.load_selected_equipment()
+        self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        item = self.app.ui.EquipmentTemplatesListWidget.findItems(field, Qt.MatchFlag.MatchStartsWith)[0]
+        self.app.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.app.equipment.load_selected_equipment()
 
     @unittest.skip('temporary skip')
     def test_checkcif_html(self):
@@ -55,13 +55,13 @@ class TestCheckCifHTML(AppWindowTestCase):
         self.maxDiff = None
         self.equipment_click('D8 VENTURE')
         self.equipment_click('Crystallographer Details')
-        self.myapp.ui.cif_main_table.setText(key='_chemical_absolute_configuration', txt='ad', column=Column.EDIT)
+        self.app.ui.cif_main_table.setText(key='_chemical_absolute_configuration', txt='ad', column=Column.EDIT)
         # Remember: This test is without structure factors!
-        self.myapp.ui.structfactCheckBox.setChecked(True)
-        QTest.mouseClick(self.myapp.ui.CheckcifHTMLOnlineButton, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
+        self.app.ui.structfactCheckBox.setChecked(True)
+        QTest.mouseClick(self.app.ui.CheckcifHTMLOnlineButton, Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
         time.sleep(5)
         # this is the file on github:
-        html_as_it_is_expected = self.myapp.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-test.html')
+        html_as_it_is_expected = self.app.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-test.html')
         htmlfile = html_as_it_is_expected.read_text().splitlines()[28:-13]
         # this is the new downloadad file
         result = self.resobj.read_text().splitlines()[28:-13]

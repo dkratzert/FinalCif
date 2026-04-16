@@ -34,10 +34,10 @@ class AppWindowTestCase(unittest.TestCase):
         super().setUp()
 
     def tearDown(self) -> None:
-        if hasattr(self, 'myapp') and getattr(self, 'myapp') is not None:
+        if hasattr(self, 'app') and getattr(self, 'app') is not None:
             try:
-                self.myapp.close()
+                self.app.close()
             except RuntimeError:
                 pass
-            self.myapp = None
+            self.app = None
         super().tearDown()
