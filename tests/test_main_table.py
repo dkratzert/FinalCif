@@ -92,3 +92,74 @@ class TestMainTableFieldBehavior(AppWindowTestCase):
         self.app.append_cif(data.parent / 'test-data/1000006.cif')
         self.assertEqual(True, self.app.cif.is_multi_cif)
         self.assertEqual(2, len(self.app.cif.doc))
+
+
+class TestMainTableRowHeights(AppWindowTestCase):
+    """Tests that row heights in the main CIF table are reasonable.
+
+    Exact pixel values vary across platforms, fonts, and DPI settings,
+    so all assertions use generous range checks.
+    """
+
+    def setUp(self) -> None:
+        self.testcif = (data / 'examples/1979688.cif').absolute()
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        self.app = AppWindow(file=self.testcif)
+        self.app.settings.empty_deleted_list()
+        self.app.ui.trackChangesCifCheckBox.setChecked(False)
+        self.table = self.app.ui.cif_main_table
+        self.table.resizeRowsToContents()
+
+    def tearDown(self) -> None:
+        self.app.cif.finalcif_file.unlink(missing_ok=True)
+        self.app.close()
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        super().tearDown()
+
+    def test_single_line_row_height(self):
+        """A short single-line value like 'geom' should produce a compact row."""
+        row = self.table.row_from_key('_atom_sites_solution_hydrogens')
+        h = self.table.rowHeight(row)
+        self.assertGreaterEqual(h, 10)
+        self.assertLessEqual(h, 80)
+
+    def test_separator_row_is_short(self):
+        """The blue diagonal separator row should be very compact."""
+        sep_row = self.app.complete_data_row
+        self.assertGreaterEqual(sep_row, 0, 'Separator row not found')
+        h = self.table.rowHeight(sep_row)
+        self.assertLessEqual(h, 40)
+
+    def test_shelx_res_file_row_height_bounded(self):
+        """_shelx_res_file is truncated to MAX_DISPLAY_LINES; row should be medium height."""
+        row = self.table.row_from_key('_shelx_res_file')
+        h = self.table.rowHeight(row)
+        self.assertGreaterEqual(h, 30)
+        self.assertLessEqual(h, 500)
+
+    def test_shelx_hkl_file_row_height_bounded(self):
+        """_shelx_hkl_file is very large but truncated; row height must stay bounded."""
+        row = self.table.row_from_key('_shelx_hkl_file')
+        h = self.table.rowHeight(row)
+        self.assertLessEqual(h, 600)
+
+    def test_empty_value_row_stays_compact(self):
+        """A row whose CIF value is '?' and has no other data should be compact."""
+        row = self.table.row_from_key('_chemical_name_common')
+        h = self.table.rowHeight(row)
+        self.assertGreaterEqual(h, 10)
+        self.assertLessEqual(h, 80)
+
+    def test_row_height_after_equipment_load(self):
+        """After loading equipment data the row should still have a reasonable height."""
+        self.app.equipment.import_equipment_from_file(
+            str(data.parent / 'test-data/Crystallographer_Details.cif'))
+        self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
+        item = self.app.ui.EquipmentTemplatesListWidget.findItems(
+            'Crystallographer Details', Qt.MatchStartsWith)[0]
+        self.app.ui.EquipmentTemplatesListWidget.setCurrentItem(item)
+        self.app.equipment.load_selected_equipment()
+        self.table.resizeRowsToContents()
+        row = self.table.row_from_key('_audit_contact_author_email')
+        h = self.table.rowHeight(row)
+        self.assertLessEqual(h, 100)
