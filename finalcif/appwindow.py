@@ -1687,7 +1687,7 @@ class AppWindow(QMainWindow):
         """
         vheader: QtWidgets.QHeaderView = self.ui.cif_main_table.verticalHeader()
         fm = QtGui.QFontMetrics(vheader.font(), self)
-        keys = self.ui.cif_main_table.model().vheaderitems
+        keys = self.ui.cif_main_table.vheaderitems
         try:
             longest_string: str = max(keys, key=len)
         except ValueError:

@@ -108,6 +108,11 @@ class CifTableView(QTableView):
     def columns_count(self) -> int:
         return self._model.columnCount()
 
+    @property
+    def vheaderitems(self) -> list[str]:
+        """List of CIF keywords in row order."""
+        return self._model.vheaderitems
+
     def rowCount(self) -> int:  # noqa: N802 – keep old name
         return self._model.rowCount()
 
@@ -248,6 +253,7 @@ class CifTableView(QTableView):
             try:
                 combobox.addItem(retranslate_delimiter(value), num)
             except TypeError:
+                print('Bad value in property:', value)
                 if DEBUG:
                     raise
                 continue
