@@ -20,7 +20,3 @@ if %errorlevel% neq 0 (
     echo _create_dist.bat failed. Stopping now.
     exit /b %errorlevel%
 )
-
-rem CALL .venv\Scripts\activate.bat
-.venv\Scripts\python.exe scripts\_make_win_release.py
-CALL .venv\Scripts\deactivate.bat
