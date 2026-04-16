@@ -2031,7 +2031,7 @@ class AppWindow(QMainWindow):
         """
         Adds the cif content to the main table. also add reference to FinalCif.
 
-        Phase 1: collect all key/value data into plain Python lists (no GUI work).
+        Phase 1: collect all key/value data into CifRowData objects (no GUI work).
         Phase 2: bulk-load the model in one shot (single beginResetModel / endResetModel).
         Phase 3: create persistent cell widgets with view updates suspended.
         Phase 4: data-source enrichment, combo boxes, etc.
@@ -2044,7 +2044,6 @@ class AppWindow(QMainWindow):
         self.cif.set_essential_keys(self.ui.cifOrderWidget.essential_keys)
         saved_items = self.settings.list_saved_items('text_templates')
 
-        prepared: list[dict] = []  # lightweight dicts for each row
         model_rows: list[CifRowData] = []
         audit_creation_index: int | None = None
 
@@ -2071,21 +2070,16 @@ class AppWindow(QMainWindow):
                 key=key,
                 is_separator=is_sep,
                 edit_color=color,
+                raw_value=raw_value,
+                strval=strval,
             )
             model_rows.append(row_data)
-            prepared.append({
-                'key': key,
-                'raw_value': raw_value,
-                'strval': strval,
-                'color': color,
-                'is_sep': is_sep,
-            })
 
             if key == '_audit_creation_method':
-                audit_creation_index = len(prepared) - 1
+                audit_creation_index = len(model_rows) - 1
 
             # Keep cif.order and cif block in sync (non-GUI)
-            row_num = len(prepared) - 1
+            row_num = len(model_rows) - 1
             if key.startswith('_'):
                 if key not in self.cif.order:
                     self.cif.order.insert(row_num, key)
@@ -2102,16 +2096,16 @@ class AppWindow(QMainWindow):
         # ------------------------------------------------------------------
         table.setUpdatesEnabled(False)
         try:
-            for row_num, item in enumerate(prepared):
-                if item['is_sep']:
+            for row_num, row_data in enumerate(model_rows):
+                if row_data.is_separator:
                     table.add_separation_line(row_num)
                     self.complete_data_row = row_num
                 else:
-                    table.setText(row=row_num, key=item['key'], column=Column.CIF,
-                                  txt=item['strval'])
-                    table.setText(row=row_num, key=item['key'], column=Column.DATA, txt='')
-                    table.setText(row=row_num, key=item['key'], column=Column.EDIT,
-                                  color=item['color'], txt='')
+                    table.setText(row=row_num, key=row_data.key, column=Column.CIF,
+                                  txt=row_data.strval)
+                    table.setText(row=row_num, key=row_data.key, column=Column.DATA, txt='')
+                    table.setText(row=row_num, key=row_data.key, column=Column.EDIT,
+                                  color=row_data.edit_color, txt='')
 
             if audit_creation_index is not None:
                 self.add_audit_creation_method('_audit_creation_method')

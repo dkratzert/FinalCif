@@ -27,7 +27,14 @@ class Column(IntEnum):
 
 @dataclass
 class CifRowData:
-    """Data for a single row in the CIF table."""
+    """Data for a single row in the CIF table.
+
+    The ``raw_value`` and ``strval`` fields are transient: they carry the
+    original CIF value through the population loop in
+    ``AppWindow.fill_cif_table`` so that a single list of ``CifRowData``
+    objects can replace both the model rows *and* the former ``prepared``
+    dicts.  The model itself never reads them.
+    """
     key: str = ''
     cif_value: str = ''
     data_value: str = ''
@@ -36,6 +43,9 @@ class CifRowData:
     data_color: QColor | None = None
     edit_color: QColor | None = None
     is_separator: bool = False
+    # Transient fields used only during table population:
+    raw_value: str = ''
+    strval: str = ''
 
 
 class CifTableModel(QAbstractTableModel):
