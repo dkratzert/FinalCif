@@ -54,7 +54,7 @@ ArchitecturesInstallIn64BitMode=x64
 [Files]
 ;Excludes: "*.pyc"
 Source: "..\finalcif\*";            DestDir: "{app}\finalcif";  Flags: ignoreversion createallsubdirs recursesubdirs
-Source: "..\dist\python_dist\*";    DestDir: "{app}";           Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "qtwebengine_devtools_resources.debug.pak"
+Source: "..\dist\python_dist\*";    DestDir: "{app}";           Flags: ignoreversion createallsubdirs recursesubdirs; Excludes: "*.debug.pak,*_metatypes.json,**\*.pdb,**\test\*,**\tests\*,**\*.dist-info\RECORD, **\*.dist-info\REQUESTED"
 Source: "..\finalcif.exe";          DestDir: "{app}";           Flags: ignoreversion
 Source: "..\update.exe";            DestDir: "{app}";           Flags: ignoreversion
 Source: "..\vc_redist.x64.exe";     DestDir: "{app}";           Flags: ignoreversion
