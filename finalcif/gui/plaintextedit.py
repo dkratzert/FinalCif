@@ -11,7 +11,7 @@ from finalcif.gui.new_key_dialog import NewKey
 from finalcif.gui.validators import validators
 
 if TYPE_CHECKING:
-    from finalcif.gui.custom_classes import MyCifTable
+    from finalcif.gui.cif_table_view import CifTableView
 
 light_red = QColor(254, 191, 189)
 
@@ -41,7 +41,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.edit_button = None
         self.default_palette = self.palette()
         # self.increse_font_size()
-        self.parent: MyCifTable = parent
+        self.parent: CifTableView = parent
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setFrameShape(QFrame.Shape.NoFrame)
         self.setTabChangesFocus(True)
