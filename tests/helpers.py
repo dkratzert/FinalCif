@@ -40,10 +40,4 @@ class AppWindowTestCase(unittest.TestCase):
             except RuntimeError:
                 pass
             self.myapp = None
-        if hasattr(self, 'app') and getattr(self, 'app') is not None and type(self.app).__name__ == 'AppWindow':
-            try:
-                self.app.close()
-            except RuntimeError:
-                pass
-            self.app = None
         super().tearDown()
