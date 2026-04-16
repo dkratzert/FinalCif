@@ -355,9 +355,11 @@ class AuthorLoops:
                 for i, name in enumerate(names):
                     if not name or name in ('?', '.'):
                         continue
+                    address_raw = addresses[i] if i < len(addresses) and addresses[i] not in ('?', '.') else ''
+                    address_stripped = [ln.strip() for ln in address_raw.splitlines() if ln.strip()]
                     author = Author(
                         name=name,
-                        address=addresses[i] if i < len(addresses) and addresses[i] not in ('?', '.') else '',
+                        address='\n'.join(address_stripped).strip('; '),
                         email=emails[i] if i < len(emails) and emails[i] not in ('?', '.') else '',
                         phone=phones[i] if i < len(phones) and phones[i] not in ('?', '.') else '',
                         orcid=orcids[i] if i < len(orcids) and orcids[i] not in ('?', '.') else '',
