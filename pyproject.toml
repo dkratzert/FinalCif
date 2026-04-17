@@ -29,6 +29,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 
+
 dependencies = [
     "wheel",
     "certifi",
@@ -42,12 +43,12 @@ dependencies = [
     "packaging",
     "QtAwesome",
     "QtPy",
+    "numpy>=2.3.5,<2.4",
     "requests",
     "urllib3",
     "docxtpl[subdoc]>=0.20.2",
     "shelxfile",
     "crossrefapi",
-    "numpy",
     "fastmolwidget",
     "pyenchant",
     "hatchling",
@@ -69,6 +70,9 @@ doc = [
     "sphinx-rtd-theme",
 ]
 
+[tool.uv]
+exclude-newer = "3 days"
+
 [project.urls]
 "Homepage" = "https://dkratzert.de/finalcif.html"
 "Bug Tracker" = "https://github.com/dkratzert/FinalCif/issues"
@@ -76,6 +80,9 @@ doc = [
 [tool.hatch.version]
 path = "finalcif/__init__.py"
 pattern = "VERSION\\s*=\\s*(?P<version>\\d+\\.{0,1}\\d{0,1})"
+
+[tool.uv.pip]
+only-binary = [":all:"]
 
 [tool.hatch.build.targets.sdist]
 exclude = [
