@@ -20,6 +20,7 @@ from typing import cast, Any
 
 from fastmolwidget.sdm import SDM
 from finalcif.gui.vzs_viewer import VZSImageViewer
+from finalcif.tools.molecule_alignment import align_molecule_widget
 
 warnings.filterwarnings("ignore", category=RuntimeWarning, module="shibokensupport.signature.parser")
 
@@ -1895,6 +1896,8 @@ class AppWindow(QMainWindow):
                 self.ui.render_widget.grow_molecule(atoms,
                                                     cell=self.cif.cell[:6],
                                                     adps=self.get_adps())
+            # Align the view automatically for a pleasing orientation
+            align_molecule_widget(self.ui.render_widget)
 
     def _calc_grown_atoms(self):
         """Helper to generate the symmetry expanded atoms without drawing them."""
