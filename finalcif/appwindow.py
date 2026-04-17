@@ -970,7 +970,8 @@ class AppWindow(QMainWindow):
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
         threading.Thread(target=self._display_structure_factor_report, args=(parser,), daemon=True).start()
         # The picture file linked in the html file:
-        threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),), daemon=True).start()
+        threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),),
+                         daemon=True).start()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
         forms = parser.response_forms
         # makes all gray:
@@ -1529,7 +1530,7 @@ class AppWindow(QMainWindow):
             for row in self.import_selector.import_cif.block.find(loop):
                 new_loop.add_row(list(row))
 
-    def load_cif_file(self, filepath: Path, block= 0, load_changes: bool = True) -> None:
+    def load_cif_file(self, filepath: Path, block=0, load_changes: bool = True) -> None:
         """
         Opens the cif file and fills information into the main table.
         """
@@ -1567,7 +1568,8 @@ class AppWindow(QMainWindow):
         self._load_block(block, load_changes=load_changes)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
-        self.ui.cif_main_table.resizeRowsToContents()
+        # Not needed anymore:
+        # self.ui.cif_main_table.resizeRowsToContents()
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
             self._flash_block_combobox()
