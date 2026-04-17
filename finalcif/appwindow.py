@@ -129,6 +129,7 @@ class AppWindow(QMainWindow):
         self.ui.cifOrderWidget.settings = self.settings
         self.ui.cifOrderWidget.set_order_from_settings(self.settings)
         self.set_window_size_and_position()
+        app.aboutToQuit.connect(self.settings.flush)
         self.ui.cif_main_table.installEventFilter(self)
         # Sorting desynchronized header and columns:
         self.ui.cif_main_table.setSortingEnabled(False)
@@ -714,13 +715,6 @@ class AppWindow(QMainWindow):
         """It called when the main window resizes."""
         with suppress(AttributeError):
             self._savesize()
-        # main_width = self.ui.Mainwidget.width()
-        # left_frame = main_width * 0.22
-        # left_frame = max(300, left_frame)
-        # self.ui.LeftFrame.setMinimumWidth(int(left_frame))
-        # Not necessary here, it is done in CifTableView
-        # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
-        # QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
         self.setTextEditSizes()
         super().resizeEvent(a0)
 
@@ -744,9 +738,16 @@ class AppWindow(QMainWindow):
                 self._savesize()
 
     def _savesize(self) -> None:
-        """Saves the main window size nd position."""
+        """Saves the main window size and position."""
         x, y = self.pos().x(), self.pos().y()
         self.settings.save_window_position(QtCore.QPoint(x, y), self.size(), self.isMaximized())
+
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        """Persist settings before the window is destroyed."""
+        with suppress(Exception):
+            self._savesize()
+        self.settings.flush()
+        super().closeEvent(event)
 
     def show_help(self) -> None:
         QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
@@ -1568,8 +1569,7 @@ class AppWindow(QMainWindow):
         self._load_block(block, load_changes=load_changes)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
-        # Not needed anymore:
-        # self.ui.cif_main_table.resizeRowsToContents()
+        QtCore.QTimer.singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
             self._flash_block_combobox()

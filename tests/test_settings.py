@@ -108,6 +108,7 @@ class TestSettingsSaveLoad(TestCase):
     def test_json_persistence(self):
         """Verify settings survive a new FinalCifSettings instance."""
         self.s.save_key_value('persist_test', 42)
+        self.s.flush()
         s2 = FinalCifSettings(settings_path=self.settings_path)
         self.assertEqual(42, s2.load_value_of_key('persist_test'))
 
@@ -511,6 +512,7 @@ class TestTextTemplateSettings(TestCase):
 
     def test_template_persists_across_new_settings_instance(self):
         self.s.save_settings_list('text_templates', '_key_persist', ['persistent data'])
+        self.s.flush()
         s2 = FinalCifSettings(settings_path=self.settings_path)
         self.assertEqual(['persistent data'], s2.load_settings_list('text_templates', '_key_persist'))
 
