@@ -72,10 +72,14 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
         self.loop_values_format = QTextCharFormat()
         self.loop_values_format.setForeground(QColor("#996600"))
 
+        self.vrf_values_format = QTextCharFormat()
+        self.vrf_values_format.setForeground(QColor("#8b0000"))
+        self.vrf_values_format.setFontWeight(QFont.Weight.Bold)
+
         self.field_re = re.compile(r'^_[A-Za-z][A-Za-z0-9_.\-\[\]()/]*')
         self.quoted_re = re.compile(r"'[^']*'")
 
-    def highlightBlock(self, text: str) -> str:
+    def highlightBlock(self, text: str) -> None:
         prev_state = self.previousBlockState()
         in_multiline = prev_state == self.MULTILINE
         in_loop_fields = prev_state == self.LOOP_FIELDS
@@ -140,6 +144,9 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
             m = self.field_re.match(text)
             if m:
                 self.setFormat(m.start(), m.end() - m.start(), self.field_format)
+
+        if text.startswith('_vrf'):
+            self.setFormat(0, len(text), self.vrf_values_format)
 
         # ---------- Quoted values ----------
 
