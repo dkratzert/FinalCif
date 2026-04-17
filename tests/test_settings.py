@@ -232,12 +232,12 @@ class TestConvertQSettingsValue(TestCase):
 
     def test_dict_converted_recursively(self):
         result = _convert_qsettings_value({'key': 'val', 'num': 7})
-        self.assertEqual({'key': 'val', 'num': '7'}, {k: str(v) if isinstance(v, int) else v
-                                                       for k, v in result.items()})
+        self.assertEqual({'key': 'val', 'num': 7}, result)
 
     def test_unknown_type_returns_string(self):
         class _Weird:
-            def __str__(self): return 'weird_repr'
+            def __str__(self):
+                return 'weird_repr'
         result = _convert_qsettings_value(_Weird())
         self.assertEqual('weird_repr', result)
 
