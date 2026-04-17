@@ -166,5 +166,42 @@ class TestMultiCif(unittest.TestCase):
         self.assertEqual(False, self.cif.is_empty())
 
 
+class TestVrfKeyOrdering(unittest.TestCase):
+    """Tests that _vrf_* keys are moved to the top by order_cif_keys() and keys_with_essentials()."""
+
+    def setUp(self) -> None:
+        self.cif = CifContainer(data / 'tests/examples/work/cu_BruecknerJK_153F40_0m.cif')
+
+    def test_order_cif_keys_puts_vrf_first(self):
+        """After order_cif_keys(), the first key in the block must be a _vrf_* key."""
+        self.cif.order_cif_keys()
+        keys = self.cif.keys()
+        vrf_keys = [k for k in keys if k.startswith('_vrf')]
+        self.assertTrue(len(vrf_keys) > 0, 'Test CIF should contain at least one _vrf_* key')
+        # All _vrf_* keys should appear before any non-_vrf_* key
+        first_non_vrf_index = next((i for i, k in enumerate(keys) if not k.startswith('_vrf')), len(keys))
+        last_vrf_index = max(i for i, k in enumerate(keys) if k.startswith('_vrf'))
+        self.assertLess(last_vrf_index, first_non_vrf_index,
+                        '_vrf_* keys should all appear before non-_vrf_* keys after ordering')
+
+    def test_keys_with_essentials_puts_vrf_first_in_questions(self):
+        """_vrf_* question keys must appear before non-_vrf_* question keys in the table."""
+        questions, _ = self.cif.keys_with_essentials()
+        vrf_indices = [i for i, (k, _v) in enumerate(questions) if k.startswith('_vrf')]
+        non_vrf_indices = [i for i, (k, _v) in enumerate(questions) if not k.startswith('_vrf')]
+        if vrf_indices and non_vrf_indices:
+            self.assertLess(max(vrf_indices), min(non_vrf_indices),
+                            '_vrf_* question keys should precede non-_vrf_* question keys')
+
+    def test_keys_with_essentials_puts_vrf_first_in_with_values(self):
+        """_vrf_* answered keys must appear before non-_vrf_* answered keys in the table."""
+        _, with_values = self.cif.keys_with_essentials()
+        vrf_indices = [i for i, (k, _v) in enumerate(with_values) if k.startswith('_vrf')]
+        non_vrf_indices = [i for i, (k, _v) in enumerate(with_values) if not k.startswith('_vrf')]
+        if vrf_indices and non_vrf_indices:
+            self.assertLess(max(vrf_indices), min(non_vrf_indices),
+                            '_vrf_* answered keys should precede non-_vrf_* answered keys')
+
+
 if __name__ == '__main__':
     unittest.main()

@@ -2084,7 +2084,8 @@ class AppWindow(QMainWindow):
             row_num = len(model_rows) - 1
             if key.startswith('_'):
                 if key not in self.cif.order:
-                    self.cif.order.insert(row_num, key)
+                    insert_pos = 0 if key.startswith('_vrf') else row_num
+                    self.cif.order.insert(insert_pos, key)
                 if not self.cif.block.find_value(key):
                     self.cif[key] = raw_value
 
