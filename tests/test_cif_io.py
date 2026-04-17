@@ -180,7 +180,7 @@ class TestVrfKeyOrdering(unittest.TestCase):
         self.assertTrue(len(vrf_keys) > 0, 'Test CIF should contain at least one _vrf_* key')
         # All _vrf_* keys should appear before any non-_vrf_* key
         first_non_vrf_index = next((i for i, k in enumerate(keys) if not k.startswith('_vrf')), len(keys))
-        last_vrf_index = max(i for i, k in enumerate(keys) if k.startswith('_vrf'))
+        last_vrf_index = max((i for i, k in enumerate(keys) if k.startswith('_vrf')), default=-1)
         self.assertLess(last_vrf_index, first_non_vrf_index,
                         '_vrf_* keys should all appear before non-_vrf_* keys after ordering')
 
