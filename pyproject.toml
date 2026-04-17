@@ -83,6 +83,7 @@ pattern = "VERSION\\s*=\\s*(?P<version>\\d+\\.{0,1}\\d{0,1})"
 
 [tool.uv.pip]
 only-binary = [":all:"]
+no-binary = ["finalcif"]
 
 [tool.hatch.build.targets.sdist]
 exclude = [
