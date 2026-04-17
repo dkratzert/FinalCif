@@ -69,13 +69,14 @@ class Equipment:
             return None
         equipment = self.settings.load_settings_list_as_dict(property='equipment',
                                                              item_name=self.selected_template_name())
-        if self.app.ui.cif_main_table.vheaderitems:
+        if self.app.ui.cif_main_table.rowCount():
             for key in equipment:
                 value = equipment[key]
-                if key not in self.app.ui.cif_main_table.vheaderitems:
+                if not self.app.ui.cif_main_table.has_key(key):
                     # Key is not in the main table:
+                    keys = self.app.ui.cif_main_table.model().vheaderitems
                     self.app.add_row(key, value, at_start=False,
-                                     position=bisect(self.app.ui.cif_main_table.vheaderitems, key))
+                                     position=bisect(keys, key))
                 # Key is already there:
                 self.app.ui.cif_main_table.setText(key, Column.CIF, txt='?')
                 self.app.ui.cif_main_table.setText(key, Column.DATA, txt=value, color=light_green)

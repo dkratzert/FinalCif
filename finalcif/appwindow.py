@@ -47,8 +47,9 @@ from finalcif.equip_property.author_loop_templates import AuthorLoops
 from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
 from finalcif.equip_property.tools import read_document_from_cif_file
-from finalcif.gui.custom_classes import Column, MyTableWidgetItem, light_green, yellow, light_blue, \
-    white
+from finalcif.gui.custom_classes import Column, light_green, yellow, light_blue, \
+    white, MyTableWidgetItem
+from finalcif.gui.cif_table_model import CifRowData
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question, \
@@ -128,6 +129,7 @@ class AppWindow(QMainWindow):
         self.ui.cifOrderWidget.settings = self.settings
         self.ui.cifOrderWidget.set_order_from_settings(self.settings)
         self.set_window_size_and_position()
+        app.aboutToQuit.connect(self.settings.flush)
         self.ui.cif_main_table.installEventFilter(self)
         # Sorting desynchronized header and columns:
         self.ui.cif_main_table.setSortingEnabled(False)
@@ -532,7 +534,7 @@ class AppWindow(QMainWindow):
 
     def on_text_template_open(self, row: int):
         self.ui.cif_main_table.setCurrentCell(row, Column.EDIT)
-        cif_key = self.ui.cif_main_table.vheaderitems[row]
+        cif_key = self.ui.cif_main_table.vheader_text(row)
         self.textedit.cif_key = cif_key
         if cif_key.startswith('_vrf_'):
             # _vrf_DIFF003_cifname
@@ -713,13 +715,6 @@ class AppWindow(QMainWindow):
         """It called when the main window resizes."""
         with suppress(AttributeError):
             self._savesize()
-        # main_width = self.ui.Mainwidget.width()
-        # left_frame = main_width * 0.22
-        # left_frame = max(300, left_frame)
-        # self.ui.LeftFrame.setMinimumWidth(int(left_frame))
-        # Not necessary here, it is done in MyCifTable
-        # threading.Thread(target=self.ui.cif_main_table.resizeRowsToContents).start()
-        # QtCore.QTimer(self).singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
         self.setTextEditSizes()
         super().resizeEvent(a0)
 
@@ -743,9 +738,16 @@ class AppWindow(QMainWindow):
                 self._savesize()
 
     def _savesize(self) -> None:
-        """Saves the main window size nd position."""
+        """Saves the main window size and position."""
         x, y = self.pos().x(), self.pos().y()
         self.settings.save_window_position(QtCore.QPoint(x, y), self.size(), self.isMaximized())
+
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
+        """Persist settings before the window is destroyed."""
+        with suppress(Exception):
+            self._savesize()
+        self.settings.flush()
+        super().closeEvent(event)
 
     def show_help(self) -> None:
         QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
@@ -969,7 +971,8 @@ class AppWindow(QMainWindow):
         self.ui.ResponsesTabWidget.setCurrentIndex(0)
         threading.Thread(target=self._display_structure_factor_report, args=(parser,), daemon=True).start()
         # The picture file linked in the html file:
-        threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),), daemon=True).start()
+        threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),),
+                         daemon=True).start()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
         forms = parser.response_forms
         # makes all gray:
@@ -1119,7 +1122,7 @@ class AppWindow(QMainWindow):
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
         self.ui.CheckcifPlaintextEdit.clear()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText("Running Checkcif locally. Please wait...\n")
-        self.ui.cif_main_table.setCurrentItem(None)
+        self.ui.cif_main_table.clearSelection()
         if not self.save_current_cif_file():
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Unable to save CIF file. Aborting action...')
             return None
@@ -1366,7 +1369,7 @@ class AppWindow(QMainWindow):
                 unable_to_open_message(parent=self, filepath=self.finalcif_changes_filename, not_ok=e)
                 changes_cif = None
         # makes sure also the currently edited item is saved:
-        self.ui.cif_main_table.setCurrentItem(None)
+        self.ui.cif_main_table.clearSelection()
         for row in range(self.ui.cif_main_table.rows_count):
             vhead = self.ui.cif_main_table.vheader_text(row)
             if not self.is_row_a_cif_item(vhead):
@@ -1517,7 +1520,7 @@ class AppWindow(QMainWindow):
     def _import_key_value_pairs(self, keys: list[str]) -> None:
         for key in keys:
             value = self.import_selector.import_cif[key]
-            if key in self.ui.cif_main_table.vheaderitems:
+            if self.ui.cif_main_table.has_key(key):
                 self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=value, color=light_green)
             else:
                 self.add_row(key, value, at_start=True)
@@ -1528,7 +1531,7 @@ class AppWindow(QMainWindow):
             for row in self.import_selector.import_cif.block.find(loop):
                 new_loop.add_row(list(row))
 
-    def load_cif_file(self, filepath: Path, block= 0, load_changes: bool = True) -> None:
+    def load_cif_file(self, filepath: Path, block=0, load_changes: bool = True) -> None:
         """
         Opens the cif file and fills information into the main table.
         """
@@ -1566,7 +1569,7 @@ class AppWindow(QMainWindow):
         self._load_block(block, load_changes=load_changes)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
-        self.ui.cif_main_table.resizeRowsToContents()
+        QtCore.QTimer.singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
         self.ui.datanameComboBox.blockSignals(False)
         if self.cif.is_multi_cif:
             self._flash_block_combobox()
@@ -1670,11 +1673,6 @@ class AppWindow(QMainWindow):
             if not (self.ui.MainStackedWidget.on_checkcif_page() or self.ui.MainStackedWidget.on_info_page()):
                 self.ui.MainStackedWidget.got_to_main_page()
             self.deposit.cif = self.cif
-            # self.ui.cif_main_table.resizeRowsToContents()
-            self.ui.cif_main_table.vheaderitems.clear()
-            for row_number in range(self.ui.cif_main_table.model().rowCount()):
-                vhead_key = self.get_key_by_row_number(row_number)
-                self.ui.cif_main_table.vheaderitems.insert(row_number, vhead_key)
             if self.ui.MainStackedWidget.on_info_page():
                 self.show_residuals()
                 self.redraw_molecule()
@@ -1692,9 +1690,9 @@ class AppWindow(QMainWindow):
         """
         vheader: QtWidgets.QHeaderView = self.ui.cif_main_table.verticalHeader()
         fm = QtGui.QFontMetrics(vheader.font(), self)
+        keys = self.ui.cif_main_table.vheaderitems
         try:
-            # noinspection PyTypeChecker
-            longest_string: str = max(self.ui.cif_main_table.vheaderitems, key=len)
+            longest_string: str = max(keys, key=len)
         except ValueError:
             longest_string = '_chemical_formula_sum_foo'
         vheader.setMaximumWidth(fm.horizontalAdvance(longest_string + 'O'))
@@ -1957,9 +1955,7 @@ class AppWindow(QMainWindow):
                                            "Please import the corresponding .sqf file\n"
                                            "from PLATON and complete the _platon_squeeze_void_content information "
                                            "in the 'Platon SQUEEZE voids' loop.")
-        vheadlist = []
-        for row_number in range(self.ui.cif_main_table.model().rowCount()):
-            vheadlist.append(self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Orientation.Vertical))
+        vheadlist = self.ui.cif_main_table.model().vheaderitems
         for src in self.sources:
             if not self.sources[src]:
                 continue
@@ -1975,7 +1971,7 @@ class AppWindow(QMainWindow):
         # missing items will even be used if under the blue separation line:
         for miss_key in self.missing_data:
             # add missing item to data sources column:
-            row_num = self.ui.cif_main_table.vheaderitems.index(miss_key)
+            row_num = self.ui.cif_main_table.row_from_key(miss_key)
             try:
                 txt = str(self.sources[miss_key][0])
                 if row_num > self.complete_data_row:
@@ -1993,7 +1989,7 @@ class AppWindow(QMainWindow):
         ccdc = CCDCMail(self.cif)
         if ccdc.depnum > 0:
             # The next line is necessary, otherwise reopening of a cif would not add the CCDC number:
-            if '_database_code_depnum_ccdc_archive' not in self.ui.cif_main_table.vheaderitems:
+            if not self.ui.cif_main_table.has_key('_database_code_depnum_ccdc_archive'):
                 # self.ui.cif_main_table.vheaderitems.insert(0, '_database_code_depnum_ccdc_archive')
                 self.add_row('_database_code_depnum_ccdc_archive', '', at_start=True)
             txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', Column.EDIT).strip()
@@ -2005,8 +2001,6 @@ class AppWindow(QMainWindow):
         combos_from_settings = self.settings.load_cif_keys_of_properties()
         for row_number in range(self.ui.cif_main_table.model().rowCount()):
             vhead_key = self.get_key_by_row_number(row_number)
-            if vhead_key not in self.ui.cif_main_table.vheaderitems:
-                self.ui.cif_main_table.vheaderitems.insert(row_number, vhead_key)
             # adding comboboxes:
             if vhead_key in combos_from_settings:
                 # First add self-made properties:
@@ -2024,8 +2018,7 @@ class AppWindow(QMainWindow):
                     widget.setBackground(white)
 
     def get_key_by_row_number(self, row_number: int) -> str:
-        vhead_key = self.ui.cif_main_table.model().headerData(row_number, QtCore.Qt.Orientation.Vertical)
-        return vhead_key
+        return self.ui.cif_main_table.vheader_text(row_number)
 
     def add_combobox(self, row: int, vhead_key: str) -> None:
         """
@@ -2039,23 +2032,99 @@ class AppWindow(QMainWindow):
     def fill_cif_table(self) -> None:
         """
         Adds the cif content to the main table. also add reference to FinalCif.
+
+        Phase 1: collect all key/value data into CifRowData objects (no GUI work).
+        Phase 2: bulk-load the model in one shot (single beginResetModel / endResetModel).
+        Phase 3: create persistent cell widgets with view updates suspended.
+        Phase 4: data-source enrichment, combo boxes, etc.
         """
+        table = self.ui.cif_main_table
+
+        # ------------------------------------------------------------------
+        # Phase 1 – prepare data (pure Python, no GUI)
+        # ------------------------------------------------------------------
         self.cif.set_essential_keys(self.ui.cifOrderWidget.essential_keys)
-        for key, value in self.cif.key_value_pairs():
-            if not value or value in {'?', "'?'"}:
+        saved_items = self.settings.list_saved_items('text_templates')
+
+        model_rows: list[CifRowData] = []
+        audit_creation_index: int | None = None
+
+        for key, raw_value in self.cif.key_value_pairs():
+            if not raw_value or raw_value in {'?', "'?'"}:
                 self.missing_data.add(key)
-                value = '?'
-            self.add_row(key, value)
+                raw_value = '?'
+
+            is_sep = (key == "These below are already in:")
+            if raw_value is None or raw_value == '?':
+                strval = '?'
+            else:
+                strval = gemmi.cif.as_string(raw_value).strip('\n\r\t')
+            if not key:
+                strval = ''
+
+            color = None
+            if not is_sep:
+                load_key = self.get_vrf_errortype(key)
+                if load_key in saved_items:
+                    color = light_blue
+
+            row_data = CifRowData(
+                key=key,
+                is_separator=is_sep,
+                edit_color=color,
+                raw_value=raw_value,
+                strval=strval,
+            )
+            model_rows.append(row_data)
+
             if key == '_audit_creation_method':
-                self.add_audit_creation_method(key)
-                # QtCore.QTimer(self).singleShot(200, self.ui.cif_main_table.resizeRowsToContents)
-            # print(key, value)
-        if self.cif.is_multi_cif:
-            self.refresh_combo_boxes()
-        else:
-            self.get_data_sources()
-        self.erase_disabled_items()
-        self.ui.cif_main_table.setCurrentItem(None)
+                audit_creation_index = len(model_rows) - 1
+
+            # Keep cif.order and cif block in sync (non-GUI)
+            row_num = len(model_rows) - 1
+            if key.startswith('_'):
+                if key not in self.cif.order:
+                    insert_pos = 0 if key.startswith('_vrf') else row_num
+                    self.cif.order.insert(insert_pos, key)
+                if not self.cif.block.find_value(key):
+                    self.cif[key] = raw_value
+
+        # ------------------------------------------------------------------
+        # Phase 2 – bulk-load the model (single reset instead of N inserts)
+        # ------------------------------------------------------------------
+        table.bulk_load(model_rows)
+
+        # ------------------------------------------------------------------
+        # Phase 3 – create widgets (with view repaints suspended)
+        # ------------------------------------------------------------------
+        table.setUpdatesEnabled(False)
+        try:
+            for row_num, row_data in enumerate(model_rows):
+                if row_data.is_separator:
+                    table.add_separation_line(row_num)
+                    self.complete_data_row = row_num
+                else:
+                    table.setText(row=row_num, key=row_data.key, column=Column.CIF,
+                                  txt=row_data.strval)
+                    table.setText(row=row_num, key=row_data.key, column=Column.DATA, txt='')
+                    table.setText(row=row_num, key=row_data.key, column=Column.EDIT,
+                                  color=row_data.edit_color, txt='')
+
+            if audit_creation_index is not None:
+                self.add_audit_creation_method('_audit_creation_method')
+
+            # ------------------------------------------------------------------
+            # Phase 4 – data sources, combo boxes, disabled items
+            # ------------------------------------------------------------------
+            if self.cif.is_multi_cif:
+                self.refresh_combo_boxes()
+            else:
+                self.get_data_sources()
+            self.erase_disabled_items()
+        finally:
+            table.setUpdatesEnabled(True)
+        table.resizeRowsToContents()
+        table.clearSelection()
 
     def check_cecksums(self):
         if "RUNNING_TEST" in os.environ:
@@ -2154,12 +2223,10 @@ class AppWindow(QMainWindow):
             row_num = position
         else:
             row_num = self.ui.cif_main_table.rowCount()
-        if key not in self.ui.cif_main_table.vheaderitems:
-            self.ui.cif_main_table.vheaderitems.insert(row_num, key)
-        else:
+        if self.ui.cif_main_table.has_key(key):
             print(f'The key {key} is already present.')
             return
-        self.ui.cif_main_table.insertRow(row_num)
+        self.ui.cif_main_table.add_row(key=key, position=row_num)
         if value is None or value == '?':
             strval = '?'
         else:
@@ -2181,9 +2248,6 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.setText(row=row_num, key=key, column=Column.DATA, txt='')
             self.ui.cif_main_table.setText(row=row_num, key=key, column=Column.EDIT, color=color,
                                            txt=strval if at_start else '')
-        head_item_key = MyTableWidgetItem(key)
-        if key != "These below are already in:":
-            self.ui.cif_main_table.setVerticalHeaderItem(row_num, head_item_key)
         if not key.startswith('_'):
             return
         if key not in self.cif.order:

@@ -1,7 +1,8 @@
 FinalCif recent changes
 -----------------------
 * v158 Added https://pypi.org/project/fastmolwidget/ as stucture viewer in the "show details" page.
-       Changed settings backend to use a json file instead of the registry for better compatibility with different QT versions.
+       Changed settings backend to use a JSON file instead of the registry for better compatibility with different QT versions.
+       Improved file loading speed. Validation response forms are now at the top of the saved CIF and the main table.
 * v157 Added a syntax highlighter to the CIF text viewer. Update to Python 3.14.
 * v156 Added a crystal video file viewer to add a video picture to the report in "show details".
 * v155 Added CSD dupluicate check option during CheckCif.

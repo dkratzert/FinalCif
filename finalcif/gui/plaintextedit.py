@@ -11,7 +11,7 @@ from finalcif.gui.new_key_dialog import NewKey
 from finalcif.gui.validators import validators
 
 if TYPE_CHECKING:
-    from finalcif.gui.custom_classes import MyCifTable
+    from finalcif.gui.cif_table_view import CifTableView
 
 light_red = QColor(254, 191, 189)
 
@@ -41,7 +41,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.edit_button = None
         self.default_palette = self.palette()
         # self.increse_font_size()
-        self.parent: MyCifTable = parent
+        self.parent: CifTableView = parent
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.setFrameShape(QFrame.Shape.NoFrame)
         self.setTabChangesFocus(True)
@@ -49,7 +49,13 @@ class MyQPlainTextEdit(QPlainTextEdit):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setWordWrapMode(QTextOption.WrapMode.WordWrap)
         self.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-        self.textChanged.connect(lambda: self.parent.resizeRowToContents(self.row))
+        self.textChanged.connect(self._on_text_changed)
+
+    def _on_text_changed(self) -> None:
+        # Skip expensive indexAt lookup while the table is being bulk-populated
+        # (updates are disabled).  The caller will resize all rows at the end.
+        if self.parent.updatesEnabled():
+            self.parent.resizeRowToContents(self.row)
 
     def increse_font_size(self):
         font = QFont()
@@ -89,10 +95,10 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def copy_vhead_item(self, row):
         """
-        Copies the content of a field.
+        Copies the CIF key of the row to clipboard.
         """
         from qtpy import QtWidgets
-        if hasattr(self.parent, 'vheaderitems'):
+        if self.cif_key:
             clipboard = QtWidgets.QApplication.clipboard()
             clipboard.setText(self.cif_key)
 
@@ -123,6 +129,8 @@ class MyQPlainTextEdit(QPlainTextEdit):
     def setUneditable(self):
         self.setReadOnly(True)
 
+    MAX_DISPLAY_LINES = 5
+
     def setText(self, text: str, color: QColor = None, column: int | None = None):
         """
         Set text of a Plaintextfield with lines wrapped at newline characters.
@@ -132,9 +140,15 @@ class MyQPlainTextEdit(QPlainTextEdit):
         if not text:
             return
         if column == Column.CIF and self.cif_key in self.to_be_shortened:
-            self.setPlainText(f'{text[:300]} [...]')
-        else:
-            self.setPlainText(text)
+            lines = text.splitlines(keepends=True)
+            if len(lines) > self.MAX_DISPLAY_LINES:
+                text = ''.join(lines[:self.MAX_DISPLAY_LINES]).rstrip() + '\n[...]'
+        # Block signals to prevent textChanged → resizeRowToContents per call.
+        # The caller (CifTableView.setText) handles resizing explicitly.
+        was_blocked = self.signalsBlocked()
+        self.blockSignals(True)
+        self.setPlainText(text)
+        self.blockSignals(was_blocked)
 
     def eventFilter(self, widget: QWidget, event: QEvent):
         """
@@ -161,7 +175,9 @@ class MyQPlainTextEdit(QPlainTextEdit):
 
     def event(self, e: QtCore.QEvent):
         if e.type() == QtCore.QEvent.Type.InputMethodQuery:
-            self.parent.setCurrentCell(self.row, self.column)
+            # Skip expensive indexAt lookup while the table is being bulk-populated.
+            if self.parent.updatesEnabled():
+                self.parent.setCurrentCell(self.row, self.column)
         return super().event(e)
 
     def keyPressEvent(self, event: QtGui.QKeyEvent):

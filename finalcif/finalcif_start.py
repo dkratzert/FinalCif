@@ -43,9 +43,17 @@ def my_exception_hook(exctype: type[BaseException], value: BaseException, error_
                       f'{frame.f_code.co_qualname}(...):\n')
         newline = '\n'
         errortext += '  Locals: \n    '
-        errortext += "    ".join(
-            [f"  {k}:{newline}          {'          '.join([x + newline for x in repr(v).splitlines()])}" for k, v in
-             frame.f_locals.items()]) + '\n\n'
+        parts = []
+        for k, v in frame.f_locals.items():
+            try:
+                v_repr = repr(v)
+            except Exception:
+                v_repr = '<unrepresentable>'
+            parts.append(
+                f"  {k}:{newline}          "
+                f"{'          '.join([x + newline for x in v_repr.splitlines()])}"
+            )
+        errortext += "    ".join(parts) + '\n\n'
 
     errortext += f'{"-" * 120}\n'
     errortext += f'{exctype.__name__!s}: {value!s} \n'

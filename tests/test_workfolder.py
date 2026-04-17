@@ -1,5 +1,7 @@
 import os
 
+from qtpy import QtWidgets
+
 os.environ['RUNNING_TEST'] = 'True'
 import unittest
 from tests.helpers import AppWindowTestCase, processevents
@@ -104,7 +106,13 @@ class TestWorkfolder(AppWindowTestCase):
         self.app.equipment.load_selected_equipment()
 
     def get_background_color(self, key: str, col: int) -> QColor:
-        return self.app.ui.cif_main_table.itemFromKey(key, col).background().color()
+        widget = self.app.ui.cif_main_table.widget_from_key(key, col)
+        if widget and hasattr(widget, 'color') and widget.color:
+            return widget.color
+        return self.app.ui.cif_main_table.model().data(
+            self.app.ui.cif_main_table.model().index(
+                self.app.ui.cif_main_table.row_from_key(key), col),
+            Qt.ItemDataRole.BackgroundRole) or QColor(255, 255, 255)
 
     def testDataColumn(self):
         # test of ccdc number added from email during load:
@@ -134,11 +142,13 @@ class TestWorkfolder(AppWindowTestCase):
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.DATA))
 
     def test_abs_configuration_combo(self):
-        self.assertEqual(6, self.key_row('_chemical_absolute_configuration'))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(6, Column.CIF))
+        self.assertEqual(7, self.key_row('_chemical_absolute_configuration'))
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
-                         self.cell_widget_class(6, Column.DATA))
-        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(6, Column.EDIT))
+                         self.cell_widget_class(self.key_row('_chemical_absolute_configuration'), Column.CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
+                         self.cell_widget_class(self.key_row('_chemical_absolute_configuration'), Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>",
+                         self.cell_widget_class(self.key_row('_chemical_absolute_configuration'), Column.EDIT))
 
         row = self.key_row('_diffrn_radiation_type')
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
@@ -246,7 +256,7 @@ class TestWorkfolder(AppWindowTestCase):
         # self.app.ui.cif_main_table.setText(key='_audit_contact_author_email', column=2, txt='test4ß')
         self.app.ui.cif_main_table.setText(key='_diffrn_measurement_method', column=2, txt='test 12 Å')
         self.app.save_current_cif_file()
-        self.app.ui.cif_main_table.setRowCount(0)
+        self.app.ui.cif_main_table.delete_content()
         self.app.load_cif_file(self.app.cif.finalcif_file)
         # test if data is still the same:
         # The character is quoted in the cif file:

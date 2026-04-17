@@ -5,6 +5,7 @@
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 
+import re
 import textwrap
 from html import unescape
 
@@ -170,6 +171,12 @@ def invert_dict(inp: dict) -> dict:
 
 inverted_characters_map = invert_dict(characters)
 
+# Compiled regex that matches any CIF delimiter sequence in a single pass.
+# Patterns are sorted longest-first so that e.g. '\\times' is tried before '\t'.
+_delimiter_pattern = re.compile(
+    '|'.join(re.escape(k) for k in sorted(inverted_characters_map, key=len, reverse=True))
+)
+
 # Removed, because it became obsolete
 # inverted_characters_map.update(invert_dict(false_characters_map))
 
@@ -195,9 +202,11 @@ def string_to_utf8(txt: str) -> str:
 def retranslate_delimiter(txt: str, no_html_unescape: bool = False) -> str:
     """
     Translates delimited cif characters back to Unicode characters.
+
+    Uses a single compiled regex pass instead of 121 sequential str.replace
+    calls, which is significantly faster for long strings (e.g. HKL files).
     """
-    for char in inverted_characters_map.keys():
-        txt = txt.replace(char, inverted_characters_map[char])
+    txt = _delimiter_pattern.sub(lambda m: inverted_characters_map[m.group()], txt)
     if no_html_unescape:
         return txt
     else:

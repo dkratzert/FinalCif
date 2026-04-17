@@ -18,6 +18,8 @@ from __future__ import annotations
 import json
 import logging
 import os
+import threading
+import time
 from collections.abc import Iterable
 from dataclasses import asdict, fields
 from pathlib import Path
@@ -210,6 +212,8 @@ class FinalCifSettings:
             self._path = _default_config_dir() / _SETTINGS_FILENAME
 
         self._data: dict[str, Any] = self._load_json()
+        self._pending_timer: threading.Timer | None = None
+        self._timer_lock = threading.Lock()
 
         # If the JSON file was empty / missing, attempt a one-time migration
         if not self._data:
@@ -240,12 +244,48 @@ class FinalCifSettings:
         return {}
 
     def _flush(self) -> None:
-        """Atomically write the in-memory dict to disk."""
-        self._path.parent.mkdir(parents=True, exist_ok=True)
-        tmp = self._path.with_suffix('.tmp')
-        with open(tmp, 'w', encoding='utf-8') as fh:
-            json.dump(self._data, fh, default=_custom_encoder, ensure_ascii=False, indent=2)
-        os.replace(tmp, self._path)
+        """Atomically write the in-memory dict to disk (best-effort, fail-soft)."""
+        try:
+            self._path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = self._path.with_suffix('.tmp')
+            with open(tmp, 'w', encoding='utf-8') as fh:
+                json.dump(self._data, fh, default=_custom_encoder, ensure_ascii=False, indent=2)
+            os.replace(tmp, self._path)
+        except OSError as exc:
+            logger.warning("Settings flush failed (will retry on close): %s", exc)
+
+    def _schedule_flush(self) -> None:
+        """Coalesce rapid writes: the actual disk I/O happens after 250 ms of inactivity."""
+        with self._timer_lock:
+            if self._pending_timer is not None:
+                self._pending_timer.cancel()
+            self._pending_timer = threading.Timer(0.25, self._flush)
+            self._pending_timer.daemon = True
+            self._pending_timer.start()
+
+    def flush(self, retries: int = 3, delay: float = 0.05) -> None:
+        """Persist in-memory data to disk immediately, retrying on failure.
+
+        Call this on the shutdown path so the last write is not lost.
+        Cancels any pending debounced flush first.
+        """
+        with self._timer_lock:
+            if self._pending_timer is not None:
+                self._pending_timer.cancel()
+                self._pending_timer = None
+        for attempt in range(retries):
+            try:
+                self._path.parent.mkdir(parents=True, exist_ok=True)
+                tmp = self._path.with_suffix('.tmp')
+                with open(tmp, 'w', encoding='utf-8') as fh:
+                    json.dump(self._data, fh, default=_custom_encoder, ensure_ascii=False, indent=2)
+                os.replace(tmp, self._path)
+                return
+            except OSError as exc:
+                logger.warning("Settings flush attempt %d/%d failed: %s", attempt + 1, retries, exc)
+                if attempt < retries - 1:
+                    time.sleep(delay)
+        logger.error("Settings could not be persisted after %d attempts.", retries)
 
     # ------------------------------------------------------------------
     # Internal helpers (replace beginGroup / endGroup pattern)
@@ -257,7 +297,7 @@ class FinalCifSettings:
 
     def _set_in_group(self, group: str, key: str, value: Any) -> None:
         self._get_group(group)[key] = value
-        self._flush()
+        self._schedule_flush()
 
     def _get_from_group(self, group: str, key: str, default: Any = None) -> Any:
         return self._get_group(group).get(key, default)
@@ -276,7 +316,7 @@ class FinalCifSettings:
         grp['position'] = position
         grp['size'] = size
         grp['maximized'] = bool(maximized)
-        self._flush()
+        self._schedule_flush()
 
     def load_window_position(self) -> dict:
         """Load window position information with sensible defaults."""
@@ -345,14 +385,14 @@ class FinalCifSettings:
         """Save a template list at the root level."""
         logger.debug("Saving %s %s", name, items)
         self._data[name] = items
-        self._flush()
+        self._schedule_flush()
         self.property_keys_and_values = self.load_property_keys_and_values()
         self.property_keys = self.load_cif_keys_of_properties()
 
     def save_key_value(self, name: str, item: str | list | tuple | dict | int | bool):
         """Save a single key/value pair at the root level."""
         self._data[name] = item
-        self._flush()
+        self._schedule_flush()
         logger.debug("Saving %s %s", name, item)
 
     def load_value_of_key(self, key: str) -> Iterable | list | int | float | None:
@@ -363,7 +403,7 @@ class FinalCifSettings:
         """Delete a template entry from a group."""
         grp = self._get_group(property)
         grp.pop(name, None)
-        self._flush()
+        self._schedule_flush()
         if property == 'equipment':
             deleted = self.load_value_of_key(key='deleted_templates') or []
             deleted.append(name)
@@ -454,7 +494,7 @@ class FinalCifSettings:
     def save_recent_files(self, recent: list[str]) -> None:
         """Persist the recent-files list."""
         self._data['recent_files'] = recent
-        self._flush()
+        self._schedule_flush()
 
     def load_property_list(self) -> list | None:
         """Return the root-level property_list value (used by properties import)."""

@@ -16,7 +16,7 @@ from packaging.version import Version
 # noinspection PyUnresolvedReferences
 from finalcif.appwindow import app
 from finalcif.cif.text import quote, utf8_to_str, retranslate_delimiter, delimit_string, characters, string_to_utf8
-from finalcif.gui.custom_classes import MyCifTable
+from finalcif.gui.cif_table_view import CifTableView
 from finalcif.report.report_text import gstr
 
 
@@ -130,11 +130,9 @@ class TestLongTextinField(unittest.TestCase):
     def setUp(self):
         os.environ["RUNNING_TEST"] = 'True'
         self.w = QtWidgets.QMainWindow()
-        self.table = MyCifTable()
+        self.table = CifTableView()
         self.w.setCentralWidget(self.table)
-        self.table.vheaderitems.append('_foo')
-        self.table.setRowCount(1)
-        self.table.setColumnCount(3)
+        self.table.add_row('_foo')
         self.table.setMinimumHeight(200)
         self.table.horizontalHeader().setDefaultSectionSize(200)
         self.w.show()

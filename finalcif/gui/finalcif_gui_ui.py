@@ -28,7 +28,7 @@ from qtpy.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication
 from fastmolwidget.molecule2D import MoleculeWidget
 from finalcif.ciforder.order import CifOrder
 from finalcif.gui.block_combobox import ComboBoxWithContextMenu
-from finalcif.gui.custom_classes import MyCifTable
+from finalcif.gui.cif_table_view import CifTableView
 from finalcif.gui.equipmenttable import MyEQTableWidget
 from finalcif.gui.file_editor import QCodeEditor
 from finalcif.gui.mainstackwidget import MyMainStackedWidget
@@ -581,15 +581,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 6, 0, 0)
-        self.cif_main_table = MyCifTable(self.page_MainTable)
-        if (self.cif_main_table.columnCount() < 3):
-            self.cif_main_table.setColumnCount(3)
-        __qtablewidgetitem2 = QTableWidgetItem()
-        self.cif_main_table.setHorizontalHeaderItem(0, __qtablewidgetitem2)
-        __qtablewidgetitem3 = QTableWidgetItem()
-        self.cif_main_table.setHorizontalHeaderItem(1, __qtablewidgetitem3)
-        __qtablewidgetitem4 = QTableWidgetItem()
-        self.cif_main_table.setHorizontalHeaderItem(2, __qtablewidgetitem4)
+        self.cif_main_table = CifTableView(self.page_MainTable)
         self.cif_main_table.setObjectName(u"cif_main_table")
         self.cif_main_table.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.cif_main_table.setAutoScroll(False)
@@ -602,13 +594,6 @@ class Ui_FinalCifWindow(object):
         self.cif_main_table.setSortingEnabled(False)
         self.cif_main_table.setWordWrap(True)
         self.cif_main_table.setCornerButtonEnabled(False)
-        self.cif_main_table.setColumnCount(3)
-        self.cif_main_table.horizontalHeader().setMinimumSectionSize(80)
-        self.cif_main_table.horizontalHeader().setDefaultSectionSize(152)
-        self.cif_main_table.horizontalHeader().setHighlightSections(False)
-        self.cif_main_table.verticalHeader().setMinimumSectionSize(20)
-        self.cif_main_table.verticalHeader().setDefaultSectionSize(25)
-        self.cif_main_table.verticalHeader().setHighlightSections(True)
 
         self.verticalLayout.addWidget(self.cif_main_table)
 
@@ -1296,12 +1281,12 @@ class Ui_FinalCifWindow(object):
         self.SourcesTableWidget = QTableWidget(self.groupBox_2)
         if (self.SourcesTableWidget.columnCount() < 3):
             self.SourcesTableWidget.setColumnCount(3)
-        __qtablewidgetitem5 = QTableWidgetItem()
-        self.SourcesTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem5)
-        __qtablewidgetitem6 = QTableWidgetItem()
-        self.SourcesTableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem6)
-        __qtablewidgetitem7 = QTableWidgetItem()
-        self.SourcesTableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem7)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.SourcesTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.SourcesTableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem3)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        self.SourcesTableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem4)
         self.SourcesTableWidget.setObjectName(u"SourcesTableWidget")
         self.SourcesTableWidget.setWordWrap(False)
         self.SourcesTableWidget.horizontalHeader().setStretchLastSection(True)
@@ -1532,8 +1517,8 @@ class Ui_FinalCifWindow(object):
         self.PropertiesEditTableWidget = MyPropTableWidget(self.PropertiesEditPage)
         if (self.PropertiesEditTableWidget.columnCount() < 1):
             self.PropertiesEditTableWidget.setColumnCount(1)
-        __qtablewidgetitem8 = QTableWidgetItem()
-        self.PropertiesEditTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem8)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.PropertiesEditTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem5)
         if (self.PropertiesEditTableWidget.rowCount() < 1):
             self.PropertiesEditTableWidget.setRowCount(1)
         self.PropertiesEditTableWidget.setObjectName(u"PropertiesEditTableWidget")
@@ -2536,12 +2521,12 @@ class Ui_FinalCifWindow(object):
         self.CODtableWidget = QTableWidget(self.StructuresListGroupBox)
         if (self.CODtableWidget.columnCount() < 3):
             self.CODtableWidget.setColumnCount(3)
-        __qtablewidgetitem9 = QTableWidgetItem()
-        self.CODtableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem9)
-        __qtablewidgetitem10 = QTableWidgetItem()
-        self.CODtableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem10)
-        __qtablewidgetitem11 = QTableWidgetItem()
-        self.CODtableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem11)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        self.CODtableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        self.CODtableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        self.CODtableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem8)
         self.CODtableWidget.setObjectName(u"CODtableWidget")
         self.CODtableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.CODtableWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
@@ -2805,12 +2790,6 @@ class Ui_FinalCifWindow(object):
         self.HelpPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Help", None))
         self.datanameLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data Name", None))
         self.SumFormMainLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Sum Formula", None))
-        ___qtablewidgetitem2 = self.cif_main_table.horizontalHeaderItem(0)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("FinalCifWindow", u"CIF Value", None))
-        ___qtablewidgetitem3 = self.cif_main_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("FinalCifWindow", u"From Data Source", None))
-        ___qtablewidgetitem4 = self.cif_main_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("FinalCifWindow", u"Own Data", None))
         self.groupBox.setTitle("")
 #if QT_CONFIG(tooltip)
         self.SaveCifButton.setToolTip(QCoreApplication.translate("FinalCifWindow", u"Saves the CIF file to name-finalcif.cif", None))
@@ -2878,10 +2857,10 @@ class Ui_FinalCifWindow(object):
 "\n"
 "Uncheck items in order to ignore the respective data source.\n"
 "The data source will be ignored until next program restart.", None))
-        ___qtablewidgetitem5 = self.SourcesTableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("FinalCifWindow", u"CIF Item", None))
-        ___qtablewidgetitem6 = self.SourcesTableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("FinalCifWindow", u"Data Source", None))
+        ___qtablewidgetitem2 = self.SourcesTableWidget.horizontalHeaderItem(1)
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("FinalCifWindow", u"CIF Item", None))
+        ___qtablewidgetitem3 = self.SourcesTableWidget.horizontalHeaderItem(2)
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("FinalCifWindow", u"Data Source", None))
         self.BackSourcesPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.BackFromOptionspPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to Main Table", None))
         self.groupBox_COD.setTitle(QCoreApplication.translate("FinalCifWindow", u"Crystallography Open Database Server", None))
@@ -2996,12 +2975,12 @@ class Ui_FinalCifWindow(object):
         self.label_deposition_output.setText(QCoreApplication.translate("FinalCifWindow", u"Deposition Output:", None))
         self.StructuresListGroupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"List of deposited structures", None))
         self.refreshDepositListPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Enter username and password", None))
-        ___qtablewidgetitem7 = self.CODtableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("FinalCifWindow", u"ID", None))
-        ___qtablewidgetitem8 = self.CODtableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("FinalCifWindow", u"Date", None))
-        ___qtablewidgetitem9 = self.CODtableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("FinalCifWindow", u"Time", None))
+        ___qtablewidgetitem4 = self.CODtableWidget.horizontalHeaderItem(0)
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("FinalCifWindow", u"ID", None))
+        ___qtablewidgetitem5 = self.CODtableWidget.horizontalHeaderItem(1)
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("FinalCifWindow", u"Date", None))
+        ___qtablewidgetitem6 = self.CODtableWidget.horizontalHeaderItem(2)
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("FinalCifWindow", u"Time", None))
         self.BackFromDepositPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.depositCIFpushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Deposit CIF", None))
     # retranslateUi
