@@ -1,5 +1,7 @@
 import os
 
+from qtpy import QtWidgets
+
 os.environ['RUNNING_TEST'] = 'True'
 import unittest
 from tests.helpers import AppWindowTestCase, processevents
@@ -140,11 +142,13 @@ class TestWorkfolder(AppWindowTestCase):
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.DATA))
 
     def test_abs_configuration_combo(self):
-        self.assertEqual(6, self.key_row('_chemical_absolute_configuration'))
-        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>", self.cell_widget_class(6, Column.CIF))
+        self.assertEqual(7, self.key_row('_chemical_absolute_configuration'))
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
-                         self.cell_widget_class(6, Column.DATA))
-        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>", self.cell_widget_class(6, Column.EDIT))
+                         self.cell_widget_class(self.key_row('_chemical_absolute_configuration'), Column.CIF))
+        self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
+                         self.cell_widget_class(self.key_row('_chemical_absolute_configuration'), Column.DATA))
+        self.assertEqual("<class 'finalcif.gui.combobox.MyComboBox'>",
+                         self.cell_widget_class(self.key_row('_chemical_absolute_configuration'), Column.EDIT))
 
         row = self.key_row('_diffrn_radiation_type')
         self.assertEqual("<class 'finalcif.gui.plaintextedit.MyQPlainTextEdit'>",
