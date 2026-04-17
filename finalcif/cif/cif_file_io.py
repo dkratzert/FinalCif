@@ -999,7 +999,7 @@ class CifContainer:
         non_vrf_questions = [x for x in questions if not x[0].startswith('_vrf')]
         vrf_with_values = [x for x in with_values if x[0].startswith('_vrf')]
         non_vrf_with_values = [x for x in with_values if not x[0].startswith('_vrf')]
-        return [*vrf_questions, *sorted(non_vrf_questions)], [*vrf_with_values, *sorted(non_vrf_with_values)]
+        return [*vrf_questions, *vrf_with_values, *sorted(non_vrf_questions)], [*sorted(non_vrf_with_values)]
 
     def check_for_missing_essential_keys(self, all_keys: list[tuple[str, str]],
                                          questions: list[tuple[str, str]]) -> None:
