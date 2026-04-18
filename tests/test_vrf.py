@@ -203,6 +203,27 @@ class TestMyVRFContainerWidget(unittest.TestCase):
         w = self._make_widget(level='PLAT413_ALERT_2_G')
         self.assertIsNotNone(w)
 
+    def test_selected_row_background_not_darker_than_lightgray(self):
+        """VRF widget must declare a light background via its stylesheet so that
+        the dark-blue Qt selection highlight is suppressed.  The background-color
+        must be no darker than lightgray (lightness >= 211/255)."""
+        from qtpy.QtGui import QColor
+        import re
+        w = self._make_widget()
+        ss = w.styleSheet()
+        self.assertIn('background-color', ss,
+                      'stylesheet must set a background-color to suppress the selection highlight')
+        match = re.search(r'background-color\s*:\s*([^;}\s]+)', ss)
+        self.assertIsNotNone(match, 'Could not parse background-color from stylesheet')
+        bg_color = QColor(match.group(1).strip())
+        self.assertTrue(bg_color.isValid(), f'background-color value "{match.group(1)}" is not a valid QColor')
+        lightgray_lightness = QColor('lightgray').lightness()
+        self.assertGreaterEqual(
+            bg_color.lightness(), lightgray_lightness,
+            f'VRF widget background ({bg_color.name()}, lightness={bg_color.lightness()}) '
+            f'is darker than lightgray (lightness={lightgray_lightness})',
+        )
+
 
 # ---------------------------------------------------------------------------
 # Integration tests with AppWindow

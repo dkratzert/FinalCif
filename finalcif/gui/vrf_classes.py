@@ -50,7 +50,7 @@ class MyVRFContainer(QWidget):
         self.alert_label_box()
         self.problem_label_box()
         self.response_label_box()
-        self.setAutoFillBackground(False)
+        self.setStyleSheet('MyVRFContainer { background-color: lightgray; }')
         self.help = help
         self.show()
 
