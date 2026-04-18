@@ -1,5 +1,6 @@
 from qtpy import QtCore
 from qtpy.QtCore import QSize, Qt, Signal
+from qtpy.QtGui import QColor, QPalette
 from qtpy.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
     QVBoxLayout, QWidget
 
@@ -50,7 +51,10 @@ class MyVRFContainer(QWidget):
         self.alert_label_box()
         self.problem_label_box()
         self.response_label_box()
-        self.setStyleSheet('MyVRFContainer { background-color: lightgray; }')
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, QColor('lightgray'))
+        self.setPalette(palette)
+        self.setAutoFillBackground(True)
         self.help = help
         self.show()
 
