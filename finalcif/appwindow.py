@@ -1105,13 +1105,6 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
 
-    def _load_existing_vrfs(self) -> None:
-        """
-        No-op: VRF entries from the CIF are now displayed inline in the main table
-        by ``fill_cif_table`` (Phase 3) when the block is loaded.  This method is
-        retained for compatibility but performs no action.
-        """
-
     def _on_vrf_deleted(self, vrf_widget) -> None:
         """
         Handles the ``deleted`` signal emitted by a ``MyVRFContainer`` widget.
