@@ -20,6 +20,8 @@ class QHLine(QFrame):
 class MyVRFContainer(QWidget):
     # Emitted when the user clicks the Delete button; carries a reference to self.
     deleted = Signal(object)
+    # Emitted when the user clicks the Templates button; carries the VRF key (str).
+    template_requested = Signal(str)
 
     def __init__(self, vrf_entry: VRFEntry, help: str, parent=None, is_multi_cif=False):
         """
@@ -47,6 +49,8 @@ class MyVRFContainer(QWidget):
         self.helpbutton.clicked.connect(self.show_help)
         self.deletebutton = QPushButton('Delete')
         self.deletebutton.clicked.connect(self._on_delete)
+        self.templatesbutton = QPushButton('Templates')
+        self.templatesbutton.clicked.connect(self._on_templates)
         self.response_text_edit = QTextEdit()
         self.alert_label_box()
         self.problem_label_box()
@@ -60,6 +64,9 @@ class MyVRFContainer(QWidget):
 
     def _on_delete(self) -> None:
         self.deleted.emit(self)
+
+    def _on_templates(self) -> None:
+        self.template_requested.emit(self.vrf_entry.key)
 
     def show_help(self):
         dialog = QDialog(parent=self)
@@ -119,6 +126,7 @@ class MyVRFContainer(QWidget):
         hlayout.addWidget(self.source_label)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         hlayout.addItem(spacerItem)
+        hlayout.addWidget(self.templatesbutton)
         hlayout.addWidget(self.helpbutton)
         hlayout.addWidget(self.deletebutton)
         self.mainVLayout.addWidget(frame)

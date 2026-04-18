@@ -662,7 +662,15 @@ class AppWindow(QMainWindow):
         text = self.textedit.ui.plainTextEdit.toPlainText()
         if text:
             TextEditItem._num = 1
-            self.ui.cif_main_table.setText(key=self.textedit.cif_key, column=Column.EDIT, txt=text)
+            cif_key = self.textedit.cif_key
+            # If the template was opened from a VRF widget, write the text into
+            # that widget's response field directly (the table cell is spanned).
+            if cif_key and cif_key.startswith('_vrf_'):
+                vrf_widget = self.ui.cif_main_table.get_vrf_widget(cif_key)
+                if vrf_widget is not None:
+                    vrf_widget.response_text_edit.setPlainText(text)
+            else:
+                self.ui.cif_main_table.setText(key=cif_key, column=Column.EDIT, txt=text)
             self.ui.MainStackedWidget.got_to_main_page()
             self.textedit.clear_fields()
         else:
@@ -1005,6 +1013,7 @@ class AppWindow(QMainWindow):
                 vrf = MyVRFContainer(entry, a.get_help(entry.alert_num), parent=self,
                                      is_multi_cif=self.cif.is_multi_cif)
                 vrf.deleted.connect(self._on_vrf_deleted)
+                vrf.template_requested.connect(self._on_vrf_template_requested)
                 self.validation_response_forms_list.append(vrf)
                 table.place_vrf_widget(insert_pos, vrf)
         if html_entries:
@@ -1114,6 +1123,27 @@ class AppWindow(QMainWindow):
         table = self.ui.cif_main_table
         row = table.row_from_key(vrf_widget.vrf_entry.key)
         table.delete_row(row)
+
+    def _on_vrf_template_requested(self, key: str) -> None:
+        """
+        Opens the text-snippet template editor for the given VRF *key*.
+
+        The editor is keyed on the alert code portion of the key
+        (e.g. ``_vrf_PLAT307`` regardless of the data-block suffix), so all
+        structures sharing the same alert code share their templates.
+        The current response text from the VRF widget is pre-filled in the
+        editor's preview field so the user can combine it with a snippet.
+        """
+        alert_code = self.get_vrf_errortype(key)
+        self.textedit.cif_key = key
+        self.textedit.ui.cifKeyLineEdit.setText(alert_code)
+        self.textedit.add_textfields(self.settings.load_settings_list('text_templates', alert_code))
+        # Pre-fill the editor preview with the current response text from the VRF widget.
+        vrf_widget = self.ui.cif_main_table.get_vrf_widget(key)
+        if vrf_widget is not None:
+            current_response = vrf_widget.response_text_edit.toPlainText()
+            self.textedit.ui.plainTextEdit.setPlainText(current_response)
+        self.ui.MainStackedWidget.go_to_text_template_page()
 
 
     def do_pdf_checkcif(self) -> None:
@@ -2153,6 +2183,7 @@ class AppWindow(QMainWindow):
                     vrf = MyVRFContainer(entry, alert_help.get_help(entry.alert_num),
                                         parent=self, is_multi_cif=self.cif.is_multi_cif)
                     vrf.deleted.connect(self._on_vrf_deleted)
+                    vrf.template_requested.connect(self._on_vrf_template_requested)
                     self.validation_response_forms_list.append(vrf)
                     table.place_vrf_widget(row_num, vrf)
                 else:
