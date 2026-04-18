@@ -139,6 +139,11 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.distribute_cif_main_table_columns_evenly()
         # Make sure the start page is shown and not the edit page:
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
+        # The "checkcif alerts" tab (ResponsesTabWidgetPage2) is no longer needed:
+        # VRF widgets are shown inline in the main table.
+        idx = self.ui.ResponsesTabWidget.indexOf(self.ui.ResponsesTabWidgetPage2)
+        if idx >= 0:
+            self.ui.ResponsesTabWidget.removeTab(idx)
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
@@ -336,7 +341,6 @@ class AppWindow(QMainWindow):
         except Exception:
             self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.cloud-upload-alt'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
-        self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.ui.revertLoopsPushButton.setIcon(qta.icon('mdi.backup-restore'))
         # Backbuttons:
         self.ui.BackpushButtonDetails.setIcon(qta.icon('mdi.keyboard-backspace'))
@@ -396,7 +400,6 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifHTMLOnlineButton.clicked.connect(self.do_html_checkcif)
         self.ui.CheckcifPDFOnlineButton.clicked.connect(self.do_pdf_checkcif)
         self.ui.BackFromPlatonPushButton.clicked.connect(self.back_to_main_noload)
-        self.ui.SavePushButton.clicked.connect(self.save_responses)
         # open, import
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_cif_and_display)
@@ -430,8 +433,6 @@ class AppWindow(QMainWindow):
         # help
         self.ui.HelpPushButton.clicked.connect(self.show_help)
         self.ui.ReportPicPushButton.clicked.connect(self.select_report_picture)
-        # brings the html checkcif in from in order to avoid confusion of an "empty" checkcif report page:
-        self.ui.CheckCIFResultsTabWidget.currentChanged.connect(lambda: self.ui.ResponsesTabWidget.setCurrentIndex(0))
         ##
         self.ui.SelectCif_LineEdit.returnPressed.connect(self.check_if_file_field_contains_database_number)
         self.ui.fullIucrCheckBox.clicked.connect(self.toggle_hkl_option)
@@ -971,7 +972,6 @@ class AppWindow(QMainWindow):
             self.checkcif_browser.setHtml(self.htmlfile.resolve().read_text('utf-8', 'ignore'))
         except FileNotFoundError:
             print(f'{self.htmlfile} not found')
-        self.ui.ResponsesTabWidget.setCurrentIndex(0)
         threading.Thread(target=self._display_structure_factor_report, args=(parser,), daemon=True).start()
         # The picture file linked in the html file:
         threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),),
@@ -1079,19 +1079,16 @@ class AppWindow(QMainWindow):
         else:
             self.get_checkdef_for_response_forms()
 
-    def save_responses(self) -> None:
+    def _write_vrf_data_to_cif(self) -> int:
+        """Flush inline VRF response text and pending deletions into the CIF document.
+
+        Returns the number of non-empty responses written.  This must be called
+        **before** ``self.cif.save()`` so that the CIF file on disk is up-to-date.
         """
-        Saves the validation response form text to _vrf_ CIF entries and applies
-        any pending VRF deletions queued by the user via the Delete button.
-        """
-        current_block = self.ui.datanameComboBox.currentIndex()
-        if not self.validation_response_forms_list and not self.pending_vrf_deletions:
-            return
         n = 0
         for response_row in self.validation_response_forms_list:
             response_txt = response_row.response_text_edit.toPlainText()
             if not response_txt:
-                # No response was written
                 continue
             n += 1
             vrf_entry = response_row.vrf_entry
@@ -1105,20 +1102,8 @@ class AppWindow(QMainWindow):
                 item = block.find_pair_item(key)
                 if item is not None:
                     item.erase()
-        n_deleted = len(self.pending_vrf_deletions)
         self.pending_vrf_deletions = []
-        self.save_current_cif_file()
-        self.load_cif_file(self.cif.finalcif_file, current_block, load_changes=False)
-        if n:
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
-        elif n_deleted:
-            noun = 'form' if n_deleted == 1 else 'forms'
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText(f'{n_deleted} {noun} deleted')
-        else:
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('No forms were filled in.')
-
-    def _switch_to_report(self) -> None:
-        self.ui.ResponsesTabWidget.setCurrentIndex(0)
+        return n
 
     def _pdf_checkcif_finished(self) -> None:
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
@@ -1138,10 +1123,9 @@ class AppWindow(QMainWindow):
         Removes the widget from ``validation_response_forms_list`` and from the
         main CIF table row.  The table's ``row_deleted`` signal then calls
         ``_deleted_row`` which removes the key from the in-memory CIF block; the
-        deletion is written to disk on the next ``save_responses()`` / save call.
-        For newly-fetched CheckCIF entries that were never saved to the CIF there
-        is nothing to erase from the block, so we only queue them in
-        ``pending_vrf_deletions`` as a safety fallback.
+        deletion is written to disk on the next save.  For newly-fetched CheckCIF
+        entries that were never saved to the CIF there is nothing to erase from
+        the block, so we only queue them in ``pending_vrf_deletions``.
         """
         if vrf_widget in self.validation_response_forms_list:
             self.validation_response_forms_list.remove(vrf_widget)
@@ -1420,6 +1404,7 @@ class AppWindow(QMainWindow):
         if not self.cif.is_multi_cif:
             self.cif.rename_data_name(''.join(self.ui.datanameComboBox.currentText().split(' ')))
         self.store_data_from_table_rows()
+        self._write_vrf_data_to_cif()
         self.save_ccdc_number()
         self.cif.set_order_keys(self.ui.cifOrderWidget.order_keys)
         try:

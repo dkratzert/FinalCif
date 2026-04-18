@@ -137,7 +137,8 @@ class CifTableView(QTableView):
         self.delete_row()
 
     def delete_content(self) -> None:
-        """Remove all rows."""
+        """Remove all rows and reset any column spans set for VRF widgets."""
+        self.clearSpans()
         self._model.clear_all()
 
     def bulk_load(self, rows) -> None:
