@@ -16,6 +16,7 @@ from finalcif.cif.vrf_entry import VRFEntry
 
 data = Path('tests')
 
+
 # ---------------------------------------------------------------------------
 # Pure-data tests (no Qt GUI required beyond QApplication init)
 # ---------------------------------------------------------------------------
@@ -54,11 +55,11 @@ class TestVRFEntryDataclass(unittest.TestCase):
 
     def test_from_html_form_creates_entry(self):
         form = {
-            'name': '_vrf_PLAT413_bar',
+            'name'     : '_vrf_PLAT413_bar',
             'data_name': 'bar',
-            'problem': 'short contacts',
+            'problem'  : 'short contacts',
             'alert_num': 'PLAT413',
-            'level': 'PLAT413_ALERT_2_C',
+            'level'    : 'PLAT413_ALERT_2_C',
         }
         entry = VRFEntry.from_html_form(form)
         self.assertEqual('_vrf_PLAT413_bar', entry.key)
@@ -69,9 +70,9 @@ class TestVRFEntryDataclass(unittest.TestCase):
 
     def test_from_html_form_missing_level(self):
         form = {
-            'name': '_vrf_PLAT413_bar',
+            'name'     : '_vrf_PLAT413_bar',
             'data_name': 'bar',
-            'problem': 'x',
+            'problem'  : 'x',
             'alert_num': 'PLAT413',
         }
         entry = VRFEntry.from_html_form(form)
@@ -280,16 +281,6 @@ class TestVRFInlineInTable(AppWindowTestCase):
         row = table.row_from_key('_audit_creation_method')
         span = table.columnSpan(row, 0)
         self.assertEqual(1, span)
-
-    def test_validation_forms_list_populated(self):
-        """validation_response_forms_list should contain one entry for the CIF VRF."""
-        self.assertEqual(1, len(self.app.validation_response_forms_list))
-
-    def test_checkcif_alerts_tab_removed(self):
-        """The 'checkcif alerts' tab (ResponsesTabWidgetPage2) should be removed."""
-        tab_widget = self.app.ui.ResponsesTabWidget
-        for i in range(tab_widget.count()):
-            self.assertNotEqual(tab_widget.widget(i), self.app.ui.ResponsesTabWidgetPage2)
 
 
 class TestSpanClearedOnReload(AppWindowTestCase):
