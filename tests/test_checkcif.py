@@ -148,13 +148,17 @@ class TestMyHTMLParser(TestCase):
             self.parser.imageurl)
 
     def test_response_forms(self):
-        form = {'alert_num': 'PLAT413',
-                'data_name': 'cu_BruecknerJK_153F40_0m',
-                'level'    : 'PLAT413_ALERT_2_C',
-                'name'     : '_vrf_PLAT413_cu_BruecknerJK_153F40_0m',
-                'problem'  : 'Short Inter XH3 .. XHn     H13      ..H19B     .       2.14 '
-                             'Ang.  '}
-        self.assertEqual(form, self.parser.response_forms[0])
+        from finalcif.cif.vrf_entry import VRFEntry
+        entry = self.parser.response_forms[0]
+        self.assertIsInstance(entry, VRFEntry)
+        self.assertEqual('PLAT413', entry.alert_num)
+        self.assertEqual('cu_BruecknerJK_153F40_0m', entry.data_name)
+        self.assertEqual('PLAT413_ALERT_2_C', entry.level)
+        self.assertEqual('_vrf_PLAT413_cu_BruecknerJK_153F40_0m', entry.key)
+        self.assertEqual(
+            'Short Inter XH3 .. XHn     H13      ..H19B     .       2.14 Ang.  ',
+            entry.problem,
+        )
 
 
 class TestMyHTMLParserPDF(TestCase):

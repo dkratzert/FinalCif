@@ -19,6 +19,7 @@ from requests import Response
 from requests.exceptions import MissingSchema
 
 from finalcif.cif.cif_file_io import CifContainer
+from finalcif.cif.vrf_entry import VRFEntry
 
 
 class CheckCif(QThread):
@@ -198,37 +199,38 @@ class MyHTMLParser(HTMLParser):
             return ''
 
     @property
-    def response_forms(self) -> list[dict[str, str]]:
+    def response_forms(self) -> list[VRFEntry]:
         """
-        :returns
-        [
-        {'level'     : 'PLAT035_ALERT_1_B',
-         'name'      : '_vrf_PLAT035_DK_zucker2_0m',
-         'problem'   : '_chemical_absolute_configuration Info  Not Given     Please Do '
-                       '!  ',
-         'alert_num': 'PLAT035'},
-         {...},
-         ]
+        :returns a list of VRFEntry instances, one per alert with a validation response form.
         """
-        forms = []
-        single_form = {}
+        entries = []
+        current_key = ''
+        current_plat = ''
+        current_data = ''
+        current_level = ''
         for line in self.vrf.split('\n'):
             if line.startswith('_vrf'):
-                single_form = {'level': ''}
-                plat = line.split('_')[2]
-                data = line.split('_', 3)[3]
-                single_form.update({'name': line, 'alert_num': plat, 'data_name': data})
+                current_key = line
+                current_plat = line.split('_')[2]
+                current_data = line.split('_', 3)[3]
+                current_level = ''
             if line.startswith(';'):
                 continue
             if line.startswith('PROBLEM'):
                 problem = line[9:]
-                single_form.update({'problem': problem})
                 for x in self.alert_levels:
-                    if single_form['alert_num'] == x[:7]:
-                        single_form.update({'level': x})
+                    if current_plat == x[:7]:
+                        current_level = x
                         break
-                forms.append(single_form)
-        return forms
+                entries.append(VRFEntry(
+                    key=current_key,
+                    data_name=current_data,
+                    problem=problem,
+                    response='',
+                    alert_num=current_plat,
+                    level=current_level,
+                ))
+        return entries
 
 
 class AlertHelp:

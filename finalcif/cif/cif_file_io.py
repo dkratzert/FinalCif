@@ -965,6 +965,22 @@ class CifContainer:
             if item.pair is not None:
                 yield item.pair
 
+    def get_vrf_entries(self) -> list:
+        """
+        Returns a list of VRFEntry instances for every ``_vrf_*`` key/value pair
+        found in the current block.  The VRFEntry objects are constructed by
+        parsing the semicolon-delimited text value that stores PROBLEM and
+        RESPONSE lines.
+        """
+        from finalcif.cif.vrf_entry import VRFEntry
+        entries = []
+        for item in self.block:
+            if item.pair is not None:
+                key, raw_value = item.pair
+                if key.startswith('_vrf'):
+                    entries.append(VRFEntry.from_cif_pair(key, raw_value))
+        return entries
+
     def _is_centrokey(self, key) -> bool:
         """
         Is True if the kurrent key is only valid

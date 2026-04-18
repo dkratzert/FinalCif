@@ -60,7 +60,7 @@ from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop, LoopTableModel, MyQTableView
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
-from finalcif.gui.vrf_classes import MyVRFContainer, VREF
+from finalcif.gui.vrf_classes import MyVRFContainer
 from finalcif.report.templated_report import ReportFormat
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
@@ -974,20 +974,26 @@ class AppWindow(QMainWindow):
         threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),),
                          daemon=True).start()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
-        forms = parser.response_forms
+        html_entries = parser.response_forms
+        # Merge existing CIF responses into the HTML-parsed entries so that
+        # previously saved responses are pre-filled in the response text edits.
+        cif_vrf_by_key = {e.key: e for e in self.cif.get_vrf_entries()}
+        for entry in html_entries:
+            if entry.key in cif_vrf_by_key:
+                entry.response = cif_vrf_by_key[entry.key].response
         # makes all gray:
         # self.ui.responseFormsListWidget.setStyleSheet("background: 'gray';")
         a = AlertHelp(self.checkdef)
         self.validation_response_forms_list = []
         self.ui.responseFormsListWidget.clear()
-        for form in forms:
-            vrf = MyVRFContainer(form, a.get_help(form['alert_num']), parent=self, is_multi_cif=self.cif.is_multi_cif)
+        for entry in html_entries:
+            vrf = MyVRFContainer(entry, a.get_help(entry.alert_num), parent=self, is_multi_cif=self.cif.is_multi_cif)
             self.validation_response_forms_list.append(vrf)
             item = QListWidgetItem()
             item.setSizeHint(vrf.sizeHint())
             self.ui.responseFormsListWidget.addItem(item)
             self.ui.responseFormsListWidget.setItemWidget(item, vrf)
-        if not forms:
+        if not html_entries:
             iteme = QListWidgetItem(' ')
             item = QListWidgetItem(' No level A, B or C alerts to explain.')
             self.ui.responseFormsListWidget.addItem(iteme)
@@ -1056,14 +1062,11 @@ class AppWindow(QMainWindow):
                 # No response was written
                 continue
             n += 1
-            v = VREF()
-            v.key = response_row.form['name']
-            v.problem = response_row.form['problem']
-            v.response = response_txt
-            v.data_name = response_row.form['data_name']
+            vrf_entry = response_row.vrf_entry
+            vrf_entry.response = response_txt
             for block in self.cif.doc:
-                if block.name == v.data_name:
-                    block.set_pair(v.key, quote(utf8_to_str(v.value)))
+                if block.name == vrf_entry.data_name:
+                    block.set_pair(vrf_entry.key, quote(utf8_to_str(vrf_entry.value)))
         self.save_current_cif_file()
         self.load_cif_file(self.cif.finalcif_file, current_block, load_changes=False)
         if n:
@@ -1078,7 +1081,31 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
 
-    def do_pdf_checkcif(self) -> None:
+    def _load_existing_vrfs(self) -> None:
+        """
+        Populates the response-forms list widget with any ``_vrf_*`` entries
+        already stored in the currently loaded CIF block.  This allows the user
+        to view and edit previously saved responses without running CheckCIF
+        again.
+        """
+        if not self.cif:
+            return
+        self.ui.responseFormsListWidget.clear()
+        self.validation_response_forms_list = []
+        entries = self.cif.get_vrf_entries()
+        if not entries:
+            return
+        a = AlertHelp(self.checkdef)
+        for entry in entries:
+            vrf = MyVRFContainer(entry, a.get_help(entry.alert_num), parent=self,
+                                 is_multi_cif=self.cif.is_multi_cif)
+            self.validation_response_forms_list.append(vrf)
+            item = QListWidgetItem()
+            item.setSizeHint(vrf.sizeHint())
+            self.ui.responseFormsListWidget.addItem(item)
+            self.ui.responseFormsListWidget.setItemWidget(item, vrf)
+
+
         """
         Performs an online checkcif and shows the result as pdf.
         """
@@ -1615,6 +1642,9 @@ class AppWindow(QMainWindow):
         self.missing_data = set()
         # clean table and vheader before loading:
         self.ui.cif_main_table.delete_content()
+        # clear VRF response forms; they are repopulated after the block is loaded:
+        self.ui.responseFormsListWidget.clear()
+        self.validation_response_forms_list = []
 
     def _load_block(self, index: int, load_changes: bool = True) -> None:
         if not self.cif:
@@ -1676,6 +1706,7 @@ class AppWindow(QMainWindow):
             if self.ui.MainStackedWidget.on_info_page():
                 self.show_residuals()
                 self.redraw_molecule()
+            self._load_existing_vrfs()
             t = QtCore.QTimer(self)
             t.singleShot(1000, self.check_cecksums)
 

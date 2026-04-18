@@ -202,6 +202,93 @@ class TestVrfKeyOrdering(unittest.TestCase):
             self.assertLess(max(vrf_indices), min(non_vrf_indices),
                             '_vrf_* answered keys should precede non-_vrf_* answered keys')
 
+    def test_get_vrf_entries_returns_vrf_entries(self):
+        """get_vrf_entries() should return VRFEntry instances for each _vrf_* key."""
+        from finalcif.cif.vrf_entry import VRFEntry
+        entries = self.cif.get_vrf_entries()
+        self.assertTrue(len(entries) > 0, 'Test CIF should contain at least one _vrf_* key')
+        for entry in entries:
+            self.assertIsInstance(entry, VRFEntry)
+
+    def test_get_vrf_entries_key_and_data_name(self):
+        """get_vrf_entries() should parse key and data_name correctly."""
+        entries = self.cif.get_vrf_entries()
+        entry = entries[0]
+        self.assertTrue(entry.key.startswith('_vrf_'), f'key should start with _vrf_: {entry.key}')
+        self.assertNotEqual('', entry.data_name)
+
+    def test_get_vrf_entries_problem_and_response(self):
+        """get_vrf_entries() should parse problem and response from the CIF value."""
+        entries = self.cif.get_vrf_entries()
+        entry = entries[0]
+        self.assertNotEqual('', entry.problem)
+        # The test CIF has a response of 'foobar'
+        self.assertEqual('foobar', entry.response)
+
+
+class TestVRFEntry(unittest.TestCase):
+    """Unit tests for the VRFEntry dataclass."""
+
+    def test_value_property(self):
+        from finalcif.cif.vrf_entry import VRFEntry
+        entry = VRFEntry(
+            key='_vrf_PLAT035_testdata',
+            data_name='testdata',
+            problem='something is wrong',
+            response='it is fine',
+            alert_num='PLAT035',
+            level='PLAT035_ALERT_1_A',
+        )
+        self.assertEqual('PROBLEM: something is wrong\nRESPONSE: it is fine\n', entry.value)
+
+    def test_from_html_form(self):
+        from finalcif.cif.vrf_entry import VRFEntry
+        form = {
+            'name'     : '_vrf_PLAT035_DK_zucker2_0m',
+            'data_name': 'DK_zucker2_0m',
+            'problem'  : 'Missing value',
+            'alert_num': 'PLAT035',
+            'level'    : 'PLAT035_ALERT_1_B',
+        }
+        entry = VRFEntry.from_html_form(form)
+        self.assertEqual('_vrf_PLAT035_DK_zucker2_0m', entry.key)
+        self.assertEqual('DK_zucker2_0m', entry.data_name)
+        self.assertEqual('Missing value', entry.problem)
+        self.assertEqual('', entry.response)
+        self.assertEqual('PLAT035', entry.alert_num)
+        self.assertEqual('PLAT035_ALERT_1_B', entry.level)
+
+    def test_from_cif_pair_parses_problem_and_response(self):
+        """from_cif_pair() correctly extracts problem and response from a raw CIF value."""
+        import gemmi
+        from finalcif.cif.vrf_entry import VRFEntry
+        from finalcif.cif.text import quote
+        raw_text = 'PROBLEM: something is bad\nRESPONSE: it is actually fine\n'
+        doc = gemmi.cif.Document()
+        block = doc.add_new_block('test')
+        block.set_pair('_vrf_PLAT307_testdata', quote(raw_text))
+        raw_value = block.find_value('_vrf_PLAT307_testdata')
+        entry = VRFEntry.from_cif_pair('_vrf_PLAT307_testdata', raw_value)
+        self.assertEqual('_vrf_PLAT307_testdata', entry.key)
+        self.assertEqual('testdata', entry.data_name)
+        self.assertEqual('PLAT307', entry.alert_num)
+        self.assertEqual('something is bad', entry.problem)
+        self.assertEqual('it is actually fine', entry.response)
+        self.assertEqual('', entry.level)
+
+    def test_from_cif_pair_multiline_response(self):
+        """from_cif_pair() supports multi-line response text."""
+        import gemmi
+        from finalcif.cif.vrf_entry import VRFEntry
+        from finalcif.cif.text import quote
+        raw_text = 'PROBLEM: short contacts\nRESPONSE: line one\nline two\nline three\n'
+        doc = gemmi.cif.Document()
+        block = doc.add_new_block('test')
+        block.set_pair('_vrf_PLAT413_mydata', quote(raw_text))
+        raw_value = block.find_value('_vrf_PLAT413_mydata')
+        entry = VRFEntry.from_cif_pair('_vrf_PLAT413_mydata', raw_value)
+        self.assertEqual('line one\nline two\nline three', entry.response)
+
 
 if __name__ == '__main__':
     unittest.main()

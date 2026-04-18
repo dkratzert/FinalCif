@@ -3,6 +3,8 @@ from qtpy.QtCore import QSize, Qt
 from qtpy.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
     QVBoxLayout, QWidget
 
+from finalcif.cif.vrf_entry import VRFEntry
+
 
 class QHLine(QFrame):
     def __init__(self, parent, *args, **kwargs):
@@ -14,70 +16,22 @@ class QHLine(QFrame):
         self.setFrameShadow(QFrame.Shadow.Raised)
 
 
-class VREF:
-    """
-    _vrf_PLAT699_DK_zucker2_0m
-    ;
-    PROBLEM: Missing _exptl_crystal_description Value .......     Please Do !
-    RESPONSE: ...
-    ;
-    """
-
-    def __init__(self):
-        self.key = ''
-        self.data_name = ''
-        self._problem = 'PROBLEM: '
-        self._response = 'RESPONSE: '
-
-    @property
-    def value(self):
-        return self.__repr__()
-
-    @property
-    def response(self):
-        return self._response
-
-    @response.setter
-    def response(self, txt) -> None:
-        self._response = self.response + txt
-
-    @property
-    def problem(self):
-        return self._problem
-
-    @problem.setter
-    def problem(self, txt) -> None:
-        self._problem = self.problem + txt
-
-    def __repr__(self):
-        txt = (
-            f"{self.problem}\n"
-            f"{self.response}\n"
-        )
-        return txt
-
-    def __str__(self):
-        return self.__repr__()
-
-
 class MyVRFContainer(QWidget):
 
-    def __init__(self, form: dict, help: str, parent=None, is_multi_cif=False):
+    def __init__(self, vrf_entry: VRFEntry, help: str, parent=None, is_multi_cif=False):
         """
         A Widget to display each validation response form.
 
-        :param form: a dictionary with:
-                    {'level':   'PLAT035_ALERT_1_B',
-                     'data_name': 'DK_zucker2_0m',
-                     'name':    '_vrf_PLAT035_DK_zucker2_0m',
-                     'problem': '_chemical_absolute_configuration ...',
-                     'alert_num': 'PLAT035'}
-        :param parent: Parent widget
+        :param vrf_entry: a VRFEntry dataclass instance holding key, data_name, problem,
+                          response, alert_num, and level for this alert.
+        :param help: help text shown in the Help dialog for this alert.
+        :param parent: Parent widget.
+        :param is_multi_cif: True when the document contains multiple data blocks.
         """
         super().__init__(parent)
         self.is_multi_cif = is_multi_cif
         self.setParent(parent)
-        self.form = form
+        self.vrf_entry = vrf_entry
         # self.setMinimumWidth(400)
         self.mainVLayout = QVBoxLayout(self)
         self.setLayout(self.mainVLayout)
@@ -120,7 +74,7 @@ class MyVRFContainer(QWidget):
         # frame.setStyleSheet('QFrame { padding: 0px; margin: 0px;}')
         label = QLabel()
         hlayout.addWidget(label)
-        level = self.form['level']
+        level = self.vrf_entry.level
         atype = level[-1] if len(level) > 1 else 'General A  Alert'
         color = 'lightgray'
         if atype == 'A':
@@ -133,9 +87,9 @@ class MyVRFContainer(QWidget):
             color = 'green'
         if len(atype) == 1:
             atype = atype + '  Alert'
-        num = self.form['alert_num'] if 'alert_num' in self.form else ''
+        num = self.vrf_entry.alert_num
         if self.is_multi_cif:
-            name = "  --> {}".format(self.form['data_name'])
+            name = "  --> {}".format(self.vrf_entry.data_name)
         else:
             name = ''
         label.setText(f"{atype} {num} {name}")
@@ -167,7 +121,7 @@ class MyVRFContainer(QWidget):
         p_text_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         hlayout.addWidget(p_text_label)
         hlayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-        p_text_label.setText(self.form['problem'])
+        p_text_label.setText(self.vrf_entry.problem)
         self.mainVLayout.addWidget(frame)
 
     def response_label_box(self):
@@ -180,6 +134,8 @@ class MyVRFContainer(QWidget):
         resp_label.setText('Response: ')
         resp_label.setStyleSheet('QLabel { font-size: 12px; font-weight: bold }')
         self.response_text_edit.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        if self.vrf_entry.response:
+            self.response_text_edit.setPlainText(self.vrf_entry.response)
         hlayout.addWidget(self.response_text_edit)
         self.mainVLayout.addWidget(frame)
 
@@ -189,19 +145,14 @@ if __name__ == '__main__':
     import sys
 
     app = QApplication(sys.argv)
-    form = {'level'    : 'PLAT035_ALERT_1_B',
-            'name'     : '_vrf_PLAT035_DK_zucker2_0m',
-            'data_name': 'DK_zucker2_0m',
-            'problem'  : '_chemical_absolute_configuration Info  Not Given     Please Do '
-                         '!  ',
-            'alert_num': 'PLAT035'}
-    web = MyVRFContainer(form, help='helptext', parent=None, is_multi_cif=True)
+    entry = VRFEntry(
+        key='_vrf_PLAT035_DK_zucker2_0m',
+        data_name='DK_zucker2_0m',
+        problem='_chemical_absolute_configuration Info  Not Given     Please Do !  ',
+        response='',
+        alert_num='PLAT035',
+        level='PLAT035_ALERT_1_B',
+    )
+    web = MyVRFContainer(entry, help='helptext', parent=None, is_multi_cif=True)
     app.exec()
     web.raise_()
-
-    v = VREF()
-    v.key = '_vrf_PLAT035_DK_zucker2_0m'
-    v.problem = '_chemical_absolute_configuration Info  Not Given     Please Do '
-    v.response = 'a response'
-
-    print(v.value)
