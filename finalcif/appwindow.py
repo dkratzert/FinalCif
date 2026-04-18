@@ -105,6 +105,8 @@ class AppWindow(QMainWindow):
         self.checkdef: list[str] = []
         self.changes_answer: int = 0
         self.validation_response_forms_list = []
+        # Keys of CIF-sourced VRF entries the user has deleted; applied when save_responses() runs.
+        self.pending_vrf_deletions: list[str] = []
         self.checkdef_file: Path = Path.home().joinpath('check.def')
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
@@ -988,6 +990,7 @@ class AppWindow(QMainWindow):
         self.ui.responseFormsListWidget.clear()
         for entry in html_entries:
             vrf = MyVRFContainer(entry, a.get_help(entry.alert_num), parent=self, is_multi_cif=self.cif.is_multi_cif)
+            vrf.deleted.connect(self._on_vrf_deleted)
             self.validation_response_forms_list.append(vrf)
             item = QListWidgetItem()
             item.setSizeHint(vrf.sizeHint())
@@ -1049,11 +1052,11 @@ class AppWindow(QMainWindow):
 
     def save_responses(self) -> None:
         """
-        Saves the validation response form text to _vrf_ CIF entries.
-        :return: None
+        Saves the validation response form text to _vrf_ CIF entries and applies
+        any pending VRF deletions queued by the user via the Delete button.
         """
         current_block = self.ui.datanameComboBox.currentIndex()
-        if not self.validation_response_forms_list:
+        if not self.validation_response_forms_list and not self.pending_vrf_deletions:
             return
         n = 0
         for response_row in self.validation_response_forms_list:
@@ -1067,10 +1070,21 @@ class AppWindow(QMainWindow):
             for block in self.cif.doc:
                 if block.name == vrf_entry.data_name:
                     block.set_pair(vrf_entry.key, quote(utf8_to_str(vrf_entry.value)))
+        # Remove CIF-sourced VRF entries that the user deleted
+        for key in self.pending_vrf_deletions:
+            for block in self.cif.doc:
+                item = block.find_pair_item(key)
+                if item is not None:
+                    item.erase()
+        n_deleted = len(self.pending_vrf_deletions)
+        self.pending_vrf_deletions = []
         self.save_current_cif_file()
         self.load_cif_file(self.cif.finalcif_file, current_block, load_changes=False)
         if n:
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
+        elif n_deleted:
+            noun = 'form' if n_deleted == 1 else 'forms'
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText(f'{n_deleted} {noun} deleted')
         else:
             self.ui.CheckCifLogPlainTextEdit.appendPlainText('No forms were filled in.')
 
@@ -1099,13 +1113,37 @@ class AppWindow(QMainWindow):
         for entry in entries:
             vrf = MyVRFContainer(entry, a.get_help(entry.alert_num), parent=self,
                                  is_multi_cif=self.cif.is_multi_cif)
+            vrf.deleted.connect(self._on_vrf_deleted)
             self.validation_response_forms_list.append(vrf)
             item = QListWidgetItem()
             item.setSizeHint(vrf.sizeHint())
             self.ui.responseFormsListWidget.addItem(item)
             self.ui.responseFormsListWidget.setItemWidget(item, vrf)
 
+    def _on_vrf_deleted(self, vrf_widget) -> None:
+        """
+        Handles the ``deleted`` signal emitted by a ``MyVRFContainer`` widget.
 
+        Removes the widget from ``validation_response_forms_list`` and from the
+        ``responseFormsListWidget``.  For VRFs that originate from the CIF (not
+        from a fresh CheckCIF run) the key is queued in ``pending_vrf_deletions``
+        so that ``save_responses()`` can remove it from the CIF block on the
+        next save.
+        """
+        if vrf_widget in self.validation_response_forms_list:
+            self.validation_response_forms_list.remove(vrf_widget)
+        if vrf_widget.vrf_entry.source == 'cif':
+            self.pending_vrf_deletions.append(vrf_widget.vrf_entry.key)
+        # Find and remove the corresponding QListWidgetItem
+        list_widget = self.ui.responseFormsListWidget
+        for i in range(list_widget.count()):
+            item = list_widget.item(i)
+            if list_widget.itemWidget(item) is vrf_widget:
+                list_widget.takeItem(i)
+                break
+
+
+    def do_pdf_checkcif(self) -> None:
         """
         Performs an online checkcif and shows the result as pdf.
         """
@@ -1645,6 +1683,7 @@ class AppWindow(QMainWindow):
         # clear VRF response forms; they are repopulated after the block is loaded:
         self.ui.responseFormsListWidget.clear()
         self.validation_response_forms_list = []
+        self.pending_vrf_deletions = []
 
     def _load_block(self, index: int, load_changes: bool = True) -> None:
         if not self.cif:

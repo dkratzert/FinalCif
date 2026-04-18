@@ -977,7 +977,7 @@ class CifContainer:
         for item in self.block:
             if item.pair is not None:
                 key, raw_value = item.pair
-                if key.startswith('_vrf'):
+                if key.startswith('_vrf_'):
                     entries.append(VRFEntry.from_cif_pair(key, raw_value))
         return entries
 

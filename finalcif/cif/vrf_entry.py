@@ -27,6 +27,7 @@ class VRFEntry:
     response: str
     alert_num: str
     level: str = field(default='')
+    source: str = field(default='checkcif')
 
     @property
     def value(self) -> str:
@@ -68,13 +69,14 @@ class VRFEntry:
         problem = ''
         response_lines: list[str] = []
         in_response = False
+        _response_prefix_len = len('RESPONSE:')
         for line in text.splitlines():
             if line.startswith('PROBLEM: '):
                 problem = line[9:]
             elif line.startswith('RESPONSE:'):
                 in_response = True
-                # strip the 'RESPONSE: ' prefix (10 chars) or 'RESPONSE:' (9 chars)
-                response_lines.append(line[9:].lstrip(' '))
+                # strip the 'RESPONSE: ' or 'RESPONSE:' prefix and any leading space
+                response_lines.append(line[_response_prefix_len:].lstrip(' '))
             elif in_response:
                 response_lines.append(line)
 
@@ -86,4 +88,5 @@ class VRFEntry:
             response=response,
             alert_num=alert_num,
             level='',
+            source='cif',
         )

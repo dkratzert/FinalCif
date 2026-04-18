@@ -1,5 +1,5 @@
 from qtpy import QtCore
-from qtpy.QtCore import QSize, Qt
+from qtpy.QtCore import QSize, Qt, Signal
 from qtpy.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
     QVBoxLayout, QWidget
 
@@ -17,13 +17,15 @@ class QHLine(QFrame):
 
 
 class MyVRFContainer(QWidget):
+    # Emitted when the user clicks the Delete button; carries a reference to self.
+    deleted = Signal(object)
 
     def __init__(self, vrf_entry: VRFEntry, help: str, parent=None, is_multi_cif=False):
         """
         A Widget to display each validation response form.
 
         :param vrf_entry: a VRFEntry dataclass instance holding key, data_name, problem,
-                          response, alert_num, and level for this alert.
+                          response, alert_num, level, and source for this alert.
         :param help: help text shown in the Help dialog for this alert.
         :param parent: Parent widget.
         :param is_multi_cif: True when the document contains multiple data blocks.
@@ -42,6 +44,8 @@ class MyVRFContainer(QWidget):
         # The button to get help for the respective alert:
         self.helpbutton = QPushButton('Help')
         self.helpbutton.clicked.connect(self.show_help)
+        self.deletebutton = QPushButton('Delete')
+        self.deletebutton.clicked.connect(self._on_delete)
         self.response_text_edit = QTextEdit()
         self.alert_label_box()
         self.problem_label_box()
@@ -49,6 +53,9 @@ class MyVRFContainer(QWidget):
         self.setAutoFillBackground(False)
         self.help = help
         self.show()
+
+    def _on_delete(self) -> None:
+        self.deleted.emit(self)
 
     def show_help(self):
         dialog = QDialog(parent=self)
@@ -102,9 +109,25 @@ class MyVRFContainer(QWidget):
                 'opacity: 230;' \
                 '}'
         label.setStyleSheet(style)
+        # Source badge: shows whether the VRF came from CheckCIF or from the CIF file
+        source_label = QLabel()
+        if self.vrf_entry.source == 'cif':
+            source_label.setText('from CIF')
+            source_label.setStyleSheet(
+                'QLabel { font-size: 10px; background-color: rgb(70, 160, 160);'
+                ' color: white; border-radius: 3px; padding: 2px 5px; }'
+            )
+        else:
+            source_label.setText('from CheckCIF')
+            source_label.setStyleSheet(
+                'QLabel { font-size: 10px; background-color: rgb(70, 110, 200);'
+                ' color: white; border-radius: 3px; padding: 2px 5px; }'
+            )
+        hlayout.addWidget(source_label)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         hlayout.addItem(spacerItem)
         hlayout.addWidget(self.helpbutton)
+        hlayout.addWidget(self.deletebutton)
         self.mainVLayout.addWidget(frame)
 
     def problem_label_box(self):

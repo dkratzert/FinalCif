@@ -210,9 +210,10 @@ class MyHTMLParser(HTMLParser):
         current_level = ''
         for line in self.vrf.split('\n'):
             if line.startswith('_vrf'):
+                parts = line.split('_')
                 current_key = line
-                current_plat = line.split('_')[2]
-                current_data = line.split('_', 3)[3]
+                current_plat = parts[2] if len(parts) > 2 else ''
+                current_data = line.split('_', 3)[3] if len(parts) > 3 else ''
                 current_level = ''
             if line.startswith(';'):
                 continue
