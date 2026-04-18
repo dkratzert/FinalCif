@@ -6,9 +6,12 @@ on:
 jobs:
   tests:
     uses: ./.github/workflows/python_tests.yml
-  build:
-    needs: ['tests']
+  release-build:
     runs-on: ubuntu-latest
+    # Build and publish are gated on successful tests.
+    needs:
+      - tests
+
     steps:
       - uses: actions/checkout@v6
 
@@ -20,21 +23,26 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          path: ./dist
+          name: release-dists
+          path: dist/
 
   pypi-publish:
-    needs: [ 'build' ]
-    environment: 'publish'
-
-    name: upload release to PyPI
+    needs:
+      - release-build
+    name: publish
     runs-on: ubuntu-latest
+    environment:
+      name: publish
+      url: https://pypi.org/p/fastmolwidget
     permissions:
-      # IMPORTANT: this permission is mandatory for trusted publishing
-      id-token: write
+      contents: read
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
       - uses: actions/download-artifact@v8
-
+        with:
+          name: release-dists
+          path: dist/
       - name: Publish package distributions to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: artifact/
+          packages-dir: dist/
