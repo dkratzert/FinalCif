@@ -137,7 +137,8 @@ class CifTableView(QTableView):
         self.delete_row()
 
     def delete_content(self) -> None:
-        """Remove all rows."""
+        """Remove all rows and reset any column spans set for VRF widgets."""
+        self.clearSpans()
         self._model.clear_all()
 
     def bulk_load(self, rows) -> None:
@@ -157,6 +158,20 @@ class CifTableView(QTableView):
             idx = self._model.index(row_num, col)
             self.setIndexWidget(idx, SeparatorWidget(self))
         self.resizeRowToContents(row_num)
+
+    def place_vrf_widget(self, row: int, widget: QWidget) -> None:
+        """Span all 3 columns and place *widget* as an inline VRF form for *row*."""
+        self.setSpan(row, 0, 1, 3)
+        self.setIndexWidget(self._model.index(row, 0), widget)
+        self.resizeRowToContents(row)
+
+    def get_vrf_widget(self, key: str) -> QWidget | None:
+        """Return the inline VRF widget placed for *key*, or ``None`` if absent."""
+        try:
+            row = self._model.row_from_key(key)
+        except ValueError:
+            return None
+        return self.indexWidget(self._model.index(row, 0))
 
     # ------------------------------------------------------------------
     # Cell widgets

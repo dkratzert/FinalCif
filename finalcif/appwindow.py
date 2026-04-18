@@ -31,7 +31,7 @@ if hasattr(gemmi, 'set_leak_warnings'):
 import requests
 from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets, compat
 from qtpy.QtCore import Qt, QEvent
-from qtpy.QtWidgets import (QMainWindow, QCheckBox, QListWidgetItem, QApplication,
+from qtpy.QtWidgets import (QMainWindow, QCheckBox, QApplication,
                             QPlainTextEdit, QMessageBox, QScrollBar)
 from gemmi import cif
 
@@ -60,7 +60,8 @@ from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.loops import Loop, LoopTableModel, MyQTableView
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
-from finalcif.gui.vrf_classes import MyVRFContainer, VREF
+from finalcif.cif.vrf_entry import VRFEntry
+from finalcif.gui.vrf_classes import MyVRFContainer
 from finalcif.report.templated_report import ReportFormat
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
@@ -333,7 +334,6 @@ class AppWindow(QMainWindow):
         except Exception:
             self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.cloud-upload-alt'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
-        self.ui.SavePushButton.setIcon(qta.icon('mdi.content-save'))
         self.ui.revertLoopsPushButton.setIcon(qta.icon('mdi.backup-restore'))
         # Backbuttons:
         self.ui.BackpushButtonDetails.setIcon(qta.icon('mdi.keyboard-backspace'))
@@ -393,7 +393,6 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifHTMLOnlineButton.clicked.connect(self.do_html_checkcif)
         self.ui.CheckcifPDFOnlineButton.clicked.connect(self.do_pdf_checkcif)
         self.ui.BackFromPlatonPushButton.clicked.connect(self.back_to_main_noload)
-        self.ui.SavePushButton.clicked.connect(self.save_responses)
         # open, import
         self.ui.SelectCif_PushButton.clicked.connect(self.load_cif_file)
         self.ui.SaveCifButton.clicked.connect(self.save_cif_and_display)
@@ -427,8 +426,6 @@ class AppWindow(QMainWindow):
         # help
         self.ui.HelpPushButton.clicked.connect(self.show_help)
         self.ui.ReportPicPushButton.clicked.connect(self.select_report_picture)
-        # brings the html checkcif in from in order to avoid confusion of an "empty" checkcif report page:
-        self.ui.CheckCIFResultsTabWidget.currentChanged.connect(lambda: self.ui.ResponsesTabWidget.setCurrentIndex(0))
         ##
         self.ui.SelectCif_LineEdit.returnPressed.connect(self.check_if_file_field_contains_database_number)
         self.ui.fullIucrCheckBox.clicked.connect(self.toggle_hkl_option)
@@ -660,7 +657,15 @@ class AppWindow(QMainWindow):
         text = self.textedit.ui.plainTextEdit.toPlainText()
         if text:
             TextEditItem._num = 1
-            self.ui.cif_main_table.setText(key=self.textedit.cif_key, column=Column.EDIT, txt=text)
+            cif_key = self.textedit.cif_key
+            # If the template was opened from a VRF widget, write the text into
+            # that widget's response field directly (the table cell is spanned).
+            if cif_key and cif_key.startswith('_vrf_'):
+                vrf_widget = self.ui.cif_main_table.get_vrf_widget(cif_key)
+                if vrf_widget is not None:
+                    vrf_widget.response_text_edit.setPlainText(text)
+            else:
+                self.ui.cif_main_table.setText(key=cif_key, column=Column.EDIT, txt=text)
             self.ui.MainStackedWidget.got_to_main_page()
             self.textedit.clear_fields()
         else:
@@ -959,7 +964,7 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
                                                         'Please try it at https://checkcif.iucr.org/ instead.</b>')
             return
-        self.checkcif_browser = QtWebEngineWidgets.QWebEngineView(self.ui.htmlTabwidgetPage)
+        self.checkcif_browser = QtWebEngineWidgets.QWebEngineView(parent=self)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
         url = QtCore.QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
@@ -968,30 +973,65 @@ class AppWindow(QMainWindow):
             self.checkcif_browser.setHtml(self.htmlfile.resolve().read_text('utf-8', 'ignore'))
         except FileNotFoundError:
             print(f'{self.htmlfile} not found')
-        self.ui.ResponsesTabWidget.setCurrentIndex(0)
         threading.Thread(target=self._display_structure_factor_report, args=(parser,), daemon=True).start()
         # The picture file linked in the html file:
         threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),),
                          daemon=True).start()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
-        forms = parser.response_forms
-        # makes all gray:
-        # self.ui.responseFormsListWidget.setStyleSheet("background: 'gray';")
+        html_entries = parser.response_forms
+        # Merge HTML-parsed entries into the main table:
+        # - Entries already shown in the main table (source='cif') get their source badge
+        #   updated to 'checkcif' to indicate they were returned by this run.  The existing
+        #   response text is preserved.
+        # - New entries (not yet in the CIF or table) are added as new rows at the top of
+        #   the main table, marked 'checkcif'.
         a = AlertHelp(self.checkdef)
-        self.validation_response_forms_list = []
-        self.ui.responseFormsListWidget.clear()
-        for form in forms:
-            vrf = MyVRFContainer(form, a.get_help(form['alert_num']), parent=self, is_multi_cif=self.cif.is_multi_cif)
-            self.validation_response_forms_list.append(vrf)
-            item = QListWidgetItem()
-            item.setSizeHint(vrf.sizeHint())
-            self.ui.responseFormsListWidget.addItem(item)
-            self.ui.responseFormsListWidget.setItemWidget(item, vrf)
-        if not forms:
-            iteme = QListWidgetItem(' ')
-            item = QListWidgetItem(' No level A, B or C alerts to explain.')
-            self.ui.responseFormsListWidget.addItem(iteme)
-            self.ui.responseFormsListWidget.addItem(item)
+        table = self.ui.cif_main_table
+        # Build a lookup of already-saved CIF VRF entries once, outside the loop.
+        existing_by_key = {e.key: e for e in self.cif.get_vrf_entries()}
+        for entry in html_entries:
+            existing_widget = table.get_vrf_widget(entry.key)
+            if existing_widget is not None:
+                # Row already in table (loaded from CIF): update badge to "From CheckCIF"
+                # but keep the user's existing response text.
+                existing_widget.update_source('checkcif')
+            else:
+                # New entry not yet in the CIF: add a row at the top of the table.
+                # Preserve any existing CIF response if the key happens to be in the CIF
+                # block even though it didn't appear in the table (edge-case safety).
+                if entry.key in existing_by_key:
+                    entry.response = existing_by_key[entry.key].response
+                insert_pos = self._vrf_insert_position()
+                table.add_row(key=entry.key, position=insert_pos)
+                if entry.key not in self.cif.order:
+                    self.cif.order.insert(insert_pos, entry.key)
+                vrf = MyVRFContainer(entry, a.get_help(entry.alert_num), parent=self,
+                                     is_multi_cif=self.cif.is_multi_cif)
+                vrf.deleted.connect(self._on_vrf_deleted)
+                vrf.template_requested.connect(self._on_vrf_template_requested)
+                self.validation_response_forms_list.append(vrf)
+                table.place_vrf_widget(insert_pos, vrf)
+        if html_entries:
+            n = len(html_entries)
+            form_noun = 'form' if n == 1 else 'forms'
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText(
+                f'{n} VRF {form_noun} updated in the main table.')
+        else:
+            self.ui.CheckCifLogPlainTextEdit.appendPlainText(
+                'No level A, B or C alerts require a response.')
+
+    def _vrf_insert_position(self) -> int:
+        """Return the row index just after the last existing ``_vrf_*`` row in the main table.
+
+        New VRF rows added during a CheckCIF run are inserted here so that all
+        VRF entries remain grouped at the top of the table.
+        """
+        keys = self.ui.cif_main_table.vheaderitems
+        pos = 0
+        for i, k in enumerate(keys):
+            if k.startswith('_vrf_'):
+                pos = i + 1
+        return pos
 
     def _display_structure_factor_report(self, parser: MyHTMLParser) -> None:
         self.ui.ckf_textedit.setPlainText(parser.get_ckf())
@@ -1041,42 +1081,65 @@ class AppWindow(QMainWindow):
         else:
             self.get_checkdef_for_response_forms()
 
-    def save_responses(self) -> None:
+    def _write_vrf_data_to_cif(self) -> int:
+        """Flush inline VRF response text and pending deletions into the CIF document.
+
+        Returns the number of non-empty responses written.  This must be called
+        **before** ``self.cif.save()`` so that the CIF file on disk is up-to-date.
         """
-        Saves the validation response form text to _vrf_ CIF entries.
-        :return: None
-        """
-        current_block = self.ui.datanameComboBox.currentIndex()
-        if not self.validation_response_forms_list:
-            return
         n = 0
         for response_row in self.validation_response_forms_list:
             response_txt = response_row.response_text_edit.toPlainText()
             if not response_txt:
-                # No response was written
                 continue
             n += 1
-            v = VREF()
-            v.key = response_row.form['name']
-            v.problem = response_row.form['problem']
-            v.response = response_txt
-            v.data_name = response_row.form['data_name']
-            for block in self.cif.doc:
-                if block.name == v.data_name:
-                    block.set_pair(v.key, quote(utf8_to_str(v.value)))
-        self.save_current_cif_file()
-        self.load_cif_file(self.cif.finalcif_file, current_block, load_changes=False)
-        if n:
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('Forms saved')
-        else:
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText('No forms were filled in.')
-
-    def _switch_to_report(self) -> None:
-        self.ui.ResponsesTabWidget.setCurrentIndex(0)
+            vrf_entry = response_row.vrf_entry
+            vrf_entry.response = response_txt
+            self.cif.block.set_pair(vrf_entry.key, quote(utf8_to_str(vrf_entry.value)))
+        return n
 
     def _pdf_checkcif_finished(self) -> None:
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
+
+    def _on_vrf_deleted(self, vrf_widget) -> None:
+        """
+        Handles the ``deleted`` signal emitted by a ``MyVRFContainer`` widget.
+
+        Removes the widget from ``validation_response_forms_list`` and from the
+        main CIF table row.  The table's ``row_deleted`` signal then calls
+        ``_deleted_row`` which removes the key from the in-memory CIF block; the
+        deletion is written to disk on the next save.
+        """
+        if vrf_widget in self.validation_response_forms_list:
+            self.validation_response_forms_list.remove(vrf_widget)
+        # Remove the row from the main table (this also emits row_deleted → _deleted_row
+        # which removes the key from the CIF block in memory).
+        table = self.ui.cif_main_table
+        row = table.row_from_key(vrf_widget.vrf_entry.key)
+        table.delete_row(row)
+
+    def _on_vrf_template_requested(self, key: str) -> None:
+        """
+        Opens the text-snippet template editor for the given VRF *key*.
+
+        The editor is keyed on the alert code portion of the key
+        (e.g. ``_vrf_PLAT307`` regardless of the data-block suffix), so all
+        structures sharing the same alert code share their templates.
+        The current response text from the VRF widget is pre-filled in the
+        editor's preview field so the user can combine it with a snippet.
+        """
+        alert_code = self.get_vrf_errortype(key)
+        self.textedit.cif_key = key
+        self.textedit.ui.cifKeyLineEdit.setText(alert_code)
+        self.textedit.add_textfields(self.settings.load_settings_list('text_templates', alert_code))
+        # Pre-fill the editor preview with the current response text from the VRF widget.
+        vrf_widget = self.ui.cif_main_table.get_vrf_widget(key)
+        if vrf_widget is not None:
+            current_response = vrf_widget.response_text_edit.toPlainText()
+            self.textedit.ui.plainTextEdit.setPlainText(current_response)
+        self.ui.MainStackedWidget.go_to_text_template_page()
+
 
     def do_pdf_checkcif(self) -> None:
         """
@@ -1339,6 +1402,9 @@ class AppWindow(QMainWindow):
         if not self.cif:
             # No file is opened
             return None
+        # Flush VRF response text *before* rename_data_name, because the
+        # rename replaces VRF keys with new names derived from the block name.
+        self._write_vrf_data_to_cif()
         if not self.cif.is_multi_cif:
             self.cif.rename_data_name(''.join(self.ui.datanameComboBox.currentText().split(' ')))
         self.store_data_from_table_rows()
@@ -1569,8 +1635,8 @@ class AppWindow(QMainWindow):
         self._load_block(block, load_changes=load_changes)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
-        QtCore.QTimer.singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
         self.ui.datanameComboBox.blockSignals(False)
+        QtCore.QTimer.singleShot(500, self.ui.cif_main_table.resizeRowsToContents)
         if self.cif.is_multi_cif:
             self._flash_block_combobox()
         self.cif.set_order_keys(self.ui.cifOrderWidget.order_keys)
@@ -1613,8 +1679,10 @@ class AppWindow(QMainWindow):
         self.ui.ckf_textedit.clear()
         # Set to empty state before loading:
         self.missing_data = set()
-        # clean table and vheader before loading:
+        # clean table (including any inline VRF widgets) before loading:
         self.ui.cif_main_table.delete_content()
+        # reset VRF tracking lists; fill_cif_table repopulates them via inline widgets
+        self.validation_response_forms_list = []
 
     def _load_block(self, index: int, load_changes: bool = True) -> None:
         if not self.cif:
@@ -2098,11 +2166,21 @@ class AppWindow(QMainWindow):
         # Phase 3 – create widgets (with view repaints suspended)
         # ------------------------------------------------------------------
         table.setUpdatesEnabled(False)
+        alert_help = AlertHelp(self.checkdef)
         try:
             for row_num, row_data in enumerate(model_rows):
                 if row_data.is_separator:
                     table.add_separation_line(row_num)
                     self.complete_data_row = row_num
+                elif row_data.key.startswith('_vrf_'):
+                    # Show a VRF response-form widget spanning all 3 columns inline.
+                    entry = VRFEntry.from_cif_pair(row_data.key, row_data.raw_value)
+                    vrf = MyVRFContainer(entry, alert_help.get_help(entry.alert_num),
+                                        parent=self, is_multi_cif=self.cif.is_multi_cif)
+                    vrf.deleted.connect(self._on_vrf_deleted)
+                    vrf.template_requested.connect(self._on_vrf_template_requested)
+                    self.validation_response_forms_list.append(vrf)
+                    table.place_vrf_widget(row_num, vrf)
                 else:
                     table.setText(row=row_num, key=row_data.key, column=Column.CIF,
                                   txt=row_data.strval)

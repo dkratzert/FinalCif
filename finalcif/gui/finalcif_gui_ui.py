@@ -38,7 +38,7 @@ class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         if not FinalCifWindow.objectName():
             FinalCifWindow.setObjectName(u"FinalCifWindow")
-        FinalCifWindow.resize(1805, 951)
+        FinalCifWindow.resize(1778, 951)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1964,62 +1964,10 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_12 = QVBoxLayout(self.html_page)
         self.verticalLayout_12.setObjectName(u"verticalLayout_12")
         self.verticalLayout_12.setContentsMargins(0, 0, 0, 0)
-        self.ResponsesTabWidget = QTabWidget(self.html_page)
-        self.ResponsesTabWidget.setObjectName(u"ResponsesTabWidget")
-        self.ResponsesTabWidget.setTabPosition(QTabWidget.TabPosition.South)
-        self.ResponsesTabWidget.setMovable(False)
-        self.htmlTabwidgetPage = QWidget()
-        self.htmlTabwidgetPage.setObjectName(u"htmlTabwidgetPage")
-        self.verticalLayout_14 = QVBoxLayout(self.htmlTabwidgetPage)
-        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
-        self.verticalLayout_14.setContentsMargins(0, 0, 0, 0)
         self.htmlCHeckCifGridLayout = QGridLayout()
         self.htmlCHeckCifGridLayout.setObjectName(u"htmlCHeckCifGridLayout")
 
-        self.verticalLayout_14.addLayout(self.htmlCHeckCifGridLayout)
-
-        self.ResponsesTabWidget.addTab(self.htmlTabwidgetPage, "")
-        self.ResponsesTabWidgetPage2 = QWidget()
-        self.ResponsesTabWidgetPage2.setObjectName(u"ResponsesTabWidgetPage2")
-        self.verticalLayout_15 = QVBoxLayout(self.ResponsesTabWidgetPage2)
-        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
-        self.verticalLayout_15.setContentsMargins(0, 0, 0, 0)
-        self.responseFormsListWidget = QListWidget(self.ResponsesTabWidgetPage2)
-        self.responseFormsListWidget.setObjectName(u"responseFormsListWidget")
-        self.responseFormsListWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-        self.responseFormsListWidget.setAutoScroll(False)
-        self.responseFormsListWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.responseFormsListWidget.setProperty(u"showDropIndicator", False)
-        self.responseFormsListWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-
-        self.verticalLayout_15.addWidget(self.responseFormsListWidget)
-
-        self.label_6 = QLabel(self.ResponsesTabWidgetPage2)
-        self.label_6.setObjectName(u"label_6")
-
-        self.verticalLayout_15.addWidget(self.label_6)
-
-        self.frame = QFrame(self.ResponsesTabWidgetPage2)
-        self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.Shape.NoFrame)
-        self.horizontalLayout_2 = QHBoxLayout(self.frame)
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.SavePushButton = QPushButton(self.frame)
-        self.SavePushButton.setObjectName(u"SavePushButton")
-
-        self.horizontalLayout_2.addWidget(self.SavePushButton)
-
-        self.horizontalSpacer_19 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_2.addItem(self.horizontalSpacer_19)
-
-
-        self.verticalLayout_15.addWidget(self.frame)
-
-        self.ResponsesTabWidget.addTab(self.ResponsesTabWidgetPage2, "")
-
-        self.verticalLayout_12.addWidget(self.ResponsesTabWidget)
+        self.verticalLayout_12.addLayout(self.htmlCHeckCifGridLayout)
 
         self.CheckCIFResultsTabWidget.addTab(self.html_page, "")
         self.pdf_page = QWidget()
@@ -2650,10 +2598,7 @@ class Ui_FinalCifWindow(object):
         QWidget.setTabOrder(self.CheckcifPDFOnlineButton, self.CheckcifHTMLOnlineButton)
         QWidget.setTabOrder(self.CheckcifHTMLOnlineButton, self.CheckCIFResultsTabWidget)
         QWidget.setTabOrder(self.CheckCIFResultsTabWidget, self.CheckcifPlaintextEdit)
-        QWidget.setTabOrder(self.CheckcifPlaintextEdit, self.ResponsesTabWidget)
-        QWidget.setTabOrder(self.ResponsesTabWidget, self.responseFormsListWidget)
-        QWidget.setTabOrder(self.responseFormsListWidget, self.SavePushButton)
-        QWidget.setTabOrder(self.SavePushButton, self.EquipmentEditTableWidget)
+        QWidget.setTabOrder(self.CheckcifPlaintextEdit, self.EquipmentEditTableWidget)
         QWidget.setTabOrder(self.EquipmentEditTableWidget, self.PropertiesTemplatesListWidget)
         QWidget.setTabOrder(self.PropertiesTemplatesListWidget, self.EquipmentTemplatesListWidget)
         QWidget.setTabOrder(self.EquipmentTemplatesListWidget, self.RecentComboBox)
@@ -2726,13 +2671,12 @@ class Ui_FinalCifWindow(object):
 
         self.TemplatesStackedWidget.setCurrentIndex(0)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        self.MainStackedWidget.setCurrentIndex(2)
+        self.MainStackedWidget.setCurrentIndex(6)
         self.picturesTabWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
         self.LoopsTabWidget.setCurrentIndex(0)
         self.authorEditTabWidget.setCurrentIndex(1)
-        self.CheckCIFResultsTabWidget.setCurrentIndex(3)
-        self.ResponsesTabWidget.setCurrentIndex(1)
+        self.CheckCIFResultsTabWidget.setCurrentIndex(1)
         self.depositionOptionsStackedWidget.setCurrentIndex(3)
 
     # setupUi
@@ -2927,10 +2871,6 @@ class Ui_FinalCifWindow(object):
         self.newLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Loop", None))
         self.deleteLoopButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Loop", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.platon_page), QCoreApplication.translate("FinalCifWindow", u"PLATON CheckCIF result", None))
-        self.ResponsesTabWidget.setTabText(self.ResponsesTabWidget.indexOf(self.htmlTabwidgetPage), QCoreApplication.translate("FinalCifWindow", u"html report", None))
-        self.label_6.setText(QCoreApplication.translate("FinalCifWindow", u"Every form you fill out will be written to the cif file.", None))
-        self.SavePushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save Response Forms", None))
-        self.ResponsesTabWidget.setTabText(self.ResponsesTabWidget.indexOf(self.ResponsesTabWidgetPage2), QCoreApplication.translate("FinalCifWindow", u"checkcif alerts", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.html_page), QCoreApplication.translate("FinalCifWindow", u"html CheckCIF result", None))
         self.label_5.setText(QCoreApplication.translate("FinalCifWindow", u"The resulting PDF file will be displayed in an external program after CheckCIF has completed.", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.pdf_page), QCoreApplication.translate("FinalCifWindow", u"PDF CheckCIF result", None))
