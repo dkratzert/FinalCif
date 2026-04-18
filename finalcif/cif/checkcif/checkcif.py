@@ -227,7 +227,7 @@ class MyHTMLParser(HTMLParser):
                     key=current_key,
                     data_name=current_data,
                     problem=problem,
-                    response='',
+                    response='?',
                     alert_num=current_plat,
                     level=current_level,
                 ))

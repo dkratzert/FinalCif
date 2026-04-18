@@ -181,7 +181,7 @@ if __name__ == '__main__':
         key='_vrf_PLAT035_DK_zucker2_0m',
         data_name='DK_zucker2_0m',
         problem='_chemical_absolute_configuration Info  Not Given     Please Do !  ',
-        response='',
+        response='?',
         alert_num='PLAT035',
         level='PLAT035_ALERT_1_B',
     )

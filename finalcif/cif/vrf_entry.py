@@ -24,8 +24,8 @@ class VRFEntry:
     key: str
     data_name: str
     problem: str
-    response: str
     alert_num: str
+    response: str = field(default='?')
     level: str = field(default='')
     source: str = field(default='checkcif')
 
@@ -41,7 +41,7 @@ class VRFEntry:
             key=form['name'],
             data_name=form['data_name'],
             problem=form['problem'],
-            response='',
+            response='?',
             alert_num=form['alert_num'],
             level=form.get('level', ''),
         )
