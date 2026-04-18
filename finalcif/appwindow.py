@@ -1091,14 +1091,7 @@ class AppWindow(QMainWindow):
             n += 1
             vrf_entry = response_row.vrf_entry
             vrf_entry.response = response_txt
-            # Write the VRF to the block that currently contains the key, or
-            # fall back to the currently loaded block.
-            for block in self.cif.doc:
-                if block.find_pair_item(vrf_entry.key) is not None:
-                    block.set_pair(vrf_entry.key, quote(utf8_to_str(vrf_entry.value)))
-                    break
-            else:
-                self.cif.block.set_pair(vrf_entry.key, quote(utf8_to_str(vrf_entry.value)))
+            self.cif.block.set_pair(vrf_entry.key, quote(utf8_to_str(vrf_entry.value)))
         return n
 
     def _pdf_checkcif_finished(self) -> None:
