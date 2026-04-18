@@ -321,10 +321,10 @@ class TestVRFSaveIntegration(AppWindowTestCase):
 
     def setUp(self) -> None:
         os.environ['RUNNING_TEST'] = 'True'
+        import tempfile
         # Copy test CIF to a temp location so we can modify it
         src = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
-        self.work_dir = Path('/tmp/test_vrf_save')
-        self.work_dir.mkdir(exist_ok=True)
+        self.work_dir = Path(tempfile.mkdtemp(prefix='test_vrf_save_'))
         self.testcif = self.work_dir / src.name
         shutil.copy2(src, self.testcif)
         # Copy companion files
