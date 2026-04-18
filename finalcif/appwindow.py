@@ -1640,8 +1640,8 @@ class AppWindow(QMainWindow):
         self._load_block(block, load_changes=load_changes)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
-        QtCore.QTimer.singleShot(0, self.ui.cif_main_table.resizeRowsToContents)
         self.ui.datanameComboBox.blockSignals(False)
+        QtCore.QTimer.singleShot(500, self.ui.cif_main_table.resizeRowsToContents)
         if self.cif.is_multi_cif:
             self._flash_block_combobox()
         self.cif.set_order_keys(self.ui.cifOrderWidget.order_keys)
