@@ -110,25 +110,34 @@ class MyVRFContainer(QWidget):
                 '}'
         label.setStyleSheet(style)
         # Source badge: shows whether the VRF came from CheckCIF or from the CIF file
-        source_label = QLabel()
-        if self.vrf_entry.source == 'cif':
-            source_label.setText('from CIF')
-            source_label.setStyleSheet(
-                'QLabel { font-size: 10px; background-color: rgb(70, 160, 160);'
-                ' color: white; border-radius: 3px; padding: 2px 5px; }'
-            )
-        else:
-            source_label.setText('from CheckCIF')
-            source_label.setStyleSheet(
-                'QLabel { font-size: 10px; background-color: rgb(70, 110, 200);'
-                ' color: white; border-radius: 3px; padding: 2px 5px; }'
-            )
-        hlayout.addWidget(source_label)
+        self.source_label = QLabel()
+        self._apply_source_style(self.vrf_entry.source)
+        hlayout.addWidget(self.source_label)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         hlayout.addItem(spacerItem)
         hlayout.addWidget(self.helpbutton)
         hlayout.addWidget(self.deletebutton)
         self.mainVLayout.addWidget(frame)
+
+    def _apply_source_style(self, source: str) -> None:
+        """Update the source badge label to reflect *source*."""
+        if source == 'cif':
+            self.source_label.setText('Saved in CIF')
+            self.source_label.setStyleSheet(
+                'QLabel { font-size: 10px; background-color: rgb(70, 160, 160);'
+                ' color: white; border-radius: 3px; padding: 2px 5px; }'
+            )
+        else:
+            self.source_label.setText('From CheckCIF')
+            self.source_label.setStyleSheet(
+                'QLabel { font-size: 10px; background-color: rgb(70, 110, 200);'
+                ' color: white; border-radius: 3px; padding: 2px 5px; }'
+            )
+
+    def update_source(self, new_source: str) -> None:
+        """Dynamically update the source badge (e.g. after a new CheckCIF run)."""
+        self.vrf_entry.source = new_source
+        self._apply_source_style(new_source)
 
     def problem_label_box(self):
         frame = QFrame()
