@@ -254,7 +254,7 @@ class TestVRFEntry(unittest.TestCase):
         self.assertEqual('_vrf_PLAT035_DK_zucker2_0m', entry.key)
         self.assertEqual('DK_zucker2_0m', entry.data_name)
         self.assertEqual('Missing value', entry.problem)
-        self.assertEqual('', entry.response)
+        self.assertEqual('?', entry.response)
         self.assertEqual('PLAT035', entry.alert_num)
         self.assertEqual('PLAT035_ALERT_1_B', entry.level)
 

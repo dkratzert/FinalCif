@@ -62,7 +62,7 @@ class TestVRFEntryDataclass(unittest.TestCase):
         }
         entry = VRFEntry.from_html_form(form)
         self.assertEqual('_vrf_PLAT413_bar', entry.key)
-        self.assertEqual('', entry.response)
+        self.assertEqual('?', entry.response)
         self.assertEqual('PLAT413', entry.alert_num)
         self.assertEqual('PLAT413_ALERT_2_C', entry.level)
         self.assertEqual('checkcif', entry.source)
