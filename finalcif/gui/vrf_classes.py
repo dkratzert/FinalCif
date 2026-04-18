@@ -47,6 +47,8 @@ class MyVRFContainer(QWidget):
         # The button to get help for the respective alert:
         self.helpbutton = QPushButton('Help')
         self.helpbutton.clicked.connect(self.show_help)
+        if not help.strip():
+            self.helpbutton.setEnabled(False)
         self.deletebutton = QPushButton('Delete')
         self.deletebutton.clicked.connect(self._on_delete)
         self.templatesbutton = QPushButton('Templates')

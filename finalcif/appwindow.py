@@ -137,11 +137,6 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.distribute_cif_main_table_columns_evenly()
         # Make sure the start page is shown and not the edit page:
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(0)
-        # The "checkcif alerts" tab (ResponsesTabWidgetPage2) is no longer needed:
-        # VRF widgets are shown inline in the main table.
-        idx = self.ui.ResponsesTabWidget.indexOf(self.ui.ResponsesTabWidgetPage2)
-        if idx >= 0:
-            self.ui.ResponsesTabWidget.removeTab(idx)
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
@@ -969,7 +964,7 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
                                                         'Please try it at https://checkcif.iucr.org/ instead.</b>')
             return
-        self.checkcif_browser = QtWebEngineWidgets.QWebEngineView(self.ui.htmlTabwidgetPage)
+        self.checkcif_browser = QtWebEngineWidgets.QWebEngineView(parent=self)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
         url = QtCore.QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()

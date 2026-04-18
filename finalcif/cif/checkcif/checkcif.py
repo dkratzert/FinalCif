@@ -241,7 +241,7 @@ class AlertHelp:
     def get_help(self, alert: str) -> str:
         checkdef_help = self._parse_checkdef(alert)
         if not checkdef_help or 'PLAT' not in alert:
-            return 'No help available.'
+            return ''
         return checkdef_help
 
     def _parse_checkdef(self, alert: str) -> str:
