@@ -1093,9 +1093,16 @@ class AppWindow(QMainWindow):
             n += 1
             vrf_entry = response_row.vrf_entry
             vrf_entry.response = response_txt
+            # Write the VRF to the block that currently contains the key, or
+            # fall back to the currently loaded block.
+            written = False
             for block in self.cif.doc:
-                if block.name == vrf_entry.data_name:
+                if block.find_pair_item(vrf_entry.key) is not None:
                     block.set_pair(vrf_entry.key, quote(utf8_to_str(vrf_entry.value)))
+                    written = True
+                    break
+            if not written:
+                self.cif.block.set_pair(vrf_entry.key, quote(utf8_to_str(vrf_entry.value)))
         # Remove CIF-sourced VRF entries that the user deleted
         for key in self.pending_vrf_deletions:
             for block in self.cif.doc:
@@ -1401,10 +1408,12 @@ class AppWindow(QMainWindow):
         if not self.cif:
             # No file is opened
             return None
+        # Flush VRF response text *before* rename_data_name, because the
+        # rename replaces VRF keys with new names derived from the block name.
+        self._write_vrf_data_to_cif()
         if not self.cif.is_multi_cif:
             self.cif.rename_data_name(''.join(self.ui.datanameComboBox.currentText().split(' ')))
         self.store_data_from_table_rows()
-        self._write_vrf_data_to_cif()
         self.save_ccdc_number()
         self.cif.set_order_keys(self.ui.cifOrderWidget.order_keys)
         try:
