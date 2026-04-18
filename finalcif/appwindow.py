@@ -106,8 +106,6 @@ class AppWindow(QMainWindow):
         self.checkdef: list[str] = []
         self.changes_answer: int = 0
         self.validation_response_forms_list = []
-        # Keys of CIF-sourced VRF entries the user has deleted; applied when save_responses() runs.
-        self.pending_vrf_deletions: list[str] = []
         self.checkdef_file: Path = Path.home().joinpath('check.def')
         self.missing_data: set = set()
         self.temperature_warning_displayed = False
@@ -1101,13 +1099,6 @@ class AppWindow(QMainWindow):
                     break
             else:
                 self.cif.block.set_pair(vrf_entry.key, quote(utf8_to_str(vrf_entry.value)))
-        # Remove CIF-sourced VRF entries that the user deleted
-        for key in self.pending_vrf_deletions:
-            for block in self.cif.doc:
-                item = block.find_pair_item(key)
-                if item is not None:
-                    item.erase()
-        self.pending_vrf_deletions = []
         return n
 
     def _pdf_checkcif_finished(self) -> None:
@@ -1128,21 +1119,15 @@ class AppWindow(QMainWindow):
         Removes the widget from ``validation_response_forms_list`` and from the
         main CIF table row.  The table's ``row_deleted`` signal then calls
         ``_deleted_row`` which removes the key from the in-memory CIF block; the
-        deletion is written to disk on the next save.  For newly-fetched CheckCIF
-        entries that were never saved to the CIF there is nothing to erase from
-        the block, so we only queue them in ``pending_vrf_deletions``.
+        deletion is written to disk on the next save.
         """
         if vrf_widget in self.validation_response_forms_list:
             self.validation_response_forms_list.remove(vrf_widget)
         # Remove the row from the main table (this also emits row_deleted → _deleted_row
         # which removes the key from the CIF block in memory).
         table = self.ui.cif_main_table
-        try:
-            row = table.row_from_key(vrf_widget.vrf_entry.key)
-            table.delete_row(row)
-        except ValueError:
-            # Key not in table (e.g. a CheckCIF entry not yet saved); queue for cleanup.
-            self.pending_vrf_deletions.append(vrf_widget.vrf_entry.key)
+        row = table.row_from_key(vrf_widget.vrf_entry.key)
+        table.delete_row(row)
 
 
     def do_pdf_checkcif(self) -> None:
@@ -1687,7 +1672,6 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.delete_content()
         # reset VRF tracking lists; fill_cif_table repopulates them via inline widgets
         self.validation_response_forms_list = []
-        self.pending_vrf_deletions = []
 
     def _load_block(self, index: int, load_changes: bool = True) -> None:
         if not self.cif:
