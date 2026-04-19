@@ -6,7 +6,7 @@ Running from Source Code
 
 
 In case you want to play with the source code and make your own modifications to FinalCif,
-get the `code from Github <https://github.com/dkratzert/FinalCif>`_.
+get the `code from GitHub <https://github.com/dkratzert/FinalCif>`_.
 
 In order to run FinalCif from the source code directly, you need Python >= 3.12:
 https://www.python.org/
