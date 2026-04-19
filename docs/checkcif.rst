@@ -5,13 +5,23 @@ FinalCif can help you doing CheckCIF. Three options are available:
 
 * Online with html report
 * Online with pdf report
-* Offline with your local PLATON installation 
+* Offline with your local PLATON installation
 
-The two online option send the CIF to the IUCr server https://checkcif.iucr.org/ and do a CheckCIF run there.
-The offline option will never send the CIF anywhere. It runs on your own computer, but PLATON has to be installed
-and reachable by the systems PATH variable.
-any CheckCIF can be performes with or without structure factors (hkl data). Without structure factors has the
-advantage of beeing fast, but the resulting ckecks are far less deeply. 
+The two online options send the CIF to the IUCr server https://checkcif.iucr.org/ and do a CheckCIF run there.
+The offline option will never send the CIF anywhere. It runs on your own computer using PLATON.
+Since version 154, a special version of PLATON (https://www.platonsoft.nl/platon/) is distributed together
+with FinalCif, so no separate installation is needed for offline CheckCIF on Windows.
+On other platforms, PLATON has to be installed and reachable by the system's PATH variable.
+
+Any CheckCIF can be performed with or without structure factors (hkl data). Without structure factors
+has the advantage of being fast, but the resulting checks are far less thorough.
+
+**CSD Duplicate Check**
+
+When performing an online CheckCIF (since version 155), you can enable the option to check for duplicate
+structures in the Cambridge Structural Database (CSD). This option is available as a checkbox in the
+CheckCIF section. It adds an additional check during the CheckCIF run to see whether a similar structure
+has already been deposited.
 
 .. figure:: pics/finalcif_checkcif.png
    :width: 700
@@ -68,6 +78,6 @@ Structure of a validation response form
 4. There is only one VRF possible per error code. Replies to multiple alerts with the same code,
    even if on different A, B or C level and for different atoms, have to be grouped in one VRF
    reply.
-5. <data block> is the datacode after the data block indiator "data_<data block>". FinalCif
+5. <data block> is the datacode after the data block indicator "data_<data block>". FinalCif
    automatically renames the <data block> item of the vrf if you rename the <data block> of the
    CIF file.

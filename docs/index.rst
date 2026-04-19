@@ -28,9 +28,6 @@ file within APEX, or import the [sample name].xml file from the frames folder. T
 information of a sample.
 
 
-
-
-
 `Back to the FinalCif home page <https://dkratzert.de/finalcif.html>`_
 
 
@@ -39,6 +36,7 @@ information of a sample.
    description
    install
    templates
+   options
    loops
    checkcif
    report

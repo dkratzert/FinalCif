@@ -29,7 +29,7 @@ The FinalCif executable also accepts file names as arguments to open .cif files 
 * Open a cif file in a work folder.
 * Check and edit the remaining items.
 * Do a html checkcif (it also saves an image for the report). Probably correct last items
-  like the moiety formula and  explain alerts with the validation response form editor in the
+  like the moiety formula and explain alerts with the validation response form editor in the
   same window.
 * Do a pdf checkcif
 * Submit the CIF to the CCDC
@@ -40,7 +40,8 @@ The FinalCif executable also accepts file names as arguments to open .cif files 
 **Files used by FinalCif**
 
 For CIF files from Bruker data, FinalCif needs the following files in the same folder as the CIF file:
-* SADBABS .abs
+
+* SADABS .abs
 * SAINT _0m._ls, _01._ls
 * Bruker _0m.p4p
 * One frame like _ib_01_0001.sfrm
@@ -49,12 +50,20 @@ For CIF files from Bruker data, FinalCif needs the following files in the same f
 
 **Non-Bruker Data**
 
-For Rigaku and STOE datasets, it is not necessary for FinalCif to collect information from various files. 
+For Rigaku and STOE datasets, it is not necessary for FinalCif to collect information from various files.
 Instead, it is sufficient to import a certain CIF created during the experiment. Rigaku produces a '.cif_od' file
-and STOE a '.cfx' file for example. Also the Bruker '.pcf' file is importable. You can import any additional CIF 
+and STOE a '.cfx' file for example. Also the Bruker '.pcf' file is importable. You can import any additional CIF
 formatted file with the 'Import' button on the left center.
 This will open an import dialog where all key/values and loops from the file except for unit cell and space group information
-is pre-seleted. The seleted items are then imported with the "Import Selected" button.
+is pre-selected. The selected items are then imported with the "Import Selected" button.
+
+
+**Keyboard shortcuts**
+
+* **Ctrl+S** – Save the CIF file
+* **Ctrl+H** – Run HTML CheckCIF
+* **Ctrl+P** – Run PDF CheckCIF
+* **Ctrl+Del** – Delete the selected row
 
 
 **CIF format specification**
@@ -84,3 +93,20 @@ on the data block selector. A menu then opens for the function to delete the blo
 
 A click on one of the CIF keywords in the vertical header of the main table pops up a window
 with explanations about the specific keyword.
+
+
+CIF Text Viewer
+---------------
+
+FinalCif includes a built-in CIF text viewer with syntax highlighting. CIF keywords, values,
+multiline text blocks, loop definitions and validation response forms are color-coded for
+easier reading.
+
+
+Validation Response Forms in the Main Table
+--------------------------------------------
+
+Validation response forms (_vrf_ entries) are displayed inline in the main CIF table. Each
+response form shows its alert level (A/B/C/G), the problem text and the response.
+A color-coded badge indicates whether the VRF was loaded from a saved CIF file or generated
+from a CheckCIF run. VRFs also appear at the top of the main table for easy access.
