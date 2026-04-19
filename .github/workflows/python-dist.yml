@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: publish
-      url: https://pypi.org/p/fastmolwidget
+      url: https://pypi.org/p/finalcif
     permissions:
       contents: read
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
