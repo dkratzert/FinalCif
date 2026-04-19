@@ -39,6 +39,7 @@ information of a sample.
    description
    install
    templates
+   options
    loops
    checkcif
    report

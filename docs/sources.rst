@@ -5,79 +5,85 @@ Running from Source Code
 ========================
 
 
-In case you want to play with the source code and make your own modifications to FinalCif, 
+In case you want to play with the source code and make your own modifications to FinalCif,
 get the `code from Github <https://github.com/dkratzert/FinalCif>`_.
 
-In order to run FinalCif from the source code directly, you need to install Python3 >= 3.7 but >= 3.9 is advisable:
+In order to run FinalCif from the source code directly, you need Python >= 3.12:
 https://www.python.org/
 
-Until now, I was just too lazy to build proper Linux packages and therefore only single-file executables
-made with `pyinstaller <https://www.pyinstaller.org/>` exist. They are large and run sub-optimal in different
-Linux distributions.
+The recommended way to manage dependencies is `uv <https://docs.astral.sh/uv/>`_.
 
-But for Ubuntu, there is an installer script that does all steps necessary for an installation from source automatically.
-Apart from the Python installation, the script should work in any Linux or MacOS distribution:
 
-First go into the directory where you like to have FinalCif, e.g.:
+Quick start with uv
+--------------------
 
-.. code-block:: bat
+Clone the repository and install all dependencies:
 
-    cd /home/username/Downloads
+.. code-block:: bash
 
-Load the script:
+    git clone https://github.com/dkratzert/FinalCif.git
+    cd FinalCif
+    uv sync --all-extras --dev
 
-.. code-block:: bat
+Compile the UI files (needed after changes to .ui files):
 
-    wget https://raw.githubusercontent.com/dkratzert/FinalCif/master/scripts/finalcif-start.sh
+.. code-block:: bash
 
-Make it executable:
-
-.. code-block:: bat
-
-    chmod u+x ./finalcif-start.sh
-
-Install Python3.9:
-
-.. code-block:: bat
-
-    ./finalcif-start.sh -pyinst
-
-Install FinalCif:
-
-.. code-block:: bat
-
-    ./finalcif-start.sh -install
+    uv run python scripts/compile_ui_files.py
 
 Run FinalCif:
 
-.. code-block:: bat
+.. code-block:: bash
 
-    ./finalcif-start.sh
+    uv run finalcif
 
-Next time, just run ./finalcif-start.sh.
+Run the tests:
+
+.. code-block:: bash
+
+    QT_QPA_PLATFORM=offscreen uv run pytest tests/
+
+On Linux, you may need to install system packages for the Qt platform plugin:
+
+.. code-block:: bash
+
+    sudo apt install libegl1 libgl1 libxkbcommon0
 
 
-Manual install from source
---------------------------
+Manual install with pip
+-----------------------
 
 Clone the repository from GitHub:
 
-.. code-block:: bat
+.. code-block:: bash
 
    git clone https://github.com/dkratzert/FinalCif.git
    cd FinalCif
 
-Install a virtual environment and activate it:
+Create and activate a virtual environment:
 
-.. code-block:: bat
+.. code-block:: bash
 
-    install_requirements.bat
+    python -m venv venv
+    source venv/bin/activate   # Windows: venv\Scripts\activate.bat
+
+Install the package in development mode:
+
+.. code-block:: bash
+
+    pip install -e ".[dev]"
+
+Compile the UI files:
+
+.. code-block:: bash
+
+    python scripts/compile_ui_files.py
 
 Run FinalCif:
 
-.. code-block:: bat
+.. code-block:: bash
 
-    run_finalcif.bat
+    finalcif
 
 I am always open for suggestions by users. Please tell me if something does not work as expected!
 

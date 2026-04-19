@@ -65,5 +65,8 @@ Sidenotes
 
 * As any other CIF, in order to import a template, it needs a \data_ keyword at the start.
 
-* Templates may be multi-CIFs with multiple data\_ kewords for e.g. multiple machine definitions in one file.
+* Templates may be multi-CIFs with multiple data\_ keywords for e.g. multiple machine definitions in one file.
+
+* The "Export All Templates" / "Import All Templates" buttons on the Options page save and restore all
+  templates at once as a JSON file. Legacy pickle-format files (.dat) can still be imported.
 

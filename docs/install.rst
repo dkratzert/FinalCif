@@ -18,6 +18,8 @@ Any System
 Alternatively, there is a pypi package for FinalCif:
 
 Since version 118, there is a `pypi <https://pypi.org/project/finalcif>`_ package for installation in a Python environment.
+Python >= 3.12 is required.
+
 Do the following steps in order to install and run FinalCif in any Python environment:
 
 .. code-block::
@@ -35,4 +37,11 @@ Next time, only
     >> finalcif
 
 is necessary.
+
+Alternatively, if you use `uv <https://docs.astral.sh/uv/>`_:
+
+.. code-block::
+
+    >> uv tool install finalcif
+    >> finalcif
 
