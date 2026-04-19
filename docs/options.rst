@@ -26,6 +26,8 @@ The general options control the behavior of the report generation:
   starting from scratch.
 * **Check for CSD duplicates** – If checked, CheckCIF online will also search the Cambridge Structural
   Database for duplicate structures.
+* **Global font size** – Adjusts the font size used throughout the application. This setting
+  is available in the main window via a spin box. Set it to 0 to use the system default.
 
 
 CIF Output Order

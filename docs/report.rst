@@ -75,7 +75,7 @@ With self-defined templates this is possible in FinalCif. You can find example t
 at https://github.com/dkratzert/FinalCif. It is easier to change them than to create them from scratch.
 
 The templates are an ordinary MS Word document (more specific: Office Open XML, https://de.wikipedia.org/wiki/Office_Open_XML)
-So you can use them with MS Word, Openoffice or Libre Office and other Office Open capable programs.
+So you can use them with MS Word, OpenOffice or LibreOffice and other Office Open capable programs.
 
 FinalCif uses the Jinja2 template language to exchange specific instructions in the templates with
 precalculated information and direct values from the CIF file.
@@ -218,7 +218,7 @@ Data Available for the Report
 .. code-block:: text
 
    'cif.res_file_data'          : The SHELX .res file text.
-   'cif.is_centrosymm'          : It true if the space group of the structure is centrosymmetric.
+   'cif.is_centrosymm'          : Is true if the space group of the structure is centrosymmetric.
    'cif.atoms'                  : The list of atoms with 'label', 'type', 'x', 'y', 'z', 'part',
                                                          'occ', 'u_eq'.
    'cif.hydrogen_atoms_present' : Is true if hydrogen atoms are present in the structure.
@@ -289,6 +289,6 @@ For example, the chemical formula of the block 'compound1' of a multi-CIF is:
     {{ block['compound1']._chemical_formula_sum }}
 
 
-Further information how to make templates for MS Office or Openoffice:
+Further information how to make templates for MS Office or OpenOffice:
 `https://docxtpl.readthedocs.io/en/latest/ <https://docxtpl.readthedocs.io/en/latest/>`_
 `https://jinja.palletsprojects.com/en/3.1.x/ <https://jinja.palletsprojects.com/en/3.1.x/>`_

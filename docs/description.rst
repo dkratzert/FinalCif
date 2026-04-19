@@ -29,7 +29,7 @@ The FinalCif executable also accepts file names as arguments to open .cif files 
 * Open a cif file in a work folder.
 * Check and edit the remaining items.
 * Do a html checkcif (it also saves an image for the report). Probably correct last items
-  like the moiety formula and  explain alerts with the validation response form editor in the
+  like the moiety formula and explain alerts with the validation response form editor in the
   same window.
 * Do a pdf checkcif
 * Submit the CIF to the CCDC
@@ -40,6 +40,7 @@ The FinalCif executable also accepts file names as arguments to open .cif files 
 **Files used by FinalCif**
 
 For CIF files from Bruker data, FinalCif needs the following files in the same folder as the CIF file:
+
 * SADABS .abs
 * SAINT _0m._ls, _01._ls
 * Bruker _0m.p4p
@@ -49,12 +50,20 @@ For CIF files from Bruker data, FinalCif needs the following files in the same f
 
 **Non-Bruker Data**
 
-For Rigaku and STOE datasets, it is not necessary for FinalCif to collect information from various files. 
+For Rigaku and STOE datasets, it is not necessary for FinalCif to collect information from various files.
 Instead, it is sufficient to import a certain CIF created during the experiment. Rigaku produces a '.cif_od' file
-and STOE a '.cfx' file for example. Also the Bruker '.pcf' file is importable. You can import any additional CIF 
+and STOE a '.cfx' file for example. Also the Bruker '.pcf' file is importable. You can import any additional CIF
 formatted file with the 'Import' button on the left center.
 This will open an import dialog where all key/values and loops from the file except for unit cell and space group information
 is pre-selected. The selected items are then imported with the "Import Selected" button.
+
+
+**Keyboard shortcuts**
+
+* **Ctrl+S** – Save the CIF file
+* **Ctrl+H** – Run HTML CheckCIF
+* **Ctrl+P** – Run PDF CheckCIF
+* **Ctrl+Del** – Delete the selected row
 
 
 **CIF format specification**

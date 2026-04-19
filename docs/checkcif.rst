@@ -78,6 +78,6 @@ Structure of a validation response form
 4. There is only one VRF possible per error code. Replies to multiple alerts with the same code,
    even if on different A, B or C level and for different atoms, have to be grouped in one VRF
    reply.
-5. <data block> is the datacode after the data block indiator "data_<data block>". FinalCif
+5. <data block> is the datacode after the data block indicator "data_<data block>". FinalCif
    automatically renames the <data block> item of the vrf if you rename the <data block> of the
    CIF file.
