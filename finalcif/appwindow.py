@@ -1560,7 +1560,7 @@ class AppWindow(QMainWindow):
         """
         Import an additional cif file to the main table.
         """
-        imp_cif: CifContainer | None = None
+        imp_cif: CifContainer
         if not filename:
             filename = cif_file_open_dialog(parent=self, filter="CIF file (*.cif *.pcf *.cif_od *.cfx *.sqf)")
         if not filename:

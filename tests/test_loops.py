@@ -323,6 +323,25 @@ class TestMyQTableView(unittest.TestCase):
         self.assertEqual(0, self.view.currentIndex().row())
         self.assertEqual(['1', '2', '3'], self.view.model().loop_data[0])
 
+    def test_move_unsaved_new_row_up_does_not_crash(self):
+        """Adding a row and immediately moving it must not raise IndexError.
+        The new row exists in the Python model but not yet in the CIF table.
+        The model reorders correctly; only the CIF table call is silently skipped."""
+        self.view._add_row(None)
+        self.assertEqual(4, self.view.model().rowCount())
+        idx = self.view.model().index(3, 0)
+        self.view.setCurrentIndex(idx)
+        self.view._row_up(None)  # must not raise
+        # Model moved the row up; selection follows
+        self.assertEqual(2, self.view.currentIndex().row())
+
+    def test_move_unsaved_new_row_down_does_not_crash(self):
+        """Moving a newly added (unsaved) row down must not raise IndexError."""
+        self.view._add_row(None)
+        idx = self.view.model().index(2, 0)
+        self.view.setCurrentIndex(idx)
+        self.view._row_down(None)  # must not raise
+
 
 # ---------------------------------------------------------------------------
 # LoopsPage integration tests
@@ -446,6 +465,15 @@ class TestLoops(unittest.TestCase):
         self.loops_page.go_to_new_loop_page()
         self.assertEqual(count_before + 1, self.loops_page.tab_widget.count())
         self.assertEqual('Create Loops', self.loops_page.tab_widget.tabText(self.loops_page.tab_widget.count() - 1))
+
+    def test_move_unsaved_row_up_in_real_loop_does_not_crash(self):
+        """Regression: adding a row to a loop and immediately moving it up
+        must not raise IndexError because the CIF table is not yet in sync."""
+        view = self.loops_page.tab_widget.widget(self.get_index_of('Scattering'))
+        view._add_row(None)
+        last_row = view.model().rowCount() - 1
+        view.setCurrentIndex(view.model().index(last_row, 0))
+        view._row_up(None)  # must not raise
 
 
 class TestLoopsResFile(unittest.TestCase):

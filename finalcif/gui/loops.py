@@ -80,10 +80,11 @@ class Loop(QtCore.QObject):
         with suppress(IndexError):
             table.remove_row(row)
 
-    def move_row(self, header: list[str], pos1: int, pos2: int) -> None:
+    def move_row(self, header: list[str], pos1: int, pos2: int):
         """Moves table row from pos1 to pos2"""
         table: cif.Table = self.block.find(header)
-        table.move_row(pos1, pos2)
+        with suppress(IndexError):
+            table.move_row(pos1, pos2)
 
     def save_new_row_to_cif_block(self, header: list[str], data: list) -> None:
         """Save values of new table rows into cif loops."""
