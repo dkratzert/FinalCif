@@ -18,7 +18,7 @@ from docx.table import Table
 
 from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.report.templated_report import TemplatedReport, ReportFormat, Hydrogens
+from finalcif.report.templated_report import TemplatedReport, ReportFormat, Hydrogens, get_card, BondsAndAngles
 
 data = Path('tests')
 test_data = Path('test-data')
@@ -278,3 +278,76 @@ class TestHydrogenText(AppWindowTestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestGetCard(unittest.TestCase):
+    """Unit tests for the get_card() helper — no AppWindow needed."""
+
+    def setUp(self):
+        self.cif = CifContainer(Path('tests/examples/1979688_small.cif').resolve())
+
+    # --- normal behaviour ---
+
+    def test_returns_list_for_valid_symm_code(self):
+        card = get_card(self.cif, '1_555')
+        self.assertIsInstance(card, list)
+        self.assertGreater(len(card), 0)
+
+    def test_returns_none_for_index_out_of_range(self):
+        self.assertIsNone(get_card(self.cif, '9999_555'))
+
+    # --- regression: garbled symmetry code must not raise ValueError ---
+
+    def test_returns_none_for_non_integer_symm_code(self):
+        """Regression: a typo like 'dfgfdg' in _geom_bond_site_symmetry_2 must
+        return None instead of crashing with ValueError."""
+        self.assertIsNone(get_card(self.cif, 'dfgfdg'))
+
+    def test_returns_none_for_empty_string(self):
+        self.assertIsNone(get_card(self.cif, ''))
+
+    def test_returns_none_for_float_string(self):
+        self.assertIsNone(get_card(self.cif, '1.5_555'))
+
+
+class TestBondsAndAnglesWithBadSymmetry(unittest.TestCase):
+    """Regression: BondsAndAngles must not crash when a bond row contains a
+    non-integer symmetry code (e.g. a user typo like 'dfgfdg')."""
+
+    _CIF_TEXT = """\
+data_test
+_cell_length_a                         5.0
+_cell_length_b                         5.0
+_cell_length_c                         5.0
+_cell_angle_alpha                      90.0
+_cell_angle_beta                       90.0
+_cell_angle_gamma                      90.0
+_cell_volume                           125.0
+_space_group_symop_operation_xyz       'x,y,z'
+loop_
+_geom_bond_atom_site_label_1
+_geom_bond_atom_site_label_2
+_geom_bond_distance
+_geom_bond_site_symmetry_2
+_geom_bond_publ_flag
+O1   C1   1.414  .       ?
+C1   H1   1.000  dfgfdg  ?
+"""
+
+    def setUp(self):
+        import tempfile
+        self._tmp = tempfile.NamedTemporaryFile(suffix='.cif', delete=False, mode='w')
+        self._tmp.write(self._CIF_TEXT)
+        self._tmp.close()
+        self.cif = CifContainer(Path(self._tmp.name))
+
+    def tearDown(self):
+        Path(self._tmp.name).unlink(missing_ok=True)
+        self.cif.finalcif_file.unlink(missing_ok=True)
+
+    def test_bonds_and_angles_does_not_raise_on_bad_symmetry(self):
+        """Regression: a garbled symmetry code must not raise ValueError."""
+        ba = BondsAndAngles(self.cif, without_h=False)
+        self.assertIsNotNone(ba)
+
+
