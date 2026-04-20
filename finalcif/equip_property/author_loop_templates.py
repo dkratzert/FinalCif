@@ -72,8 +72,8 @@ class AuthorLoops:
         self.ui.AddThisAuthorToLoopPushButton_cif.clicked.connect(self.save_author_to_loop)
         self.ui.ContactAuthorCheckBox.stateChanged.connect(self.contact_author_checked)
         self.ui.ContactAuthorCheckBox_cif.stateChanged.connect(self.contact_author_checked)
-        self.ui.LoopsTabWidget.currentChanged.connect(
-            lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.LoopsTabWidget.count()))
+        self.ui.loops_page.tab_widget.currentChanged.connect(
+            lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.loops_page.tab_widget.count()))
         self.ui.authorEditTabWidget.currentChanged.connect(self.set_author_state)
         # self.ui.authorEditTabWidget.currentChanged.connect(self.contact_author_checked)
         self.ui.SaveAuthorLoopToTemplateButton.clicked.connect(self.save_author_to_loop_template)
@@ -158,7 +158,7 @@ class AuthorLoops:
             row = row[:gemmi_loop.width()]
         if row not in table:
             table.append_row(row)
-        self.app.make_loops_tables()
+        self.app.ui.loops_page.make_loops_tables()
         self.show_authors_list()
 
     def get_author_info(self) -> Author:
@@ -390,7 +390,7 @@ class AuthorLoops:
     def load_selected_loop(self) -> None:
         self.clear_fields()
         self.set_author_info(self.author_loopdata(author_name=self.get_selected_loop_name()))
-        self.ui.LoopsTabWidget.setCurrentIndex(0)
+        self.ui.loops_page.tab_widget.setCurrentIndex(0)
 
     def author_loopdata(self, author_name: str) -> dict[str, str] | Author:
         return self.settings.load_settings_dict('authors_list', author_name)

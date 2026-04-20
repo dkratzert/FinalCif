@@ -16,9 +16,10 @@ from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
-from typing import cast, Any
+from typing import cast
 
 from fastmolwidget.sdm import SDM
+
 from finalcif.gui.vzs_viewer import VZSImageViewer
 
 warnings.filterwarnings("ignore", category=RuntimeWarning, module="shibokensupport.signature.parser")
@@ -57,7 +58,6 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
 from finalcif.gui.loop_creator import LoopCreator
-from finalcif.gui.loops import Loop, LoopTableModel, MyQTableView
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.cif.vrf_entry import VRFEntry
@@ -66,7 +66,7 @@ from finalcif.report.templated_report import ReportFormat
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
-from finalcif.tools.misc import (next_path, celltxt, to_float, cif_to_header_label, grouper, is_database_number,
+from finalcif.tools.misc import (next_path, celltxt, to_float, is_database_number,
                                  open_file, strip_finalcif_of_name, file_age_in_days)
 from finalcif.tools.options import Options
 from finalcif.tools.platon import PlatonRunner
@@ -102,7 +102,6 @@ class AppWindow(QMainWindow):
         self.sources: dict[str, tuple[str, str | None]] | None = None
         self.cif: CifContainer | None = None
         self.report_picture_path: Path | None = None
-        self.loopcreate: LoopCreator | None = None
         self.checkdef: list[str] = []
         self.changes_answer: int = 0
         self.validation_response_forms_list = []
@@ -114,6 +113,8 @@ class AppWindow(QMainWindow):
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
         self.ui.page_MainTable.setParent(self.ui.MainStackedWidget)
+        # Inject the Author Editor tab (defined in the .ui file) into LoopsPage
+        self.ui.loops_page.set_author_editor_tab(self.ui.author_editor_widget)
         self.fixfont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
         self.ui.shelx_TextEdit.setFont(self.fixfont)
         self.ui.shelx_warn_TextEdit.setFont(self.fixfont)
@@ -382,11 +383,11 @@ class AppWindow(QMainWindow):
         self.ui.ExploreDirButton.clicked.connect(self.explore_current_dir)
         self.ui.LoopsPushButton.clicked.connect(self._on_go_to_loops_page)
         self.ui.LoopsPushButton.clicked.connect(
-            lambda x: self.ui.LoopsTabWidget.setCurrentIndex(1) if self.ui.LoopsTabWidget.count() > 0 else None)
+            lambda x: self.ui.loops_page.tab_widget.setCurrentIndex(1) if self.ui.loops_page.tab_widget.count() > 0 else None)
         self.ui.LoopsPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
         self.ui.AuthorEditPushButton.clicked.connect(self._on_go_to_loops_page)
         self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.TemplatesStackedWidget.setCurrentIndex(1))
-        self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.LoopsTabWidget.setCurrentIndex(0))
+        self.ui.AuthorEditPushButton.clicked.connect(lambda x: self.ui.loops_page.tab_widget.setCurrentIndex(0))
         # checkcif
         self.ui.CheckcifStartButton.clicked.connect(self.open_checkcif_page)
         self.ui.CheckcifButton.clicked.connect(self.do_offline_checkcif)
@@ -403,8 +404,10 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
         self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
-        self.ui.newLoopPushButton.clicked.connect(self._go_to_new_loop_page)
-        self.ui.deleteLoopButton.clicked.connect(self._on_delete_current_loop)
+        self.ui.newLoopPushButton.clicked.connect(self.ui.loops_page.go_to_new_loop_page)
+        self.ui.loops_page.new_loop_requested.connect(self._on_new_loop_requested)
+        self.ui.deleteLoopButton.clicked.connect(self.ui.loops_page.on_delete_current_loop)
+        self.ui.revertLoopsPushButton.clicked.connect(self.ui.loops_page.revert_all_loops)
         save_shortcut = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         save_shortcut.activated.connect(self.save_current_cif_file)
         save_shortcut = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+H'), self)
@@ -470,8 +473,14 @@ class AppWindow(QMainWindow):
         return self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif_changes.cif', force_strip=True)
 
     def _on_go_to_loops_page(self) -> None:
-        self.make_loops_tables()
+        self.ui.loops_page.load(self.cif)
         self.ui.MainStackedWidget.go_to_loops_page()
+
+    def _on_new_loop_requested(self) -> None:
+        """Hide loop-management buttons when the LoopCreator tab is active."""
+        self.ui.revertLoopsPushButton.hide()
+        self.ui.newLoopPushButton.hide()
+        self.ui.deleteLoopButton.hide()
 
     def export_all_templates(self, filename: Path | None = None) -> None:
         from finalcif.tools.settings import _custom_encoder
@@ -2218,78 +2227,6 @@ class AppWindow(QMainWindow):
         strval = txt.format(VERSION, datetime.now().year)
         self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=strval)
         self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=strval)
-
-    def make_loops_tables(self) -> None:
-        for _ in range(self.ui.LoopsTabWidget.count()):
-            # I use this, so that always the first tab stays.
-            self.ui.LoopsTabWidget.removeTab(1)
-        if self.cif and self.cif.loops:
-            self.add_loops_tables()
-
-    def add_loops_tables(self) -> None:
-        """
-        Generates a list of tables containing the cif loops.
-        """
-        # do_not_display = ('_diffrn_refln_index_h')
-        for num, loop in enumerate(self.cif.loops):
-            tags = loop.tags
-            if not tags or len(tags) < 1:
-                continue
-            # if tags[0] in do_not_display:
-            #    continue
-            self.new_loop_tab(loop, num, tags)
-        if self.cif.res_file_data:
-            self.add_res_file_to_loops()
-
-    def new_loop_tab(self, loop: gemmi.cif.Loop, num: int, tags: list[str]):
-        loop = Loop(tags, values=grouper(loop.values, loop.width()),
-                    parent=self.ui.LoopsTabWidget, block=self.cif.block)
-        self.add_loop_widget(loop, first_tag=tags[0])
-        self.ui.LoopsTabWidget.setTabToolTip(num + 1, tags[0])
-        self.ui.revertLoopsPushButton.clicked.connect(loop.model.revert)
-
-    def add_loop_widget(self, loop: Loop, first_tag: str) -> None:
-        self.ui.LoopsTabWidget.addTab(loop.tableview, cif_to_header_label.get(first_tag) or first_tag)
-
-    def add_res_file_to_loops(self) -> None:
-        textedit = QPlainTextEdit()
-        self.ui.LoopsTabWidget.addTab(textedit, 'SHELX res file')
-        textedit.setPlainText(self.cif.res_file_data[1:-1])
-        doc = textedit.document()
-        doc.setDefaultFont(self.fixfont)
-        textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
-        textedit.setReadOnly(True)
-
-    def _go_to_new_loop_page(self) -> None:
-        self.loopcreate = LoopCreator(parent=self, cif=self.cif)
-        self.ui.LoopsTabWidget.addTab(self.loopcreate, 'Create Loops')
-        self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
-        self.ui.revertLoopsPushButton.hide()
-        self.ui.newLoopPushButton.hide()
-        self.ui.deleteLoopButton.hide()
-        self.loopcreate.saveLoopPushButton.clicked.connect(self.save_new_loop_to_cif)
-
-    def _on_delete_current_loop(self) -> None:
-        current_tab_index = self.ui.LoopsTabWidget.currentIndex()
-        current_table_view: MyQTableView = self.ui.LoopsTabWidget.widget(current_tab_index)
-        try:
-            header_model: LoopTableModel | QtCore.QAbstractItemModel = current_table_view.horizontalHeader().model()
-        except AttributeError:
-            # Not a QTableView
-            return
-        header_item = header_model._header[0]
-        loop: gemmi.cif.Loop = self.cif.block.find_loop(header_item).get_loop()
-        table: gemmi.cif.Table = self.cif.block.find(loop.tags)
-        table.erase()
-        self.ui.LoopsTabWidget.removeTab(current_tab_index)
-
-    def save_new_loop_to_cif(self):
-        if self.loopcreate:
-            loop = self.loopcreate.save_new_loop_to_cif()
-            self.new_loop_tab(loop=loop, num=self.ui.LoopsTabWidget.count(), tags=self.loopcreate.tags)
-            self.ui.LoopsTabWidget.removeTab(self.ui.LoopsTabWidget.count() - 2)
-            self.loopcreate.deleteLater()
-            self.ui.LoopsTabWidget.setCurrentIndex(self.ui.LoopsTabWidget.count() - 1)
 
     def add_row(self, key: str, value: str, at_start=False, position: int | None = None) -> None:
         """

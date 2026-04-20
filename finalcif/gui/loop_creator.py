@@ -1,3 +1,6 @@
+"""
+A widget to create new CIF loops by selecting a list og CIF keywords.
+"""
 import re
 
 from qtpy.QtWidgets import QWidget

@@ -2786,14 +2786,13 @@ The data source will be ignored until next program restart.</string>
              <number>12</number>
             </property>
             <item>
-             <widget class="QTabWidget" name="LoopsTabWidget">
-              <property name="currentIndex">
-               <number>0</number>
+             <widget class="LoopsPage" name="loops_page" native="true"/>
+            </item>
+            <item>
+             <widget class="QWidget" name="author_editor_widget">
+              <property name="visible">
+               <bool>false</bool>
               </property>
-              <widget class="QWidget" name="tab_2">
-               <attribute name="title">
-                <string>Author Editor</string>
-               </attribute>
                <layout class="QGridLayout" name="gridLayout_2">
                 <item row="0" column="1">
                  <spacer name="verticalSpacer_16">
@@ -3204,7 +3203,6 @@ Contact authors should always also appear as regular authors.</string>
                  </spacer>
                 </item>
                </layout>
-              </widget>
              </widget>
             </item>
             <item>
@@ -4359,8 +4357,14 @@ please add a publication author:</string>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
- <customwidgets>
-  <customwidget>
+  <customwidgets>
+   <customwidget>
+    <class>LoopsPage</class>
+    <extends>QWidget</extends>
+    <header>finalcif.gui.loops.h</header>
+    <container>1</container>
+   </customwidget>
+   <customwidget>
    <class>CifTableView</class>
    <extends>QTableView</extends>
    <header>finalcif.gui.cif_table_view.h</header>
@@ -4462,7 +4466,7 @@ please add a publication author:</string>
   <tabstop>BackFromOptionspPushButton</tabstop>
   <tabstop>CheckCIFServerURLTextedit</tabstop>
   <tabstop>PictureWidthDoubleSpinBox</tabstop>
-  <tabstop>LoopsTabWidget</tabstop>
+  <tabstop>loops_page</tabstop>
   <tabstop>revertLoopsPushButton</tabstop>
   <tabstop>BackFromLoopsPushButton</tabstop>
   <tabstop>CheckCifLogPlainTextEdit</tabstop>

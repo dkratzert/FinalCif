@@ -31,6 +31,7 @@ from finalcif.gui.block_combobox import ComboBoxWithContextMenu
 from finalcif.gui.cif_table_view import CifTableView
 from finalcif.gui.equipmenttable import MyEQTableWidget
 from finalcif.gui.file_editor import QCodeEditor
+from finalcif.gui.loops import LoopsPage
 from finalcif.gui.mainstackwidget import MyMainStackedWidget
 from finalcif.gui.propertytable import MyPropTableWidget
 
@@ -1588,17 +1589,22 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_9 = QVBoxLayout(self.page_Loops)
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
         self.verticalLayout_9.setContentsMargins(-1, 12, -1, -1)
-        self.LoopsTabWidget = QTabWidget(self.page_Loops)
-        self.LoopsTabWidget.setObjectName(u"LoopsTabWidget")
-        self.tab_2 = QWidget()
-        self.tab_2.setObjectName(u"tab_2")
-        self.gridLayout_2 = QGridLayout(self.tab_2)
+        self.loops_page = LoopsPage(self.page_Loops)
+        self.loops_page.setObjectName(u"loops_page")
+
+        self.verticalLayout_9.addWidget(self.loops_page)
+
+        self.author_editor_widget = QWidget(self.page_Loops)
+        self.author_editor_widget.setObjectName(u"author_editor_widget")
+        self.author_editor_widget.setVisible(False)
+        self.gridLayout_2 = QGridLayout(self.author_editor_widget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalSpacer_16 = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_2.addItem(self.verticalSpacer_16, 0, 1, 1, 1)
 
-        self.authorEditTabWidget = QTabWidget(self.tab_2)
+        self.authorEditTabWidget = QTabWidget(self.author_editor_widget)
         self.authorEditTabWidget.setObjectName(u"authorEditTabWidget")
         sizePolicy26 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy26.setHorizontalStretch(45)
@@ -1869,7 +1875,7 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_2.addItem(self.verticalSpacer_10, 3, 1, 1, 1)
 
-        self.frame_2 = QFrame(self.tab_2)
+        self.frame_2 = QFrame(self.author_editor_widget)
         self.frame_2.setObjectName(u"frame_2")
         sizePolicy29 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy29.setHorizontalStretch(55)
@@ -1885,9 +1891,8 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_2.addItem(self.verticalSpacer_15, 1, 1, 1, 1)
 
-        self.LoopsTabWidget.addTab(self.tab_2, "")
 
-        self.verticalLayout_9.addWidget(self.LoopsTabWidget)
+        self.verticalLayout_9.addWidget(self.author_editor_widget)
 
         self.gridLayout_16 = QGridLayout()
         self.gridLayout_16.setObjectName(u"gridLayout_16")
@@ -2589,8 +2594,8 @@ class Ui_FinalCifWindow(object):
         QWidget.setTabOrder(self.BackSourcesPushButton, self.BackFromOptionspPushButton)
         QWidget.setTabOrder(self.BackFromOptionspPushButton, self.CheckCIFServerURLTextedit)
         QWidget.setTabOrder(self.CheckCIFServerURLTextedit, self.PictureWidthDoubleSpinBox)
-        QWidget.setTabOrder(self.PictureWidthDoubleSpinBox, self.LoopsTabWidget)
-        QWidget.setTabOrder(self.LoopsTabWidget, self.revertLoopsPushButton)
+        QWidget.setTabOrder(self.PictureWidthDoubleSpinBox, self.loops_page)
+        QWidget.setTabOrder(self.loops_page, self.revertLoopsPushButton)
         QWidget.setTabOrder(self.revertLoopsPushButton, self.BackFromLoopsPushButton)
         QWidget.setTabOrder(self.BackFromLoopsPushButton, self.CheckCifLogPlainTextEdit)
         QWidget.setTabOrder(self.CheckCifLogPlainTextEdit, self.CheckcifButton)
@@ -2674,7 +2679,6 @@ class Ui_FinalCifWindow(object):
         self.MainStackedWidget.setCurrentIndex(6)
         self.picturesTabWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.LoopsTabWidget.setCurrentIndex(0)
         self.authorEditTabWidget.setCurrentIndex(1)
         self.CheckCIFResultsTabWidget.setCurrentIndex(1)
         self.depositionOptionsStackedWidget.setCurrentIndex(3)
@@ -2865,7 +2869,6 @@ class Ui_FinalCifWindow(object):
         self.SaveAuthorLoopToTemplateButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
         self.AddThisAuthorToLoopPushButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Add Audit Author to CIF Loop", None))
         self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_audit), QCoreApplication.translate("FinalCifWindow", u"Audit (CIF) Authors", None))
-        self.LoopsTabWidget.setTabText(self.LoopsTabWidget.indexOf(self.tab_2), QCoreApplication.translate("FinalCifWindow", u"Author Editor", None))
         self.revertLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Revert Changes", None))
         self.BackFromLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.newLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Loop", None))
