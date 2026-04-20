@@ -1014,11 +1014,11 @@ class AppWindow(QMainWindow):
         if html_entries:
             n = len(html_entries)
             form_noun = 'form' if n == 1 else 'forms'
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText(
-                f'{n} VRF {form_noun} updated in the main table.')
+            self.ui.CheckCifLogPlainTextEdit.appendHtml(
+                f'<br><b>{n} validation response forms {form_noun} added to the main table.</b>')
         else:
-            self.ui.CheckCifLogPlainTextEdit.appendPlainText(
-                'No level A, B or C alerts require a response.')
+            self.ui.CheckCifLogPlainTextEdit.appendHtml(
+                '<br><b>No level A, B or C alerts require a response.</b>')
 
     def _vrf_insert_position(self) -> int:
         """Return the row index just after the last existing ``_vrf_*`` row in the main table.
@@ -1139,7 +1139,6 @@ class AppWindow(QMainWindow):
             current_response = vrf_widget.response_text_edit.toPlainText()
             self.textedit.ui.plainTextEdit.setPlainText(current_response)
         self.ui.MainStackedWidget.go_to_text_template_page()
-
 
     def do_pdf_checkcif(self) -> None:
         """
@@ -1541,7 +1540,9 @@ class AppWindow(QMainWindow):
         # increases the pont size every time a bit more :)
         # size = font.pointSize()
         # font.setPointSize(14)
-        doc.setDefaultFont(self.fixfont)
+        fixfont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
+        fixfont.setPointSize(fixfont.pointSize() + 2)
+        doc.setDefaultFont(fixfont)
         final_textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         final_textedit.setPlainText(self.cif.finalcif_file.read_text(encoding='utf-8', errors='ignore'))
         QtCore.QTimer().singleShot(0, lambda: final_textedit.highlighter.setDocument(doc))
@@ -2176,7 +2177,7 @@ class AppWindow(QMainWindow):
                     # Show a VRF response-form widget spanning all 3 columns inline.
                     entry = VRFEntry.from_cif_pair(row_data.key, row_data.raw_value)
                     vrf = MyVRFContainer(entry, alert_help.get_help(entry.alert_num),
-                                        parent=self, is_multi_cif=self.cif.is_multi_cif)
+                                         parent=self, is_multi_cif=self.cif.is_multi_cif)
                     vrf.deleted.connect(self._on_vrf_deleted)
                     vrf.template_requested.connect(self._on_vrf_template_requested)
                     self.validation_response_forms_list.append(vrf)
