@@ -202,55 +202,60 @@ class EquipmentRenameGUITestCase(AppWindowTestCase):
     def test_rename_equipment_via_context_menu_mouse_click(self):
         """Context-menu → Rename → QTest mouse click + keyboard input renames the template.
 
-        This test exercises the QTimer.singleShot fix end-to-end:
+        This test exercises the full rename flow end-to-end:
         - customContextMenuRequested is emitted (what a right-click produces)
-        - show_equipment_rename_menu schedules editItem() via QTimer.singleShot(0, ...)
-        - processEvents() fires the timer so the inline editor opens
-        - QTest.mouseClick on the editor is the 'actual mouse click'
+        - show_equipment_rename_menu opens a non-blocking popup menu
+        - The 'Rename' action is triggered programmatically
+        - processEvents() fires the deferred QTimer.singleShot(0, editItem) call
+        - QTest.mouseClick on the inline editor is the 'actual mouse click'
         - QTest.keyClicks + Key_Return complete the rename
         """
+        from qtpy.QtWidgets import QMenu as _QMenu
+
+        # The list widget must be visible so that visualRect() returns a valid
+        # (non-empty) rect; otherwise Qt's openEditor() bails out immediately.
+        self.app.show()
+        QApplication.instance().processEvents()
+
         listw = self.app.ui.EquipmentTemplatesListWidget
         items = listw.findItems('Crystallographer Details', Qt.MatchFlag.MatchExactly)
         self.assertTrue(items, 'Template not found in list')
         item = items[0]
         listw.setCurrentItem(item)
 
-        # Schedule: once menu.exec() opens its nested event loop, trigger "Rename"
-        # so the loop exits.  We use a list to communicate between the callbacks.
-        triggered = [False]
-
-        def click_rename_in_menu():
-            if triggered[0]:
-                return
-            popup = QApplication.activePopupWidget()
-            if popup is not None:
-                for action in popup.actions():
-                    if action.text() == 'Rename':
-                        triggered[0] = True
-                        action.trigger()
-                        return
-            # Menu not visible yet — retry on the next event-loop tick
-            QTimer.singleShot(20, click_rename_in_menu)
-
-        QTimer.singleShot(20, click_rename_in_menu)
-
-        # Emitting customContextMenuRequested is exactly what a right-click produces.
-        # The connected handler (show_equipment_rename_menu) calls menu.exec() which
-        # blocks in a nested event loop until click_rename_in_menu() triggers the action.
+        # Emit the signal that a right-click produces.  The handler opens a
+        # non-blocking popup menu (menu.popup()) and returns immediately.
         rect = listw.visualItemRect(item)
         listw.customContextMenuRequested.emit(rect.center())
 
-        # Run one event-loop pass so the deferred QTimer.singleShot(0, editItem) fires
-        # and creates the inline editor.
+        # Find the popup menu that was just opened.
+        popup = None
+        for w in QApplication.instance().topLevelWidgets():
+            if isinstance(w, _QMenu) and w.isVisible():
+                popup = w
+                break
+        self.assertIsNotNone(popup, 'Rename context menu did not open')
+
+        # Trigger the Rename action; this schedules editItem() via QTimer.singleShot(0).
+        for action in popup.actions():
+            if action.text() == 'Rename':
+                action.trigger()
+                break
+
+        # Process one event-loop cycle so the deferred editItem() runs and
+        # creates the inline QLineEdit editor *before* the popup is closed.
+        # Closing the popup first would send focus-change events that arrive in
+        # the same processEvents() batch as the timer, immediately stealing focus
+        # from the freshly opened editor and causing it to commit (and close)
+        # with the unchanged original text.
+        QApplication.instance().processEvents()
+        popup.close()
         QApplication.instance().processEvents()
 
-        self.assertTrue(triggered[0], 'Rename menu action was not triggered')
-
-        # The inline QLineEdit created by Qt for the item editor must now exist.
         editor = listw.viewport().findChild(QLineEdit)
         self.assertIsNotNone(editor, 'Inline editor did not open after deferred editItem()')
 
-        # Actual mouse click to focus the editor, then type the new name and confirm.
+        # Actual mouse click to focus the editor, then type + confirm.
         QTest.mouseClick(editor, Qt.MouseButton.LeftButton)
         QTest.keyClick(editor, Qt.Key.Key_A, Qt.KeyboardModifier.ControlModifier)
         QTest.keyClicks(editor, 'Crystallographer Details Renamed')

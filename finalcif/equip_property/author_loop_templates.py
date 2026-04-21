@@ -56,6 +56,7 @@ class AuthorLoops:
         self.cif = cif
         self.app = app
         self._rename_old_name: str = ''
+        self._rename_menu: QMenu | None = None
         self.cif_key = '_publ_author'
         self.keys_list = [f'{self.cif_key}_name', f'{self.cif_key}_address', f'{self.cif_key}_email',
                           f'{self.cif_key}_phone', f'{self.cif_key}_id_orcid', f'{self.cif_key}_id_iucr',
@@ -416,19 +417,28 @@ class AuthorLoops:
             return
         menu = QMenu(listw)
         rename_action = menu.addAction('Rename')
-        action = menu.exec(listw.viewport().mapToGlobal(pos))
-        if action == rename_action:
-            self._rename_old_name = item.text()
-            item.setFlags(
-                QtCore.Qt.ItemFlag.ItemIsEditable
-                | QtCore.Qt.ItemFlag.ItemIsEnabled
-                | QtCore.Qt.ItemFlag.ItemIsSelectable
-            )
-            # Defer editItem() to the next event-loop tick so that all
-            # menu-close events are processed before Qt starts the editor.
-            # Calling editItem() immediately after menu.exec() returns causes
-            # Qt to emit "edit: editing failed".
-            QtCore.QTimer.singleShot(0, lambda: listw.editItem(item))
+        # Keep a strong Python reference so PySide6 does not garbage-collect the
+        # menu wrapper (and thereby drop the triggered signal connection) before
+        # the user selects an action.
+        self._rename_menu = menu
+
+        def _on_triggered(action) -> None:
+            self._rename_menu = None  # release after signal fires
+            if action == rename_action:
+                # Set flags first so the spurious itemChanged signal (fired by
+                # setFlags) finds _rename_old_name still empty and returns early.
+                item.setFlags(
+                    QtCore.Qt.ItemFlag.ItemIsEditable
+                    | QtCore.Qt.ItemFlag.ItemIsEnabled
+                    | QtCore.Qt.ItemFlag.ItemIsSelectable
+                )
+                self._rename_old_name = item.text()
+                # Defer editItem() to the next event-loop tick so that all
+                # menu-close events are processed before Qt starts the editor.
+                QtCore.QTimer.singleShot(0, lambda: listw.editItem(item))
+
+        menu.triggered.connect(_on_triggered)
+        menu.popup(listw.viewport().mapToGlobal(pos))
 
     def on_author_item_renamed(self, item: QListWidgetItem) -> None:
         """Persist an author template rename when the user finishes editing."""
