@@ -7,7 +7,7 @@ from tempfile import NamedTemporaryFile
 
 from qtpy.QtCore import Qt, QTimer
 from qtpy.QtTest import QTest
-from qtpy.QtWidgets import QApplication, QLineEdit
+from qtpy.QtWidgets import QApplication, QLineEdit, QMenu
 
 from tests.helpers import AppWindowTestCase
 from finalcif.appwindow import AppWindow
@@ -210,8 +210,6 @@ class EquipmentRenameGUITestCase(AppWindowTestCase):
         - QTest.mouseClick on the inline editor is the 'actual mouse click'
         - QTest.keyClicks + Key_Return complete the rename
         """
-        from qtpy.QtWidgets import QMenu as _QMenu
-
         # The list widget must be visible so that visualRect() returns a valid
         # (non-empty) rect; otherwise Qt's openEditor() bails out immediately.
         self.app.show()
@@ -231,7 +229,7 @@ class EquipmentRenameGUITestCase(AppWindowTestCase):
         # Find the popup menu that was just opened.
         popup = None
         for w in QApplication.instance().topLevelWidgets():
-            if isinstance(w, _QMenu) and w.isVisible():
+            if isinstance(w, QMenu) and w.isVisible():
                 popup = w
                 break
         self.assertIsNotNone(popup, 'Rename context menu did not open')

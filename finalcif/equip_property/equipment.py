@@ -30,6 +30,7 @@ class Equipment:
         self._rename_old_name: str = ''
         self._rename_menu: QMenu | None = None
         if app:
+            self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
             self.app.ui.EquipmentEditTableWidget.verticalHeader().hide()
             self.signals_and_slots()
             self.load_default_equipment()
