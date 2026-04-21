@@ -600,25 +600,6 @@ class TestLoops(unittest.TestCase):
 
     # --- column button actions via LoopsPage ---
 
-    def test_on_move_column_left_updates_model_header(self):
-        tab_idx = self.get_index_of('Scattering')
-        self.loops_page.tab_widget.setCurrentIndex(tab_idx)
-        view = self.loops_page.tab_widget.widget(tab_idx)
-        original_header = list(view.model().header)
-        view.setCurrentIndex(view.model().index(0, 1))
-        self.loops_page.on_move_column_left()
-        self.assertNotEqual(original_header, view.model().header)
-        self.assertEqual(original_header[1], view.model().header[0])
-
-    def test_on_move_column_right_updates_model_header(self):
-        tab_idx = self.get_index_of('Scattering')
-        self.loops_page.tab_widget.setCurrentIndex(tab_idx)
-        view = self.loops_page.tab_widget.widget(tab_idx)
-        original_header = list(view.model().header)
-        view.setCurrentIndex(view.model().index(0, 0))
-        self.loops_page.on_move_column_right()
-        self.assertEqual(original_header[1], view.model().header[0])
-
     def test_on_delete_current_column_reduces_column_count(self):
         tab_idx = self.get_index_of('Scattering')
         self.loops_page.tab_widget.setCurrentIndex(tab_idx)
@@ -627,13 +608,6 @@ class TestLoops(unittest.TestCase):
         view.setCurrentIndex(view.model().index(0, 0))
         self.loops_page.on_delete_current_column()
         self.assertEqual(original_col_count - 1, view.model().columnCount())
-
-    def test_on_move_column_left_on_non_loop_tab_does_nothing(self):
-        """on_move_column_left must be a no-op when the current tab is not a loop table."""
-        from qtpy.QtWidgets import QWidget
-        self.loops_page.set_author_editor_tab(QWidget())
-        self.loops_page.tab_widget.setCurrentIndex(0)  # Author Editor tab
-        self.loops_page.on_move_column_left()  # must not raise
 
     def test_on_delete_current_column_on_non_loop_tab_does_nothing(self):
         """on_delete_current_column must be a no-op when not on a loop table tab."""

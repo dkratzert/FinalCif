@@ -529,18 +529,6 @@ class LoopsPage(QtWidgets.QWidget):
             return widget
         return None
 
-    def on_move_column_left(self) -> None:
-        """Move the selected column one position to the left in the active loop tab."""
-        view = self._get_current_loop_view()
-        if view:
-            view._column_left()
-
-    def on_move_column_right(self) -> None:
-        """Move the selected column one position to the right in the active loop tab."""
-        view = self._get_current_loop_view()
-        if view:
-            view._column_right()
-
     def on_delete_current_column(self) -> None:
         """Delete the selected column in the active loop tab."""
         view = self._get_current_loop_view()
