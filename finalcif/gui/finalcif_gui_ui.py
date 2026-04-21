@@ -1931,6 +1931,21 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_16.addWidget(self.deleteLoopButton, 3, 4, 1, 1)
 
+        self.moveColumnLeftButton = QPushButton(self.page_Loops)
+        self.moveColumnLeftButton.setObjectName(u"moveColumnLeftButton")
+
+        self.gridLayout_16.addWidget(self.moveColumnLeftButton, 1, 2, 1, 1)
+
+        self.moveColumnRightButton = QPushButton(self.page_Loops)
+        self.moveColumnRightButton.setObjectName(u"moveColumnRightButton")
+
+        self.gridLayout_16.addWidget(self.moveColumnRightButton, 1, 3, 1, 1)
+
+        self.deleteColumnButton = QPushButton(self.page_Loops)
+        self.deleteColumnButton.setObjectName(u"deleteColumnButton")
+
+        self.gridLayout_16.addWidget(self.deleteColumnButton, 1, 4, 1, 1)
+
 
         self.verticalLayout_9.addLayout(self.gridLayout_16)
 
@@ -2873,6 +2888,9 @@ class Ui_FinalCifWindow(object):
         self.BackFromLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.newLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Loop", None))
         self.deleteLoopButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Loop", None))
+        self.moveColumnLeftButton.setText(QCoreApplication.translate("FinalCifWindow", u"Move Column Left", None))
+        self.moveColumnRightButton.setText(QCoreApplication.translate("FinalCifWindow", u"Move Column Right", None))
+        self.deleteColumnButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Column", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.platon_page), QCoreApplication.translate("FinalCifWindow", u"PLATON CheckCIF result", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.html_page), QCoreApplication.translate("FinalCifWindow", u"html CheckCIF result", None))
         self.label_5.setText(QCoreApplication.translate("FinalCifWindow", u"The resulting PDF file will be displayed in an external program after CheckCIF has completed.", None))

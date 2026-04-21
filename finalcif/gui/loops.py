@@ -50,6 +50,8 @@ class Loop(QtCore.QObject):
         self.tableview.rowChanged.connect(self.save_new_row_to_cif_block)
         self.tableview.row_moved.connect(self.move_row)
         self.model.rowDeleted.connect(self.delete_row)
+        self.tableview.column_moved.connect(self.move_column_in_cif)
+        self.tableview.column_deleted.connect(self.delete_column_from_cif)
 
     @QtCore.Slot(int)
     def display_help(self, header_section: int) -> None:
@@ -94,6 +96,25 @@ class Loop(QtCore.QObject):
         for row in data:
             table.append_row([x if is_null(x) else quote(x) for x in row])
 
+    def move_column_in_cif(self, old_header: list[str], new_header: list[str], old_col: int, new_col: int) -> None:
+        """Rebuild the CIF loop with the new column order."""
+        with suppress(Exception):
+            table: cif.Table = self.block.find(old_header)
+            table.erase()
+            new_loop = self.block.init_loop('', new_header)
+            for row in self.model.loop_data:
+                new_loop.add_row([x if is_null(x) else quote(x) for x in row])
+
+    def delete_column_from_cif(self, old_header: list[str], new_header: list[str], col: int) -> None:
+        """Rebuild the CIF loop without the deleted column."""
+        with suppress(Exception):
+            table: cif.Table = self.block.find(old_header)
+            table.erase()
+            if new_header:
+                new_loop = self.block.init_loop('', new_header)
+                for row in self.model.loop_data:
+                    new_loop.add_row([x if is_null(x) else quote(x) for x in row])
+
     @property
     def values(self):
         return self._values
@@ -123,6 +144,8 @@ class Loop(QtCore.QObject):
 class MyQTableView(QTableView):
     rowChanged = Signal(list, list)
     row_moved = Signal(list, int, int)
+    column_moved = Signal(list, list, int, int)
+    column_deleted = Signal(list, list, int)
 
     def __init__(self, parent):
         super().__init__(parent=parent)
@@ -133,20 +156,33 @@ class MyQTableView(QTableView):
         del_action = QtGui.QAction('Delete Row', self)
         down_action = QtGui.QAction('Move row down', self)
         up_action = QtGui.QAction('Move row up', self)
+        col_left_action = QtGui.QAction('Move column left', self)
+        col_right_action = QtGui.QAction('Move column right', self)
+        del_col_action = QtGui.QAction('Delete column', self)
         add_action.triggered.connect(lambda: self._add_row(event))
         del_action.triggered.connect(lambda: self._delete_row(event))
         up_action.triggered.connect(lambda: self._row_up(event))
         down_action.triggered.connect(lambda: self._row_down(event))
+        col_left_action.triggered.connect(self._column_left)
+        col_right_action.triggered.connect(self._column_right)
+        del_col_action.triggered.connect(self._delete_column)
         with suppress(Exception):
             up_action.setIcon(qtawesome.icon('mdi.arrow-up'))
             down_action.setIcon(qtawesome.icon('mdi.arrow-down'))
             del_action.setIcon(qtawesome.icon('mdi.trash-can-outline'))
             add_action.setIcon(qtawesome.icon('mdi.table-row-plus-after'))
+            col_left_action.setIcon(qtawesome.icon('mdi.arrow-left'))
+            col_right_action.setIcon(qtawesome.icon('mdi.arrow-right'))
+            del_col_action.setIcon(qtawesome.icon('mdi.table-column-remove'))
         self.menu.addAction(add_action)
         self.menu.addAction(del_action)
         self.menu.addSeparator()
         self.menu.addAction(up_action)
         self.menu.addAction(down_action)
+        self.menu.addSeparator()
+        self.menu.addAction(col_left_action)
+        self.menu.addAction(col_right_action)
+        self.menu.addAction(del_col_action)
         self.menu.popup(QCursor.pos())
 
     def _delete_row(self, event: QEvent) -> None:
@@ -176,6 +212,37 @@ class MyQTableView(QTableView):
         if self.model().move_row_up(row_id):
             self.setCurrentIndex(self.get_index_of_row(row_id - 1))
             self.row_moved.emit(self.model().header, row_id, row_id - 1)
+
+    def _column_left(self) -> None:
+        """Moves the current column one position to the left."""
+        current_row = self.currentIndex().row()
+        col_id = self.currentIndex().column()
+        old_header = list(self.model().header)
+        if self.model().move_column_left(col_id):
+            self.model().beginResetModel()
+            self.model().endResetModel()
+            self.setCurrentIndex(self.model().index(current_row, col_id - 1))
+            self.column_moved.emit(old_header, list(self.model().header), col_id, col_id - 1)
+
+    def _column_right(self) -> None:
+        """Moves the current column one position to the right."""
+        current_row = self.currentIndex().row()
+        col_id = self.currentIndex().column()
+        old_header = list(self.model().header)
+        if self.model().move_column_right(col_id):
+            self.model().beginResetModel()
+            self.model().endResetModel()
+            self.setCurrentIndex(self.model().index(current_row, col_id + 1))
+            self.column_moved.emit(old_header, list(self.model().header), col_id, col_id + 1)
+
+    def _delete_column(self) -> None:
+        """Deletes the currently selected column."""
+        col_id = self.currentIndex().column()
+        old_header = list(self.model().header)
+        if self.model().remove_column(col_id):
+            self.model().beginResetModel()
+            self.model().endResetModel()
+            self.column_deleted.emit(old_header, list(self.model().header), col_id)
 
 
 class LoopItemDelegate(QtWidgets.QStyledItemDelegate):
@@ -238,6 +305,39 @@ class LoopTableModel(QAbstractTableModel):
         if len(self._data) > 1 and row_id > 0:
             rowdata = self._data.pop(row_id)
             self._data.insert(row_id - 1, rowdata)
+            return True
+        return False
+
+    def move_column_left(self, col: int) -> bool:
+        """Moves column at col one position to the left. Returns True if the move was performed."""
+        if col > 0 and len(self._header) > 1:
+            self._header[col], self._header[col - 1] = self._header[col - 1], self._header[col]
+            for row in self._data:
+                row[col], row[col - 1] = row[col - 1], row[col]
+            for row in self._original:
+                row[col], row[col - 1] = row[col - 1], row[col]
+            return True
+        return False
+
+    def move_column_right(self, col: int) -> bool:
+        """Moves column at col one position to the right. Returns True if the move was performed."""
+        if col < len(self._header) - 1 and len(self._header) > 1:
+            self._header[col], self._header[col + 1] = self._header[col + 1], self._header[col]
+            for row in self._data:
+                row[col], row[col + 1] = row[col + 1], row[col]
+            for row in self._original:
+                row[col], row[col + 1] = row[col + 1], row[col]
+            return True
+        return False
+
+    def remove_column(self, col: int) -> bool:
+        """Removes the column at col. Returns True if the column was removed."""
+        if len(self._header) > 0:
+            del self._header[col]
+            for row in self._data:
+                del row[col]
+            for row in self._original:
+                del row[col]
             return True
         return False
 
@@ -421,6 +521,31 @@ class LoopsPage(QtWidgets.QWidget):
         table: gemmi.cif.Table = self._cif.block.find(loop.tags)
         table.erase()
         self.tab_widget.removeTab(current_tab_index)
+
+    def _get_current_loop_view(self) -> 'MyQTableView | None':
+        """Return the MyQTableView for the active loop tab, or None if not applicable."""
+        widget = self.tab_widget.widget(self.tab_widget.currentIndex())
+        if isinstance(widget, MyQTableView):
+            return widget
+        return None
+
+    def on_move_column_left(self) -> None:
+        """Move the selected column one position to the left in the active loop tab."""
+        view = self._get_current_loop_view()
+        if view:
+            view._column_left()
+
+    def on_move_column_right(self) -> None:
+        """Move the selected column one position to the right in the active loop tab."""
+        view = self._get_current_loop_view()
+        if view:
+            view._column_right()
+
+    def on_delete_current_column(self) -> None:
+        """Delete the selected column in the active loop tab."""
+        view = self._get_current_loop_view()
+        if view:
+            view._delete_column()
 
     def _save_new_loop_to_cif(self) -> None:
         if self._loopcreate is None:
