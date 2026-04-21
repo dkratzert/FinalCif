@@ -227,6 +227,70 @@ class TestLoopTableModel(unittest.TestCase):
         m = LoopTableModel(['_a'], [['x']])
         self.assertFalse(m.move_row_up(0))
 
+    # --- move_column_left ---
+
+    def test_move_column_left_returns_true(self):
+        self.assertTrue(self.model.move_column_left(1))
+
+    def test_move_column_left_changes_header_order(self):
+        self.model.move_column_left(1)
+        self.assertEqual(['_col_b', '_col_a', '_col_c'], self.model.header)
+
+    def test_move_column_left_reorders_data(self):
+        self.model.move_column_left(1)
+        self.assertEqual(['2', '1', '3'], self.model.loop_data[0])
+        self.assertEqual(['5', '4', '6'], self.model.loop_data[1])
+
+    def test_move_column_left_at_first_column_returns_false(self):
+        self.assertFalse(self.model.move_column_left(0))
+
+    def test_move_column_left_single_column_returns_false(self):
+        m = LoopTableModel(['_a'], [['x']])
+        self.assertFalse(m.move_column_left(0))
+
+    # --- move_column_right ---
+
+    def test_move_column_right_returns_true(self):
+        self.assertTrue(self.model.move_column_right(1))
+
+    def test_move_column_right_changes_header_order(self):
+        self.model.move_column_right(1)
+        self.assertEqual(['_col_a', '_col_c', '_col_b'], self.model.header)
+
+    def test_move_column_right_reorders_data(self):
+        self.model.move_column_right(1)
+        self.assertEqual(['1', '3', '2'], self.model.loop_data[0])
+        self.assertEqual(['4', '6', '5'], self.model.loop_data[1])
+
+    def test_move_column_right_at_last_column_returns_false(self):
+        self.assertFalse(self.model.move_column_right(2))
+
+    def test_move_column_right_single_column_returns_false(self):
+        m = LoopTableModel(['_a'], [['x']])
+        self.assertFalse(m.move_column_right(0))
+
+    # --- remove_column ---
+
+    def test_remove_column_returns_true(self):
+        self.assertTrue(self.model.remove_column(1))
+
+    def test_remove_column_reduces_column_count(self):
+        self.model.remove_column(1)
+        self.assertEqual(2, self.model.columnCount())
+
+    def test_remove_column_updates_header(self):
+        self.model.remove_column(1)
+        self.assertEqual(['_col_a', '_col_c'], self.model.header)
+
+    def test_remove_column_updates_data(self):
+        self.model.remove_column(1)
+        self.assertEqual(['1', '3'], self.model.loop_data[0])
+        self.assertEqual(['4', '6'], self.model.loop_data[1])
+
+    def test_remove_column_from_empty_header_returns_false(self):
+        m = LoopTableModel([], [])
+        self.assertFalse(m.remove_column(0))
+
     # --- revert ---
 
     def test_revert_restores_original_values(self):
@@ -341,6 +405,65 @@ class TestMyQTableView(unittest.TestCase):
         idx = self.view.model().index(2, 0)
         self.view.setCurrentIndex(idx)
         self.view._row_down(None)  # must not raise
+
+    # --- column operations via view ---
+
+    def test_column_left_updates_selection(self):
+        idx = self.view.model().index(0, 1)
+        self.view.setCurrentIndex(idx)
+        self.view._column_left()
+        self.assertEqual(0, self.view.currentIndex().column())
+
+    def test_column_right_updates_selection(self):
+        idx = self.view.model().index(0, 1)
+        self.view.setCurrentIndex(idx)
+        self.view._column_right()
+        self.assertEqual(2, self.view.currentIndex().column())
+
+    def test_column_left_at_first_column_does_not_move(self):
+        idx = self.view.model().index(0, 0)
+        self.view.setCurrentIndex(idx)
+        self.view._column_left()
+        self.assertEqual(0, self.view.currentIndex().column())
+        self.assertEqual(['_col_a', '_col_b', '_col_c'], self.view.model().header)
+
+    def test_column_right_at_last_column_does_not_move(self):
+        idx = self.view.model().index(0, 2)
+        self.view.setCurrentIndex(idx)
+        self.view._column_right()
+        self.assertEqual(2, self.view.currentIndex().column())
+        self.assertEqual(['_col_a', '_col_b', '_col_c'], self.view.model().header)
+
+    def test_delete_column_decreases_column_count(self):
+        idx = self.view.model().index(0, 1)
+        self.view.setCurrentIndex(idx)
+        self.view._delete_column()
+        self.assertEqual(2, self.view.model().columnCount())
+
+    def test_column_moved_signal_emitted_on_left(self):
+        signals = []
+        self.view.column_moved.connect(lambda oh, nh, oc, nc: signals.append((oh, nh, oc, nc)))
+        idx = self.view.model().index(0, 1)
+        self.view.setCurrentIndex(idx)
+        self.view._column_left()
+        self.assertEqual(1, len(signals))
+        old_h, new_h, old_c, new_c = signals[0]
+        self.assertEqual(['_col_a', '_col_b', '_col_c'], old_h)
+        self.assertEqual(['_col_b', '_col_a', '_col_c'], new_h)
+        self.assertEqual(1, old_c)
+        self.assertEqual(0, new_c)
+
+    def test_column_deleted_signal_emitted(self):
+        signals = []
+        self.view.column_deleted.connect(lambda oh, nh, c: signals.append((oh, nh, c)))
+        idx = self.view.model().index(0, 1)
+        self.view.setCurrentIndex(idx)
+        self.view._delete_column()
+        self.assertEqual(1, len(signals))
+        old_h, new_h, col = signals[0]
+        self.assertEqual(['_col_a', '_col_b', '_col_c'], old_h)
+        self.assertEqual(['_col_a', '_col_c'], new_h)
+        self.assertEqual(1, col)
 
 
 # ---------------------------------------------------------------------------
