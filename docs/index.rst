@@ -42,5 +42,6 @@ information of a sample.
    report
    deposition
    sources
+   citations
    homepage
 
