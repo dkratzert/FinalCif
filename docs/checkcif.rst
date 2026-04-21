@@ -16,6 +16,16 @@ On other platforms, PLATON has to be installed and reachable by the system's PAT
 Any CheckCIF can be performed with or without structure factors (hkl data). Without structure factors
 has the advantage of being fast, but the resulting checks are far less thorough.
 
+**Citations for CheckCIF and PLATON**
+
+When using the CheckCIF service or PLATON for structure validation, please cite:
+
+* IUCr CheckCIF/PLATON service: https://checkcif.iucr.org/
+* A. L. Spek, *Acta Cryst.* **2009**, *D65*, 148–155, doi:`10.1107/S090744490804362X <https://doi.org/10.1107/S090744490804362X>`_.
+* A. L. Spek, *Acta Cryst.* **2015**, *C71*, 9–18, doi:`10.1107/S2053229614024929 <https://doi.org/10.1107/S2053229614024929>`_ (for SQUEEZE).
+
+See also the :ref:`citations` page for a full list of software citations.
+
 **CSD Duplicate Check**
 
 When performing an online CheckCIF (since version 155), you can enable the option to check for duplicate
