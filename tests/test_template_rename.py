@@ -102,6 +102,32 @@ class RenameSettingsTestCase(unittest.TestCase):
         self.settings.rename_template('equipment', 'Does Not Exist', 'New Name')
         self.assertNotIn('New Name', self.settings.get_equipment_list())
 
+    def test_rename_equipment_duplicate_name_is_noop(self):
+        self.settings.save_settings_list('equipment', 'Alpha', [['_key', 'val']])
+        self.settings.save_settings_list('equipment', 'Beta', [['_key2', 'val2']])
+        # Attempting to rename 'Alpha' to 'Beta' (which already exists) must be a no-op
+        self.settings.rename_template('equipment', 'Alpha', 'Beta')
+        self.assertIn('Alpha', self.settings.get_equipment_list())
+        self.assertIn('Beta', self.settings.get_equipment_list())
+        # Data under 'Beta' must be unchanged
+        self.assertEqual([['_key2', 'val2']], self.settings.load_settings_list('equipment', 'Beta'))
+
+    def test_rename_property_duplicate_name_is_noop(self):
+        self.settings.save_settings_list('property', 'Prop A', ['_key_a', ['x']])
+        self.settings.save_settings_list('property', 'Prop B', ['_key_b', ['y']])
+        self.settings.rename_template('property', 'Prop A', 'Prop B')
+        self.assertIn('Prop A', self.settings.get_properties_list())
+        self.assertIn('Prop B', self.settings.get_properties_list())
+        self.assertEqual(['_key_b', ['y']], self.settings.load_settings_list('property', 'Prop B'))
+
+    def test_rename_author_duplicate_name_is_noop(self):
+        self.settings.save_settings_dict('authors_list', 'Author X', {'name': 'x'})
+        self.settings.save_settings_dict('authors_list', 'Author Y', {'name': 'y'})
+        self.settings.rename_template('authors_list', 'Author X', 'Author Y')
+        self.assertIn('Author X', self.settings.list_saved_items('authors_list'))
+        self.assertIn('Author Y', self.settings.list_saved_items('authors_list'))
+        self.assertEqual({'name': 'y'}, self.settings.load_settings_dict('authors_list', 'Author Y'))
+
 
 class EquipmentRenameGUITestCase(AppWindowTestCase):
     """Integration tests for renaming equipment templates via the GUI helpers."""
@@ -109,9 +135,13 @@ class EquipmentRenameGUITestCase(AppWindowTestCase):
     def setUp(self) -> None:
         self.app = AppWindow(Path('test-data/1000006.cif'))
         self.app.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
+        # Clean up any leftover renamed entry from a previous test run
+        self.app.equipment.settings.delete_template('equipment', 'Crystallographer Details Renamed')
         self.app.hide()
 
     def tearDown(self) -> None:
+        # Clean up renamed entry so it does not bleed into subsequent test runs
+        self.app.equipment.settings.delete_template('equipment', 'Crystallographer Details Renamed')
         self.app.close()
         super().tearDown()
 
@@ -146,15 +176,40 @@ class EquipmentRenameGUITestCase(AppWindowTestCase):
         equip_list = self.app.equipment.settings.get_equipment_list()
         self.assertIn('Crystallographer Details', equip_list)
 
+    def test_rename_equipment_to_existing_name_is_rejected(self):
+        """Renaming to an already-existing template name must leave both templates intact."""
+        equip_list_before = self.app.equipment.settings.get_equipment_list()
+        # Pick the first two templates in the list for the conflict test
+        self.assertGreaterEqual(len(equip_list_before), 2, 'Need at least two templates')
+        existing_name = equip_list_before[0]
+        other_name = equip_list_before[1]
+
+        listw = self.app.ui.EquipmentTemplatesListWidget
+        items = listw.findItems(other_name, Qt.MatchFlag.MatchExactly)
+        self.assertTrue(items)
+        item = items[0]
+
+        self.app.equipment._rename_old_name = other_name
+        item.setText(existing_name)
+        self.app.equipment.on_equipment_item_renamed(item)
+
+        equip_list = self.app.equipment.settings.get_equipment_list()
+        self.assertIn(other_name, equip_list)
+        self.assertIn(existing_name, equip_list)
+
 
 class PropertiesRenameGUITestCase(AppWindowTestCase):
     """Integration tests for renaming property templates via the GUI helpers."""
 
     def setUp(self) -> None:
         self.app = AppWindow(Path('test-data/1000006.cif'))
+        # Remove any leftover renamed entry from a previous test run
+        self.app.properties.settings.delete_template('property', 'Crystal Colour')
         self.app.hide()
 
     def tearDown(self) -> None:
+        # Remove renamed entry to avoid bleeding into subsequent test runs
+        self.app.properties.settings.delete_template('property', 'Crystal Colour')
         self.app.close()
         super().tearDown()
 
@@ -183,6 +238,26 @@ class PropertiesRenameGUITestCase(AppWindowTestCase):
         self.app.properties._rename_old_name = ''
         self.app.properties.on_properties_item_renamed(item)
         self.assertIn(original_name, self.app.properties.settings.get_properties_list())
+
+    def test_rename_property_to_existing_name_is_rejected(self):
+        """Renaming to an already-existing property template name must leave both intact."""
+        prop_list = self.app.properties.settings.get_properties_list()
+        self.assertGreaterEqual(len(prop_list), 2, 'Need at least two property templates')
+        existing_name = prop_list[0]
+        other_name = prop_list[1]
+
+        listw = self.app.ui.PropertiesTemplatesListWidget
+        items = listw.findItems(other_name, Qt.MatchFlag.MatchExactly)
+        self.assertTrue(items)
+        item = items[0]
+
+        self.app.properties._rename_old_name = other_name
+        item.setText(existing_name)
+        self.app.properties.on_properties_item_renamed(item)
+
+        result = self.app.properties.settings.get_properties_list()
+        self.assertIn(other_name, result)
+        self.assertIn(existing_name, result)
 
 
 class AuthorRenameGUITestCase(AppWindowTestCase):
@@ -225,6 +300,31 @@ class AuthorRenameGUITestCase(AppWindowTestCase):
         self.app.authors._rename_old_name = ''
         self.app.authors.on_author_item_renamed(item)
         self.assertIn('AATest Author', self.app.authors.settings.list_saved_items('authors_list'))
+
+    def test_rename_author_to_existing_name_is_rejected(self):
+        """Renaming to an already-existing author template name must leave both intact."""
+        # Create a second author entry directly in settings so we have two names to conflict
+        second_name = 'AATest Conflict Author'
+        self.app.authors.settings.save_settings_dict(
+            'authors_list', second_name,
+            {'name': second_name, 'address': '', 'email': '', 'phone': '',
+             'orcid': '', 'footnote': '', 'contact_author': False,
+             'author_type': 'publ', 'iucr_id': ''}
+        )
+        self.app.authors.show_authors_list()
+
+        item = self._find_author_item('AATest Author')
+        self.assertIsNotNone(item, 'AATest Author not found')
+
+        self.app.authors._rename_old_name = 'AATest Author'
+        item.setText(second_name)
+        self.app.authors.on_author_item_renamed(item)
+
+        author_list = self.app.authors.settings.list_saved_items('authors_list')
+        self.assertIn('AATest Author', author_list)
+        self.assertIn(second_name, author_list)
+        # Clean up the extra entry
+        self.app.authors.settings.delete_template('authors_list', second_name)
 
 
 if __name__ == '__main__':

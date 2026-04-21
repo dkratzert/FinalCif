@@ -415,6 +415,8 @@ class FinalCifSettings:
         grp = self._get_group(property)
         if old_name not in grp or not new_name:
             return
+        if new_name in grp:
+            return
         grp[new_name] = grp.pop(old_name)
         self._schedule_flush()
         # Remove old_name from the deleted list if it was there (edge case)

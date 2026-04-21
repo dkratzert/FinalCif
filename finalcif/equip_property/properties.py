@@ -118,6 +118,10 @@ class Properties(QtCore.QObject):
         # Remove the editable flag so items cannot be renamed by accident
         item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
         if new_name and new_name != old_name:
+            if new_name in self.settings.get_properties_list():
+                show_general_warning(self.app, f'A template named "{new_name}" already exists.')
+                item.setText(old_name)
+                return
             self.settings.rename_template('property', old_name, new_name)
             self.show_properties()
 
