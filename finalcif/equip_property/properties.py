@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from qtpy import QtCore
-from qtpy.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget, QLabel
+from qtpy.QtWidgets import QListWidgetItem, QMenu, QTableWidget, QStackedWidget, QLabel
 from gemmi import cif
 
 from finalcif.cif.text import retranslate_delimiter, utf8_to_str
@@ -25,6 +25,7 @@ class Properties(QtCore.QObject):
         super().__init__(parent=parent)
         self.app = parent
         self.settings = settings
+        self._rename_old_name: str = ''
         if parent:
             self.signals_and_slots()
             self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
@@ -53,6 +54,11 @@ class Properties(QtCore.QObject):
         self.app.ui.ImportPropertyTemplateButton.clicked.connect(self.import_property_from_file)
         self.app.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
         self.app.ui.cifKeywordLineEdit.textChanged.connect(self.check_for_duplicates)
+        self.app.ui.PropertiesTemplatesListWidget.setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.app.ui.PropertiesTemplatesListWidget.customContextMenuRequested.connect(
+            self.show_properties_rename_menu)
+        self.app.ui.PropertiesTemplatesListWidget.itemChanged.connect(self.on_properties_item_renamed)
 
     def check_for_duplicates(self) -> None:
         key = self.app.ui.cifKeywordLineEdit.text()
@@ -83,6 +89,37 @@ class Properties(QtCore.QObject):
             if pr:
                 item = QListWidgetItem(pr)
                 self.app.ui.PropertiesTemplatesListWidget.addItem(item)
+
+    def show_properties_rename_menu(self, pos: QtCore.QPoint) -> None:
+        """Show a context menu with a Rename action for the properties list."""
+        listw = self.app.ui.PropertiesTemplatesListWidget
+        item = listw.itemAt(pos)
+        if item is None:
+            return
+        menu = QMenu(listw)
+        rename_action = menu.addAction('Rename')
+        action = menu.exec(listw.viewport().mapToGlobal(pos))
+        if action == rename_action:
+            self._rename_old_name = item.text()
+            item.setFlags(
+                QtCore.Qt.ItemFlag.ItemIsEditable
+                | QtCore.Qt.ItemFlag.ItemIsEnabled
+                | QtCore.Qt.ItemFlag.ItemIsSelectable
+            )
+            listw.editItem(item)
+
+    def on_properties_item_renamed(self, item: QListWidgetItem) -> None:
+        """Persist a property template rename when the user finishes editing."""
+        if not self._rename_old_name:
+            return
+        new_name = item.text().strip()
+        old_name = self._rename_old_name
+        self._rename_old_name = ''
+        # Remove the editable flag so items cannot be renamed by accident
+        item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
+        if new_name and new_name != old_name:
+            self.settings.rename_template('property', old_name, new_name)
+            self.show_properties()
 
     def new_property(self) -> None:
         item = QListWidgetItem('')

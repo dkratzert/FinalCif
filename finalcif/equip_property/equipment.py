@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from qtpy import QtCore
-from qtpy.QtWidgets import QListWidgetItem
+from qtpy.QtWidgets import QListWidgetItem, QMenu
 from gemmi import cif
 
 from finalcif.app_path import application_path
@@ -27,6 +27,7 @@ class Equipment:
     def __init__(self, app: AppWindow, settings: FinalCifSettings):
         self.app = app
         self.settings = settings
+        self._rename_old_name: str = ''
         if app:
             self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
             self.app.ui.EquipmentEditTableWidget.verticalHeader().hide()
@@ -51,6 +52,11 @@ class Equipment:
             self.app.ui.EquipmentEditTableWidget.add_row_if_needed)
         self.app.ui.NewEquipmentTemplateButton.clicked.connect(self.new_equipment)
         self.app.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.load_selected_equipment)
+        self.app.ui.EquipmentTemplatesListWidget.setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.app.ui.EquipmentTemplatesListWidget.customContextMenuRequested.connect(
+            self.show_equipment_rename_menu)
+        self.app.ui.EquipmentTemplatesListWidget.itemChanged.connect(self.on_equipment_item_renamed)
 
     def show_equipment(self):
         self.app.ui.EquipmentTemplatesListWidget.clear()
@@ -59,6 +65,37 @@ class Equipment:
             if eq and eq not in deleted:
                 item = QListWidgetItem(eq)
                 self.app.ui.EquipmentTemplatesListWidget.addItem(item)
+
+    def show_equipment_rename_menu(self, pos: QtCore.QPoint) -> None:
+        """Show a context menu with a Rename action for the equipment list."""
+        listw = self.app.ui.EquipmentTemplatesListWidget
+        item = listw.itemAt(pos)
+        if item is None:
+            return
+        menu = QMenu(listw)
+        rename_action = menu.addAction('Rename')
+        action = menu.exec(listw.viewport().mapToGlobal(pos))
+        if action == rename_action:
+            self._rename_old_name = item.text()
+            item.setFlags(
+                QtCore.Qt.ItemFlag.ItemIsEditable
+                | QtCore.Qt.ItemFlag.ItemIsEnabled
+                | QtCore.Qt.ItemFlag.ItemIsSelectable
+            )
+            listw.editItem(item)
+
+    def on_equipment_item_renamed(self, item: QListWidgetItem) -> None:
+        """Persist an equipment template rename when the user finishes editing."""
+        if not self._rename_old_name:
+            return
+        new_name = item.text().strip()
+        old_name = self._rename_old_name
+        self._rename_old_name = ''
+        # Remove the editable flag so items cannot be renamed by accident
+        item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
+        if new_name and new_name != old_name:
+            self.settings.rename_template('equipment', old_name, new_name)
+            self.show_equipment()
 
     def load_selected_equipment(self) -> None:
         """

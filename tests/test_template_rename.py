@@ -1,0 +1,232 @@
+import os
+
+os.environ["RUNNING_TEST"] = 'True'
+import unittest
+from pathlib import Path
+from tempfile import NamedTemporaryFile
+
+from tests.helpers import AppWindowTestCase
+from finalcif.appwindow import AppWindow
+from finalcif.tools.settings import FinalCifSettings
+
+
+class RenameSettingsTestCase(unittest.TestCase):
+    """Unit tests for FinalCifSettings.rename_template() — no GUI needed."""
+
+    def setUp(self) -> None:
+        self._tmp = NamedTemporaryFile(suffix='.json', delete=False)
+        self._tmp.close()
+        self._path = Path(self._tmp.name)
+        self.settings = FinalCifSettings(settings_path=self._path)
+
+    def tearDown(self) -> None:
+        self._path.unlink(missing_ok=True)
+        self._path.with_suffix('.tmp').unlink(missing_ok=True)
+
+    def test_rename_equipment(self):
+        self.settings.save_settings_list('equipment', 'Old Name', [['_key', 'value']])
+        self.settings.rename_template('equipment', 'Old Name', 'New Name')
+        self.assertIn('New Name', self.settings.get_equipment_list())
+        self.assertNotIn('Old Name', self.settings.get_equipment_list())
+        data = self.settings.load_settings_list('equipment', 'New Name')
+        self.assertEqual([['_key', 'value']], data)
+
+    def test_rename_equipment_preserves_data(self):
+        items = [['_diffrn_radiation_wavelength', '0.71073'], ['_diffrn_source', 'synchrotron']]
+        self.settings.save_settings_list('equipment', 'Synchrotron', items)
+        self.settings.rename_template('equipment', 'Synchrotron', 'Synchrotron Source')
+        self.assertEqual(items, self.settings.load_settings_list('equipment', 'Synchrotron Source'))
+
+    def test_rename_equipment_same_name_is_noop(self):
+        self.settings.save_settings_list('equipment', 'MyEquip', [['_key', 'val']])
+        self.settings.rename_template('equipment', 'MyEquip', 'MyEquip')
+        self.assertIn('MyEquip', self.settings.get_equipment_list())
+
+    def test_rename_equipment_empty_new_name_is_noop(self):
+        self.settings.save_settings_list('equipment', 'MyEquip', [['_key', 'val']])
+        self.settings.rename_template('equipment', 'MyEquip', '')
+        self.assertIn('MyEquip', self.settings.get_equipment_list())
+
+    def test_rename_equipment_does_not_add_to_deleted(self):
+        self.settings.save_settings_list('equipment', 'Old Name', [['_key', 'val']])
+        self.settings.rename_template('equipment', 'Old Name', 'New Name')
+        self.assertNotIn('Old Name', self.settings.deleted_equipment)
+        self.assertNotIn('New Name', self.settings.deleted_equipment)
+
+    def test_rename_equipment_removes_from_deleted_if_present(self):
+        self.settings.save_settings_list('equipment', 'Old Name', [['_key', 'val']])
+        # Manually add old_name to deleted list to simulate the edge case
+        self.settings.save_key_value(name='deleted_templates', item=['Old Name'])
+        self.settings.rename_template('equipment', 'Old Name', 'New Name')
+        self.assertNotIn('Old Name', self.settings.deleted_equipment)
+
+    def test_rename_property(self):
+        self.settings.save_settings_list('property', 'Crystal Shape', ['_exptl_crystal_description', ['block']])
+        self.settings.rename_template('property', 'Crystal Shape', 'Crystal Form')
+        self.assertIn('Crystal Form', self.settings.get_properties_list())
+        self.assertNotIn('Crystal Shape', self.settings.get_properties_list())
+
+    def test_rename_property_preserves_data(self):
+        items = ['_exptl_crystal_colour', ['red', 'blue']]
+        self.settings.save_settings_list('property', 'Crystal Color', items)
+        self.settings.rename_template('property', 'Crystal Color', 'Crystal Colour')
+        self.assertEqual(items, self.settings.load_settings_list('property', 'Crystal Colour'))
+
+    def test_rename_property_same_name_is_noop(self):
+        self.settings.save_settings_list('property', 'MyProp', ['_key', ['val']])
+        self.settings.rename_template('property', 'MyProp', 'MyProp')
+        self.assertIn('MyProp', self.settings.get_properties_list())
+
+    def test_rename_property_empty_new_name_is_noop(self):
+        self.settings.save_settings_list('property', 'MyProp', ['_key', ['val']])
+        self.settings.rename_template('property', 'MyProp', '')
+        self.assertIn('MyProp', self.settings.get_properties_list())
+
+    def test_rename_author(self):
+        author_data = {'name': 'John Doe', 'email': 'john@example.com'}
+        self.settings.save_settings_dict('authors_list', 'John Doe', author_data)
+        self.settings.rename_template('authors_list', 'John Doe', 'John D.')
+        self.assertIn('John D.', self.settings.list_saved_items('authors_list'))
+        self.assertNotIn('John Doe', self.settings.list_saved_items('authors_list'))
+        self.assertEqual(author_data, self.settings.load_settings_dict('authors_list', 'John D.'))
+
+    def test_rename_author_same_name_is_noop(self):
+        author_data = {'name': 'Jane'}
+        self.settings.save_settings_dict('authors_list', 'Jane', author_data)
+        self.settings.rename_template('authors_list', 'Jane', 'Jane')
+        self.assertIn('Jane', self.settings.list_saved_items('authors_list'))
+
+    def test_rename_nonexistent_old_name_is_noop(self):
+        self.settings.rename_template('equipment', 'Does Not Exist', 'New Name')
+        self.assertNotIn('New Name', self.settings.get_equipment_list())
+
+
+class EquipmentRenameGUITestCase(AppWindowTestCase):
+    """Integration tests for renaming equipment templates via the GUI helpers."""
+
+    def setUp(self) -> None:
+        self.app = AppWindow(Path('test-data/1000006.cif'))
+        self.app.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
+        self.app.hide()
+
+    def tearDown(self) -> None:
+        self.app.close()
+        super().tearDown()
+
+    def test_rename_equipment_via_handler(self):
+        """Simulate a rename by calling on_equipment_item_renamed directly."""
+        listw = self.app.ui.EquipmentTemplatesListWidget
+        items = listw.findItems('Crystallographer Details', __import__('qtpy').QtCore.Qt.MatchFlag.MatchExactly)
+        self.assertTrue(items, 'Template not found in list')
+        item = items[0]
+
+        # Simulate what the context menu does: set old name, make editable
+        self.app.equipment._rename_old_name = 'Crystallographer Details'
+        item.setText('Crystallographer Details Renamed')
+        # itemChanged fires automatically above; but call handler explicitly too for safety
+        # (in tests itemChanged may not fire depending on event loop)
+        self.app.equipment.on_equipment_item_renamed(item)
+
+        equip_list = self.app.equipment.settings.get_equipment_list()
+        self.assertIn('Crystallographer Details Renamed', equip_list)
+        self.assertNotIn('Crystallographer Details', equip_list)
+
+    def test_rename_equipment_noop_if_no_old_name(self):
+        """Handler must do nothing when _rename_old_name is empty."""
+        listw = self.app.ui.EquipmentTemplatesListWidget
+        items = listw.findItems('Crystallographer Details', __import__('qtpy').QtCore.Qt.MatchFlag.MatchExactly)
+        self.assertTrue(items)
+        item = items[0]
+
+        # _rename_old_name is '' by default — no rename should occur
+        self.app.equipment._rename_old_name = ''
+        self.app.equipment.on_equipment_item_renamed(item)
+        equip_list = self.app.equipment.settings.get_equipment_list()
+        self.assertIn('Crystallographer Details', equip_list)
+
+
+class PropertiesRenameGUITestCase(AppWindowTestCase):
+    """Integration tests for renaming property templates via the GUI helpers."""
+
+    def setUp(self) -> None:
+        self.app = AppWindow(Path('test-data/1000006.cif'))
+        self.app.hide()
+
+    def tearDown(self) -> None:
+        self.app.close()
+        super().tearDown()
+
+    def test_rename_property_via_handler(self):
+        listw = self.app.ui.PropertiesTemplatesListWidget
+        from qtpy.QtCore import Qt
+        items = listw.findItems('Crystal Color', Qt.MatchFlag.MatchStartsWith)
+        self.assertTrue(items, 'Crystal Color template not found')
+        item = items[0]
+        original_name = item.text()
+
+        self.app.properties._rename_old_name = original_name
+        item.setText('Crystal Colour')
+        self.app.properties.on_properties_item_renamed(item)
+
+        prop_list = self.app.properties.settings.get_properties_list()
+        self.assertIn('Crystal Colour', prop_list)
+        self.assertNotIn(original_name, prop_list)
+
+    def test_rename_property_noop_if_no_old_name(self):
+        listw = self.app.ui.PropertiesTemplatesListWidget
+        from qtpy.QtCore import Qt
+        items = listw.findItems('Crystal Color', Qt.MatchFlag.MatchStartsWith)
+        self.assertTrue(items)
+        item = items[0]
+        original_name = item.text()
+
+        self.app.properties._rename_old_name = ''
+        self.app.properties.on_properties_item_renamed(item)
+        self.assertIn(original_name, self.app.properties.settings.get_properties_list())
+
+
+class AuthorRenameGUITestCase(AppWindowTestCase):
+    """Integration tests for renaming author loop templates via the GUI helpers."""
+
+    def setUp(self) -> None:
+        self.testcif = Path('tests/examples/1979688.cif')
+        self.testimport_author = Path('tests/other_templates/AATest_Author.cif')
+        self.app = AppWindow(self.testcif)
+        self.app.authors.import_author(str(self.testimport_author))
+        self.app.hide()
+
+    def tearDown(self) -> None:
+        # Clean up both possible names
+        for name in ('AATest Author', 'AATest Author Renamed'):
+            self.app.authors.settings.delete_template('authors_list', name)
+        self.app.close()
+        super().tearDown()
+
+    def _find_author_item(self, name: str):
+        from qtpy.QtCore import Qt
+        listw = self.app.ui.LoopTemplatesListWidget
+        items = listw.findItems(name, Qt.MatchFlag.MatchStartsWith)
+        return items[0] if items else None
+
+    def test_rename_author_via_handler(self):
+        item = self._find_author_item('AATest Author')
+        self.assertIsNotNone(item, 'AATest Author not found in list')
+
+        self.app.authors._rename_old_name = 'AATest Author'
+        item.setText('AATest Author Renamed')
+        self.app.authors.on_author_item_renamed(item)
+
+        author_list = self.app.authors.settings.list_saved_items('authors_list')
+        self.assertIn('AATest Author Renamed', author_list)
+        self.assertNotIn('AATest Author', author_list)
+
+    def test_rename_author_noop_if_no_old_name(self):
+        item = self._find_author_item('AATest Author')
+        self.assertIsNotNone(item)
+        self.app.authors._rename_old_name = ''
+        self.app.authors.on_author_item_renamed(item)
+        self.assertIn('AATest Author', self.app.authors.settings.list_saved_items('authors_list'))
+
+
+if __name__ == '__main__':
+    unittest.main()

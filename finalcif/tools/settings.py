@@ -410,6 +410,19 @@ class FinalCifSettings:
             deleted = list(set(deleted))
             self.save_key_value(name='deleted_templates', item=deleted)
 
+    def rename_template(self, property: str, old_name: str, new_name: str) -> None:
+        """Rename a template entry within a group, preserving its data."""
+        grp = self._get_group(property)
+        if old_name not in grp or not new_name:
+            return
+        grp[new_name] = grp.pop(old_name)
+        self._schedule_flush()
+        # Remove old_name from the deleted list if it was there (edge case)
+        deleted = self.load_value_of_key(key='deleted_templates') or []
+        if old_name in deleted:
+            deleted = [d for d in deleted if d != old_name]
+            self.save_key_value(name='deleted_templates', item=deleted)
+
     @property
     def deleted_equipment(self):
         deleted = self.load_value_of_key(key='deleted_templates')
