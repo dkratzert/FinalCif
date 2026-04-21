@@ -5,6 +5,8 @@ import unittest
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+from qtpy.QtCore import Qt
+
 from tests.helpers import AppWindowTestCase
 from finalcif.appwindow import AppWindow
 from finalcif.tools.settings import FinalCifSettings
@@ -116,7 +118,7 @@ class EquipmentRenameGUITestCase(AppWindowTestCase):
     def test_rename_equipment_via_handler(self):
         """Simulate a rename by calling on_equipment_item_renamed directly."""
         listw = self.app.ui.EquipmentTemplatesListWidget
-        items = listw.findItems('Crystallographer Details', __import__('qtpy').QtCore.Qt.MatchFlag.MatchExactly)
+        items = listw.findItems('Crystallographer Details', Qt.MatchFlag.MatchExactly)
         self.assertTrue(items, 'Template not found in list')
         item = items[0]
 
@@ -134,7 +136,7 @@ class EquipmentRenameGUITestCase(AppWindowTestCase):
     def test_rename_equipment_noop_if_no_old_name(self):
         """Handler must do nothing when _rename_old_name is empty."""
         listw = self.app.ui.EquipmentTemplatesListWidget
-        items = listw.findItems('Crystallographer Details', __import__('qtpy').QtCore.Qt.MatchFlag.MatchExactly)
+        items = listw.findItems('Crystallographer Details', Qt.MatchFlag.MatchExactly)
         self.assertTrue(items)
         item = items[0]
 
@@ -158,7 +160,6 @@ class PropertiesRenameGUITestCase(AppWindowTestCase):
 
     def test_rename_property_via_handler(self):
         listw = self.app.ui.PropertiesTemplatesListWidget
-        from qtpy.QtCore import Qt
         items = listw.findItems('Crystal Color', Qt.MatchFlag.MatchStartsWith)
         self.assertTrue(items, 'Crystal Color template not found')
         item = items[0]
@@ -174,7 +175,6 @@ class PropertiesRenameGUITestCase(AppWindowTestCase):
 
     def test_rename_property_noop_if_no_old_name(self):
         listw = self.app.ui.PropertiesTemplatesListWidget
-        from qtpy.QtCore import Qt
         items = listw.findItems('Crystal Color', Qt.MatchFlag.MatchStartsWith)
         self.assertTrue(items)
         item = items[0]
@@ -203,7 +203,6 @@ class AuthorRenameGUITestCase(AppWindowTestCase):
         super().tearDown()
 
     def _find_author_item(self, name: str):
-        from qtpy.QtCore import Qt
         listw = self.app.ui.LoopTemplatesListWidget
         items = listw.findItems(name, Qt.MatchFlag.MatchStartsWith)
         return items[0] if items else None
