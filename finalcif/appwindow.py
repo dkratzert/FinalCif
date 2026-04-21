@@ -336,7 +336,6 @@ class AppWindow(QMainWindow):
             self.ui.CCDCpushButton.setIcon(qta.icon('fa5s.cloud-upload-alt'))
         self.ui.CODpushButton.setIcon(qta.icon('mdi.upload'))
         self.ui.revertLoopsPushButton.setIcon(qta.icon('mdi.backup-restore'))
-        self.ui.deleteColumnButton.setIcon(qta.icon('mdi.table-column-remove'))
         # Backbuttons:
         self.ui.BackpushButtonDetails.setIcon(qta.icon('mdi.keyboard-backspace'))
         self.ui.BackFromDepositPushButton.setIcon(qta.icon('mdi.keyboard-backspace'))
@@ -409,7 +408,6 @@ class AppWindow(QMainWindow):
         self.ui.loops_page.new_loop_requested.connect(self._on_new_loop_requested)
         self.ui.deleteLoopButton.clicked.connect(self.ui.loops_page.on_delete_current_loop)
         self.ui.revertLoopsPushButton.clicked.connect(self.ui.loops_page.revert_all_loops)
-        self.ui.deleteColumnButton.clicked.connect(self.ui.loops_page.on_delete_current_column)
         save_shortcut = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+S'), self)
         save_shortcut.activated.connect(self.save_current_cif_file)
         save_shortcut = QtGui.QShortcut(QtGui.QKeySequence('Ctrl+H'), self)
@@ -483,7 +481,6 @@ class AppWindow(QMainWindow):
         self.ui.revertLoopsPushButton.hide()
         self.ui.newLoopPushButton.hide()
         self.ui.deleteLoopButton.hide()
-        self.ui.deleteColumnButton.hide()
 
     def export_all_templates(self, filename: Path | None = None) -> None:
         from finalcif.tools.settings import _custom_encoder
@@ -956,7 +953,6 @@ class AppWindow(QMainWindow):
         self.ui.revertLoopsPushButton.show()
         self.ui.newLoopPushButton.show()
         self.ui.deleteLoopButton.show()
-        self.ui.deleteColumnButton.show()
 
     def _checkcif_failed(self, txt: str) -> None:
         self.ui.CheckCifLogPlainTextEdit.appendHtml(f'<b>{txt}</b>')

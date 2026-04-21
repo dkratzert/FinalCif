@@ -522,19 +522,6 @@ class LoopsPage(QtWidgets.QWidget):
         table.erase()
         self.tab_widget.removeTab(current_tab_index)
 
-    def _get_current_loop_view(self) -> 'MyQTableView | None':
-        """Return the MyQTableView for the active loop tab, or None if not applicable."""
-        widget = self.tab_widget.widget(self.tab_widget.currentIndex())
-        if isinstance(widget, MyQTableView):
-            return widget
-        return None
-
-    def on_delete_current_column(self) -> None:
-        """Delete the selected column in the active loop tab."""
-        view = self._get_current_loop_view()
-        if view:
-            view._delete_column()
-
     def _save_new_loop_to_cif(self) -> None:
         if self._loopcreate is None:
             return

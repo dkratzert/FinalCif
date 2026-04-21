@@ -598,24 +598,6 @@ class TestLoops(unittest.TestCase):
         view.setCurrentIndex(view.model().index(last_row, 0))
         view._row_up(None)  # must not raise
 
-    # --- column button actions via LoopsPage ---
-
-    def test_on_delete_current_column_reduces_column_count(self):
-        tab_idx = self.get_index_of('Scattering')
-        self.loops_page.tab_widget.setCurrentIndex(tab_idx)
-        view = self.loops_page.tab_widget.widget(tab_idx)
-        original_col_count = view.model().columnCount()
-        view.setCurrentIndex(view.model().index(0, 0))
-        self.loops_page.on_delete_current_column()
-        self.assertEqual(original_col_count - 1, view.model().columnCount())
-
-    def test_on_delete_current_column_on_non_loop_tab_does_nothing(self):
-        """on_delete_current_column must be a no-op when not on a loop table tab."""
-        from qtpy.QtWidgets import QWidget
-        self.loops_page.set_author_editor_tab(QWidget())
-        self.loops_page.tab_widget.setCurrentIndex(0)
-        self.loops_page.on_delete_current_column()  # must not raise
-
 
 class TestLoopsResFile(unittest.TestCase):
     """Tests that require a CIF with an embedded SHELX res file."""
