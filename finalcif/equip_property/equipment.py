@@ -82,7 +82,11 @@ class Equipment:
                 | QtCore.Qt.ItemFlag.ItemIsEnabled
                 | QtCore.Qt.ItemFlag.ItemIsSelectable
             )
-            listw.editItem(item)
+            # Defer editItem() to the next event-loop tick so that all
+            # menu-close events are processed before Qt starts the editor.
+            # Calling editItem() immediately after menu.exec() returns causes
+            # Qt to emit "edit: editing failed".
+            QtCore.QTimer.singleShot(0, lambda: listw.editItem(item))
 
     def on_equipment_item_renamed(self, item: QListWidgetItem) -> None:
         """Persist an equipment template rename when the user finishes editing."""
