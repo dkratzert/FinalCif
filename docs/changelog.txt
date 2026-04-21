@@ -1,5 +1,9 @@
 FinalCif recent changes
 -----------------------
+* v159 Added validation response forms from CheckCIF results to the main table directly. There, they can be edited or deleted
+       conveniently. The old "CheckCIF response forms" page is now removed.
+       Added more loop features. Loops can now be rearranged by row and or column with the right-click menu.
+       Also columns can be deleted now.
 * v158 Added https://pypi.org/project/fastmolwidget/ as structure viewer in the "show details" page.
        Changed settings backend to use a JSON file instead of the registry for better compatibility with different QT versions.
        Improved file loading speed. Validation response forms are now at the top of the saved CIF and the main table.

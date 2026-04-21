@@ -27,7 +27,7 @@ Large text templates
     So large text templates are usable either as a comfortable text editor and/or as template manager.
     For validation response forms, so CIF keywords starting with _vrf_, the template editor stores the
     template with the key _vrf_PLAT[number] rather than the full name. This also makes it usable as a
-    template collection for validation responses with checkCIF.
+    template collection for validation responses with CheckCIF.
 
 
 Equipment templates

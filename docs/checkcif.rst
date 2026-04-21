@@ -43,10 +43,9 @@ Validation Response Forms (_VRF)
 --------------------------------
 Sometimes you have to explain certain alerts from CheckCIF. For example regarding the experiment resolution.
 This is done via validation response forms. FinalCif has a convenient method to do so.
-After a "CheckCIF Online HTML" with structure factors you have the option to click on "Edit Response Forms".
+After a "CheckCIF Online HTML" with structure factors the validation response forms of CheckCif appear in the main CIF table.
 There you have the possibility to reply to A, B or C level alerts and save them to the CIF.
-This works also with multi-CIFs. The respective data block name after the alert numbers indicates
-the respective CIF file.
+This works also with multi-CIFs.
 
 Common responses can be saved for later use. See the templates section how to do this.
 
@@ -56,14 +55,6 @@ Common responses can be saved for later use. See the templates section how to do
    Validation response form editor.
 
 
-----
-
-A resulting response form:
-
-
-.. figure:: pics/response_cell.png
-
-   A single response form in the FinalCif main table.
 
 
 Structure of a validation response form
