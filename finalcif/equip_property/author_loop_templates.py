@@ -449,7 +449,10 @@ class AuthorLoops:
         self._rename_old_name = ''
         # Remove the editable flag so items cannot be renamed by accident
         item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
-        if new_name and new_name != old_name:
+        if not new_name:
+            item.setText(old_name)
+            return
+        if new_name != old_name:
             if new_name in self.authors_list():
                 show_general_warning(self.app, f'A template named "{new_name}" already exists.')
                 item.setText(old_name)
