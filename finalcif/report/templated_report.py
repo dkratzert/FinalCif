@@ -977,8 +977,11 @@ class HtmlFormatter(Formatter):
 class LaTeXFormatter(HtmlFormatter):
     """Formatter for LaTeX report templates.
 
-    Inherits plain-data methods (get_bonds, get_angles, etc.) from HtmlFormatter
-    but overrides symmetry-info methods to return plain text without HTML markup.
+    Inherits most formatting behaviour from HtmlFormatter (bonds, angles,
+    coordinates, displacement parameters, etc.) but overrides the three
+    symmetry-info methods to return plain text instead of HTML markup
+    (no ``<br>`` tags or ``&nbsp;`` entities that would appear literally
+    in the rendered ``.tex`` file).
     """
 
     def get_bonds_angles_symminfo(self) -> str:

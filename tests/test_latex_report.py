@@ -42,6 +42,8 @@ CIF_DIAMOND = TEST_DATA_DIR / 'diamond/9008564.cif'
 
 
 def _make_options(bonds_table: bool = False, report_adp: bool = False) -> Options:
+    # Use the private-attribute debug path supported by Options._get_setting().
+    # This is the established test pattern in this codebase (see test_templated_report.py).
     opts = Options()
     opts._bonds_table = bonds_table
     opts._report_adp = report_adp
