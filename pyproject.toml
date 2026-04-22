@@ -36,7 +36,7 @@ dependencies = [
     "chardet",
     "gemmi>=0.7.5",
     "html2text",
-    "lxml==6.0.2",
+    "lxml==6.1.0",
     "pefile",
     "pybind11",
     "python-docx",
