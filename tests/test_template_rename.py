@@ -115,6 +115,20 @@ class RenameSettingsTestCase(unittest.TestCase):
         # Data under 'Beta' must be unchanged
         self.assertEqual([['_key2', 'val2']], self.settings.load_settings_list('equipment', 'Beta'))
 
+    def test_rename_equipment_to_deleted_name_succeeds(self):
+        """Renaming to a name that is in deleted_templates must succeed (not a live conflict)."""
+        self.settings.save_settings_list('equipment', 'My Equip', [['_key', 'val']])
+        # Simulate a previously-deleted template whose name the user wants to reuse
+        self.settings.save_settings_list('equipment', 'Deleted Name', [['_old', 'data']])
+        self.settings.save_key_value(name='deleted_templates', item=['Deleted Name'])
+        self.settings.rename_template('equipment', 'My Equip', 'Deleted Name')
+        # The rename must succeed: 'Deleted Name' now holds My Equip's data
+        self.assertIn('Deleted Name', self.settings.get_equipment_list())
+        self.assertNotIn('My Equip', self.settings.get_equipment_list())
+        self.assertEqual([['_key', 'val']], self.settings.load_settings_list('equipment', 'Deleted Name'))
+        # 'Deleted Name' must no longer be hidden
+        self.assertNotIn('Deleted Name', self.settings.deleted_equipment)
+
     def test_rename_property_duplicate_name_is_noop(self):
         self.settings.save_settings_list('property', 'Prop A', ['_key_a', ['x']])
         self.settings.save_settings_list('property', 'Prop B', ['_key_b', ['y']])
@@ -145,6 +159,7 @@ class EquipmentRenameGUITestCase(AppWindowTestCase):
     def tearDown(self) -> None:
         # Clean up renamed entry so it does not bleed into subsequent test runs
         self.app.equipment.settings.delete_template('equipment', 'Crystallographer Details Renamed')
+        self.app.equipment.settings.delete_template('equipment', 'My Custom Equip')
         self.app.close()
         super().tearDown()
 
@@ -199,6 +214,47 @@ class EquipmentRenameGUITestCase(AppWindowTestCase):
         equip_list = self.app.equipment.settings.get_equipment_list()
         self.assertIn(other_name, equip_list)
         self.assertIn(existing_name, equip_list)
+
+    def test_rename_predefined_equipment_adds_old_name_to_deleted(self):
+        """Renaming a predefined template must add the old name to deleted_templates."""
+        listw = self.app.ui.EquipmentTemplatesListWidget
+        items = listw.findItems('Crystallographer Details', Qt.MatchFlag.MatchExactly)
+        self.assertTrue(items, 'Template not found in list')
+        item = items[0]
+
+        self.app.equipment._rename_old_name = 'Crystallographer Details'
+        item.setText('Crystallographer Details Renamed')
+        self.app.equipment.on_equipment_item_renamed(item)
+
+        self.assertIn('Crystallographer Details', self.app.equipment.settings.deleted_equipment)
+
+    def test_rename_to_deleted_equipment_name_succeeds(self):
+        """Renaming to a name in deleted_templates must succeed without a conflict warning."""
+        # Mark 'Crystallographer Details' as deleted so it is hidden
+        self.app.equipment.settings.save_key_value(
+            name='deleted_templates', item=['Crystallographer Details']
+        )
+        # Add a custom template to rename
+        self.app.equipment.settings.save_settings_list(
+            'equipment', 'My Custom Equip', [['_key', 'val']]
+        )
+        self.app.equipment.show_equipment()
+
+        listw = self.app.ui.EquipmentTemplatesListWidget
+        items = listw.findItems('My Custom Equip', Qt.MatchFlag.MatchExactly)
+        self.assertTrue(items, 'Custom template not found')
+        item = items[0]
+
+        self.app.equipment._rename_old_name = 'My Custom Equip'
+        item.setText('Crystallographer Details')
+        self.app.equipment.on_equipment_item_renamed(item)
+
+        # Rename must succeed: custom data now lives under the old predefined name
+        equip_list = self.app.equipment.settings.get_equipment_list()
+        self.assertIn('Crystallographer Details', equip_list)
+        self.assertNotIn('My Custom Equip', equip_list)
+        # The name must be removed from deleted so it is visible again
+        self.assertNotIn('Crystallographer Details', self.app.equipment.settings.deleted_equipment)
 
     def test_rename_equipment_via_context_menu_mouse_click(self):
         """Context-menu → Rename → QTest mouse click + keyboard input renames the template.

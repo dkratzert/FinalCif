@@ -416,15 +416,22 @@ class FinalCifSettings:
         grp = self._get_group(property)
         if old_name not in grp or not new_name:
             return
-        if new_name in grp:
-            return
+        if property == 'equipment':
+            # For equipment, allow renaming to a previously-deleted name (it is not a
+            # live conflict).  Renaming to a live (non-deleted) name is still rejected.
+            deleted = self.load_value_of_key(key='deleted_templates') or []
+            if new_name in grp and new_name not in deleted:
+                return
+        else:
+            deleted = []
+            if new_name in grp:
+                return
         grp[new_name] = grp.pop(old_name)
         self._schedule_flush()
         # Remove old_name and new_name from the deleted equipment list.
         # old_name: edge case where it was in deleted before rename.
         # new_name: renaming to a previously-deleted name should make it visible again.
         if property == 'equipment':
-            deleted = self.load_value_of_key(key='deleted_templates') or []
             updated = [d for d in deleted if d not in (old_name, new_name)]
             if updated != deleted:
                 self.save_key_value(name='deleted_templates', item=updated)

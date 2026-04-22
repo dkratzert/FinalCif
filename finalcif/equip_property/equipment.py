@@ -113,11 +113,21 @@ class Equipment:
             item.setText(old_name)
             return
         if new_name != old_name:
-            if new_name in self.settings.get_equipment_list():
+            deleted = self.settings.load_value_of_key(key='deleted_templates') or []
+            if new_name in self.settings.get_equipment_list() and new_name not in deleted:
                 show_general_warning(self.app, f'A template named "{new_name}" already exists.')
                 item.setText(old_name)
                 return
             self.settings.rename_template('equipment', old_name, new_name)
+            # If old_name was a predefined (hard-wired) template, add it to the deleted
+            # list so that store_predefined_templates() does not re-surface it.
+            predefined_names = {t['name'] for t in misc.predefined_equipment_templates}
+            if old_name in predefined_names:
+                deleted_after = self.settings.load_value_of_key(key='deleted_templates') or []
+                if old_name not in deleted_after:
+                    self.settings.save_key_value(
+                        name='deleted_templates', item=list(set(deleted_after + [old_name]))
+                    )
             self.show_equipment()
 
     def load_selected_equipment(self) -> None:
