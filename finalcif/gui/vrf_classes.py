@@ -1,7 +1,10 @@
 from qtpy import QtCore
-from qtpy.QtCore import QSize, Qt
+from qtpy.QtCore import QSize, Qt, Signal
+from qtpy.QtGui import QColor, QPalette
 from qtpy.QtWidgets import QDialog, QFrame, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpacerItem, QTextEdit, \
     QVBoxLayout, QWidget
+
+from finalcif.cif.vrf_entry import VRFEntry
 
 
 class QHLine(QFrame):
@@ -14,70 +17,26 @@ class QHLine(QFrame):
         self.setFrameShadow(QFrame.Shadow.Raised)
 
 
-class VREF:
-    """
-    _vrf_PLAT699_DK_zucker2_0m
-    ;
-    PROBLEM: Missing _exptl_crystal_description Value .......     Please Do !
-    RESPONSE: ...
-    ;
-    """
-
-    def __init__(self):
-        self.key = ''
-        self.data_name = ''
-        self._problem = 'PROBLEM: '
-        self._response = 'RESPONSE: '
-
-    @property
-    def value(self):
-        return self.__repr__()
-
-    @property
-    def response(self):
-        return self._response
-
-    @response.setter
-    def response(self, txt) -> None:
-        self._response = self.response + txt
-
-    @property
-    def problem(self):
-        return self._problem
-
-    @problem.setter
-    def problem(self, txt) -> None:
-        self._problem = self.problem + txt
-
-    def __repr__(self):
-        txt = (
-            f"{self.problem}\n"
-            f"{self.response}\n"
-        )
-        return txt
-
-    def __str__(self):
-        return self.__repr__()
-
-
 class MyVRFContainer(QWidget):
+    # Emitted when the user clicks the Delete button; carries a reference to self.
+    deleted = Signal(object)
+    # Emitted when the user clicks the Templates button; carries the VRF key (str).
+    template_requested = Signal(str)
 
-    def __init__(self, form: dict, help: str, parent=None, is_multi_cif=False):
+    def __init__(self, vrf_entry: VRFEntry, help: str, parent=None, is_multi_cif=False):
         """
         A Widget to display each validation response form.
 
-        :param form: a dictionary with:
-                    {'level':   'PLAT035_ALERT_1_B',
-                     'data_name': 'DK_zucker2_0m',
-                     'name':    '_vrf_PLAT035_DK_zucker2_0m',
-                     'problem': '_chemical_absolute_configuration ...',
-                     'alert_num': 'PLAT035'}
-        :param parent: Parent widget
+        :param vrf_entry: a VRFEntry dataclass instance holding key, data_name, problem,
+                          response, alert_num, level, and source for this alert.
+        :param help: help text shown in the Help dialog for this alert.
+        :param parent: Parent widget.
+        :param is_multi_cif: True when the document contains multiple data blocks.
         """
         super().__init__(parent)
         self.is_multi_cif = is_multi_cif
         self.setParent(parent)
-        self.form = form
+        self.vrf_entry = vrf_entry
         # self.setMinimumWidth(400)
         self.mainVLayout = QVBoxLayout(self)
         self.setLayout(self.mainVLayout)
@@ -88,13 +47,28 @@ class MyVRFContainer(QWidget):
         # The button to get help for the respective alert:
         self.helpbutton = QPushButton('Help')
         self.helpbutton.clicked.connect(self.show_help)
+        if not help.strip():
+            self.helpbutton.setEnabled(False)
+        self.deletebutton = QPushButton('Delete')
+        self.deletebutton.clicked.connect(self._on_delete)
+        self.templatesbutton = QPushButton('Templates')
+        self.templatesbutton.clicked.connect(self._on_templates)
         self.response_text_edit = QTextEdit()
         self.alert_label_box()
         self.problem_label_box()
         self.response_label_box()
-        self.setAutoFillBackground(False)
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, QColor('lightgray'))
+        self.setPalette(palette)
+        self.setAutoFillBackground(True)
         self.help = help
         self.show()
+
+    def _on_delete(self) -> None:
+        self.deleted.emit(self)
+
+    def _on_templates(self) -> None:
+        self.template_requested.emit(self.vrf_entry.key)
 
     def show_help(self):
         dialog = QDialog(parent=self)
@@ -120,7 +94,7 @@ class MyVRFContainer(QWidget):
         # frame.setStyleSheet('QFrame { padding: 0px; margin: 0px;}')
         label = QLabel()
         hlayout.addWidget(label)
-        level = self.form['level']
+        level = self.vrf_entry.level
         atype = level[-1] if len(level) > 1 else 'General A  Alert'
         color = 'lightgray'
         if atype == 'A':
@@ -133,9 +107,9 @@ class MyVRFContainer(QWidget):
             color = 'green'
         if len(atype) == 1:
             atype = atype + '  Alert'
-        num = self.form['alert_num'] if 'alert_num' in self.form else ''
+        num = self.vrf_entry.alert_num
         if self.is_multi_cif:
-            name = "  --> {}".format(self.form['data_name'])
+            name = "  --> {}".format(self.vrf_entry.data_name)
         else:
             name = ''
         label.setText(f"{atype} {num} {name}")
@@ -148,10 +122,36 @@ class MyVRFContainer(QWidget):
                 'opacity: 230;' \
                 '}'
         label.setStyleSheet(style)
+        # Source badge: shows whether the VRF came from CheckCIF or from the CIF file
+        self.source_label = QLabel()
+        self._apply_source_style(self.vrf_entry.source)
+        hlayout.addWidget(self.source_label)
         spacerItem = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
         hlayout.addItem(spacerItem)
+        hlayout.addWidget(self.templatesbutton)
         hlayout.addWidget(self.helpbutton)
+        hlayout.addWidget(self.deletebutton)
         self.mainVLayout.addWidget(frame)
+
+    def _apply_source_style(self, source: str) -> None:
+        """Update the source badge label to reflect *source*."""
+        if source == 'cif':
+            self.source_label.setText('Saved in CIF')
+            self.source_label.setStyleSheet(
+                'QLabel { font-size: 10px; background-color: rgb(70, 160, 160);'
+                ' color: white; border-radius: 3px; padding: 2px 5px; }'
+            )
+        else:
+            self.source_label.setText('From CheckCIF')
+            self.source_label.setStyleSheet(
+                'QLabel { font-size: 10px; background-color: rgb(70, 110, 200);'
+                ' color: white; border-radius: 3px; padding: 2px 5px; }'
+            )
+
+    def update_source(self, new_source: str) -> None:
+        """Dynamically update the source badge (e.g. after a new CheckCIF run)."""
+        self.vrf_entry.source = new_source
+        self._apply_source_style(new_source)
 
     def problem_label_box(self):
         frame = QFrame()
@@ -167,7 +167,7 @@ class MyVRFContainer(QWidget):
         p_text_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         hlayout.addWidget(p_text_label)
         hlayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-        p_text_label.setText(self.form['problem'])
+        p_text_label.setText(self.vrf_entry.problem)
         self.mainVLayout.addWidget(frame)
 
     def response_label_box(self):
@@ -180,6 +180,8 @@ class MyVRFContainer(QWidget):
         resp_label.setText('Response: ')
         resp_label.setStyleSheet('QLabel { font-size: 12px; font-weight: bold }')
         self.response_text_edit.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        if self.vrf_entry.response:
+            self.response_text_edit.setPlainText(self.vrf_entry.response)
         hlayout.addWidget(self.response_text_edit)
         self.mainVLayout.addWidget(frame)
 
@@ -189,19 +191,14 @@ if __name__ == '__main__':
     import sys
 
     app = QApplication(sys.argv)
-    form = {'level'    : 'PLAT035_ALERT_1_B',
-            'name'     : '_vrf_PLAT035_DK_zucker2_0m',
-            'data_name': 'DK_zucker2_0m',
-            'problem'  : '_chemical_absolute_configuration Info  Not Given     Please Do '
-                         '!  ',
-            'alert_num': 'PLAT035'}
-    web = MyVRFContainer(form, help='helptext', parent=None, is_multi_cif=True)
+    entry = VRFEntry(
+        key='_vrf_PLAT035_DK_zucker2_0m',
+        data_name='DK_zucker2_0m',
+        problem='_chemical_absolute_configuration Info  Not Given     Please Do !  ',
+        response='?',
+        alert_num='PLAT035',
+        level='PLAT035_ALERT_1_B',
+    )
+    web = MyVRFContainer(entry, help='helptext', parent=None, is_multi_cif=True)
     app.exec()
     web.raise_()
-
-    v = VREF()
-    v.key = '_vrf_PLAT035_DK_zucker2_0m'
-    v.problem = '_chemical_absolute_configuration Info  Not Given     Please Do '
-    v.response = 'a response'
-
-    print(v.value)

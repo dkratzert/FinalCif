@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from qtpy import QtCore
-from qtpy.QtWidgets import QListWidgetItem
+from qtpy.QtWidgets import QListWidgetItem, QMenu
 from gemmi import cif
 
 from finalcif.app_path import application_path
@@ -27,6 +27,8 @@ class Equipment:
     def __init__(self, app: AppWindow, settings: FinalCifSettings):
         self.app = app
         self.settings = settings
+        self._rename_old_name: str = ''
+        self._rename_menu: QMenu | None = None
         if app:
             self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
             self.app.ui.EquipmentEditTableWidget.verticalHeader().hide()
@@ -51,6 +53,11 @@ class Equipment:
             self.app.ui.EquipmentEditTableWidget.add_row_if_needed)
         self.app.ui.NewEquipmentTemplateButton.clicked.connect(self.new_equipment)
         self.app.ui.EquipmentTemplatesListWidget.doubleClicked.connect(self.load_selected_equipment)
+        self.app.ui.EquipmentTemplatesListWidget.setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.app.ui.EquipmentTemplatesListWidget.customContextMenuRequested.connect(
+            self.show_equipment_rename_menu)
+        self.app.ui.EquipmentTemplatesListWidget.itemChanged.connect(self.on_equipment_item_renamed)
 
     def show_equipment(self):
         self.app.ui.EquipmentTemplatesListWidget.clear()
@@ -59,6 +66,71 @@ class Equipment:
             if eq and eq not in deleted:
                 item = QListWidgetItem(eq)
                 self.app.ui.EquipmentTemplatesListWidget.addItem(item)
+
+    def show_equipment_rename_menu(self, pos: QtCore.QPoint) -> None:
+        """Show a context menu with a Rename action for the equipment list."""
+        listw = self.app.ui.EquipmentTemplatesListWidget
+        item = listw.itemAt(pos)
+        if item is None:
+            return
+        menu = QMenu(listw)
+        rename_action = menu.addAction('Rename')
+        # Keep a strong Python reference so PySide6 does not garbage-collect the
+        # menu wrapper (and thereby drop the triggered signal connection) before
+        # the user selects an action.  Clear it whenever the menu closes so the
+        # reference is not held indefinitely if the user dismisses without action.
+        self._rename_menu = menu
+        menu.aboutToHide.connect(lambda: setattr(self, '_rename_menu', None))
+
+        def _on_triggered(action) -> None:
+            if action == rename_action:
+                # Set flags first so the spurious itemChanged signal (fired by
+                # setFlags) finds _rename_old_name still empty and returns early.
+                item.setFlags(
+                    QtCore.Qt.ItemFlag.ItemIsEditable
+                    | QtCore.Qt.ItemFlag.ItemIsEnabled
+                    | QtCore.Qt.ItemFlag.ItemIsSelectable
+                )
+                self._rename_old_name = item.text()
+                # Defer editItem() to the next event-loop tick so that all
+                # menu-close events are processed before Qt starts the editor.
+                QtCore.QTimer.singleShot(0, lambda: listw.editItem(item))
+
+        menu.triggered.connect(_on_triggered)
+        menu.popup(listw.viewport().mapToGlobal(pos))
+
+    def on_equipment_item_renamed(self, item: QListWidgetItem) -> None:
+        """Persist an equipment template rename when the user finishes editing."""
+        if not self._rename_old_name:
+            return
+        new_name = item.text().strip()
+        old_name = self._rename_old_name
+        self._rename_old_name = ''
+        # Remove the editable flag so items cannot be renamed by accident
+        item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
+        if not new_name:
+            show_general_warning(self.app, 'Equipment template names cannot be empty.')
+            item.setText(old_name)
+            return
+        if new_name != old_name:
+            deleted = self.settings.load_value_of_key(key='deleted_templates') or []
+            if new_name in self.settings.get_equipment_list() and new_name not in deleted:
+                show_general_warning(self.app, f'A template named "{new_name}" already exists.')
+                item.setText(old_name)
+                return
+            self.settings.rename_template('equipment', old_name, new_name)
+            # If old_name was a predefined (hard-wired) template, add it to the deleted
+            # list so that store_predefined_templates() does not re-surface it.
+            # Reload deleted_templates here because rename_template() may have modified it
+            # (it removes new_name from the list when renaming to a previously-deleted name).
+            predefined_names = {t['name'] for t in misc.predefined_equipment_templates}
+            if old_name in predefined_names:
+                deleted_after = self.settings.load_value_of_key(key='deleted_templates') or []
+                if old_name not in deleted_after:
+                    self.settings.save_key_value(
+                        name='deleted_templates', item=list(set(deleted_after + [old_name]))
+                    )
+            self.show_equipment()
 
     def load_selected_equipment(self) -> None:
         """
@@ -69,13 +141,14 @@ class Equipment:
             return None
         equipment = self.settings.load_settings_list_as_dict(property='equipment',
                                                              item_name=self.selected_template_name())
-        if self.app.ui.cif_main_table.vheaderitems:
+        if self.app.ui.cif_main_table.rowCount():
             for key in equipment:
                 value = equipment[key]
-                if key not in self.app.ui.cif_main_table.vheaderitems:
+                if not self.app.ui.cif_main_table.has_key(key):
                     # Key is not in the main table:
+                    keys = self.app.ui.cif_main_table.model().vheaderitems
                     self.app.add_row(key, value, at_start=False,
-                                     position=bisect(self.app.ui.cif_main_table.vheaderitems, key))
+                                     position=bisect(keys, key))
                 # Key is already there:
                 self.app.ui.cif_main_table.setText(key, Column.CIF, txt='?')
                 self.app.ui.cif_main_table.setText(key, Column.DATA, txt=value, color=light_green)

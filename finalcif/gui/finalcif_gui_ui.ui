@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1753</width>
+    <width>1778</width>
     <height>951</height>
    </rect>
   </property>
@@ -1043,7 +1043,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>6</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -1063,7 +1063,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="MyCifTable" name="cif_main_table">
+             <widget class="CifTableView" name="cif_main_table">
               <property name="sizeAdjustPolicy">
                <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
               </property>
@@ -1097,42 +1097,6 @@
               <property name="cornerButtonEnabled">
                <bool>false</bool>
               </property>
-              <property name="columnCount">
-               <number>3</number>
-              </property>
-              <attribute name="horizontalHeaderMinimumSectionSize">
-               <number>80</number>
-              </attribute>
-              <attribute name="horizontalHeaderDefaultSectionSize">
-               <number>152</number>
-              </attribute>
-              <attribute name="horizontalHeaderHighlightSections">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderMinimumSectionSize">
-               <number>20</number>
-              </attribute>
-              <attribute name="verticalHeaderDefaultSectionSize">
-               <number>25</number>
-              </attribute>
-              <attribute name="verticalHeaderHighlightSections">
-               <bool>true</bool>
-              </attribute>
-              <column>
-               <property name="text">
-                <string>CIF Value</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>From Data Source</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Own Data</string>
-               </property>
-              </column>
              </widget>
             </item>
             <item>
@@ -1989,11 +1953,6 @@
                    <verstretch>90</verstretch>
                   </sizepolicy>
                  </property>
-                 <property name="font">
-                  <font>
-                   <family>Courier New</family>
-                  </font>
-                 </property>
                  <property name="frameShape">
                   <enum>QFrame::Shape::NoFrame</enum>
                  </property>
@@ -2024,7 +1983,6 @@
                  </property>
                  <property name="font">
                   <font>
-                   <family>Courier New</family>
                    <bold>true</bold>
                   </font>
                  </property>
@@ -2051,7 +2009,7 @@
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>1</number>
+               <number>0</number>
               </property>
               <widget class="QWidget" name="tab_structure">
                <attribute name="title">
@@ -2132,6 +2090,16 @@
                        </property>
                        <property name="text">
                         <string>Show Labels</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QCheckBox" name="adpCheckBox">
+                       <property name="text">
+                        <string>ADPs</string>
+                       </property>
+                       <property name="checked">
+                        <bool>true</bool>
                        </property>
                       </widget>
                      </item>
@@ -2818,14 +2786,13 @@ The data source will be ignored until next program restart.</string>
              <number>12</number>
             </property>
             <item>
-             <widget class="QTabWidget" name="LoopsTabWidget">
-              <property name="currentIndex">
-               <number>0</number>
+             <widget class="LoopsPage" name="loops_page" native="true"/>
+            </item>
+            <item>
+             <widget class="QWidget" name="author_editor_widget">
+              <property name="visible">
+               <bool>false</bool>
               </property>
-              <widget class="QWidget" name="tab_2">
-               <attribute name="title">
-                <string>Author Editor</string>
-               </attribute>
                <layout class="QGridLayout" name="gridLayout_2">
                 <item row="0" column="1">
                  <spacer name="verticalSpacer_16">
@@ -3236,7 +3203,6 @@ Contact authors should always also appear as regular authors.</string>
                  </spacer>
                 </item>
                </layout>
-              </widget>
              </widget>
             </item>
             <item>
@@ -3338,7 +3304,7 @@ Contact authors should always also appear as regular authors.</string>
                </sizepolicy>
               </property>
               <property name="currentIndex">
-               <number>3</number>
+               <number>1</number>
               </property>
               <property name="documentMode">
                <bool>false</bool>
@@ -3402,125 +3368,7 @@ Contact authors should always also appear as regular authors.</string>
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QTabWidget" name="ResponsesTabWidget">
-                  <property name="tabPosition">
-                   <enum>QTabWidget::TabPosition::South</enum>
-                  </property>
-                  <property name="currentIndex">
-                   <number>1</number>
-                  </property>
-                  <property name="movable">
-                   <bool>false</bool>
-                  </property>
-                  <widget class="QWidget" name="htmlTabwidgetPage">
-                   <attribute name="title">
-                    <string>html report</string>
-                   </attribute>
-                   <layout class="QVBoxLayout" name="verticalLayout_14">
-                    <property name="leftMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <item>
-                     <layout class="QGridLayout" name="htmlCHeckCifGridLayout"/>
-                    </item>
-                   </layout>
-                  </widget>
-                  <widget class="QWidget" name="ResponsesTabWidgetPage2">
-                   <attribute name="title">
-                    <string>checkcif alerts</string>
-                   </attribute>
-                   <layout class="QVBoxLayout" name="verticalLayout_15">
-                    <property name="leftMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="rightMargin">
-                     <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                     <number>0</number>
-                    </property>
-                    <item>
-                     <widget class="QListWidget" name="responseFormsListWidget">
-                      <property name="sizeAdjustPolicy">
-                       <enum>QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents</enum>
-                      </property>
-                      <property name="autoScroll">
-                       <bool>false</bool>
-                      </property>
-                      <property name="editTriggers">
-                       <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
-                      </property>
-                      <property name="showDropIndicator" stdset="0">
-                       <bool>false</bool>
-                      </property>
-                      <property name="selectionMode">
-                       <enum>QAbstractItemView::SelectionMode::NoSelection</enum>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="label_6">
-                      <property name="text">
-                       <string>Every form you fill out will be written to the cif file.</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QFrame" name="frame">
-                      <property name="frameShape">
-                       <enum>QFrame::Shape::NoFrame</enum>
-                      </property>
-                      <layout class="QHBoxLayout" name="horizontalLayout_2">
-                       <property name="leftMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="topMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>0</number>
-                       </property>
-                       <item>
-                        <widget class="QPushButton" name="SavePushButton">
-                         <property name="text">
-                          <string>Save Response Forms</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item>
-                        <spacer name="horizontalSpacer_19">
-                         <property name="orientation">
-                          <enum>Qt::Orientation::Horizontal</enum>
-                         </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>40</width>
-                           <height>20</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                      </layout>
-                     </widget>
-                    </item>
-                   </layout>
-                  </widget>
-                 </widget>
+                 <layout class="QGridLayout" name="htmlCHeckCifGridLayout"/>
                 </item>
                </layout>
               </widget>
@@ -3582,11 +3430,6 @@ Contact authors should always also appear as regular authors.</string>
                 </property>
                 <item>
                  <widget class="QPlainTextEdit" name="ckf_textedit">
-                  <property name="font">
-                   <font>
-                    <family>Courier New</family>
-                   </font>
-                  </property>
                   <property name="readOnly">
                    <bool>true</bool>
                   </property>
@@ -4514,11 +4357,17 @@ please add a publication author:</string>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>MyCifTable</class>
-   <extends>QTableWidget</extends>
-   <header>finalcif.gui.custom_classes.h</header>
+  <customwidgets>
+   <customwidget>
+    <class>LoopsPage</class>
+    <extends>QWidget</extends>
+    <header>finalcif.gui.loops.h</header>
+    <container>1</container>
+   </customwidget>
+   <customwidget>
+   <class>CifTableView</class>
+   <extends>QTableView</extends>
+   <header>finalcif.gui.cif_table_view.h</header>
   </customwidget>
   <customwidget>
    <class>CifOrder</class>
@@ -4544,7 +4393,7 @@ please add a publication author:</string>
   <customwidget>
    <class>MoleculeWidget</class>
    <extends>QWidget</extends>
-   <header>finalcif.displaymol.molecule2D.h</header>
+   <header>fastmolwidget.molecule2D.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
@@ -4617,7 +4466,7 @@ please add a publication author:</string>
   <tabstop>BackFromOptionspPushButton</tabstop>
   <tabstop>CheckCIFServerURLTextedit</tabstop>
   <tabstop>PictureWidthDoubleSpinBox</tabstop>
-  <tabstop>LoopsTabWidget</tabstop>
+  <tabstop>loops_page</tabstop>
   <tabstop>revertLoopsPushButton</tabstop>
   <tabstop>BackFromLoopsPushButton</tabstop>
   <tabstop>CheckCifLogPlainTextEdit</tabstop>
@@ -4626,9 +4475,6 @@ please add a publication author:</string>
   <tabstop>CheckcifHTMLOnlineButton</tabstop>
   <tabstop>CheckCIFResultsTabWidget</tabstop>
   <tabstop>CheckcifPlaintextEdit</tabstop>
-  <tabstop>ResponsesTabWidget</tabstop>
-  <tabstop>responseFormsListWidget</tabstop>
-  <tabstop>SavePushButton</tabstop>
   <tabstop>EquipmentEditTableWidget</tabstop>
   <tabstop>PropertiesTemplatesListWidget</tabstop>
   <tabstop>EquipmentTemplatesListWidget</tabstop>

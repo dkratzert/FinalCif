@@ -12,7 +12,7 @@ light_red = QtGui.QColor(254, 191, 189)
 white = QtGui.QColor(255, 255, 255)
 
 if TYPE_CHECKING:
-    from finalcif.gui.custom_classes import MyCifTable
+    from finalcif.gui.cif_table_view import CifTableView
 
 
 class MyComboBox(QComboBox):
@@ -21,9 +21,9 @@ class MyComboBox(QComboBox):
     """
     textTemplate = QtCore.Signal(int)
 
-    def __init__(self, parent: MyCifTable = None):
+    def __init__(self, parent: CifTableView = None):
         super().__init__(parent)
-        self.parent: MyCifTable = parent
+        self.parent: CifTableView = parent
         self.cif_key = ''
         self.color = white
         self.default_palette = self.palette()
@@ -45,7 +45,7 @@ class MyComboBox(QComboBox):
 
     @property
     def row(self) -> int:
-        return self.parent.vheaderitems.index(self.cif_key)
+        return self.parent.row_from_key(self.cif_key)
 
     def _delete_row(self) -> None:
         self.parent.delete_row(self.row)

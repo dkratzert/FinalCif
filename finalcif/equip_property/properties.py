@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from qtpy import QtCore
-from qtpy.QtWidgets import QListWidgetItem, QTableWidget, QStackedWidget, QLabel
+from qtpy.QtWidgets import QListWidgetItem, QMenu, QTableWidget, QStackedWidget, QLabel
 from gemmi import cif
 
 from finalcif.cif.text import retranslate_delimiter, utf8_to_str
@@ -19,13 +19,14 @@ from finalcif.tools.settings import FinalCifSettings
 
 if TYPE_CHECKING:
     from finalcif.appwindow import AppWindow
-    from finalcif.gui.custom_classes import MyCifTable
 
 class Properties(QtCore.QObject):
     def __init__(self, parent: AppWindow, settings: FinalCifSettings):
         super().__init__(parent=parent)
         self.app = parent
         self.settings = settings
+        self._rename_old_name: str = ''
+        self._rename_menu: QMenu | None = None
         if parent:
             self.signals_and_slots()
             self.app.ui.PropertiesTemplatesStackedWidget.setCurrentIndex(0)
@@ -54,8 +55,13 @@ class Properties(QtCore.QObject):
         self.app.ui.ImportPropertyTemplateButton.clicked.connect(self.import_property_from_file)
         self.app.ui.ExportPropertyButton.clicked.connect(self.export_property_template)
         self.app.ui.cifKeywordLineEdit.textChanged.connect(self.check_for_duplicates)
+        self.app.ui.PropertiesTemplatesListWidget.setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.app.ui.PropertiesTemplatesListWidget.customContextMenuRequested.connect(
+            self.show_properties_rename_menu)
+        self.app.ui.PropertiesTemplatesListWidget.itemChanged.connect(self.on_properties_item_renamed)
 
-    def check_for_duplicates(self):
+    def check_for_duplicates(self) -> None:
         key = self.app.ui.cifKeywordLineEdit.text()
         props = self.export_raw_data()
         keys = [x['cif_key'] for x in props]
@@ -66,13 +72,12 @@ class Properties(QtCore.QObject):
             self.lb.setText(f'key {key} already exists')
             self.lb.move(self.app.ui.cifKeywordLineEdit.mapToGlobal(QtCore.QPoint(15, 25)))
             self.lb.show()
-            threading.Thread(target=self.hide_label).start()
+            QtCore.QTimer().singleShot(5000, self.hide_label)
         else:
             self.app.ui.SavePropertiesButton.setEnabled(True)
             self.lb.hide()
 
-    def hide_label(self):
-        time.sleep(5)
+    def hide_label(self) -> None:
         self.lb.hide()
 
     def show_properties(self) -> None:
@@ -85,6 +90,58 @@ class Properties(QtCore.QObject):
             if pr:
                 item = QListWidgetItem(pr)
                 self.app.ui.PropertiesTemplatesListWidget.addItem(item)
+
+    def show_properties_rename_menu(self, pos: QtCore.QPoint) -> None:
+        """Show a context menu with a Rename action for the properties list."""
+        listw = self.app.ui.PropertiesTemplatesListWidget
+        item = listw.itemAt(pos)
+        if item is None:
+            return
+        menu = QMenu(listw)
+        rename_action = menu.addAction('Rename')
+        # Keep a strong Python reference so PySide6 does not garbage-collect the
+        # menu wrapper (and thereby drop the triggered signal connection) before
+        # the user selects an action.  Clear it whenever the menu closes so the
+        # reference is not held indefinitely if the user dismisses without action.
+        self._rename_menu = menu
+        menu.aboutToHide.connect(lambda: setattr(self, '_rename_menu', None))
+
+        def _on_triggered(action) -> None:
+            if action == rename_action:
+                # Set flags first so the spurious itemChanged signal (fired by
+                # setFlags) finds _rename_old_name still empty and returns early.
+                item.setFlags(
+                    QtCore.Qt.ItemFlag.ItemIsEditable
+                    | QtCore.Qt.ItemFlag.ItemIsEnabled
+                    | QtCore.Qt.ItemFlag.ItemIsSelectable
+                )
+                self._rename_old_name = item.text()
+                # Defer editItem() to the next event-loop tick so that all
+                # menu-close events are processed before Qt starts the editor.
+                QtCore.QTimer.singleShot(0, lambda: listw.editItem(item))
+
+        menu.triggered.connect(_on_triggered)
+        menu.popup(listw.viewport().mapToGlobal(pos))
+
+    def on_properties_item_renamed(self, item: QListWidgetItem) -> None:
+        """Persist a property template rename when the user finishes editing."""
+        if not self._rename_old_name:
+            return
+        new_name = item.text().strip()
+        old_name = self._rename_old_name
+        self._rename_old_name = ''
+        # Remove the editable flag so items cannot be renamed by accident
+        item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
+        if not new_name:
+            item.setText(old_name)
+            return
+        if new_name != old_name:
+            if new_name in self.settings.get_properties_list():
+                show_general_warning(self.app, f'A template named "{new_name}" already exists.')
+                item.setText(old_name)
+                return
+            self.settings.rename_template('property', old_name, new_name)
+            self.show_properties()
 
     def new_property(self) -> None:
         item = QListWidgetItem('')
@@ -209,7 +266,7 @@ class Properties(QtCore.QObject):
         self.show_properties()
 
     def _import_block(self, block: cif.Block) -> None:
-        property_list = self.settings.settings.value('property_list')
+        property_list = self.settings.load_property_list()
         if not property_list:
             property_list = ['']
         template_list = []
@@ -294,7 +351,7 @@ class Properties(QtCore.QObject):
         key_item.setPlainText(value)
         table.setCellWidget(row_num, 0, key_item)
 
-    def save_property(self, table: QTableWidget | MyCifTable,
+    def save_property(self, table: QTableWidget,
                       stackwidget: QStackedWidget,
                       keyword: str = '') -> None:
         """

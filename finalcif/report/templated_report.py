@@ -282,7 +282,9 @@ def get_card(cif: CifContainer, symm: str) -> list[str] | None:
     """
     try:
         card = cif.symmops[int(symm.split('_')[0]) - 1].split(',')
-    except IndexError:
+    except (IndexError, ValueError):
+        # IndexError  – symmetry index out of range for this space group
+        # ValueError  – symmetry code is not a valid integer (e.g. a typo like 'dfgfdg')
         return None
     return card
 

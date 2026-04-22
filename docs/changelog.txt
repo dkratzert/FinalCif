@@ -1,9 +1,19 @@
 FinalCif recent changes
 -----------------------
+* v160 Equipment, property, and author loop template entries can now be renamed by right-clicking the entry and selecting
+       "Rename" from the context menu. Renaming to an empty name or to a name already in use is rejected with a warning.
+* v159 Added validation response forms from CheckCIF results to the main table directly. There, they can be edited or deleted
+       conveniently. The old "CheckCIF response forms" page is now removed.
+       Added more loop features. Loops can now be rearranged by row and or column with the right-click menu.
+       Also columns can be deleted now.
+* v158 Added https://pypi.org/project/fastmolwidget/ as structure viewer in the "show details" page.
+       Changed settings backend to use a JSON file instead of the registry for better compatibility with different QT versions.
+       Improved file loading speed. Validation response forms are now at the top of the saved CIF and the main table.
+* v157 Added a syntax highlighter to the CIF text viewer. Update to Python 3.14.
 * v156 Added a crystal video file viewer to add a video picture to the report in "show details".
-* v155 Added CSD dupluicate check option during CheckCif.
+* v155 Added CSD duplicate check option during CheckCif.
 * v154 A special version of PLATON (https://www.platonsoft.nl/platon/) is now distributed together with FinalCif
-       for easier local CheckCIF. Fixed problems with the order of author name and adress if the CIF contained a loop
+       for easier local CheckCIF. Fixed problems with the order of author name and address if the CIF contained a loop
        with _publ_author_name and _publ_author_address with unusual order. Fixed crash when a CIF with atom loops is
        loaded which has only _atom_site_label and coordinates.
        Fixed problems with the report when the atom loops are missing publ flags.
@@ -26,7 +36,7 @@ FinalCif recent changes
        Saving/loading of options fixed. Improved documentation.
 * v141 Added feature to delete the currently selected block of a multi-CIF by right-click on the dropbox.
 * v140 Improved support for SQUEEZEd structures. New 'refinement_gui' keyword for report templates available.
-       Fixed sum formula parsing. Some forulae were displayed incorrectly.
+       Fixed sum formula parsing. Some formulae were displayed incorrectly.
 * v139 Fixed crash on Mac with report template. New report template attribute for hydrogen atoms available.
 * v138 Validators for loop values were added. Incorrect loop values turn the input field red and changed values are gray now.
        Faster loading of large CIF files. The warning about inconsistent temperatures from different files was improved.
@@ -56,7 +66,7 @@ FinalCif recent changes
        templates list which makes them easier to change. Updated documentation. And other small changes.
 * v123 Added checkbox to import only new items from a CIF.
 * v122 Fixed hkl and res file extraction. The hkl file had a newline at the start which made it invalid.
-* v121 Adds spell checking for US english in the larget-text template fields.
+* v121 Adds spell checking for US english in the large-text template fields.
 * v120 The template for the description of the crystallization method needs again the complete sentence instead of
        only the half sentence "from xx at y or similar". Small improvements were made in the report text wording.
        Fields with dropdown menus can now also be used in combination with large text templates. Improved line wrapping
@@ -115,7 +125,7 @@ FinalCif recent changes
 * v91 Added ability to import multi CIFs for equipment and properties (A CIF with multiple data_ blocks)
 * v90 Show proper warning id data_ is missing in a template CIF. Find out min/max hkl for CIF from twins. Small fixes.
 * v89 Fixed wR2 in report templates. Other minor corrections.
-* v88 Added full IUCr publication checkcif option. Made CCDC number field direcly editable (No need to use a template anymore).
+* v88 Added full IUCr publication checkcif option. Made CCDC number field directly editable (No need to use a template anymore).
      Fixed _vref help buttons showing invalid help text for non-PLATON validations.
 * v87 Fixed problems with Checkcif.
 * v86 Added upload interface for the crystallographic open database (COD).
@@ -193,9 +203,9 @@ FinalCif recent changes
 * v33 Minor report improvements.
 * v32 Added a validation response form editor in order to reply to CheckCif alerts: Do a "html checkcif" and 
      click on "Edit Response Forms" to use it. Only A and B alert responses are supported. Fixed many smaller bugs.
-* v31 Added vertical splitter between table and templates. Lots of internal refractoring. Improved coloring of
+* v31 Added vertical splitter between table and templates. Lots of internal refactoring. Improved coloring of
      the main table. FC calculates the space group information from symmetry operators if present. FC now
-     shows all key/value pairs, exept for .res and .hkl file. New splash screen for checkcif.
+     shows all key/value pairs, except for .res and .hkl file. New splash screen for checkcif.
 * v30 Fixed problems in template export. Improved handling of text fields.
 * v29 Fixed some crashes.
 * v28 Improved template behavior. Faster checkcif without structure factors. 

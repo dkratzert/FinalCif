@@ -6,3 +6,6 @@ FinalCif-v* filter=lfs diff=lfs merge=lfs -text
 FinalCif-setup* filter=lfs diff=lfs merge=lfs -text
 
 
+*.f linguist-detectable=false
+*.html linguist-detectable=false
+*.js linguist-detectable=false

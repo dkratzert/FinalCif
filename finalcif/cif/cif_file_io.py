@@ -332,6 +332,13 @@ class CifContainer:
                     block.move_item(block.get_index(key), -1)
                 except (RuntimeError, ValueError):
                     continue
+            # Move all _vrf_* keys to the very top of the block:
+            vrf_keys = [item.pair[0] for item in block if item.pair and item.pair[0].startswith('_vrf')]
+            for key in reversed(vrf_keys):
+                try:
+                    block.move_item(block.get_index(key), 0)
+                except (RuntimeError, ValueError):
+                    pass
 
     @property
     def res_file_data(self) -> str:
@@ -958,6 +965,22 @@ class CifContainer:
             if item.pair is not None:
                 yield item.pair
 
+    def get_vrf_entries(self) -> list:
+        """
+        Returns a list of VRFEntry instances for every ``_vrf_*`` key/value pair
+        found in the current block.  The VRFEntry objects are constructed by
+        parsing the semicolon-delimited text value that stores PROBLEM and
+        RESPONSE lines.
+        """
+        from finalcif.cif.vrf_entry import VRFEntry
+        entries = []
+        for item in self.block:
+            if item.pair is not None:
+                key, raw_value = item.pair
+                if key.startswith('_vrf_'):
+                    entries.append(VRFEntry.from_cif_pair(key, raw_value))
+        return entries
+
     def _is_centrokey(self, key) -> bool:
         """
         Is True if the kurrent key is only valid
@@ -988,7 +1011,11 @@ class CifContainer:
                     with_values.append((key, value))
         all_keys = [x[0] for x in with_values] + [x[0] for x in questions]
         self.check_for_missing_essential_keys(all_keys, questions)
-        return sorted(questions), sorted(with_values)
+        vrf_questions = [x for x in questions if x[0].startswith('_vrf')]
+        non_vrf_questions = [x for x in questions if not x[0].startswith('_vrf')]
+        vrf_with_values = [x for x in with_values if x[0].startswith('_vrf')]
+        non_vrf_with_values = [x for x in with_values if not x[0].startswith('_vrf')]
+        return [*vrf_questions, *vrf_with_values, *sorted(non_vrf_questions)], [*sorted(non_vrf_with_values)]
 
     def check_for_missing_essential_keys(self, all_keys: list[tuple[str, str]],
                                          questions: list[tuple[str, str]]) -> None:

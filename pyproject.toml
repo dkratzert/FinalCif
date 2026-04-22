@@ -19,7 +19,7 @@ authors = [
 ]
 description = "CIF file editor"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -29,25 +29,27 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 
+
 dependencies = [
     "wheel",
     "certifi",
     "chardet",
-    "gemmi",
+    "gemmi>=0.7.5",
     "html2text",
-    "lxml",
+    "lxml==6.1.0",
     "pefile",
     "pybind11",
     "python-docx",
     "packaging",
     "QtAwesome",
     "QtPy",
+    "numpy>=2.3.5,<2.4",
     "requests",
     "urllib3",
-    "docxtpl",
+    "docxtpl[subdoc]>=0.20.2",
     "shelxfile",
     "crossrefapi",
-    "numpy",
+    "fastmolwidget",
     "pyenchant",
     "hatchling",
     "charset-normalizer",
@@ -59,14 +61,17 @@ dependencies = [
 dev = [
     "pytest",
     "ruff",
-    "pyrefly",
+    "ty",
     "pyside6-stubs",
 ]
 
 doc = [
-    "sphinx",
+    "sphinx>=8.1.3",
     "sphinx-rtd-theme",
 ]
+
+[tool.uv]
+exclude-newer = "3 days"
 
 [project.urls]
 "Homepage" = "https://dkratzert.de/finalcif.html"
@@ -75,6 +80,10 @@ doc = [
 [tool.hatch.version]
 path = "finalcif/__init__.py"
 pattern = "VERSION\\s*=\\s*(?P<version>\\d+\\.{0,1}\\d{0,1})"
+
+[tool.uv.pip]
+only-binary = [":all:"]
+no-binary = ["finalcif"]
 
 [tool.hatch.build.targets.sdist]
 exclude = [

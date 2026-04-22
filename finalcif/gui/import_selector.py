@@ -1,5 +1,6 @@
 import shutil
 from pathlib import Path
+from typing import Any, Iterable
 
 from qtpy import QtWidgets, QtCore
 
@@ -13,7 +14,7 @@ from finalcif.tools.settings import FinalCifSettings
 class ImportSelector(QtWidgets.QMainWindow):
     import_clicked = QtCore.Signal(list, list)
 
-    def __init__(self, parent, import_cif: CifContainer, target_cif: CifContainer, settings: FinalCifSettings):
+    def __init__(self, parent, import_cif: CifContainer, target_cif: CifContainer | None, settings: FinalCifSettings) -> None:
         super().__init__(parent)
         self.import_cif = import_cif
         self.target_cif = target_cif
@@ -69,7 +70,7 @@ class ImportSelector(QtWidgets.QMainWindow):
         self.settings.save_key_value('do_not_import_keys', [])
         self.settings.save_key_value('do_not_import_loops', [])
 
-    def _get_excluded_items(self) -> tuple[list[str], list[list[str]]]:
+    def _get_excluded_items(self) -> tuple[Iterable | list | int | float, Iterable | list | int | float]:
         excluded_kv = misc.do_not_import_keys
         excluded_loops = misc.do_not_loop_import
         exclude_kv_from_settings = self.settings.load_value_of_key('do_not_import_keys')

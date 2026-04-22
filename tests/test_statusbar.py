@@ -2,6 +2,7 @@ import os
 
 os.environ["RUNNING_TEST"] = 'True'
 import unittest
+from tests.helpers import AppWindowTestCase
 
 from qtpy.QtGui import QIcon
 
@@ -10,17 +11,18 @@ from finalcif.tools.statusbar import StatusBar
 from finalcif import VERSION
 
 
-class TestStausBarWithGraphics(unittest.TestCase):
+class TestStausBarWithGraphics(AppWindowTestCase):
 
     def setUp(self) -> None:
-        self.myapp = AppWindow()
-        self.myapp.setWindowIcon(QIcon('./icon/multitable.png'))
-        self.myapp.setWindowTitle(f'FinalCif v{VERSION}')
-        self.status = StatusBar(self.myapp.ui)
-        self.myapp.hide()
+        self.app = AppWindow()
+        self.app.setWindowIcon(QIcon('./icon/multitable.png'))
+        self.app.setWindowTitle(f'FinalCif v{VERSION}')
+        self.status = StatusBar(self.app.ui)
+        self.app.hide()
 
     def tearDown(self) -> None:
-        self.myapp.close()
+        self.app.close()
+        super().tearDown()
 
     def test_show_hello(self):
         self.status.show_message('Hello!')
@@ -36,7 +38,7 @@ class TestStausBarWithGraphics(unittest.TestCase):
         # I am not sure how to test this really
 
 
-class TestStausBarConsole(unittest.TestCase):
+class TestStausBarConsole(AppWindowTestCase):
 
     def setUp(self) -> None:
         self.status = StatusBar()

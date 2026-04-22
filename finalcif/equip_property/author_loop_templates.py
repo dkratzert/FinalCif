@@ -13,7 +13,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import gemmi.cif
-from qtpy.QtWidgets import QListWidgetItem
+from qtpy import QtCore
+from qtpy.QtWidgets import QListWidgetItem, QMenu
 from gemmi.cif import Loop, as_string
 
 from finalcif.cif.cif_file_io import CifContainer
@@ -54,15 +55,13 @@ class AuthorLoops:
         self.ui = ui
         self.cif = cif
         self.app = app
+        self._rename_old_name: str = ''
+        self._rename_menu: QMenu | None = None
         self.cif_key = '_publ_author'
         self.keys_list = [f'{self.cif_key}_name', f'{self.cif_key}_address', f'{self.cif_key}_email',
                           f'{self.cif_key}_phone', f'{self.cif_key}_id_orcid', f'{self.cif_key}_id_iucr',
                           f'{self.cif_key}_footnote']
         self.settings = FinalCifSettings()
-        try:
-            self._migrate_pyqt_saved_templates()
-        except ImportError as e:
-            print(f'Import of old settings failed:\n{e}')
         if app:
             self.ui.authorEditTabWidget.setCurrentIndex(0)
             self.contact_author_checked(self.ui.ContactAuthorCheckBox.isChecked())
@@ -71,37 +70,13 @@ class AuthorLoops:
             self.show_authors_list()
             self.make_sure_to_save_only_when_name_field_has_text()
 
-    def _migrate_pyqt_saved_templates(self) -> None:
-        """Author entries saved by PyQt5 (pre-v151) cannot be loaded by PySide2. Load such entries
-        using PyQt5 and re-save with PySide2.
-        """
-
-        UPGRADE_FLAG = "v152_migrated_author_templates"
-        if self.settings.load_value_of_key(UPGRADE_FLAG):
-            return
-
-        import PyQt5.QtCore
-        pyqt_settings = PyQt5.QtCore.QSettings(self.settings.organization, self.settings.software_name)
-
-        pyqt_settings.beginGroup("authors_list")
-        for author in self.authors_list():
-            pyside_loopdata = self.author_loopdata(author)
-            pyqt_loopdata = pyqt_settings.value(author)
-            if not pyside_loopdata and isinstance(pyqt_loopdata, Author):
-                self.general_author_save(pyqt_loopdata)
-                print(f"Migrated pre-v151 saved author data for \"{author}\".")
-        pyqt_settings.endGroup()
-
-        self.settings.save_key_value(UPGRADE_FLAG, True)
-        del pyqt_settings
-
     def connect_signals_and_slots(self) -> None:
         self.ui.AddThisAuthorToLoopPushButton.clicked.connect(self.save_author_to_loop)
         self.ui.AddThisAuthorToLoopPushButton_cif.clicked.connect(self.save_author_to_loop)
         self.ui.ContactAuthorCheckBox.stateChanged.connect(self.contact_author_checked)
         self.ui.ContactAuthorCheckBox_cif.stateChanged.connect(self.contact_author_checked)
-        self.ui.LoopsTabWidget.currentChanged.connect(
-            lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.LoopsTabWidget.count()))
+        self.ui.loops_page.tab_widget.currentChanged.connect(
+            lambda: self.ui.AddThisAuthorToLoopPushButton.setDisabled(not self.ui.loops_page.tab_widget.count()))
         self.ui.authorEditTabWidget.currentChanged.connect(self.set_author_state)
         # self.ui.authorEditTabWidget.currentChanged.connect(self.contact_author_checked)
         self.ui.SaveAuthorLoopToTemplateButton.clicked.connect(self.save_author_to_loop_template)
@@ -114,6 +89,11 @@ class AuthorLoops:
         self.ui.ImportAuthorPushButton.clicked.connect(self.import_author)
         self.ui.FullNameLineEdit.textChanged.connect(self.make_sure_to_save_only_when_name_field_has_text)
         self.ui.FullNameLineEdit_cif.textChanged.connect(self.make_sure_to_save_only_when_name_field_has_text)
+        self.ui.LoopTemplatesListWidget.setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.ui.LoopTemplatesListWidget.customContextMenuRequested.connect(
+            self.show_author_rename_menu)
+        self.ui.LoopTemplatesListWidget.itemChanged.connect(self.on_author_item_renamed)
 
     def set_author_state(self) -> None:
         if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication':
@@ -186,7 +166,7 @@ class AuthorLoops:
             row = row[:gemmi_loop.width()]
         if row not in table:
             table.append_row(row)
-        self.app.make_loops_tables()
+        self.app.ui.loops_page.make_loops_tables()
         self.show_authors_list()
 
     def get_author_info(self) -> Author:
@@ -270,16 +250,30 @@ class AuthorLoops:
         self.general_author_save(author)
         self.clear_fields()
 
-    def general_author_save(self, author: Author) -> None:
+    def _author_template_name(self, author: Author) -> str:
+        """Return the default template-list name for an author."""
+        if author.contact_author:
+            return f'{string_to_utf8(as_string(author.name))} (contact author)'
+        return string_to_utf8(as_string(author.name))
+
+    def _unique_author_name(self, base_name: str) -> str:
+        """Return a name not yet in the authors list, appending a counter if necessary."""
+        existing = set(self.authors_list())
+        if base_name not in existing:
+            return base_name
+        counter = 2
+        while f'{base_name} {counter}' in existing:
+            counter += 1
+        return f'{base_name} {counter}'
+
+    def general_author_save(self, author: Author, template_name: str | None = None) -> None:
         if not author.name:
             return
-        if author.contact_author:
-            itemtext = f'{string_to_utf8(as_string(author.name))} (contact author)'
-        else:
-            itemtext = string_to_utf8(as_string(author.name))
-        if not itemtext:
+        if template_name is None:
+            template_name = self._author_template_name(author)
+        if not template_name:
             return
-        self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author)
+        self.settings.save_settings_dict(property='authors_list', name=template_name, items=author)
         self.show_authors_list()
 
     def export_author_template(self, filename: str | None = None) -> None:
@@ -304,7 +298,24 @@ class AuthorLoops:
             show_general_warning(self, f'No permission to write file to {Path(filename).resolve()}')
 
     def put_author_in_cif_object(self, blockname: str, filename: str) -> CifContainer:
-        author = self.author_loopdata(author_name=self.get_selected_loop_name())
+        author_data = self.author_loopdata(author_name=self.get_selected_loop_name())
+
+        # Convert dict to Author object if needed
+        if isinstance(author_data, dict):
+            author = Author(
+                name=author_data.get('name'),
+                address=author_data.get('address'),
+                email=author_data.get('email'),
+                phone=author_data.get('phone'),
+                orcid=author_data.get('orcid'),
+                footnote=author_data.get('footnote'),
+                contact_author=author_data.get('contact', False),
+                author_type=AuthorType.publ,
+                iucr_id=author_data.get('iucr_id', '')
+            )
+        else:
+            author = author_data
+
         data = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id,
                 author.footnote]
         author_cif = CifContainer(filename, new_block=blockname)
@@ -324,24 +335,65 @@ class AuthorLoops:
         doc = read_document_from_cif_file(filename)
         if not doc:
             return
-        block: gemmi.cif.Block = doc.sole_block()
-        if block.find_value('_publ_author_name'):
-            self.cif_key = '_publ_author'
-        else:
-            self.cif_key = '_publ_contact_author'
-        author = Author(name=block.find_value(self.keys_list[0]),
-                        address=block.find_value(self.keys_list[1]),
-                        email=block.find_value(self.keys_list[2]),
-                        phone=block.find_value(self.keys_list[3]),
-                        orcid=block.find_value(self.keys_list[4]),
-                        iucr_id=block.find_value(self.keys_list[5]),
-                        footnote=block.find_value(self.keys_list[6]),
-                        author_type=AuthorType.audit,
+
+        for block in doc:
+            contact_name = block.find_value('_publ_contact_author_name')
+            contact_address = block.find_value('_publ_contact_author_address')
+
+            if not contact_name or contact_name in ('?', '.'):
+                contact_author_combined = block.find_value('_publ_contact_author')
+                if contact_author_combined and contact_author_combined not in ('?', '.'):
+                    ca_str = as_string(contact_author_combined).strip()
+                    if ca_str:
+                        lines = [ln.strip() for ln in ca_str.splitlines() if ln.strip()]
+                        if lines:
+                            contact_name = quote(lines[0])
+                            if not contact_address and len(lines) > 1:
+                                contact_address = quote('\n'.join(lines[1:]))
+
+            if contact_name and contact_name not in ('?', '.'):
+                author = Author(
+                    name=contact_name,
+                    address=contact_address or '',
+                    email=block.find_value('_publ_contact_author_email') or '',
+                    phone=block.find_value('_publ_contact_author_phone') or '',
+                    orcid=block.find_value('_publ_contact_author_id_orcid') or '',
+                    iucr_id=block.find_value('_publ_contact_author_id_iucr') or '',
+                    footnote=block.find_value('_publ_contact_author_footnote') or '',
+                    author_type=AuthorType.publ,
+                    contact_author=True
+                )
+                unique_name = self._unique_author_name(self._author_template_name(author))
+                self.general_author_save(author, template_name=unique_name)
+
+            names = list(block.find_values('_publ_author_name'))
+            if names:
+                addresses = list(block.find_values('_publ_author_address'))
+                emails = list(block.find_values('_publ_author_email'))
+                phones = list(block.find_values('_publ_author_phone'))
+                orcids = list(block.find_values('_publ_author_id_orcid'))
+                iucrs = list(block.find_values('_publ_author_id_iucr'))
+                footnotes = list(block.find_values('_publ_author_footnote'))
+
+                for i, name in enumerate(names):
+                    if not name or name in ('?', '.'):
+                        continue
+                    address_raw = addresses[i] if i < len(addresses) and addresses[i] not in ('?', '.') else ''
+                    address_stripped = [ln.strip() for ln in address_raw.splitlines() if ln.strip()]
+                    author = Author(
+                        name=name,
+                        address='\n'.join(address_stripped).strip('; '),
+                        email=emails[i] if i < len(emails) and emails[i] not in ('?', '.') else '',
+                        phone=phones[i] if i < len(phones) and phones[i] not in ('?', '.') else '',
+                        orcid=orcids[i] if i < len(orcids) and orcids[i] not in ('?', '.') else '',
+                        iucr_id=iucrs[i] if i < len(iucrs) and iucrs[i] not in ('?', '.') else '',
+                        footnote=footnotes[i] if i < len(footnotes) and footnotes[i] not in ('?', '.') else '',
+                        author_type=AuthorType.publ,
                         contact_author=False
-                        )
-        if not author.name:
-            return None
-        self.general_author_save(author)
+                    )
+                    unique_name = self._unique_author_name(self._author_template_name(author))
+                    self.general_author_save(author, template_name=unique_name)
+
         self.show_authors_list()
 
     def delete_current_author(self) -> None:
@@ -360,8 +412,9 @@ class AuthorLoops:
         return self.ui.LoopTemplatesListWidget.currentIndex().data()
 
     def load_selected_loop(self) -> None:
+        self.clear_fields()
         self.set_author_info(self.author_loopdata(author_name=self.get_selected_loop_name()))
-        self.ui.LoopsTabWidget.setCurrentIndex(0)
+        self.ui.loops_page.tab_widget.setCurrentIndex(0)
 
     def author_loopdata(self, author_name: str) -> dict[str, str] | Author:
         return self.settings.load_settings_dict('authors_list', author_name)
@@ -371,6 +424,58 @@ class AuthorLoops:
         for author in sorted(self.authors_list()):
             if author:
                 self.ui.LoopTemplatesListWidget.addItem(QListWidgetItem(author))
+
+    def show_author_rename_menu(self, pos: QtCore.QPoint) -> None:
+        """Show a context menu with a Rename action for the author loop templates list."""
+        listw = self.ui.LoopTemplatesListWidget
+        item = listw.itemAt(pos)
+        if item is None:
+            return
+        menu = QMenu(listw)
+        rename_action = menu.addAction('Rename')
+        # Keep a strong Python reference so PySide6 does not garbage-collect the
+        # menu wrapper (and thereby drop the triggered signal connection) before
+        # the user selects an action.  Clear it whenever the menu closes so the
+        # reference is not held indefinitely if the user dismisses without action.
+        self._rename_menu = menu
+        menu.aboutToHide.connect(lambda: setattr(self, '_rename_menu', None))
+
+        def _on_triggered(action) -> None:
+            if action == rename_action:
+                # Set flags first so the spurious itemChanged signal (fired by
+                # setFlags) finds _rename_old_name still empty and returns early.
+                item.setFlags(
+                    QtCore.Qt.ItemFlag.ItemIsEditable
+                    | QtCore.Qt.ItemFlag.ItemIsEnabled
+                    | QtCore.Qt.ItemFlag.ItemIsSelectable
+                )
+                self._rename_old_name = item.text()
+                # Defer editItem() to the next event-loop tick so that all
+                # menu-close events are processed before Qt starts the editor.
+                QtCore.QTimer.singleShot(0, lambda: listw.editItem(item))
+
+        menu.triggered.connect(_on_triggered)
+        menu.popup(listw.viewport().mapToGlobal(pos))
+
+    def on_author_item_renamed(self, item: QListWidgetItem) -> None:
+        """Persist an author template rename when the user finishes editing."""
+        if not self._rename_old_name:
+            return
+        new_name = item.text().strip()
+        old_name = self._rename_old_name
+        self._rename_old_name = ''
+        # Remove the editable flag so items cannot be renamed by accident
+        item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
+        if not new_name:
+            item.setText(old_name)
+            return
+        if new_name != old_name:
+            if new_name in self.authors_list():
+                show_general_warning(self.app, f'A template named "{new_name}" already exists.')
+                item.setText(old_name)
+                return
+            self.settings.rename_template('authors_list', old_name, new_name)
+            self.show_authors_list()
 
     def export_raw_data(self) -> list[Author]:
         """
@@ -386,7 +491,8 @@ class AuthorLoops:
         Import all authors from an external file"""
         for author in authors_data:
             if author and isinstance(author, Author):
-                self.general_author_save(author)
+                unique_name = self._unique_author_name(self._author_template_name(author))
+                self.general_author_save(author, template_name=unique_name)
 
     def authors_list(self) -> list[str]:
         return self.settings.list_saved_items(property='authors_list')
@@ -437,3 +543,4 @@ if __name__ == '__main__':
     l = AuthorLoops(Ui_FinalCifWindow(), CifContainer('test-data/1000007.cif'), None)
     data = l.export_raw_data()
     pprint.pprint(data)
+

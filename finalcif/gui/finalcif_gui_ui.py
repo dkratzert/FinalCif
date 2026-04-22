@@ -25,12 +25,13 @@ from qtpy.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication
     QTableWidget, QTableWidgetItem, QTextBrowser, QTextEdit,
     QToolButton, QVBoxLayout, QWidget)
 
+from fastmolwidget.molecule2D import MoleculeWidget
 from finalcif.ciforder.order import CifOrder
-from finalcif.displaymol.molecule2D import MoleculeWidget
 from finalcif.gui.block_combobox import ComboBoxWithContextMenu
-from finalcif.gui.custom_classes import MyCifTable
+from finalcif.gui.cif_table_view import CifTableView
 from finalcif.gui.equipmenttable import MyEQTableWidget
 from finalcif.gui.file_editor import QCodeEditor
+from finalcif.gui.loops import LoopsPage
 from finalcif.gui.mainstackwidget import MyMainStackedWidget
 from finalcif.gui.propertytable import MyPropTableWidget
 
@@ -38,7 +39,7 @@ class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         if not FinalCifWindow.objectName():
             FinalCifWindow.setObjectName(u"FinalCifWindow")
-        FinalCifWindow.resize(1753, 951)
+        FinalCifWindow.resize(1778, 951)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -350,8 +351,8 @@ class Ui_FinalCifWindow(object):
         font = QFont()
         font.setItalic(True)
         __qlistwidgetitem = QListWidgetItem(self.docxTemplatesListWidget)
-        __qlistwidgetitem.setCheckState(Qt.Checked);
-        __qlistwidgetitem.setFont(font);
+        __qlistwidgetitem.setCheckState(Qt.Checked)
+        __qlistwidgetitem.setFont(font)
         self.docxTemplatesListWidget.setObjectName(u"docxTemplatesListWidget")
         self.docxTemplatesListWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.docxTemplatesListWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
@@ -581,15 +582,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 6, 0, 0)
-        self.cif_main_table = MyCifTable(self.page_MainTable)
-        if (self.cif_main_table.columnCount() < 3):
-            self.cif_main_table.setColumnCount(3)
-        __qtablewidgetitem2 = QTableWidgetItem()
-        self.cif_main_table.setHorizontalHeaderItem(0, __qtablewidgetitem2)
-        __qtablewidgetitem3 = QTableWidgetItem()
-        self.cif_main_table.setHorizontalHeaderItem(1, __qtablewidgetitem3)
-        __qtablewidgetitem4 = QTableWidgetItem()
-        self.cif_main_table.setHorizontalHeaderItem(2, __qtablewidgetitem4)
+        self.cif_main_table = CifTableView(self.page_MainTable)
         self.cif_main_table.setObjectName(u"cif_main_table")
         self.cif_main_table.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
         self.cif_main_table.setAutoScroll(False)
@@ -602,13 +595,6 @@ class Ui_FinalCifWindow(object):
         self.cif_main_table.setSortingEnabled(False)
         self.cif_main_table.setWordWrap(True)
         self.cif_main_table.setCornerButtonEnabled(False)
-        self.cif_main_table.setColumnCount(3)
-        self.cif_main_table.horizontalHeader().setMinimumSectionSize(80)
-        self.cif_main_table.horizontalHeader().setDefaultSectionSize(152)
-        self.cif_main_table.horizontalHeader().setHighlightSections(False)
-        self.cif_main_table.verticalHeader().setMinimumSectionSize(20)
-        self.cif_main_table.verticalHeader().setDefaultSectionSize(25)
-        self.cif_main_table.verticalHeader().setHighlightSections(True)
 
         self.verticalLayout.addWidget(self.cif_main_table)
 
@@ -1114,9 +1100,6 @@ class Ui_FinalCifWindow(object):
         sizePolicy13.setVerticalStretch(90)
         sizePolicy13.setHeightForWidth(self.shelx_TextEdit.sizePolicy().hasHeightForWidth())
         self.shelx_TextEdit.setSizePolicy(sizePolicy13)
-        font3 = QFont()
-        font3.setFamilies([u"Courier New"])
-        self.shelx_TextEdit.setFont(font3)
         self.shelx_TextEdit.setFrameShape(QFrame.Shape.NoFrame)
         self.shelx_TextEdit.setFrameShadow(QFrame.Shadow.Plain)
         self.shelx_TextEdit.setUndoRedoEnabled(False)
@@ -1132,10 +1115,9 @@ class Ui_FinalCifWindow(object):
         sizePolicy14.setVerticalStretch(10)
         sizePolicy14.setHeightForWidth(self.shelx_warn_TextEdit.sizePolicy().hasHeightForWidth())
         self.shelx_warn_TextEdit.setSizePolicy(sizePolicy14)
-        font4 = QFont()
-        font4.setFamilies([u"Courier New"])
-        font4.setBold(True)
-        self.shelx_warn_TextEdit.setFont(font4)
+        font3 = QFont()
+        font3.setBold(True)
+        self.shelx_warn_TextEdit.setFont(font3)
         self.shelx_warn_TextEdit.setUndoRedoEnabled(False)
         self.shelx_warn_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         self.shelx_warn_TextEdit.setReadOnly(True)
@@ -1191,6 +1173,12 @@ class Ui_FinalCifWindow(object):
         self.labelsCheckBox.setMinimumSize(QSize(0, 20))
 
         self.horizontalLayout_7.addWidget(self.labelsCheckBox)
+
+        self.adpCheckBox = QCheckBox(self.molGroupBox)
+        self.adpCheckBox.setObjectName(u"adpCheckBox")
+        self.adpCheckBox.setChecked(True)
+
+        self.horizontalLayout_7.addWidget(self.adpCheckBox)
 
         self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
@@ -1294,12 +1282,12 @@ class Ui_FinalCifWindow(object):
         self.SourcesTableWidget = QTableWidget(self.groupBox_2)
         if (self.SourcesTableWidget.columnCount() < 3):
             self.SourcesTableWidget.setColumnCount(3)
-        __qtablewidgetitem5 = QTableWidgetItem()
-        self.SourcesTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem5)
-        __qtablewidgetitem6 = QTableWidgetItem()
-        self.SourcesTableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem6)
-        __qtablewidgetitem7 = QTableWidgetItem()
-        self.SourcesTableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem7)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.SourcesTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.SourcesTableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem3)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        self.SourcesTableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem4)
         self.SourcesTableWidget.setObjectName(u"SourcesTableWidget")
         self.SourcesTableWidget.setWordWrap(False)
         self.SourcesTableWidget.horizontalHeader().setStretchLastSection(True)
@@ -1530,8 +1518,8 @@ class Ui_FinalCifWindow(object):
         self.PropertiesEditTableWidget = MyPropTableWidget(self.PropertiesEditPage)
         if (self.PropertiesEditTableWidget.columnCount() < 1):
             self.PropertiesEditTableWidget.setColumnCount(1)
-        __qtablewidgetitem8 = QTableWidgetItem()
-        self.PropertiesEditTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem8)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.PropertiesEditTableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem5)
         if (self.PropertiesEditTableWidget.rowCount() < 1):
             self.PropertiesEditTableWidget.setRowCount(1)
         self.PropertiesEditTableWidget.setObjectName(u"PropertiesEditTableWidget")
@@ -1601,17 +1589,22 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_9 = QVBoxLayout(self.page_Loops)
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
         self.verticalLayout_9.setContentsMargins(-1, 12, -1, -1)
-        self.LoopsTabWidget = QTabWidget(self.page_Loops)
-        self.LoopsTabWidget.setObjectName(u"LoopsTabWidget")
-        self.tab_2 = QWidget()
-        self.tab_2.setObjectName(u"tab_2")
-        self.gridLayout_2 = QGridLayout(self.tab_2)
+        self.loops_page = LoopsPage(self.page_Loops)
+        self.loops_page.setObjectName(u"loops_page")
+
+        self.verticalLayout_9.addWidget(self.loops_page)
+
+        self.author_editor_widget = QWidget(self.page_Loops)
+        self.author_editor_widget.setObjectName(u"author_editor_widget")
+        self.author_editor_widget.setVisible(False)
+        self.gridLayout_2 = QGridLayout(self.author_editor_widget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalSpacer_16 = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_2.addItem(self.verticalSpacer_16, 0, 1, 1, 1)
 
-        self.authorEditTabWidget = QTabWidget(self.tab_2)
+        self.authorEditTabWidget = QTabWidget(self.author_editor_widget)
         self.authorEditTabWidget.setObjectName(u"authorEditTabWidget")
         sizePolicy26 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         sizePolicy26.setHorizontalStretch(45)
@@ -1882,7 +1875,7 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_2.addItem(self.verticalSpacer_10, 3, 1, 1, 1)
 
-        self.frame_2 = QFrame(self.tab_2)
+        self.frame_2 = QFrame(self.author_editor_widget)
         self.frame_2.setObjectName(u"frame_2")
         sizePolicy29 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy29.setHorizontalStretch(55)
@@ -1898,9 +1891,8 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_2.addItem(self.verticalSpacer_15, 1, 1, 1, 1)
 
-        self.LoopsTabWidget.addTab(self.tab_2, "")
 
-        self.verticalLayout_9.addWidget(self.LoopsTabWidget)
+        self.verticalLayout_9.addWidget(self.author_editor_widget)
 
         self.gridLayout_16 = QGridLayout()
         self.gridLayout_16.setObjectName(u"gridLayout_16")
@@ -1977,62 +1969,10 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_12 = QVBoxLayout(self.html_page)
         self.verticalLayout_12.setObjectName(u"verticalLayout_12")
         self.verticalLayout_12.setContentsMargins(0, 0, 0, 0)
-        self.ResponsesTabWidget = QTabWidget(self.html_page)
-        self.ResponsesTabWidget.setObjectName(u"ResponsesTabWidget")
-        self.ResponsesTabWidget.setTabPosition(QTabWidget.TabPosition.South)
-        self.ResponsesTabWidget.setMovable(False)
-        self.htmlTabwidgetPage = QWidget()
-        self.htmlTabwidgetPage.setObjectName(u"htmlTabwidgetPage")
-        self.verticalLayout_14 = QVBoxLayout(self.htmlTabwidgetPage)
-        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
-        self.verticalLayout_14.setContentsMargins(0, 0, 0, 0)
         self.htmlCHeckCifGridLayout = QGridLayout()
         self.htmlCHeckCifGridLayout.setObjectName(u"htmlCHeckCifGridLayout")
 
-        self.verticalLayout_14.addLayout(self.htmlCHeckCifGridLayout)
-
-        self.ResponsesTabWidget.addTab(self.htmlTabwidgetPage, "")
-        self.ResponsesTabWidgetPage2 = QWidget()
-        self.ResponsesTabWidgetPage2.setObjectName(u"ResponsesTabWidgetPage2")
-        self.verticalLayout_15 = QVBoxLayout(self.ResponsesTabWidgetPage2)
-        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
-        self.verticalLayout_15.setContentsMargins(0, 0, 0, 0)
-        self.responseFormsListWidget = QListWidget(self.ResponsesTabWidgetPage2)
-        self.responseFormsListWidget.setObjectName(u"responseFormsListWidget")
-        self.responseFormsListWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-        self.responseFormsListWidget.setAutoScroll(False)
-        self.responseFormsListWidget.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.responseFormsListWidget.setProperty(u"showDropIndicator", False)
-        self.responseFormsListWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-
-        self.verticalLayout_15.addWidget(self.responseFormsListWidget)
-
-        self.label_6 = QLabel(self.ResponsesTabWidgetPage2)
-        self.label_6.setObjectName(u"label_6")
-
-        self.verticalLayout_15.addWidget(self.label_6)
-
-        self.frame = QFrame(self.ResponsesTabWidgetPage2)
-        self.frame.setObjectName(u"frame")
-        self.frame.setFrameShape(QFrame.Shape.NoFrame)
-        self.horizontalLayout_2 = QHBoxLayout(self.frame)
-        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
-        self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.SavePushButton = QPushButton(self.frame)
-        self.SavePushButton.setObjectName(u"SavePushButton")
-
-        self.horizontalLayout_2.addWidget(self.SavePushButton)
-
-        self.horizontalSpacer_19 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_2.addItem(self.horizontalSpacer_19)
-
-
-        self.verticalLayout_15.addWidget(self.frame)
-
-        self.ResponsesTabWidget.addTab(self.ResponsesTabWidgetPage2, "")
-
-        self.verticalLayout_12.addWidget(self.ResponsesTabWidget)
+        self.verticalLayout_12.addLayout(self.htmlCHeckCifGridLayout)
 
         self.CheckCIFResultsTabWidget.addTab(self.html_page, "")
         self.pdf_page = QWidget()
@@ -2062,7 +2002,6 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_36.setContentsMargins(3, 3, 3, 3)
         self.ckf_textedit = QPlainTextEdit(self.ckf_page)
         self.ckf_textedit.setObjectName(u"ckf_textedit")
-        self.ckf_textedit.setFont(font3)
         self.ckf_textedit.setReadOnly(True)
         self.ckf_textedit.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByKeyboard|Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextBrowserInteraction|Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
 
@@ -2535,12 +2474,12 @@ class Ui_FinalCifWindow(object):
         self.CODtableWidget = QTableWidget(self.StructuresListGroupBox)
         if (self.CODtableWidget.columnCount() < 3):
             self.CODtableWidget.setColumnCount(3)
-        __qtablewidgetitem9 = QTableWidgetItem()
-        self.CODtableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem9)
-        __qtablewidgetitem10 = QTableWidgetItem()
-        self.CODtableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem10)
-        __qtablewidgetitem11 = QTableWidgetItem()
-        self.CODtableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem11)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        self.CODtableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        self.CODtableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        self.CODtableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem8)
         self.CODtableWidget.setObjectName(u"CODtableWidget")
         self.CODtableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
         self.CODtableWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
@@ -2655,8 +2594,8 @@ class Ui_FinalCifWindow(object):
         QWidget.setTabOrder(self.BackSourcesPushButton, self.BackFromOptionspPushButton)
         QWidget.setTabOrder(self.BackFromOptionspPushButton, self.CheckCIFServerURLTextedit)
         QWidget.setTabOrder(self.CheckCIFServerURLTextedit, self.PictureWidthDoubleSpinBox)
-        QWidget.setTabOrder(self.PictureWidthDoubleSpinBox, self.LoopsTabWidget)
-        QWidget.setTabOrder(self.LoopsTabWidget, self.revertLoopsPushButton)
+        QWidget.setTabOrder(self.PictureWidthDoubleSpinBox, self.loops_page)
+        QWidget.setTabOrder(self.loops_page, self.revertLoopsPushButton)
         QWidget.setTabOrder(self.revertLoopsPushButton, self.BackFromLoopsPushButton)
         QWidget.setTabOrder(self.BackFromLoopsPushButton, self.CheckCifLogPlainTextEdit)
         QWidget.setTabOrder(self.CheckCifLogPlainTextEdit, self.CheckcifButton)
@@ -2664,10 +2603,7 @@ class Ui_FinalCifWindow(object):
         QWidget.setTabOrder(self.CheckcifPDFOnlineButton, self.CheckcifHTMLOnlineButton)
         QWidget.setTabOrder(self.CheckcifHTMLOnlineButton, self.CheckCIFResultsTabWidget)
         QWidget.setTabOrder(self.CheckCIFResultsTabWidget, self.CheckcifPlaintextEdit)
-        QWidget.setTabOrder(self.CheckcifPlaintextEdit, self.ResponsesTabWidget)
-        QWidget.setTabOrder(self.ResponsesTabWidget, self.responseFormsListWidget)
-        QWidget.setTabOrder(self.responseFormsListWidget, self.SavePushButton)
-        QWidget.setTabOrder(self.SavePushButton, self.EquipmentEditTableWidget)
+        QWidget.setTabOrder(self.CheckcifPlaintextEdit, self.EquipmentEditTableWidget)
         QWidget.setTabOrder(self.EquipmentEditTableWidget, self.PropertiesTemplatesListWidget)
         QWidget.setTabOrder(self.PropertiesTemplatesListWidget, self.EquipmentTemplatesListWidget)
         QWidget.setTabOrder(self.EquipmentTemplatesListWidget, self.RecentComboBox)
@@ -2740,13 +2676,11 @@ class Ui_FinalCifWindow(object):
 
         self.TemplatesStackedWidget.setCurrentIndex(0)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        self.MainStackedWidget.setCurrentIndex(2)
-        self.picturesTabWidget.setCurrentIndex(1)
+        self.MainStackedWidget.setCurrentIndex(6)
+        self.picturesTabWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.LoopsTabWidget.setCurrentIndex(0)
         self.authorEditTabWidget.setCurrentIndex(1)
-        self.CheckCIFResultsTabWidget.setCurrentIndex(3)
-        self.ResponsesTabWidget.setCurrentIndex(1)
+        self.CheckCIFResultsTabWidget.setCurrentIndex(1)
         self.depositionOptionsStackedWidget.setCurrentIndex(3)
 
     # setupUi
@@ -2769,9 +2703,9 @@ class Ui_FinalCifWindow(object):
         self.EditEquipmentTemplateButton.setText(QCoreApplication.translate("FinalCifWindow", u"Edit Template", None))
         self.ImportEquipmentTemplateButton.setText(QCoreApplication.translate("FinalCifWindow", u"Import Template", None))
         ___qtablewidgetitem = self.EquipmentEditTableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("FinalCifWindow", u"key", None));
+        ___qtablewidgetitem.setText(QCoreApplication.translate("FinalCifWindow", u"key", None))
         ___qtablewidgetitem1 = self.EquipmentEditTableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("FinalCifWindow", u"value", None));
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("FinalCifWindow", u"value", None))
         self.DeleteEquipmentButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Template", None))
         self.SaveEquipmentButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save", None))
         self.CancelEquipmentButton.setText(QCoreApplication.translate("FinalCifWindow", u"Cancel", None))
@@ -2788,7 +2722,7 @@ class Ui_FinalCifWindow(object):
         __sortingEnabled = self.docxTemplatesListWidget.isSortingEnabled()
         self.docxTemplatesListWidget.setSortingEnabled(False)
         ___qlistwidgetitem = self.docxTemplatesListWidget.item(0)
-        ___qlistwidgetitem.setText(QCoreApplication.translate("FinalCifWindow", u"Use FinalCif default template", None));
+        ___qlistwidgetitem.setText(QCoreApplication.translate("FinalCifWindow", u"Use FinalCif default template", None))
         self.docxTemplatesListWidget.setSortingEnabled(__sortingEnabled)
 
         self.AddNewTemplPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Template", None))
@@ -2804,12 +2738,6 @@ class Ui_FinalCifWindow(object):
         self.HelpPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Help", None))
         self.datanameLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data Name", None))
         self.SumFormMainLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Sum Formula", None))
-        ___qtablewidgetitem2 = self.cif_main_table.horizontalHeaderItem(0)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("FinalCifWindow", u"CIF Value", None));
-        ___qtablewidgetitem3 = self.cif_main_table.horizontalHeaderItem(1)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("FinalCifWindow", u"From Data Source", None));
-        ___qtablewidgetitem4 = self.cif_main_table.horizontalHeaderItem(2)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("FinalCifWindow", u"Own Data", None));
         self.groupBox.setTitle("")
 #if QT_CONFIG(tooltip)
         self.SaveCifButton.setToolTip(QCoreApplication.translate("FinalCifWindow", u"Saves the CIF file to name-finalcif.cif", None))
@@ -2863,6 +2791,7 @@ class Ui_FinalCifWindow(object):
         self.molGroupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"Molecule", None))
         self.growCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Grow Structure", None))
         self.labelsCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Show Labels", None))
+        self.adpCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"ADPs", None))
         self.drawImagePushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Use as Image for Report", None))
         self.picturesTabWidget.setTabText(self.picturesTabWidget.indexOf(self.tab_structure), QCoreApplication.translate("FinalCifWindow", u"Structure", None))
         self.videoLineEdit.setPlaceholderText(QCoreApplication.translate("FinalCifWindow", u"*.vzs; *.jpg file", None))
@@ -2876,10 +2805,10 @@ class Ui_FinalCifWindow(object):
 "\n"
 "Uncheck items in order to ignore the respective data source.\n"
 "The data source will be ignored until next program restart.", None))
-        ___qtablewidgetitem5 = self.SourcesTableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("FinalCifWindow", u"CIF Item", None));
-        ___qtablewidgetitem6 = self.SourcesTableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("FinalCifWindow", u"Data Source", None));
+        ___qtablewidgetitem2 = self.SourcesTableWidget.horizontalHeaderItem(1)
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("FinalCifWindow", u"CIF Item", None))
+        ___qtablewidgetitem3 = self.SourcesTableWidget.horizontalHeaderItem(2)
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("FinalCifWindow", u"Data Source", None))
         self.BackSourcesPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.BackFromOptionspPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to Main Table", None))
         self.groupBox_COD.setTitle(QCoreApplication.translate("FinalCifWindow", u"Crystallography Open Database Server", None))
@@ -2940,16 +2869,11 @@ class Ui_FinalCifWindow(object):
         self.SaveAuthorLoopToTemplateButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
         self.AddThisAuthorToLoopPushButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Add Audit Author to CIF Loop", None))
         self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_audit), QCoreApplication.translate("FinalCifWindow", u"Audit (CIF) Authors", None))
-        self.LoopsTabWidget.setTabText(self.LoopsTabWidget.indexOf(self.tab_2), QCoreApplication.translate("FinalCifWindow", u"Author Editor", None))
         self.revertLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Revert Changes", None))
         self.BackFromLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.newLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Loop", None))
         self.deleteLoopButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Loop", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.platon_page), QCoreApplication.translate("FinalCifWindow", u"PLATON CheckCIF result", None))
-        self.ResponsesTabWidget.setTabText(self.ResponsesTabWidget.indexOf(self.htmlTabwidgetPage), QCoreApplication.translate("FinalCifWindow", u"html report", None))
-        self.label_6.setText(QCoreApplication.translate("FinalCifWindow", u"Every form you fill out will be written to the cif file.", None))
-        self.SavePushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save Response Forms", None))
-        self.ResponsesTabWidget.setTabText(self.ResponsesTabWidget.indexOf(self.ResponsesTabWidgetPage2), QCoreApplication.translate("FinalCifWindow", u"checkcif alerts", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.html_page), QCoreApplication.translate("FinalCifWindow", u"html CheckCIF result", None))
         self.label_5.setText(QCoreApplication.translate("FinalCifWindow", u"The resulting PDF file will be displayed in an external program after CheckCIF has completed.", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.pdf_page), QCoreApplication.translate("FinalCifWindow", u"PDF CheckCIF result", None))
@@ -2994,12 +2918,12 @@ class Ui_FinalCifWindow(object):
         self.label_deposition_output.setText(QCoreApplication.translate("FinalCifWindow", u"Deposition Output:", None))
         self.StructuresListGroupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"List of deposited structures", None))
         self.refreshDepositListPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Enter username and password", None))
-        ___qtablewidgetitem7 = self.CODtableWidget.horizontalHeaderItem(0)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("FinalCifWindow", u"ID", None));
-        ___qtablewidgetitem8 = self.CODtableWidget.horizontalHeaderItem(1)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("FinalCifWindow", u"Date", None));
-        ___qtablewidgetitem9 = self.CODtableWidget.horizontalHeaderItem(2)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("FinalCifWindow", u"Time", None));
+        ___qtablewidgetitem4 = self.CODtableWidget.horizontalHeaderItem(0)
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("FinalCifWindow", u"ID", None))
+        ___qtablewidgetitem5 = self.CODtableWidget.horizontalHeaderItem(1)
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("FinalCifWindow", u"Date", None))
+        ___qtablewidgetitem6 = self.CODtableWidget.horizontalHeaderItem(2)
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("FinalCifWindow", u"Time", None))
         self.BackFromDepositPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.depositCIFpushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Deposit CIF", None))
     # retranslateUi

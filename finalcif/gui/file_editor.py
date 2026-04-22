@@ -6,6 +6,8 @@ from qtpy.QtCore import QRect, QSize
 from qtpy.QtGui import QColor, QPainter, QTextFormat
 from qtpy.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
 
+from finalcif.gui import syntax_highlighter
+
 
 class QLineNumberArea(QWidget):
     def __init__(self, parent: QCodeEditor):
@@ -22,6 +24,7 @@ class QLineNumberArea(QWidget):
 class QCodeEditor(QPlainTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.highlighter = syntax_highlighter.CIFSyntaxHighlighter(self)
         self.lineNumberArea = QLineNumberArea(self)
         self.blockCountChanged.connect(self.update_line_number_area_width)
         self.updateRequest.connect(self.update_line_number_area)
@@ -80,9 +83,7 @@ class QCodeEditor(QPlainTextEdit):
             if block.isVisible() and (bottom >= event.rect().top()):
                 number = f'{block_number + 1} '
                 painter.setPen(QtCore.Qt.GlobalColor.black)
-                font = painter.font()
-                font.setFamily("Courier")
-                font.setStyleHint(QtGui.QFont.StyleHint.Monospace)
+                font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
                 painter.setFont(font)
                 painter.drawText(0, top, self.lineNumberArea.width(), height,
                                  QtCore.Qt.AlignmentFlag.AlignRight, number)
@@ -95,13 +96,19 @@ class QCodeEditor(QPlainTextEdit):
 
 if __name__ == '__main__':
     from qtpy.QtWidgets import QApplication
-
+    import gemmi
     app = QApplication.instance()
     if app is None:
         app = QApplication([])
     import sys
 
     codeEditor = QCodeEditor()
-    codeEditor.setPlainText('Foo bar')
+    codeEditor.setMinimumSize(800, 600)
+    font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
+    codeEditor.setFont(font)
+    options = gemmi.cif.WriteOptions(gemmi.cif.Style(gemmi.cif.Style.Indent35))
+    ciftext = gemmi.cif.read('test-data/DK_Zucker2_0m.cif').sole_block().as_string(options)
+    codeEditor.setPlainText(ciftext)
+    codeEditor.highlighter.setDocument(codeEditor.document())
     codeEditor.show()
     sys.exit(app.exec())

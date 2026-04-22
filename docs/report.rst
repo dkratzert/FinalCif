@@ -34,13 +34,23 @@ FinalCif can add a picture of your structure to the report document.
 
 * Either by previously performing an html or local checkcif. Then it automatically adds a picture from the checkcif report, as in the example above.
 * Or you can add any other picture with the "Picture for Report" button.
-* A third possibility is the 'Show Details' page where you can use the current structure view as picture
-  for the report:
+* A different possibility is the 'Show Details' page where you can use the current structure view as picture
+  for the report. Since version 158, the structure viewer uses the `fastmolwidget <https://pypi.org/project/fastmolwidget/>`_
+  library for a faster and more interactive visualization:
 
 .. figure:: pics/finalcif_details.png
    :width: 600
 
    The Details page.
+
+* The details page also allows to select a picture of the crystal from a video file (either Bruker .vzs or Rigaku .jpg)
+  The crystal can be rotated with the mouse wheel and zoomed by left-click and drag of the mouse. A right-click restores the default zoom.
+
+.. figure:: pics/finalcif_details_video.png
+   :width: 600
+
+   The crystal video selection.
+
 
 
 Bonds and Angles Tables
@@ -65,7 +75,7 @@ With self-defined templates this is possible in FinalCif. You can find example t
 at https://github.com/dkratzert/FinalCif. It is easier to change them than to create them from scratch.
 
 The templates are an ordinary MS Word document (more specific: Office Open XML, https://de.wikipedia.org/wiki/Office_Open_XML)
-So you can use them with MS Word, Openoffice or Libre Office and other Office Open capable programs.
+So you can use them with MS Word, OpenOffice or LibreOffice and other Office Open capable programs.
 
 FinalCif uses the Jinja2 template language to exchange specific instructions in the templates with
 precalculated information and direct values from the CIF file.
@@ -94,7 +104,7 @@ The second possibility for blocks is to iterate over the values of a Python dict
 
    {% for atom in atoms %}
       {{ atom.label }}
-   {% enfor %}
+   {% endfor %}
 
 Produces a list of all atom names in a CIF.
 If you need a table, :code:`{%tr foo %}` is used to generate table rows.
@@ -112,7 +122,7 @@ That way, it is possible to access any column from the _atom_site loop.
 
 
 This was only a brief introduction to what is possible with the Jinja template language.
-The links at the end of this chapter go far mor into details.
+The links at the end of this chapter go far more into details.
 
 
 
@@ -131,7 +141,7 @@ Data Available for the Report
     'displacement_parameters': The atomic displacement parameters as ('label', 'U11', 'U22', 'U33',
                                'U23', 'U13', 'U12') for each atom.
     'dist_unit'             : Unit for bond lengths (Angstrom or picometers).
-    'vol_unit'              : Unit for unit cel volume (Angstrom^3 or namometers^3).
+    'vol_unit'              : Unit for unit cell volume (Angstrom^3 or nanometers^3).
     'bonds'                 : The bonds with lengths as ('atoms', 'dist') for each atom pair.
     'angles'                : The bond angles as ('atoms', 'angle') for each atom triple.
     'ba_symminfo'           : The symmetry operations used to generate equivalent atoms in the angles list.
@@ -168,7 +178,7 @@ Data Available for the Report
     'detector'              : The detector model.
     'lowtemp_dev'           : The low-temperature device.
     'index_ranges'          : The preformatted index ranges.
-    'indepentent_refl'      : The number of independent reflections.
+    'independent_refl'      : The number of independent reflections.
     'r_int'                 : The R_int of the data.
     'r_sigma'               : The R_sigma of the data.
     'completeness'          : The completeness of the data.
@@ -189,11 +199,11 @@ Data Available for the Report
     'flack_x'               : The value of the flack X parameter.
     'integration_progr'     : The name of the integration program used.
     'abstype'               : The value of '_exptl_absorpt_correction_type'.
-    'abs_details'           : The name of the absortion correction program used.
+    'abs_details'           : The name of the absorption correction program used.
     'solution_method'       : The structure solution method used.
     'solution_program'      : The name of the structure solution program.
     'refinement_prog'       : The name of the refinement program.
-    'refinement_gui'        : The name of the graphical user interface used for model building and refienement.
+    'refinement_gui'        : The name of the graphical user interface used for model building and refinement.
     'refinement_details'    : The text of '_refine_special_details'.
     'resolution_angstrom'   : The resolution of the experiment in Å.
     'redundancy'            : The value of _diffrn_reflns_number / _reflns_number_total
@@ -208,7 +218,7 @@ Data Available for the Report
 .. code-block:: text
 
    'cif.res_file_data'          : The SHELX .res file text.
-   'cif.is_centrosymm'          : It true if the space group of the structure is centrosymmetric.
+   'cif.is_centrosymm'          : Is true if the space group of the structure is centrosymmetric.
    'cif.atoms'                  : The list of atoms with 'label', 'type', 'x', 'y', 'z', 'part',
                                                          'occ', 'u_eq'.
    'cif.hydrogen_atoms_present' : Is true if hydrogen atoms are present in the structure.
@@ -256,13 +266,13 @@ For a single-CIF, leave out the "block['block name']." part:
 The procedures in this chapter are not limited to the templates of FinalCif. It is also possible to insert template tags
 into any other Word document and replace them with values from a CIF file. There are no limits to
 the imagination.
-Sine version 130, it is possible to address the values of individual blocks of a multi-CIF. For example,
+Since version 130, it is possible to address the values of individual blocks of a multi-CIF. For example,
 
 .. code-block:: jinja
 
    {% for block in blocklist %}
       {{ block.name }}
-   {% enfor %}
+   {% endfor %}
 
 prints all block names of a multi-CIF.
 
@@ -279,6 +289,6 @@ For example, the chemical formula of the block 'compound1' of a multi-CIF is:
     {{ block['compound1']._chemical_formula_sum }}
 
 
-Further information how to make templates for MS Office or Openoffice:
+Further information how to make templates for MS Office or OpenOffice:
 `https://docxtpl.readthedocs.io/en/latest/ <https://docxtpl.readthedocs.io/en/latest/>`_
 `https://jinja.palletsprojects.com/en/3.1.x/ <https://jinja.palletsprojects.com/en/3.1.x/>`_
