@@ -13,7 +13,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import gemmi.cif
-from qtpy.QtWidgets import QListWidgetItem
+from qtpy import QtCore
+from qtpy.QtWidgets import QListWidgetItem, QMenu
 from gemmi.cif import Loop, as_string
 
 from finalcif.cif.cif_file_io import CifContainer
@@ -54,6 +55,8 @@ class AuthorLoops:
         self.ui = ui
         self.cif = cif
         self.app = app
+        self._rename_old_name: str = ''
+        self._rename_menu: QMenu | None = None
         self.cif_key = '_publ_author'
         self.keys_list = [f'{self.cif_key}_name', f'{self.cif_key}_address', f'{self.cif_key}_email',
                           f'{self.cif_key}_phone', f'{self.cif_key}_id_orcid', f'{self.cif_key}_id_iucr',
@@ -86,6 +89,11 @@ class AuthorLoops:
         self.ui.ImportAuthorPushButton.clicked.connect(self.import_author)
         self.ui.FullNameLineEdit.textChanged.connect(self.make_sure_to_save_only_when_name_field_has_text)
         self.ui.FullNameLineEdit_cif.textChanged.connect(self.make_sure_to_save_only_when_name_field_has_text)
+        self.ui.LoopTemplatesListWidget.setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.ui.LoopTemplatesListWidget.customContextMenuRequested.connect(
+            self.show_author_rename_menu)
+        self.ui.LoopTemplatesListWidget.itemChanged.connect(self.on_author_item_renamed)
 
     def set_author_state(self) -> None:
         if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication':
@@ -400,6 +408,58 @@ class AuthorLoops:
         for author in sorted(self.authors_list()):
             if author:
                 self.ui.LoopTemplatesListWidget.addItem(QListWidgetItem(author))
+
+    def show_author_rename_menu(self, pos: QtCore.QPoint) -> None:
+        """Show a context menu with a Rename action for the author loop templates list."""
+        listw = self.ui.LoopTemplatesListWidget
+        item = listw.itemAt(pos)
+        if item is None:
+            return
+        menu = QMenu(listw)
+        rename_action = menu.addAction('Rename')
+        # Keep a strong Python reference so PySide6 does not garbage-collect the
+        # menu wrapper (and thereby drop the triggered signal connection) before
+        # the user selects an action.  Clear it whenever the menu closes so the
+        # reference is not held indefinitely if the user dismisses without action.
+        self._rename_menu = menu
+        menu.aboutToHide.connect(lambda: setattr(self, '_rename_menu', None))
+
+        def _on_triggered(action) -> None:
+            if action == rename_action:
+                # Set flags first so the spurious itemChanged signal (fired by
+                # setFlags) finds _rename_old_name still empty and returns early.
+                item.setFlags(
+                    QtCore.Qt.ItemFlag.ItemIsEditable
+                    | QtCore.Qt.ItemFlag.ItemIsEnabled
+                    | QtCore.Qt.ItemFlag.ItemIsSelectable
+                )
+                self._rename_old_name = item.text()
+                # Defer editItem() to the next event-loop tick so that all
+                # menu-close events are processed before Qt starts the editor.
+                QtCore.QTimer.singleShot(0, lambda: listw.editItem(item))
+
+        menu.triggered.connect(_on_triggered)
+        menu.popup(listw.viewport().mapToGlobal(pos))
+
+    def on_author_item_renamed(self, item: QListWidgetItem) -> None:
+        """Persist an author template rename when the user finishes editing."""
+        if not self._rename_old_name:
+            return
+        new_name = item.text().strip()
+        old_name = self._rename_old_name
+        self._rename_old_name = ''
+        # Remove the editable flag so items cannot be renamed by accident
+        item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
+        if not new_name:
+            item.setText(old_name)
+            return
+        if new_name != old_name:
+            if new_name in self.authors_list():
+                show_general_warning(self.app, f'A template named "{new_name}" already exists.')
+                item.setText(old_name)
+                return
+            self.settings.rename_template('authors_list', old_name, new_name)
+            self.show_authors_list()
 
     def export_raw_data(self) -> list[Author]:
         """

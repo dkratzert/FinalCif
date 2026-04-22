@@ -402,13 +402,39 @@ class FinalCifSettings:
     def delete_template(self, property: str, name: str):
         """Delete a template entry from a group."""
         grp = self._get_group(property)
+        existed = name in grp
         grp.pop(name, None)
         self._schedule_flush()
-        if property == 'equipment':
+        if property == 'equipment' and existed:
             deleted = self.load_value_of_key(key='deleted_templates') or []
             deleted.append(name)
             deleted = list(set(deleted))
             self.save_key_value(name='deleted_templates', item=deleted)
+
+    def rename_template(self, property: str, old_name: str, new_name: str) -> None:
+        """Rename a template entry within a group, preserving its data."""
+        grp = self._get_group(property)
+        if old_name not in grp or not new_name:
+            return
+        if property == 'equipment':
+            # For equipment, allow renaming to a previously-deleted name (it is not a
+            # live conflict).  Renaming to a live (non-deleted) name is still rejected.
+            deleted = self.load_value_of_key(key='deleted_templates') or []
+            if new_name in grp and new_name not in deleted:
+                return
+        else:
+            deleted = []
+            if new_name in grp:
+                return
+        grp[new_name] = grp.pop(old_name)
+        self._schedule_flush()
+        # Remove old_name and new_name from the deleted equipment list.
+        # old_name: edge case where it was in deleted before rename.
+        # new_name: renaming to a previously-deleted name should make it visible again.
+        if property == 'equipment':
+            updated = [d for d in deleted if d not in (old_name, new_name)]
+            if updated != deleted:
+                self.save_key_value(name='deleted_templates', item=updated)
 
     @property
     def deleted_equipment(self):
