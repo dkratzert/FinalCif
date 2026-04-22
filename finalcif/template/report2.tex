@@ -230,7 +230,10 @@
             \textbf{Atom\,--\,Atom\,--\,Atom} & \textbf{Angle [$^{\circ}$]} \\
             \midrule
             \BLOCK{ for angle in angles }
-            \VAR{ angle.atom1 }\BLOCK{ if angle.symm1 }$^{\text{\VAR{ angle.symm1|replace('#', '\\#') }}}$\BLOCK{ endif }\VAR{ angle.atom2 }\BLOCK{ if angle.symm2 }$^{\text{\VAR{ angle.symm2|replace('#', '\\#') }}}$\BLOCK{ endif } & \VAR{ angle.angle|replace('\u2212', '\\textminus') } \\
+            \VAR{ angle.atom1 }%
+            \BLOCK{ if angle.symm1 }$^{\text{\VAR{ angle.symm1|replace('#', '\\#') }}}$\BLOCK{ endif }%
+            \VAR{ angle.atom2 }%
+            \BLOCK{ if angle.symm2 }$^{\text{\VAR{ angle.symm2|replace('#', '\\#') }}}$\BLOCK{ endif } & \VAR{ angle.angle|replace('\u2212', '\\textminus') } \\
             \BLOCK{ endfor }
             \bottomrule
         \end{tabular}
