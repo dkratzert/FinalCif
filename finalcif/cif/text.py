@@ -11,7 +11,6 @@ from html import unescape
 
 import gemmi
 
-from finalcif.template.unicode2latex.u2l import uni2tex
 
 
 def quote(string: str, wrapping=80) -> str:
@@ -202,11 +201,13 @@ def string_to_utf8(txt: str) -> str:
 
 
 def string_to_latex(cif_string: str) -> str:
+    from finalcif.template.unicode2latex.u2l import uni2tex
     utf8_string = string_to_utf8(cif_string)
     return uni2tex(utf8_string, add_font_modifiers=False, prefer_unicode_math=False, convert_accents=True)
 
 
 def utf8_to_latex(utf8_string: str) -> str:
+    from finalcif.template.unicode2latex.u2l import uni2tex
     return uni2tex(utf8_string, add_font_modifiers=False, prefer_unicode_math=False, convert_accents=True)
 
 
