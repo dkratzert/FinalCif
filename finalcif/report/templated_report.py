@@ -1218,7 +1218,7 @@ class TemplatedReport:
                                     picfile: Path | None = None,
                                     template_path: Path = Path('.'),
                                     template_file: str = "report2.tex") -> bool:
-        context = self.get_context(self.cif, self.options, picfile, None)
+        context = self.get_context(self.cif, self.options, None)
         jinja_env = jinja2.Environment(
             block_start_string=r'\BLOCK{',
             block_end_string=r'}',
