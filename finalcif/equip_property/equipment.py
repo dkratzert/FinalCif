@@ -107,6 +107,10 @@ class Equipment:
         self._rename_old_name = ''
         # Remove the editable flag so items cannot be renamed by accident
         item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
+        if not new_name:
+            show_general_warning(self.app, 'Equipment template names cannot be empty.')
+            item.setText(old_name)
+            return
         if new_name and new_name != old_name:
             if new_name in self.settings.get_equipment_list():
                 show_general_warning(self.app, f'A template named "{new_name}" already exists.')
