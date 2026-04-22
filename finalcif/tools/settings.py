@@ -402,9 +402,10 @@ class FinalCifSettings:
     def delete_template(self, property: str, name: str):
         """Delete a template entry from a group."""
         grp = self._get_group(property)
+        existed = name in grp
         grp.pop(name, None)
         self._schedule_flush()
-        if property == 'equipment':
+        if property == 'equipment' and existed:
             deleted = self.load_value_of_key(key='deleted_templates') or []
             deleted.append(name)
             deleted = list(set(deleted))
@@ -419,11 +420,14 @@ class FinalCifSettings:
             return
         grp[new_name] = grp.pop(old_name)
         self._schedule_flush()
-        # Remove old_name from the deleted list if it was there (edge case)
-        deleted = self.load_value_of_key(key='deleted_templates') or []
-        if old_name in deleted:
-            deleted = [d for d in deleted if d != old_name]
-            self.save_key_value(name='deleted_templates', item=deleted)
+        # Remove old_name and new_name from the deleted equipment list.
+        # old_name: edge case where it was in deleted before rename.
+        # new_name: renaming to a previously-deleted name should make it visible again.
+        if property == 'equipment':
+            deleted = self.load_value_of_key(key='deleted_templates') or []
+            updated = [d for d in deleted if d not in (old_name, new_name)]
+            if updated != deleted:
+                self.save_key_value(name='deleted_templates', item=updated)
 
     @property
     def deleted_equipment(self):

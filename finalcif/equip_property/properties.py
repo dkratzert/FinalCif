@@ -101,11 +101,12 @@ class Properties(QtCore.QObject):
         rename_action = menu.addAction('Rename')
         # Keep a strong Python reference so PySide6 does not garbage-collect the
         # menu wrapper (and thereby drop the triggered signal connection) before
-        # the user selects an action.
+        # the user selects an action.  Clear it whenever the menu closes so the
+        # reference is not held indefinitely if the user dismisses without action.
         self._rename_menu = menu
+        menu.aboutToHide.connect(lambda: setattr(self, '_rename_menu', None))
 
         def _on_triggered(action) -> None:
-            self._rename_menu = None  # release after signal fires
             if action == rename_action:
                 # Set flags first so the spurious itemChanged signal (fired by
                 # setFlags) finds _rename_old_name still empty and returns early.
@@ -131,7 +132,10 @@ class Properties(QtCore.QObject):
         self._rename_old_name = ''
         # Remove the editable flag so items cannot be renamed by accident
         item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable)
-        if new_name and new_name != old_name:
+        if not new_name:
+            item.setText(old_name)
+            return
+        if new_name != old_name:
             if new_name in self.settings.get_properties_list():
                 show_general_warning(self.app, f'A template named "{new_name}" already exists.')
                 item.setText(old_name)
