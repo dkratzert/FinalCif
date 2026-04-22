@@ -974,6 +974,23 @@ class HtmlFormatter(Formatter):
                 f'{less_or_equal} l {less_or_equal} {limit_l_max}')
 
 
+class LaTeXFormatter(HtmlFormatter):
+    """Formatter for LaTeX report templates.
+
+    Inherits plain-data methods (get_bonds, get_angles, etc.) from HtmlFormatter
+    but overrides symmetry-info methods to return plain text without HTML markup.
+    """
+
+    def get_bonds_angles_symminfo(self) -> str:
+        return self._bonds_angles.symminfo.replace('-', minus_sign)
+
+    def get_torsion_symminfo(self) -> str:
+        return self._torsions.symminfo.replace('-', minus_sign)
+
+    def get_hydrogen_symminfo(self) -> str:
+        return self._hydrogens.symminfo.replace('-', minus_sign)
+
+
 class RichTextFormatter(Formatter):
 
     def __init__(self, options: Options, cif: CifContainer) -> None:
@@ -1086,6 +1103,7 @@ def text_factory(options: Options, cif: CifContainer) -> dict[ReportFormat, Form
     factory = {
         ReportFormat.RICHTEXT: RichTextFormatter(options, cif),
         ReportFormat.HTML    : HtmlFormatter(options, cif),
+        ReportFormat.LATEX   : LaTeXFormatter(options, cif),
         # 'plaintext': StringFormatter(),
     }
     return factory
