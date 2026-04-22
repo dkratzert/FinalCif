@@ -1,7 +1,7 @@
 Templates
 =========
 
-FinalCif uses three different kinds of templates to simplify recurring tasks:
+FinalCif uses four different kinds of templates to simplify recurring tasks:
 
 Large text templates
 --------------------
@@ -34,6 +34,9 @@ Equipment templates
 -------------------
     They are useful for definitions of parameters like the properties of a measurement device
     or the name and address of the crystallographer. Apply template by double-clicking the respective row.
+    An existing equipment template entry can be **renamed** by right-clicking it in the list and selecting
+    "Rename" from the context menu. The entry name then becomes editable inline. Renaming to an empty name
+    or to a name that is already in use is rejected with a warning and the original name is restored.
 
 .. figure:: pics/templates.png
 
@@ -50,11 +53,20 @@ Property templates
     After saving the respective template, its values are accessible as a dropdown menu behind the respective
     key in the main table of FinalCif.
     The property templates list is located on the Options page.
+    A property template entry can be **renamed** by right-clicking it in the list and selecting "Rename".
+    As with equipment templates, empty names and duplicate names are not accepted.
 
 
 .. figure:: pics/property_templates.png
 
    Template editor for cell measurement temperature.
+
+Author loop templates
+---------------------
+    The author loop template list (visible on the loops page in the author editor) stores complete sets of
+    author information for reuse. Like equipment and property templates, an author loop template entry can be
+    **renamed** by right-clicking it in the list and selecting "Rename" from the context menu. The name becomes
+    editable inline; renaming to an empty name or to a name already in use is rejected with a warning.
 
 Templates can be edited anytime and they can be saved as a CIF file. You can use them for any cif keyword.
 Just be creative...

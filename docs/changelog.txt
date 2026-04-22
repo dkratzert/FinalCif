@@ -1,5 +1,7 @@
 FinalCif recent changes
 -----------------------
+* v160 Equipment, property, and author loop template entries can now be renamed by right-clicking the entry and selecting
+       "Rename" from the context menu. Renaming to an empty name or to a name already in use is rejected with a warning.
 * v159 Added validation response forms from CheckCIF results to the main table directly. There, they can be edited or deleted
        conveniently. The old "CheckCIF response forms" page is now removed.
        Added more loop features. Loops can now be rearranged by row and or column with the right-click menu.

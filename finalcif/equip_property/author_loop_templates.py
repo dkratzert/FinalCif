@@ -250,16 +250,30 @@ class AuthorLoops:
         self.general_author_save(author)
         self.clear_fields()
 
-    def general_author_save(self, author: Author) -> None:
+    def _author_template_name(self, author: Author) -> str:
+        """Return the default template-list name for an author."""
+        if author.contact_author:
+            return f'{string_to_utf8(as_string(author.name))} (contact author)'
+        return string_to_utf8(as_string(author.name))
+
+    def _unique_author_name(self, base_name: str) -> str:
+        """Return a name not yet in the authors list, appending a counter if necessary."""
+        existing = set(self.authors_list())
+        if base_name not in existing:
+            return base_name
+        counter = 2
+        while f'{base_name} {counter}' in existing:
+            counter += 1
+        return f'{base_name} {counter}'
+
+    def general_author_save(self, author: Author, template_name: str | None = None) -> None:
         if not author.name:
             return
-        if author.contact_author:
-            itemtext = f'{string_to_utf8(as_string(author.name))} (contact author)'
-        else:
-            itemtext = string_to_utf8(as_string(author.name))
-        if not itemtext:
+        if template_name is None:
+            template_name = self._author_template_name(author)
+        if not template_name:
             return
-        self.settings.save_settings_dict(property='authors_list', name=itemtext, items=author)
+        self.settings.save_settings_dict(property='authors_list', name=template_name, items=author)
         self.show_authors_list()
 
     def export_author_template(self, filename: str | None = None) -> None:
@@ -349,7 +363,8 @@ class AuthorLoops:
                     author_type=AuthorType.publ,
                     contact_author=True
                 )
-                self.general_author_save(author)
+                unique_name = self._unique_author_name(self._author_template_name(author))
+                self.general_author_save(author, template_name=unique_name)
 
             names = list(block.find_values('_publ_author_name'))
             if names:
@@ -376,7 +391,8 @@ class AuthorLoops:
                         author_type=AuthorType.publ,
                         contact_author=False
                     )
-                    self.general_author_save(author)
+                    unique_name = self._unique_author_name(self._author_template_name(author))
+                    self.general_author_save(author, template_name=unique_name)
 
         self.show_authors_list()
 
@@ -475,7 +491,8 @@ class AuthorLoops:
         Import all authors from an external file"""
         for author in authors_data:
             if author and isinstance(author, Author):
-                self.general_author_save(author)
+                unique_name = self._unique_author_name(self._author_template_name(author))
+                self.general_author_save(author, template_name=unique_name)
 
     def authors_list(self) -> list[str]:
         return self.settings.list_saved_items(property='authors_list')

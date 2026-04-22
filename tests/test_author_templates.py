@@ -4,8 +4,10 @@ os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from tests.helpers import AppWindowTestCase
 from pathlib import Path
+from unittest.mock import patch
 
 from finalcif.appwindow import AppWindow
+from finalcif.equip_property.author_loop_templates import AuthorLoops, Author, AuthorType
 
 data = Path('tests')
 
@@ -169,6 +171,92 @@ class MyTestCase(AppWindowTestCase):
         self.assertEqual("''", self.app.authors.get_author_info().email)
         self.assertEqual(False, self.app.authors.get_author_info().contact_author)
         self._delete_test_author('Author Two')
+
+
+class UniqueAuthorNameTestCase(unittest.TestCase):
+    """Unit tests for AuthorLoops._unique_author_name — no GUI needed."""
+
+    def _make_loops(self, existing: list[str]) -> AuthorLoops:
+        loops = AuthorLoops.__new__(AuthorLoops)
+        loops._rename_old_name = ''
+        loops._rename_menu = None
+        loops.authors_list = lambda: list(existing)
+        return loops
+
+    def test_unique_name_returns_base_when_no_clash(self):
+        loops = self._make_loops(['Alice'])
+        self.assertEqual('Bob', loops._unique_author_name('Bob'))
+
+    def test_unique_name_appends_2_on_first_clash(self):
+        loops = self._make_loops(['Alice'])
+        self.assertEqual('Alice 2', loops._unique_author_name('Alice'))
+
+    def test_unique_name_skips_taken_numbers(self):
+        loops = self._make_loops(['Alice', 'Alice 2', 'Alice 3'])
+        self.assertEqual('Alice 4', loops._unique_author_name('Alice'))
+
+    def test_unique_name_empty_list(self):
+        loops = self._make_loops([])
+        self.assertEqual('Alice', loops._unique_author_name('Alice'))
+
+    def test_author_template_name_regular(self):
+        loops = self._make_loops([])
+        author = Author(name='John Doe', address='', email='', phone='',
+                        orcid='', footnote='', contact_author=False,
+                        author_type=AuthorType.publ)
+        self.assertEqual('John Doe', loops._author_template_name(author))
+
+    def test_author_template_name_contact_author(self):
+        loops = self._make_loops([])
+        author = Author(name='John Doe', address='', email='', phone='',
+                        orcid='', footnote='', contact_author=True,
+                        author_type=AuthorType.publ)
+        self.assertEqual('John Doe (contact author)', loops._author_template_name(author))
+
+
+class ImportAuthorDeduplicationTestCase(AppWindowTestCase):
+    """Integration tests: importing the same CIF author twice must deduplicate."""
+
+    def setUp(self) -> None:
+        self.testcif = data / 'examples/1979688.cif'
+        self.testimport_author = data / 'other_templates/AATest_Author.cif'
+        self.app = AppWindow(self.testcif)
+        self.app.ui.authorEditTabWidget.setCurrentIndex(0)
+        self._cleanup()
+
+    def tearDown(self) -> None:
+        self._cleanup()
+        self.app.close()
+        super().tearDown()
+
+    def _cleanup(self):
+        for name in list(self.app.authors.authors_list()):
+            if name and name.startswith('AATest Author'):
+                self.app.authors.settings.delete_template('authors_list', name)
+        self.app.authors.show_authors_list()
+
+    def test_import_same_author_twice_creates_distinct_entries(self):
+        self.app.authors.import_author(str(self.testimport_author))
+        self.app.authors.import_author(str(self.testimport_author))
+        authors = self.app.authors.authors_list()
+        self.assertIn('AATest Author', authors)
+        self.assertIn('AATest Author 2', authors)
+
+    def test_import_three_times_creates_three_entries(self):
+        for _ in range(3):
+            self.app.authors.import_author(str(self.testimport_author))
+        authors = self.app.authors.authors_list()
+        self.assertIn('AATest Author', authors)
+        self.assertIn('AATest Author 2', authors)
+        self.assertIn('AATest Author 3', authors)
+
+    def test_reimport_does_not_overwrite_existing_entry(self):
+        self.app.authors.import_author(str(self.testimport_author))
+        first_data = self.app.authors.author_loopdata('AATest Author')
+        self.app.authors.import_author(str(self.testimport_author))
+        after_data = self.app.authors.author_loopdata('AATest Author')
+        self.assertEqual(first_data, after_data)
+
 
 if __name__ == '__main__':
     unittest.main()
