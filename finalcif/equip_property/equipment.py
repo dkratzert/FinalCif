@@ -112,7 +112,8 @@ class Equipment:
             item.setText(old_name)
             return
         if new_name and new_name != old_name:
-            if new_name in self.settings.get_equipment_list():
+            deleted = self.settings.load_value_of_key(key='deleted_templates') or []
+            if new_name in self.settings.get_equipment_list() or new_name in deleted:
                 show_general_warning(self.app, f'A template named "{new_name}" already exists.')
                 item.setText(old_name)
                 return
