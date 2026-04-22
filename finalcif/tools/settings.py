@@ -419,11 +419,12 @@ class FinalCifSettings:
             return
         grp[new_name] = grp.pop(old_name)
         self._schedule_flush()
-        # Remove old_name from the deleted list if it was there (edge case)
-        deleted = self.load_value_of_key(key='deleted_templates') or []
-        if old_name in deleted:
-            deleted = [d for d in deleted if d != old_name]
-            self.save_key_value(name='deleted_templates', item=deleted)
+        # Remove old_name from the deleted equipment list if it was there (edge case)
+        if property == 'equipment':
+            deleted = self.load_value_of_key(key='deleted_templates') or []
+            if old_name in deleted:
+                deleted = [d for d in deleted if d != old_name]
+                self.save_key_value(name='deleted_templates', item=deleted)
 
     @property
     def deleted_equipment(self):
