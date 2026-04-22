@@ -24,6 +24,7 @@ class RenameSettingsTestCase(unittest.TestCase):
         self.settings = FinalCifSettings(settings_path=self._path)
 
     def tearDown(self) -> None:
+        self.settings.flush()
         self._path.unlink(missing_ok=True)
         self._path.with_suffix('.tmp').unlink(missing_ok=True)
 
