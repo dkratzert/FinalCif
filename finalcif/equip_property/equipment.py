@@ -121,6 +121,8 @@ class Equipment:
             self.settings.rename_template('equipment', old_name, new_name)
             # If old_name was a predefined (hard-wired) template, add it to the deleted
             # list so that store_predefined_templates() does not re-surface it.
+            # Reload deleted_templates here because rename_template() may have modified it
+            # (it removes new_name from the list when renaming to a previously-deleted name).
             predefined_names = {t['name'] for t in misc.predefined_equipment_templates}
             if old_name in predefined_names:
                 deleted_after = self.settings.load_value_of_key(key='deleted_templates') or []
