@@ -190,6 +190,40 @@ class TestSqueezeSolventDialog(unittest.TestCase):
         delta_item = dlg.table.item(0, 5)
         self.assertEqual(QColor(255, 200, 200), delta_item.background().color())
 
+    def test_empty_formula_clears_delta_and_colors(self):
+        """Clearing the formula should reset Δ and both calc/delta cells to neutral."""
+        from qtpy.QtGui import QColor
+        dlg = self._make_dialog()
+        # First set a formula to get a colored delta
+        dlg.table.item(0, 3).setText('H2O')
+        # Now clear it
+        dlg.table.item(0, 3).setText('')
+        delta_item = dlg.table.item(0, 5)   # _COL_DELTA
+        calc_item = dlg.table.item(0, 4)    # _COL_ELEC_CALC
+        self.assertEqual('', delta_item.text())
+        self.assertEqual('', calc_item.text())
+        self.assertEqual(QColor(255, 255, 255), delta_item.background().color())
+        self.assertEqual(QColor(255, 255, 255), calc_item.background().color())
+
+    def test_manual_details_edit_not_overwritten(self):
+        """If user has edited the details text, formula changes should not overwrite it."""
+        dlg = self._make_dialog()
+        dlg.table.item(0, 3).setText('CH2Cl2')   # trigger auto-generation
+        dlg.details_edit.setPlainText('My custom text')  # simulate user edit
+        dlg.table.item(0, 3).setText('3(H2O)')   # change formula
+        self.assertEqual('My custom text', dlg.details_edit.toPlainText())
+
+    def test_auto_details_generated_before_manual_edit(self):
+        """Auto-generation works normally until the user touches the text area."""
+        dlg = self._make_dialog()
+        dlg.table.item(0, 3).setText('CH2Cl2')
+        text_after_auto = dlg.details_edit.toPlainText()
+        self.assertIn('CH2Cl2', text_after_auto)
+        # Change formula — should still auto-update (no user edit yet)
+        dlg.table.item(0, 3).setText('H2O')
+        self.assertIn('H2O', dlg.details_edit.toPlainText())
+        self.assertNotIn('CH2Cl2', dlg.details_edit.toPlainText())
+
     def test_details_auto_generated(self):
         dlg = self._make_dialog()
         dlg.table.item(0, 3).setText('CH2Cl2')
@@ -231,6 +265,7 @@ class TestSqueezeSolventDialog(unittest.TestCase):
         with tempfile.NamedTemporaryFile(suffix='.cif', mode='w', delete=False) as f:
             f.write(sqf_text)
             tmp_path = Path(f.name)
+        dlg = None
         try:
             cif = CifContainer(tmp_path)
             dlg = self.SqueezeSolventDialog(cif=cif)
@@ -239,7 +274,8 @@ class TestSqueezeSolventDialog(unittest.TestCase):
             self.assertEqual('H2O', dlg.formula_for_row(0))
         finally:
             tmp_path.unlink(missing_ok=True)
-            dlg.close()
+            if dlg is not None:
+                dlg.close()
 
 
 if __name__ == '__main__':

@@ -136,9 +136,12 @@ class SqueezeSolventDialog(QDialog):
         layout.addWidget(self.details_edit)
 
         # pre-fill from existing _platon_squeeze_details if present
+        self._details_user_modified = False
         existing_details = self.cif['_platon_squeeze_details']
         if existing_details:
+            self._details_user_modified = True
             self.details_edit.setPlainText(existing_details)
+        self.details_edit.textChanged.connect(self._on_details_text_changed)
 
         # button box
         btn_box = QDialogButtonBox(
@@ -282,6 +285,10 @@ class SqueezeSolventDialog(QDialog):
     # Slots
     # ------------------------------------------------------------------
 
+    def _on_details_text_changed(self) -> None:
+        """Mark details as user-modified so auto-regeneration stops overwriting it."""
+        self._details_user_modified = True
+
     def _on_formula_changed(self, item: QTableWidgetItem) -> None:
         if item.column() != _COL_FORMULA:
             return
@@ -299,6 +306,14 @@ class SqueezeSolventDialog(QDialog):
             return
 
         formula = formula_item.text().strip()
+
+        if not formula:
+            elec_calc_item.setText('')
+            elec_calc_item.setBackground(_COLOR_NEUTRAL)
+            delta_item.setText('')
+            delta_item.setBackground(_COLOR_NEUTRAL)
+            return
+
         calc_e = electrons_from_formula(formula)
         elec_calc_item.setText(str(calc_e) if formula else '')
 
@@ -332,10 +347,9 @@ class SqueezeSolventDialog(QDialog):
         self._regenerate_details()
 
     def _regenerate_details(self) -> None:
-        """Auto-regenerate the details text from current table contents."""
-        # Don't overwrite if the user has edited the text manually; only
-        # regenerate if the contents still match an auto-generated pattern
-        # or are empty.
+        """Auto-regenerate the details text, but only while the user hasn't modified it."""
+        if self._details_user_modified:
+            return
         void_rows = []
         for row_idx in range(self.table.rowCount()):
             vol_item = self.table.item(row_idx, _COL_VOL)
@@ -349,7 +363,10 @@ class SqueezeSolventDialog(QDialog):
             })
         text = build_details_text(void_rows)
         if text:
+            # Block textChanged so our programmatic update doesn't set _details_user_modified
+            self.details_edit.blockSignals(True)
             self.details_edit.setPlainText(text)
+            self.details_edit.blockSignals(False)
 
     # ------------------------------------------------------------------
     # Accept / write-back
