@@ -993,6 +993,20 @@ class LaTeXFormatter(HtmlFormatter):
     def get_hydrogen_symminfo(self) -> str:
         return self._hydrogens.symminfo.replace('-', minus_sign)
 
+    def space_group_formatted(self, cif: CifContainer, _: None) -> str:
+        s = SpaceGroups()
+        try:
+            spgrxml = s.to_latex(cif.space_group)
+            # Mathml doesn't work well in pyQt
+            # spgrxml = s.to_mathml(cif.space_group)
+        except KeyError:
+            spgrxml = cif.space_group
+        try:
+            number = cif.spgr_number
+        except AttributeError:
+            return '?'
+        return f'{spgrxml} ({number})'
+
 
 class RichTextFormatter(Formatter):
 
