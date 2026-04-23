@@ -7,7 +7,8 @@
 #   ----------------------------------------------------------------------------
 """
 Dialog that lets the user assign solvent formulae and generates the
-``_platon_squeeze_details`` text for structures refined with PLATON SQUEEZE.
+``_platon_squeeze_details`` or ``_smtbx_masks_special_details`` text for
+structures refined with PLATON SQUEEZE or Olex2/SMTBX solvent masks.
 """
 from __future__ import annotations
 
@@ -35,6 +36,7 @@ _COL_FORMULA = 3
 _COL_ELEC_CALC = 4
 _COL_DELTA = 5
 
+# ── PLATON SQUEEZE keys ──────────────────────────────────────────────────────
 _SQUEEZE_LOOP_KEY = '_platon_squeeze_void_nr'
 _SQUEEZE_LOOP_TAGS = [
     '_platon_squeeze_void_nr',
@@ -47,6 +49,52 @@ _SQUEEZE_LOOP_TAGS = [
     '_platon_squeeze_void_probe_radius',
 ]
 
+# ── Olex2/SMTBX solvent mask keys ────────────────────────────────────────────
+_SMTBX_LOOP_KEY = '_smtbx_masks_void_nr'
+_SMTBX_LOOP_TAGS = [
+    '_smtbx_masks_void_nr',
+    '_smtbx_masks_void_average_x',
+    '_smtbx_masks_void_average_y',
+    '_smtbx_masks_void_average_z',
+    '_smtbx_masks_void_volume',
+    '_smtbx_masks_void_count_electrons',
+    '_smtbx_masks_void_content',
+]
+
+# ── Per-mode dialog configuration ────────────────────────────────────────────
+_MODE_CONFIG: dict[str, dict] = {
+    'squeeze': {
+        'loop_key': _SQUEEZE_LOOP_KEY,
+        'loop_tags': _SQUEEZE_LOOP_TAGS,
+        'vol_tag': '_platon_squeeze_void_volume',
+        'elec_tag': '_platon_squeeze_void_count_electrons',
+        'content_tag': '_platon_squeeze_void_content',
+        'details_key': '_platon_squeeze_details',
+        'title': 'PLATON SQUEEZE \u2013 Assign Solvent Content',
+        'info': (
+            'PLATON/SQUEEZE was used. '
+            'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'
+        ),
+        'details_label': 'SQUEEZE details (<i>_platon_squeeze_details</i>):',
+        'electrons_col_header': 'Electrons\n(PLATON)',
+    },
+    'smtbx': {
+        'loop_key': _SMTBX_LOOP_KEY,
+        'loop_tags': _SMTBX_LOOP_TAGS,
+        'vol_tag': '_smtbx_masks_void_volume',
+        'elec_tag': '_smtbx_masks_void_count_electrons',
+        'content_tag': '_smtbx_masks_void_content',
+        'details_key': '_smtbx_masks_special_details',
+        'title': 'Olex2/SMTBX Masks \u2013 Assign Solvent Content',
+        'info': (
+            'Olex2/SMTBX solvent masks were used. '
+            'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'
+        ),
+        'details_label': 'Masks details (<i>_smtbx_masks_special_details</i>):',
+        'electrons_col_header': 'Electrons\n(Masks)',
+    },
+}
+
 _COLOR_OK = QColor(200, 255, 200)      # light green
 _COLOR_WARN = QColor(255, 200, 200)    # light red
 _COLOR_NEUTRAL = QColor(255, 255, 255) # white
@@ -54,33 +102,71 @@ _COLOR_NEUTRAL = QColor(255, 255, 255) # white
 
 class SqueezeSolventDialog(QDialog):
     """
-    Modal dialog for entering PLATON SQUEEZE solvent content.
+    Modal dialog for entering PLATON SQUEEZE or Olex2/SMTBX solvent mask content.
 
-    The dialog reads the existing SQUEEZE loop from *cif* (populated from the
-    ``.sqf`` file) and lets the user assign a chemical formula (per unit cell)
-    to each void.  The electron count from that formula is automatically
-    calculated and compared to the value PLATON reported so the user can judge
-    whether the assignment is chemically reasonable.
+    The dialog reads the existing void loop from *cif* and lets the user assign a
+    chemical formula (per unit cell) to each void.  The electron count from that
+    formula is automatically calculated and compared to the value reported by the
+    refinement program so the user can judge whether the assignment is chemically
+    reasonable.
+
+    Supported modes (auto-detected from the CIF when *mode* is not given):
+
+    * ``'squeeze'`` - PLATON SQUEEZE (``_platon_squeeze_*`` keys)
+    * ``'smtbx'``   - Olex2/SMTBX solvent masks (``_smtbx_masks_*`` keys)
 
     After the user clicks **OK**:
-    * The ``_platon_squeeze_void_content`` column in the SQUEEZE loop is updated.
-    * The ``_platon_squeeze_details`` key is written as a descriptive sentence
+    * The ``_*_void_content`` column in the void loop is updated.
+    * The corresponding details key is written as a descriptive sentence
       for each void.
 
-    If no SQUEEZE loop is present in *cif*, the dialog first offers to locate
-    and import the corresponding ``.sqf`` file.
+    For SQUEEZE mode: if no loop is present in *cif*, the dialog first offers to
+    locate and import the corresponding ``.sqf`` file.
     """
 
-    def __init__(self, cif: 'CifContainer', parent: QWidget | None = None) -> None:
+    def __init__(
+        self,
+        cif: 'CifContainer',
+        mode: str | None = None,
+        parent: QWidget | None = None,
+    ) -> None:
         super().__init__(parent)
         self.cif = cif
-        self.setWindowTitle('PLATON SQUEEZE – Assign Solvent Content')
+        # Determine operating mode: use provided value, or auto-detect from CIF
+        self._loop_mode: str = mode if mode is not None else self._auto_detect_mode()
+        self._cfg = _MODE_CONFIG[self._loop_mode]
+        self.setWindowTitle(self._cfg['title'])
         self.setMinimumWidth(750)
         self._build_ui()
-        if self._has_squeeze_loop():
+        if self._has_loop():
             self._populate_table()
-        else:
+        elif self._loop_mode == 'squeeze':
             self._ask_for_sqf_file()
+        else:
+            # smtbx loop absent - nothing to import; populate (empty) table
+            self._populate_table()
+
+    # ------------------------------------------------------------------
+    # Mode detection
+    # ------------------------------------------------------------------
+
+    def _auto_detect_mode(self) -> str:
+        """Return 'smtbx' when an smtbx void loop is present, else 'squeeze'."""
+        if self._check_loop_present(_SMTBX_LOOP_KEY):
+            return 'smtbx'
+        return 'squeeze'
+
+    def _check_loop_present(self, key: str) -> bool:
+        """Return True when a CIF loop containing *key* exists and is non-empty."""
+        try:
+            loop = self.cif.get_loop(key)
+            return loop is not None and loop.width() > 0
+        except (AttributeError, RuntimeError, TypeError):
+            return False
+
+    def _has_loop(self) -> bool:
+        """Return True when the mode-appropriate void loop is present in the CIF."""
+        return self._check_loop_present(self._cfg['loop_key'])
 
     # ------------------------------------------------------------------
     # UI construction
@@ -90,18 +176,16 @@ class SqueezeSolventDialog(QDialog):
         layout = QVBoxLayout(self)
 
         # info label
-        info = QLabel(
-            'PLATON/SQUEEZE was used. '
-            'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'
-        )
+        info = QLabel(self._cfg['info'])
         info.setWordWrap(True)
         layout.addWidget(info)
 
         # void table
         self.table = QTableWidget(0, 6)
         self.table.setHorizontalHeaderLabels([
-            'Void #', 'Volume (Å³)', 'Electrons\n(PLATON)', 'Solvent formula\n(per unit cell)',
-            'Electrons\n(calc.)', 'Δ electrons',
+            'Void #', 'Volume (\u00c5\u00b3)', self._cfg['electrons_col_header'],
+            'Solvent formula\n(per unit cell)',
+            'Electrons\n(calc.)', '\u0394 electrons',
         ])
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setColumnWidth(_COL_NR, 55)
@@ -125,7 +209,7 @@ class SqueezeSolventDialog(QDialog):
         layout.addLayout(btn_row)
 
         # details label + editor
-        layout.addWidget(QLabel('SQUEEZE details (<i>_platon_squeeze_details</i>):'))
+        layout.addWidget(QLabel(self._cfg['details_label']))
         self.details_edit = QPlainTextEdit()
         self.details_edit.setPlaceholderText(
             'Auto-generated when you enter formulae above. You may edit freely.'
@@ -135,9 +219,9 @@ class SqueezeSolventDialog(QDialog):
         self.details_edit.setMaximumHeight(140)
         layout.addWidget(self.details_edit)
 
-        # pre-fill from existing _platon_squeeze_details if present
+        # pre-fill from existing details key if present
         self._details_user_modified = False
-        existing_details = self.cif['_platon_squeeze_details']
+        existing_details = self.cif[self._cfg['details_key']]
         if existing_details:
             self._details_user_modified = True
             self.details_edit.setPlainText(existing_details)
@@ -155,18 +239,11 @@ class SqueezeSolventDialog(QDialog):
     # Data helpers
     # ------------------------------------------------------------------
 
-    def _has_squeeze_loop(self) -> bool:
-        """Return True when the SQUEEZE void loop is already present in the CIF."""
-        try:
-            loop = self.cif.get_loop(_SQUEEZE_LOOP_KEY)
-            return loop is not None and loop.width() > 0
-        except (AttributeError, RuntimeError, TypeError):
-            return False
-
     def _ask_for_sqf_file(self) -> None:
         """
         Try to auto-locate a .sqf file next to the CIF.  If not found,
         open a file-chooser dialog.  Import the chosen file into the CIF.
+        (SQUEEZE mode only.)
         """
         cif_path = Path(self.cif.fileobj)
         candidate = cif_path.with_suffix('.sqf')
@@ -176,13 +253,13 @@ class SqueezeSolventDialog(QDialog):
             sqf_path = str(candidate)
         else:
             msg = QMessageBox(self)
-            msg.setWindowTitle('PLATON SQUEEZE – .sqf file required')
+            msg.setWindowTitle('PLATON SQUEEZE \u2013 .sqf file required')
             msg.setText(
                 'No SQUEEZE data found in the current CIF.\n\n'
                 'Please locate the corresponding .sqf file produced by PLATON.'
             )
             msg.setIcon(QMessageBox.Icon.Information)
-            open_btn = msg.addButton('Choose .sqf file…', QMessageBox.ButtonRole.AcceptRole)
+            open_btn = msg.addButton('Choose .sqf file\u2026', QMessageBox.ButtonRole.AcceptRole)
             msg.addButton('Skip', QMessageBox.ButtonRole.RejectRole)
             msg.exec()
             if msg.clickedButton() is open_btn:
@@ -223,11 +300,11 @@ class SqueezeSolventDialog(QDialog):
         self.cif.add_loop_from_columns(existing_tags, columns)
 
     def _populate_table(self) -> None:
-        """Fill the void table from the current CIF's SQUEEZE loop."""
+        """Fill the void table from the current CIF's mode-appropriate void loop."""
         self.table.blockSignals(True)
         self.table.setRowCount(0)
 
-        if not self._has_squeeze_loop():
+        if not self._has_loop():
             self.table.blockSignals(False)
             return
 
@@ -238,10 +315,11 @@ class SqueezeSolventDialog(QDialog):
             except (AttributeError, RuntimeError):
                 return []
 
-        nrs = _col('_platon_squeeze_void_nr')
-        volumes = _col('_platon_squeeze_void_volume')
-        electrons = _col('_platon_squeeze_void_count_electrons')
-        contents = _col('_platon_squeeze_void_content')
+        cfg = self._cfg
+        nrs = _col(cfg['loop_key'])
+        volumes = _col(cfg['vol_tag'])
+        electrons = _col(cfg['elec_tag'])
+        contents = _col(cfg['content_tag'])
 
         n_rows = len(nrs)
         self.table.setRowCount(n_rows)
@@ -361,7 +439,7 @@ class SqueezeSolventDialog(QDialog):
                 'electrons_platon': elec_item.text() if elec_item else '?',
                 'formula': formula_item.text() if formula_item else '',
             })
-        text = build_details_text(void_rows)
+        text = build_details_text(void_rows, method=self._loop_mode)
         if text:
             # Block textChanged so our programmatic update doesn't set _details_user_modified
             self.details_edit.blockSignals(True)
@@ -374,9 +452,11 @@ class SqueezeSolventDialog(QDialog):
 
     def _on_accept(self) -> None:
         """Write formulae and details back to the CIF and close."""
-        if not self._has_squeeze_loop():
+        if not self._has_loop():
             self.accept()
             return
+
+        cfg = self._cfg
 
         # Gather all current loop column data
         def _col(tag: str) -> list[str]:
@@ -386,7 +466,7 @@ class SqueezeSolventDialog(QDialog):
                 return []
 
         # Determine which tags are present in the existing loop
-        present_tags = [t for t in _SQUEEZE_LOOP_TAGS if _col(t)]
+        present_tags = [t for t in cfg['loop_tags'] if _col(t)]
         if not present_tags:
             self.accept()
             return
@@ -400,9 +480,10 @@ class SqueezeSolventDialog(QDialog):
             new_formulae.append(formula if formula else '?')
 
         # Reconstruct column data with the updated content column
+        content_tag = cfg['content_tag']
         columns: list[list[str]] = []
         for tag in present_tags:
-            if tag == '_platon_squeeze_void_content':
+            if tag == content_tag:
                 columns.append(new_formulae)
             else:
                 col_data = _col(tag)
@@ -412,18 +493,19 @@ class SqueezeSolventDialog(QDialog):
                 columns.append(col_data[:n_rows])
 
         # If content column was not in the original loop, add it
-        if '_platon_squeeze_void_content' not in present_tags:
-            present_tags.append('_platon_squeeze_void_content')
+        if content_tag not in present_tags:
+            present_tags.append(content_tag)
             columns.append(new_formulae)
 
         self.cif.add_loop_from_columns(present_tags, columns)
 
         # Write details text
+        details_key = cfg['details_key']
         details = self.details_edit.toPlainText().strip()
         if details:
-            self.cif['_platon_squeeze_details'] = details
-        elif '_platon_squeeze_details' in self.cif:
-            del self.cif['_platon_squeeze_details']
+            self.cif[details_key] = details
+        elif details_key in self.cif:
+            del self.cif[details_key]
 
         self.accept()
 
@@ -440,3 +522,16 @@ class SqueezeSolventDialog(QDialog):
         """Return the delta text for the given row index (for testing)."""
         item = self.table.item(row, _COL_DELTA)
         return item.text() if item else ''
+
+
+# ---------------------------------------------------------------------------
+# Module-level helpers (usable without instantiating the dialog)
+# ---------------------------------------------------------------------------
+
+def has_smtbx_masks_loop(cif: 'CifContainer') -> bool:
+    """Return True when an Olex2/SMTBX solvent masks loop is present in *cif*."""
+    try:
+        loop = cif.get_loop(_SMTBX_LOOP_KEY)
+        return loop is not None and loop.width() > 0
+    except (AttributeError, RuntimeError, TypeError):
+        return False

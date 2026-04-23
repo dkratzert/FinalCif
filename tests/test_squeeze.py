@@ -22,6 +22,7 @@ if app is None:
 
 FIXTURES = Path(__file__).parent / 'fixtures'
 SQF_FILE = FIXTURES / 'squeeze_test.sqf'
+SMTBX_FILE = FIXTURES / 'smtbx_test.cif'
 
 
 # ---------------------------------------------------------------------------
@@ -276,6 +277,137 @@ class TestSqueezeSolventDialog(unittest.TestCase):
             tmp_path.unlink(missing_ok=True)
             if dlg is not None:
                 dlg.close()
+
+
+# ---------------------------------------------------------------------------
+# build_details_text – smtbx method
+# ---------------------------------------------------------------------------
+
+class TestBuildDetailsTextSmtbx(unittest.TestCase):
+
+    def test_smtbx_mentions_olex2(self):
+        rows = [{'nr': 1, 'volume': '471.7', 'electrons_platon': '165.7', 'formula': '16(H2O)'}]
+        text = build_details_text(rows, method='smtbx')
+        self.assertIn('Olex2', text)
+        self.assertIn('SMTBX', text)
+        self.assertNotIn('SQUEEZE', text)
+
+    def test_smtbx_includes_formula_and_volume(self):
+        rows = [{'nr': 1, 'volume': '471.7', 'electrons_platon': '165.7', 'formula': '16(H2O)'}]
+        text = build_details_text(rows, method='smtbx')
+        self.assertIn('16(H2O)', text)
+        self.assertIn('471.7', text)
+
+    def test_squeeze_still_mentions_squeeze(self):
+        rows = [{'nr': 1, 'volume': '248.3', 'electrons_platon': '42', 'formula': 'CH2Cl2'}]
+        text = build_details_text(rows, method='squeeze')
+        self.assertIn('SQUEEZE', text)
+        self.assertNotIn('SMTBX', text)
+
+
+# ---------------------------------------------------------------------------
+# SqueezeSolventDialog – smtbx masks mode
+# ---------------------------------------------------------------------------
+
+class TestSmtbxMasksDialog(unittest.TestCase):
+
+    def setUp(self):
+        from finalcif.gui.squeeze_dialog import SqueezeSolventDialog
+        self.SqueezeSolventDialog = SqueezeSolventDialog
+        self.cif = CifContainer(SMTBX_FILE)
+
+    def tearDown(self):
+        if hasattr(self, 'dialog'):
+            self.dialog.close()
+
+    def _make_dialog(self) -> 'SqueezeSolventDialog':
+        dlg = self.SqueezeSolventDialog(cif=self.cif)
+        self.dialog = dlg
+        return dlg
+
+    def test_auto_detects_smtbx_mode(self):
+        dlg = self._make_dialog()
+        self.assertEqual('smtbx', dlg._loop_mode)
+
+    def test_title_reflects_smtbx(self):
+        dlg = self._make_dialog()
+        self.assertIn('SMTBX', dlg.windowTitle())
+        self.assertIn('Olex2', dlg.windowTitle())
+
+    def test_table_has_two_rows(self):
+        dlg = self._make_dialog()
+        self.assertEqual(2, dlg.table.rowCount())
+
+    def test_electron_count_loaded(self):
+        dlg = self._make_dialog()
+        # Fixture: both voids have 165.7 electrons
+        elec_item = dlg.table.item(0, 2)  # _COL_ELEC_PLATON
+        self.assertEqual('165.7', elec_item.text())
+
+    def test_volume_loaded(self):
+        dlg = self._make_dialog()
+        vol_item = dlg.table.item(0, 1)  # _COL_VOL
+        self.assertEqual('471.7', vol_item.text())
+
+    def test_formula_editable(self):
+        dlg = self._make_dialog()
+        from qtpy.QtCore import Qt
+        item = dlg.table.item(0, 3)  # _COL_FORMULA
+        self.assertTrue(bool(item.flags() & Qt.ItemFlag.ItemIsEditable))
+
+    def test_fill_down_works(self):
+        dlg = self._make_dialog()
+        dlg.table.item(0, 3).setText('16(H2O)')
+        dlg.fill_down_btn.click()
+        self.assertEqual('16(H2O)', dlg.formula_for_row(1))
+
+    def test_details_mentions_smtbx(self):
+        dlg = self._make_dialog()
+        dlg.table.item(0, 3).setText('16(H2O)')
+        text = dlg.details_edit.toPlainText()
+        self.assertIn('SMTBX', text)
+        self.assertIn('Olex2', text)
+
+    def test_accept_writes_content_to_cif(self):
+        dlg = self._make_dialog()
+        dlg.table.item(0, 3).setText('16(H2O)')
+        dlg.table.item(1, 3).setText('16(H2O)')
+        dlg._on_accept()
+        contents = self.cif.get_loop_column('_smtbx_masks_void_content')
+        self.assertEqual('16(H2O)', contents[0])
+        self.assertEqual('16(H2O)', contents[1])
+
+    def test_accept_writes_details_to_cif(self):
+        dlg = self._make_dialog()
+        dlg.table.item(0, 3).setText('16(H2O)')
+        dlg._on_accept()
+        details = self.cif['_smtbx_masks_special_details']
+        self.assertIn('16(H2O)', details)
+        self.assertIn('SMTBX', details)
+
+    def test_explicit_mode_parameter(self):
+        """Passing mode='smtbx' explicitly should work even if auto-detection would differ."""
+        dlg = self.SqueezeSolventDialog(cif=self.cif, mode='smtbx')
+        self.dialog = dlg
+        self.assertEqual('smtbx', dlg._loop_mode)
+        dlg.close()
+
+
+# ---------------------------------------------------------------------------
+# has_smtbx_masks_loop helper
+# ---------------------------------------------------------------------------
+
+class TestHasSmtbxMasksLoop(unittest.TestCase):
+
+    def test_detects_smtbx_loop(self):
+        from finalcif.gui.squeeze_dialog import has_smtbx_masks_loop
+        cif = CifContainer(SMTBX_FILE)
+        self.assertTrue(has_smtbx_masks_loop(cif))
+
+    def test_squeeze_cif_has_no_smtbx_loop(self):
+        from finalcif.gui.squeeze_dialog import has_smtbx_masks_loop
+        cif = CifContainer(SQF_FILE)
+        self.assertFalse(has_smtbx_masks_loop(cif))
 
 
 if __name__ == '__main__':

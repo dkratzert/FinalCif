@@ -82,21 +82,26 @@ def electrons_from_formula(formula_str: str) -> int:
         return 0
 
 
-def build_details_text(void_rows: list[dict]) -> str:
+def build_details_text(void_rows: list[dict], method: str = 'squeeze') -> str:
     """
-    Auto-generates a draft ``_platon_squeeze_details`` text from void data.
+    Auto-generates a draft details text from void data.
 
     Each entry in *void_rows* is expected to have the keys:
     ``nr``, ``volume``, ``electrons_platon``, ``formula``.
     Voids without a formula are skipped.
 
-    The generated style mirrors the example text in ``all_cif_dicts.py``:
+    For PLATON SQUEEZE (*method='squeeze'*) the generated style mirrors the
+    example text in ``all_cif_dicts.py``:
 
         "The C4H8O solvent molecule (42 electrons) disordered in a void of
         248.3 A**3 was treated by SQUEEZE."
 
+    For Olex2/SMTBX solvent masks (*method='smtbx'*) a parallel sentence is
+    generated that references the SMTBX mask procedure instead.
+
     Args:
         void_rows: List of dicts with void metadata and user-provided formula.
+        method: Treatment method - ``'squeeze'`` (default) or ``'smtbx'``.
 
     Returns:
         Multi-sentence details string, or empty string when no formulae are set.
@@ -108,8 +113,15 @@ def build_details_text(void_rows: list[dict]) -> str:
             continue
         volume = row.get('volume', '?')
         calc_e = electrons_from_formula(formula)
-        sentences.append(
-            f'The {formula} solvent molecule ({calc_e} electrons) disordered '
-            f'in a void of {volume} \u212b\u00b3 was treated by SQUEEZE.'
-        )
+        if method == 'smtbx':
+            sentences.append(
+                f'The {formula} solvent molecule ({calc_e} electrons) disordered '
+                f'in a void of {volume} \u212b\u00b3 was treated by the Olex2/SMTBX '
+                f'solvent mask procedure.'
+            )
+        else:
+            sentences.append(
+                f'The {formula} solvent molecule ({calc_e} electrons) disordered '
+                f'in a void of {volume} \u212b\u00b3 was treated by SQUEEZE.'
+            )
     return '\n'.join(sentences)

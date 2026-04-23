@@ -58,7 +58,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
 from finalcif.gui.loop_creator import LoopCreator
-from finalcif.gui.squeeze_dialog import SqueezeSolventDialog
+from finalcif.gui.squeeze_dialog import SqueezeSolventDialog, has_smtbx_masks_loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.cif.vrf_entry import VRFEntry
@@ -2045,6 +2045,9 @@ class AppWindow(QMainWindow):
             self.add_ccdc_number()
             if self.cif.shx and self.cif.shx.abin and not self.cif['_platon_squeeze_void_probe_radius']:
                 self.open_squeeze_dialog()
+        # Olex2/SMTBX solvent masks – trigger dialog when loop is present but details absent
+        if has_smtbx_masks_loop(self.cif) and not self.cif['_smtbx_masks_special_details']:
+            self.open_squeeze_dialog()
         vheadlist = self.ui.cif_main_table.model().vheaderitems
         for src in self.sources:
             if not self.sources[src]:
