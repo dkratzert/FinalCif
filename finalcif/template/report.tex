@@ -12,7 +12,8 @@
 \usepackage{microtype}
 \usepackage{caption}
 \usepackage{makecell}
-\captionsetup[table]{position=below}
+\captionsetup[table]{position=above}
+\setlength{\arrayrulewidth}{0.4pt}
 \usepackage{siunitx}
 \usepackage{verbatim}
 %\usepackage{unicode-math}
@@ -85,7 +86,12 @@
     \section*{Table 1. Crystal data and structure refinement for \detokenize{\VAR{ cif.block.name }}}
 
     \begin{table}[]
-        \begin{tabular}{ll}
+        \caption{Crystal data and structure refinement for \detokenize{\VAR{ cif.block.name }}}
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{p{5.5cm}l}
+            \toprule
+            \textbf{Identification} & \textbf{Value} \\
+            \midrule
             CCDC number                       & \VAR{cif._database_code_depnum_ccdc_archive}                                                        \\
             Empirical formula                 & \VAR{sum_formula}                                                                                   \\
             Formula weight                    & \VAR{ cif._chemical_formula_weight }                                                                \\
@@ -131,6 +137,7 @@
             \BLOCK{ if flack_x }
             Flack X parameter                 & \VAR{flack_x}                                                                                       \\
             \BLOCK{ endif }
+            \bottomrule
         \end{tabular}\label{tab:table1}
     \end{table}
 
@@ -139,18 +146,21 @@
 
     \begin{table}[]
         \caption{$U_{eq}$ is defined as 1/3 of the trace of the orthogonalized $U_{ij}$ tensor.}
-        \begin{tabular}{lllll}
-            \hline
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{lrrrr}
+            \toprule
             \thead{Atom} &
             \thead{$x$} &
             \thead{$y$} &
             \thead{$z$} &
             \thead{$U_{eq}$} \\
+            \midrule
             \BLOCK{ for atom in atomic_coordinates }
             \VAR{ atom.label } & \VAR{ atom.x|replace('\u2212', ' \\textminus') } &
             \VAR{ atom.y|replace('\u2212', ' \\textminus') } & \VAR{ atom.z|replace('\u2212', ' \\textminus') } &
             \VAR{ atom.u_eq } \\
             \BLOCK{ endfor }
+            \bottomrule
         \end{tabular}\label{tab:table2}
     \end{table}
     \BLOCK{ endif }
@@ -167,10 +177,9 @@
                        +\dots \allowbreak +2hka^*b^*U_{12}\right]
             $
         }
-
-        \begin{tabular}{lllllll}
-            % <th>Atom  <i>U</i><sub>11</sub>  <i>U</i><sub>22</sub>   <i>U</i><sub>33</sub>   <i>U</i><sub>23</sub>   <i>U</i><sub>13</sub>   <i>U</i><sub>12</sub>
-            \hline
+        \renewcommand{\arraystretch}{1.2}
+        \begin{tabular}{lrrrrrr}
+            \toprule
             \thead{Atom} &
             \thead{$U_{11}$} &
             \thead{$U_{22}$} &
@@ -178,7 +187,7 @@
             \thead{$U_{23}$} &
             \thead{$U_{13}$} &
             \thead{$U_{12}$} \\
-
+            \midrule
             \BLOCK{ for atom in displacement_parameters }
             \VAR{ atom.label } &
             \VAR{ atom.U11|replace('\u2212', ' \\textminus') } &
@@ -188,6 +197,7 @@
             \VAR{ atom.U13|replace('\u2212', ' \\textminus') } &
             \VAR{ atom.U12|replace('\u2212', ' \\textminus') } \\
             \BLOCK{ endfor }
+            \bottomrule
         \end{tabular}\label{tab:table3}
     \end{table}
 
@@ -198,11 +208,28 @@
         \BLOCK{if bonds}
         \section*{Table 4. Bond lengths and angles for \detokenize{\VAR{ cif.block.name }}}
         \begin{table}[]
+            \renewcommand{\arraystretch}{1.2}
             \begin{tabular}{ll}
-                \hline
-                \thead{Atom} &
-                \thead{Length {[\AA]}} \\
+                \toprule
+                \textbf{Atom\,--\,Atom} & \textbf{Length [\AA]} \\
+                \midrule
+                \BLOCK{ for bond in bonds }
+                \VAR{ bond.atoms }\BLOCK{ if bond.symm }$^{\text{\VAR{ bond.symm|replace('#', '\\#') }}}$\BLOCK{ endif } & \VAR{ bond.dist|replace('\u2212', '\\textminus') } \\
+                \BLOCK{ endfor }
+                \midrule
+                \textbf{Atom\,--\,Atom\,--\,Atom} & \textbf{Angle [$^{\circ}$]} \\
+                \midrule
+                \BLOCK{ for angle in angles }
+                \VAR{ angle.atom1 }%
+                \BLOCK{ if angle.symm1 }$^{\text{\VAR{ angle.symm1|replace('#', '\\#') }}}$\BLOCK{ endif }%
+                \VAR{ angle.atom2 }%
+                \BLOCK{ if angle.symm2 }$^{\text{\VAR{ angle.symm2|replace('#', '\\#') }}}$\BLOCK{ endif } & \VAR{ angle.angle|replace('\u2212', '\\textminus') } \\
+                \BLOCK{ endfor }
+                \bottomrule
             \end{tabular}
+            \BLOCK{ if ba_symminfo }
+            \par\smallskip{\footnotesize \VAR{ ba_symminfo }}
+            \BLOCK{ endif }
         \end{table}
 
         \BLOCK{endif}

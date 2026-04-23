@@ -974,6 +974,26 @@ class HtmlFormatter(Formatter):
                 f'{less_or_equal} l {less_or_equal} {limit_l_max}')
 
 
+class LaTeXFormatter(HtmlFormatter):
+    """Formatter for LaTeX report templates.
+
+    Inherits most formatting behaviour from HtmlFormatter (bonds, angles,
+    coordinates, displacement parameters, etc.) but overrides the three
+    symmetry-info methods to return plain text instead of HTML markup
+    (no ``<br>`` tags or ``&nbsp;`` entities that would appear literally
+    in the rendered ``.tex`` file).
+    """
+
+    def get_bonds_angles_symminfo(self) -> str:
+        return self._bonds_angles.symminfo.replace('-', minus_sign)
+
+    def get_torsion_symminfo(self) -> str:
+        return self._torsions.symminfo.replace('-', minus_sign)
+
+    def get_hydrogen_symminfo(self) -> str:
+        return self._hydrogens.symminfo.replace('-', minus_sign)
+
+
 class RichTextFormatter(Formatter):
 
     def __init__(self, options: Options, cif: CifContainer) -> None:
@@ -1086,6 +1106,7 @@ def text_factory(options: Options, cif: CifContainer) -> dict[ReportFormat, Form
     factory = {
         ReportFormat.RICHTEXT: RichTextFormatter(options, cif),
         ReportFormat.HTML    : HtmlFormatter(options, cif),
+        ReportFormat.LATEX   : LaTeXFormatter(options, cif),
         # 'plaintext': StringFormatter(),
     }
     return factory
@@ -1200,7 +1221,7 @@ class TemplatedReport:
                                     picfile: Path | None = None,
                                     template_path: Path = Path('.'),
                                     template_file: str = "report2.tex") -> bool:
-        context = self.get_context(self.cif, self.options, picfile, None)
+        context = self.get_context(self.cif, self.options, None)
         jinja_env = jinja2.Environment(
             block_start_string=r'\BLOCK{',
             block_end_string=r'}',

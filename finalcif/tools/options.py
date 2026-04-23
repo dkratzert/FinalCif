@@ -99,6 +99,18 @@ class Options:
         return self._get_setting('report_adp', True)
 
     @property
+    def bonds_table(self) -> bool:
+        return self._get_setting('bonds_table', True)
+
+    @property
+    def atoms_table(self) -> bool:
+        return self._get_setting('atoms_table', True)
+
+    @property
+    def hydrogen_bonds(self) -> bool:
+        return self._get_setting('hydrogen_bonds', True)
+
+    @property
     def without_h(self) -> bool:
         return self._get_setting('without_h', False)
 
