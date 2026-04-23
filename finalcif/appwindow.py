@@ -58,6 +58,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
 from finalcif.gui.loop_creator import LoopCreator
+from finalcif.gui.squeeze_dialog import SqueezeSolventDialog
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.cif.vrf_entry import VRFEntry
@@ -777,6 +778,20 @@ class AppWindow(QMainWindow):
         Opens the checkcif stackwidget page and therein the html report page
         """
         self.ui.MainStackedWidget.go_to_checkcif_page()
+
+    def open_squeeze_dialog(self) -> None:
+        """
+        Opens the PLATON SQUEEZE solvent content dialog.
+
+        The dialog lets the user assign a chemical formula to each SQUEEZE void,
+        calculates the expected electron count for validation, auto-generates the
+        ``_platon_squeeze_details`` text, and writes the results back to the CIF.
+        If no SQUEEZE loop is present yet, the dialog offers to import the .sqf file.
+        """
+        if self.cif is None:
+            return
+        dialog = SqueezeSolventDialog(cif=self.cif, parent=self)
+        dialog.exec()
 
     def _ccdc_deposit(self) -> None:
         """
@@ -2029,10 +2044,7 @@ class AppWindow(QMainWindow):
             # Add the CCDC number in case we have a deposition mail lying around:
             self.add_ccdc_number()
             if self.cif.shx and self.cif.shx.abin and not self.cif['_platon_squeeze_void_probe_radius']:
-                show_general_warning(self, "A SQUEEZE refinement was detected.\n"
-                                           "Please import the corresponding .sqf file\n"
-                                           "from PLATON and complete the _platon_squeeze_void_content information "
-                                           "in the 'Platon SQUEEZE voids' loop.")
+                self.open_squeeze_dialog()
         vheadlist = self.ui.cif_main_table.model().vheaderitems
         for src in self.sources:
             if not self.sources[src]:
