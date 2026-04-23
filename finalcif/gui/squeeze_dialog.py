@@ -92,8 +92,7 @@ class SqueezeSolventDialog(QDialog):
         # info label
         info = QLabel(
             'PLATON/SQUEEZE was used. '
-            'Assign the solvent formula per void <b>per unit cell</b>. '
-            'The formula may describe multiple molecules, e.g. <tt>2(H2O)</tt>.'
+            'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'
         )
         info.setWordWrap(True)
         layout.addWidget(info)
