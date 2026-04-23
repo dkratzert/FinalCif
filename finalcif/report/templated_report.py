@@ -16,8 +16,8 @@ from typing import Any
 
 from qtpy.QtWidgets import QApplication
 
-from finalcif.cif.text import string_to_utf8
-from finalcif.template.xsl.convert import xml_to_html
+from finalcif.cif.text import string_to_utf8, escape_for_latex, string_to_latex
+from finalcif.template.xsl.convert import xml_to_html, xml_to_latex
 from finalcif.tools.dsrmath import my_isnumeric
 
 # This is necessary, because if jinja crashes, we show an error dialog:
@@ -57,6 +57,7 @@ TableRow = namedtuple('TableRow', experiment_table_columns)
 class ReportFormat(enum.Enum):
     RICHTEXT = 'richtext'
     HTML = 'html'
+    LATEX = 'latex'
 
 
 @dataclasses.dataclass(frozen=True)
@@ -355,6 +356,9 @@ class Atoms:
         Transforms XML to HTML using XSLT.
         """
         return xml_to_html(self.rt)
+
+    def latex(self):
+        return xml_to_latex(self.rt)
 
     def number_of_isotropic_atoms(self, without_h: bool = True) -> float | int:
         isotropic_count = 0
@@ -970,6 +974,26 @@ class HtmlFormatter(Formatter):
                 f'{less_or_equal} l {less_or_equal} {limit_l_max}')
 
 
+class LaTeXFormatter(HtmlFormatter):
+    """Formatter for LaTeX report templates.
+
+    Inherits most formatting behaviour from HtmlFormatter (bonds, angles,
+    coordinates, displacement parameters, etc.) but overrides the three
+    symmetry-info methods to return plain text instead of HTML markup
+    (no ``<br>`` tags or ``&nbsp;`` entities that would appear literally
+    in the rendered ``.tex`` file).
+    """
+
+    def get_bonds_angles_symminfo(self) -> str:
+        return self._bonds_angles.symminfo.replace('-', minus_sign)
+
+    def get_torsion_symminfo(self) -> str:
+        return self._torsions.symminfo.replace('-', minus_sign)
+
+    def get_hydrogen_symminfo(self) -> str:
+        return self._hydrogens.symminfo.replace('-', minus_sign)
+
+
 class RichTextFormatter(Formatter):
 
     def __init__(self, options: Options, cif: CifContainer) -> None:
@@ -1082,6 +1106,7 @@ def text_factory(options: Options, cif: CifContainer) -> dict[ReportFormat, Form
     factory = {
         ReportFormat.RICHTEXT: RichTextFormatter(options, cif),
         ReportFormat.HTML    : HtmlFormatter(options, cif),
+        ReportFormat.LATEX   : LaTeXFormatter(options, cif),
         # 'plaintext': StringFormatter(),
     }
     return factory
@@ -1191,6 +1216,54 @@ class TemplatedReport:
             return False
         return True
 
+    def make_templated_latex_report(self,
+                                    output_filename: str = 'test.tex',
+                                    picfile: Path | None = None,
+                                    template_path: Path = Path('.'),
+                                    template_file: str = "report2.tex") -> bool:
+        context = self.get_context(self.cif, self.options, None)
+        jinja_env = jinja2.Environment(
+            block_start_string=r'\BLOCK{',
+            block_end_string=r'}',
+            variable_start_string=r'\VAR{',
+            variable_end_string=r'}',
+            comment_start_string=r'\#{',
+            comment_end_string=r'}',
+            line_statement_prefix=r'%%',
+            line_comment_prefix=r'%#',
+            trim_blocks=True,
+            autoescape=False,
+            loader=jinja2.FileSystemLoader(searchpath=template_path.resolve())
+        )
+        jinja_env.globals.update(zip=zip)
+        jinja_env.globals.update(strip=str.strip)
+        jinja_env.filters['to_pm'] = angstrom_to_pm if self.options.use_picometers else do_nothing
+        jinja_env.filters['to_nm'] = angstrom_to_nanometers if self.options.use_picometers else do_nothing
+        jinja_env.filters['inv_article'] = report_text.get_inf_article
+        jinja_env.filters['utf8'] = report_text.utf8
+        jinja_env.filters['float_num'] = report_text.format_float_with_decimal_places
+        jinja_env.filters['ref_num'] = self.count_reference
+        # foo(Kratzert, 2015):
+        jinja_env.filters['ref_short'] = self.reference_short
+        # richtext formatted full reference:
+        jinja_env.filters['ref_long'] = self.reference_long
+        # plain text full reference:
+        jinja_env.filters['ref_txt'] = self.reference_text
+        # html reference:
+        jinja_env.filters['ref_html'] = self.reference_html
+        jinja_env.filters['to_latex'] = string_to_latex
+        template = jinja_env.get_template(template_file)
+
+        try:
+            with open(output_filename, encoding='utf-8', mode='w+t') as f:
+                outputText = template.render(context)
+                f.write(outputText)
+        except Exception as e:
+            show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
+                                 info_text=str(e))
+            return False
+        return True
+
     def prepare_report_data(self, cif: CifContainer,
                             options: Options,
                             tpl_doc: DocxTemplate | None) -> tuple[dict[str, Any], DocxTemplate]:
@@ -1269,8 +1342,8 @@ class TemplatedReport:
                    'ls_wR_factor_gt'        : this_or_quest(cif['_refine_ls_wR_factor_gt']),
                    'ls_R_factor_all'        : this_or_quest(cif['_refine_ls_R_factor_all']),
                    'ls_wR_factor_ref'       : this_or_quest(cif['_refine_ls_wR_factor_ref']),
-                   'diff_dens_min'          : self.text_formatter.get_diff_density_min(cif).replace('-', minus_sign),
-                   'diff_dens_max'          : self.text_formatter.get_diff_density_max(cif).replace('-', minus_sign),
+                   'diff_dens_min'          : self.text_formatter.get_diff_density_min(cif),
+                   'diff_dens_max'          : self.text_formatter.get_diff_density_max(cif),
                    'exti'                   : self.text_formatter.get_exti(cif),
                    'flack_x'                : self.text_formatter.get_flackx(cif),
                    'integration_progr'      : string_to_utf8(self.text_formatter.get_integration_program(cif)),
@@ -1327,12 +1400,13 @@ if __name__ == '__main__':
 
     import subprocess
 
-    html = False
+    report_type = ReportFormat.LATEX
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
-    testcif = Path(r'test-data/p31c.cif').absolute()
-    # testcif = Path(r"D:\Downloads\9008564.cif").absolute()
+    # testcif = Path(r'test-data/p31c.cif').absolute()
+    #testcif = Path(r'test-data/p31c.cif').absolute()
+    #testcif = Path(r"D:\Downloads\9008564.cif").absolute()
     cif = CifContainer(testcif)
 
     pic = pathlib.Path("screenshots/finalcif_checkcif.png")
@@ -1352,15 +1426,21 @@ if __name__ == '__main__':
     work.mkdir(exist_ok=True)
     template_path = app_path.application_path / 'template'
 
-    if html:
+    if report_type == ReportFormat.HTML:
         output = work / 'test.html'
         t = TemplatedReport(format=ReportFormat.HTML, options=options, cif=cif)
-        ok = t.make_templated_html_report(output_filename=str(output), template_path=template_path)
-    else:
+        ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
+    elif report_type == ReportFormat.RICHTEXT:
         output = work / 'test.docx'
         t = TemplatedReport(format=ReportFormat.RICHTEXT, options=options, cif=cif)
-        ok = t.make_templated_docx_report(template_path=Path('finalcif/template/report_default.docx'),
-                                          output_filename=str(output))
+        ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
+                                          output_filename=str(output), picfile=pic)
+    elif report_type == ReportFormat.LATEX:
+        print('Doing LaTex report')
+        output = work / 'test.tex'
+        t = TemplatedReport(format=ReportFormat.LATEX, options=options, cif=cif)
+        ok = t.make_templated_latex_report(template_path=template_path,
+                                           output_filename=str(output), picfile=pic)
     if ok:
         print('report successfully generated')
         if sys.platform == 'darwin':

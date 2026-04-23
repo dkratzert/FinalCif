@@ -12,6 +12,7 @@ from html import unescape
 import gemmi
 
 
+
 def quote(string: str, wrapping=80) -> str:
     """
     Quotes a cif string and wraps it. The shorter strings are directly handled by cif.quote().
@@ -28,56 +29,56 @@ def quote(string: str, wrapping=80) -> str:
 
 
 characters = {
-    '—'      : r'--',
-    '±'      : r'+-',
-    '×'      : r'\\times',  # noqa: RUF001
-    '≠'      : r'\\neq',
-    '→'      : r'\\rightarrow',
-    '←'      : r'\\leftarrow',
-    '∞'      : r'\\infty',
-    '≃'      : r'\\simeq',
-    '≈'      : r'\\sim',
-    'ß'      : r'\&s',
-    'ü'      : r'\"u',
-    'Ü'      : r'\"U',
-    'ö'      : r'\"o',  # 'LATIN SMALL LETTER O WITH DIAERESIS'
-    'Ö'      : r'\"O',
-    'ä'      : r'\"a',
-    'Ä'      : r'\"A',
-    'é'      : r"\'e",
-    'É'      : r"\'E",
-    'è'      : r'\`e',
-    'È'      : r'\`E',
-    'ì'      : r'\`i',
-    'Ì'      : r'\`I',
-    'í'      : r'\'i',
-    'Í'      : r'\'I',
-    'ó'      : r"\'o",
-    'Ó'      : r"\'O",
-    'ò'      : r'\`o',
-    'Ò'      : r'\`O',
-    'ȯ'      : r'\.o',
-    'ø'      : r'\/o',
-    'á'      : r'\'a',
-    'Á'      : r'\'A',
-    'à'      : r'\`a',
-    'À'      : r'\`A',
-    'â'      : r'\^a',
-    'Â'      : r'\^A',
-    'å'      : r'\%a',
-    'ê'      : r'\^e',
-    'î'      : r'\^i',
-    'Î'      : r'\^I',
-    'ô'      : r'\^o',
-    'Ô'      : r'\^O',
-    'û'      : r'\^u',
-    'Û'      : r'\^U',
-    'ç'      : r'\,c',
-    'ñ'      : r'\~n',
-    'ł'      : r'\/l',
-    'đ'      : r'\/d',
-    'Å'      : r'\%A',  # 'LATIN CAPITAL LETTER A WITH RING ABOVE'
-    'Å'      : r'\%A',  # unicodedata.name('Å'): 'ANGSTROM SIGN'
+    '—'     : r'--',
+    '±'     : r'+-',
+    '×'     : r'\\times',  # noqa: RUF001
+    '≠'     : r'\\neq',
+    '→'     : r'\\rightarrow',
+    '←'     : r'\\leftarrow',
+    '∞'     : r'\\infty',
+    '≃'     : r'\\simeq',
+    '≈'     : r'\\sim',
+    'ß'     : r'\&s',
+    'ü'     : r'\"u',
+    'Ü'     : r'\"U',
+    'ö'     : r'\"o',  # 'LATIN SMALL LETTER O WITH DIAERESIS'
+    'Ö'     : r'\"O',
+    'ä'     : r'\"a',
+    'Ä'     : r'\"A',
+    'é'     : r"\'e",
+    'É'     : r"\'E",
+    'è'     : r'\`e',
+    'È'     : r'\`E',
+    'ì'     : r'\`i',
+    'Ì'     : r'\`I',
+    'í'     : r'\'i',
+    'Í'     : r'\'I',
+    'ó'     : r"\'o",
+    'Ó'     : r"\'O",
+    'ò'     : r'\`o',
+    'Ò'     : r'\`O',
+    'ȯ'     : r'\.o',
+    'ø'     : r'\/o',
+    'á'     : r'\'a',
+    'Á'     : r'\'A',
+    'à'     : r'\`a',
+    'À'     : r'\`A',
+    'â'     : r'\^a',
+    'Â'     : r'\^A',
+    'å'     : r'\%a',
+    'ê'     : r'\^e',
+    'î'     : r'\^i',
+    'Î'     : r'\^I',
+    'ô'     : r'\^o',
+    'Ô'     : r'\^O',
+    'û'     : r'\^u',
+    'Û'     : r'\^U',
+    'ç'     : r'\,c',
+    'ñ'     : r'\~n',
+    'ł'     : r'\/l',
+    'đ'     : r'\/d',
+    'Å'     : r'\%A',  # 'LATIN CAPITAL LETTER A WITH RING ABOVE'
+    'Å'     : r'\%A',  # unicodedata.name('Å'): 'ANGSTROM SIGN'
     '\u2079': r'^9^',
     '\u2078': r'^8^',
     '\u2077': r'^7^',
@@ -149,7 +150,7 @@ characters = {
     "\u03A9": r'\W',
     "\u03D5": r'\f',
     "\u00B0": r"\%",
-    '·'      : r"{middle dot}",
+    '·'     : r"{middle dot}",
     # "1̄": r'\=1',  # Does not work in QT?
 }
 
@@ -199,6 +200,17 @@ def string_to_utf8(txt: str) -> str:
     return retranslate_delimiter(txt)
 
 
+def string_to_latex(cif_string: str) -> str:
+    from finalcif.template.unicode2latex.u2l import uni2tex
+    utf8_string = string_to_utf8(cif_string)
+    return uni2tex(utf8_string, add_font_modifiers=False, prefer_unicode_math=False, convert_accents=True)
+
+
+def utf8_to_latex(utf8_string: str) -> str:
+    from finalcif.template.unicode2latex.u2l import uni2tex
+    return uni2tex(utf8_string, add_font_modifiers=False, prefer_unicode_math=False, convert_accents=True)
+
+
 def retranslate_delimiter(txt: str, no_html_unescape: bool = False) -> str:
     """
     Translates delimited cif characters back to Unicode characters.
@@ -219,3 +231,26 @@ def utf8_to_html_ascii(text: str) -> str:
 
 def html_ascii_to_utf8(text: str) -> str:
     return unescape(text)
+
+
+def escape_for_latex(text: str) -> str:
+    """
+    Escapes special characters in text so that it can be safely used in LaTeX.
+    """
+    latex_special_chars = {
+        '\\': r'\textbackslash{}',
+        '{' : r'\{',
+        '}' : r'\}',
+        '$' : r'\$',
+        '&' : r'\&',
+        '#' : r'\#',
+        '_' : r'\_',
+        '%' : r'\%',
+        '~' : r'\textasciitilde{}',
+        '^' : r'\textasciicircum{}',
+        '[' : r'\[',
+        ']' : r'\]',
+    }
+    regex = re.compile('|'.join(re.escape(key) for key in latex_special_chars))
+    escaped_text = regex.sub(lambda match: latex_special_chars[match.group()], text)
+    return string_to_latex(escaped_text)
