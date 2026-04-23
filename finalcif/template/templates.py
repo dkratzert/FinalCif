@@ -34,7 +34,7 @@ class ReportTemplates:
     def add_new_template(self, templ_path: str = '') -> None:
         if not templ_path:
             templ_path, _ = compat.getopenfilename(parent=self.app,
-                                                        filters="All template files (*.docx *.html *.tmpl *.tex);; DOCX file (*.docx);; html file (*.html *.tmpl)",
+                                                        filters="All template files (*.docx *.html *.tmpl *.tex);; DOCX file (*.docx);; html file (*.html *.tmpl *.tex)",
                                                         selectedfilter="All template files (*.docx *.html *.tmpl *.tex)",
                                                         caption='Open a Report Template File')
         itemslist = self.get_templates_list_from_widget()
