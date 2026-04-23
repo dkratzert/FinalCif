@@ -51,9 +51,9 @@ def _normalize_squeeze_formula(formula_str: str) -> str:
         Normalised formula string accepted by ``chemparse.parse_formula``.
     """
     def _swap(m: re.Match) -> str:
-        return f'({m.group(2)}){m.group(1)}'
+        return f'{m.group(1)}({m.group(3)}){m.group(2)}'
 
-    return re.sub(r'(\d+(?:\.\d+)?)\(([^()]*)\)', _swap, formula_str)
+    return re.sub(r'(^|(?<=\s))(\d+(?:\.\d+)?)\(([^()]*)\)', _swap, formula_str)
 
 
 def electrons_from_formula(formula_str: str) -> int:
