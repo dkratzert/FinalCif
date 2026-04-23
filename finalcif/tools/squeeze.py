@@ -1,6 +1,6 @@
 #   ----------------------------------------------------------------------------
 #   "THE BEER-WARE LICENSE" (Revision 42):
-#   dkratzert@gmx.de> wrote this file.  As long as you retain
+#   <dkratzert@gmx.de> wrote this file.  As long as you retain
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   Dr. Daniel Kratzert
@@ -75,7 +75,10 @@ def electrons_from_formula(formula_str: str) -> int:
         normalised = _normalize_squeeze_formula(formula_str.strip())
         atom_dict = parse_formula(normalised)
         return round(sum(ATOMIC_NUMBERS.get(el, 0) * count for el, count in atom_dict.items()))
-    except (ChemparseError, Exception):
+    except ChemparseError:
+        return 0
+    except (TypeError, ValueError, KeyError, AttributeError):
+        # Unexpected formula format — return 0 to avoid crashing the UI
         return 0
 
 

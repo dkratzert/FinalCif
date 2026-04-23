@@ -1,6 +1,6 @@
 #   ----------------------------------------------------------------------------
 #   "THE BEER-WARE LICENSE" (Revision 42):
-#   dkratzert@gmx.de> wrote this file.  As long as you retain
+#   <dkratzert@gmx.de> wrote this file.  As long as you retain
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   Dr. Daniel Kratzert
@@ -158,7 +158,7 @@ class SqueezeSolventDialog(QDialog):
         try:
             loop = self.cif.get_loop(_SQUEEZE_LOOP_KEY)
             return loop is not None and loop.width() > 0
-        except Exception:
+        except (AttributeError, RuntimeError, TypeError):
             return False
 
     def _ask_for_sqf_file(self) -> None:
@@ -233,7 +233,7 @@ class SqueezeSolventDialog(QDialog):
         def _col(tag: str) -> list[str]:
             try:
                 return self.cif.get_loop_column(tag)
-            except Exception:
+            except (AttributeError, RuntimeError):
                 return []
 
         nrs = _col('_platon_squeeze_void_nr')
@@ -366,7 +366,7 @@ class SqueezeSolventDialog(QDialog):
         def _col(tag: str) -> list[str]:
             try:
                 return self.cif.get_loop_column(tag)
-            except Exception:
+            except (AttributeError, RuntimeError):
                 return []
 
         # Determine which tags are present in the existing loop
