@@ -315,7 +315,7 @@ class SqueezeSolventDialog(QDialog):
             return
 
         calc_e = electrons_from_formula(formula)
-        elec_calc_item.setText(str(calc_e) if formula else '')
+        elec_calc_item.setText(str(calc_e))
 
         try:
             platon_e = float(elec_platon_item.text())
