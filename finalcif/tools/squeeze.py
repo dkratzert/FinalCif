@@ -11,6 +11,7 @@ Helper utilities for handling PLATON SQUEEZE structures.
 from __future__ import annotations
 
 import re
+from typing import Literal
 
 from finalcif.tools.chemparse import parse_formula, ChemparseError
 
@@ -82,7 +83,7 @@ def electrons_from_formula(formula_str: str) -> int:
         return 0
 
 
-def build_details_text(void_rows: list[dict], method: str = 'squeeze') -> str:
+def build_details_text(void_rows: list[dict], method: Literal['squeeze', 'smtbx'] = 'squeeze') -> str:
     """
     Auto-generates a draft details text from void data.
 

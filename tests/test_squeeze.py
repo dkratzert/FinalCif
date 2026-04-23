@@ -285,6 +285,13 @@ class TestSqueezeSolventDialog(unittest.TestCase):
 
 class TestBuildDetailsTextSmtbx(unittest.TestCase):
 
+    def test_default_method_is_squeeze(self):
+        """build_details_text() without method argument should generate SQUEEZE text."""
+        rows = [{'nr': 1, 'volume': '248.3', 'electrons_platon': '42', 'formula': 'CH2Cl2'}]
+        text = build_details_text(rows)
+        self.assertIn('SQUEEZE', text)
+        self.assertNotIn('SMTBX', text)
+
     def test_smtbx_mentions_olex2(self):
         rows = [{'nr': 1, 'volume': '471.7', 'electrons_platon': '165.7', 'formula': '16(H2O)'}]
         text = build_details_text(rows, method='smtbx')
@@ -391,6 +398,12 @@ class TestSmtbxMasksDialog(unittest.TestCase):
         self.dialog = dlg
         self.assertEqual('smtbx', dlg._loop_mode)
         dlg.close()
+
+    def test_invalid_mode_raises_value_error(self):
+        """Passing an invalid mode should raise ValueError with a descriptive message."""
+        with self.assertRaises(ValueError) as ctx:
+            self.SqueezeSolventDialog(cif=self.cif, mode='invalid')
+        self.assertIn('invalid', str(ctx.exception))
 
 
 # ---------------------------------------------------------------------------

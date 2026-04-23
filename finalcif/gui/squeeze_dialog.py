@@ -132,7 +132,11 @@ class SqueezeSolventDialog(QDialog):
     ) -> None:
         super().__init__(parent)
         self.cif = cif
-        # Determine operating mode: use provided value, or auto-detect from CIF
+        # Validate and resolve operating mode
+        if mode is not None and mode not in _MODE_CONFIG:
+            raise ValueError(
+                f"Invalid mode {mode!r}. Valid modes are: {list(_MODE_CONFIG)}"
+            )
         self._loop_mode: str = mode if mode is not None else self._auto_detect_mode()
         self._cfg = _MODE_CONFIG[self._loop_mode]
         self.setWindowTitle(self._cfg['title'])
