@@ -777,9 +777,9 @@ class Formatter(abc.ABC):
 
     def get_completeness(self, cif: CifContainer) -> str:
         try:
-            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}"
+            completeness = f"{float(cif['_diffrn_measured_fraction_theta_max']) * 100:.1f}"
         except ValueError:
-            completeness = cif['_diffrn_measured_fraction_theta_full']
+            completeness = cif['_diffrn_measured_fraction_theta_max']
         return completeness
 
     def format_experiment_table(self, cif: CifContainer):
@@ -1414,7 +1414,7 @@ if __name__ == '__main__':
 
     import subprocess
 
-    report_type = ReportFormat.LATEX
+    report_type = ReportFormat.RICHTEXT
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
@@ -1443,12 +1443,12 @@ if __name__ == '__main__':
     if report_type == ReportFormat.HTML:
         output = work / 'test.html'
         t = TemplatedReport(format=ReportFormat.HTML, options=options, cif=cif)
-        ok = t.make_templated_html_report(output_filename=str(output), picfile=pic, template_path=template_path)
+        ok = t.make_templated_html_report(output_filename=str(output), template_path=template_path)
     elif report_type == ReportFormat.RICHTEXT:
         output = work / 'test.docx'
         t = TemplatedReport(format=ReportFormat.RICHTEXT, options=options, cif=cif)
         ok = t.make_templated_docx_report(template_path=Path('finalcif/template/template_text.docx'),
-                                          output_filename=str(output), picfile=pic)
+                                          output_filename=str(output))
     elif report_type == ReportFormat.LATEX:
         print('Doing LaTex report')
         output = work / 'test.tex'
