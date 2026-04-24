@@ -444,11 +444,10 @@ class SqueezeSolventDialog(QDialog):
                 'formula': formula_item.text() if formula_item else '',
             })
         text = build_details_text(void_rows, method=self._loop_mode)
-        if text:
-            # Block textChanged so our programmatic update doesn't set _details_user_modified
-            self.details_edit.blockSignals(True)
-            self.details_edit.setPlainText(text)
-            self.details_edit.blockSignals(False)
+        # Block textChanged so our programmatic update doesn't set _details_user_modified
+        self.details_edit.blockSignals(True)
+        self.details_edit.setPlainText(text)
+        self.details_edit.blockSignals(False)
 
     # ------------------------------------------------------------------
     # Accept / write-back
