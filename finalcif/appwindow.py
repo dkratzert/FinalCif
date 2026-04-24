@@ -779,18 +779,22 @@ class AppWindow(QMainWindow):
         """
         self.ui.MainStackedWidget.go_to_checkcif_page()
 
-    def open_squeeze_dialog(self) -> None:
+    def open_squeeze_dialog(self, mode: str | None = None) -> None:
         """
-        Opens the PLATON SQUEEZE solvent content dialog.
+        Opens the solvent content dialog for PLATON SQUEEZE or Olex2/SMTBX masks.
 
-        The dialog lets the user assign a chemical formula to each SQUEEZE void,
+        The dialog lets the user assign a chemical formula to each void,
         calculates the expected electron count for validation, auto-generates the
-        ``_platon_squeeze_details`` text, and writes the results back to the CIF.
-        If no SQUEEZE loop is present yet, the dialog offers to import the .sqf file.
+        appropriate details text, and writes the results back to the CIF.
+
+        Args:
+            mode: ``'squeeze'`` to open in PLATON SQUEEZE mode, ``'smtbx'`` for
+                  Olex2/SMTBX solvent masks, or ``None`` (default) to let the
+                  dialog auto-detect from the CIF content.
         """
         if self.cif is None:
             return
-        dialog = SqueezeSolventDialog(cif=self.cif, parent=self)
+        dialog = SqueezeSolventDialog(cif=self.cif, mode=mode, parent=self)
         dialog.exec()
 
     def _ccdc_deposit(self) -> None:
