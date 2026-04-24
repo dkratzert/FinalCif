@@ -33,8 +33,9 @@ class ReportTemplates:
 
     def add_new_template(self, templ_path: str = '') -> None:
         if not templ_path:
-            templ_path, _ = compat.getopenfilename(parent=self.app, filters="DOCX file (*.docx);; html file (*.html *.tmpl)",
-                                                        selectedfilter="DOCX file (*.docx)",
+            templ_path, _ = compat.getopenfilename(parent=self.app,
+                                                        filters="All template files (*.docx *.html *.tmpl *.tex);; DOCX file (*.docx);; html file (*.html *.tmpl);; LaTeX file (*.tex)",
+                                                        selectedfilter="All template files (*.docx *.html *.tmpl *.tex)",
                                                         caption='Open a Report Template File')
         itemslist = self.get_templates_list_from_widget()
         self.app.status_bar.show_message('')
@@ -43,7 +44,7 @@ class ReportTemplates:
             print('This templates is already in the list.')
             return
         if (not Path(templ_path).exists() or not Path(templ_path).is_file()
-                or Path(templ_path).suffix not in ('.docx', '.html', '.tmpl')):
+                or Path(templ_path).suffix not in ('.docx', '.html', '.tmpl', '.tex')):
             self.app.status_bar.show_message('This template does not exist or is unreadable.', 10)
             print('This template does not exist or is unreadable.', Path(templ_path).resolve())
             return
