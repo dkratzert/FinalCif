@@ -20,7 +20,7 @@ from qtpy.QtGui import QColor
 from qtpy.QtWidgets import (
     QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QMessageBox,
     QPlainTextEdit, QPushButton, QSizePolicy, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget,
+    QVBoxLayout, QWidget, QApplication
 )
 
 from finalcif.tools.squeeze import build_details_text, electrons_from_formula
@@ -64,40 +64,40 @@ _SMTBX_LOOP_TAGS = [
 # ── Per-mode dialog configuration ────────────────────────────────────────────
 _MODE_CONFIG: dict[str, dict] = {
     'squeeze': {
-        'loop_key': _SQUEEZE_LOOP_KEY,
-        'loop_tags': _SQUEEZE_LOOP_TAGS,
-        'vol_tag': '_platon_squeeze_void_volume',
-        'elec_tag': '_platon_squeeze_void_count_electrons',
-        'content_tag': '_platon_squeeze_void_content',
-        'details_key': '_platon_squeeze_details',
-        'title': 'PLATON SQUEEZE \u2013 Assign Solvent Content',
-        'info': (
+        'loop_key'            : _SQUEEZE_LOOP_KEY,
+        'loop_tags'           : _SQUEEZE_LOOP_TAGS,
+        'vol_tag'             : '_platon_squeeze_void_volume',
+        'elec_tag'            : '_platon_squeeze_void_count_electrons',
+        'content_tag'         : '_platon_squeeze_void_content',
+        'details_key'         : '_platon_squeeze_details',
+        'title'               : 'PLATON SQUEEZE \u2013 Assign Solvent Content',
+        'info'                : (
             'PLATON/SQUEEZE was used. '
             'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'
         ),
-        'details_label': 'SQUEEZE details (<i>_platon_squeeze_details</i>):',
+        'details_label'       : 'SQUEEZE details (<i>_platon_squeeze_details</i>):',
         'electrons_col_header': 'Electrons\n(PLATON)',
     },
-    'smtbx': {
-        'loop_key': _SMTBX_LOOP_KEY,
-        'loop_tags': _SMTBX_LOOP_TAGS,
-        'vol_tag': '_smtbx_masks_void_volume',
-        'elec_tag': '_smtbx_masks_void_count_electrons',
-        'content_tag': '_smtbx_masks_void_content',
-        'details_key': '_smtbx_masks_special_details',
-        'title': 'Olex2/SMTBX Masks \u2013 Assign Solvent Content',
-        'info': (
+    'smtbx'  : {
+        'loop_key'            : _SMTBX_LOOP_KEY,
+        'loop_tags'           : _SMTBX_LOOP_TAGS,
+        'vol_tag'             : '_smtbx_masks_void_volume',
+        'elec_tag'            : '_smtbx_masks_void_count_electrons',
+        'content_tag'         : '_smtbx_masks_void_content',
+        'details_key'         : '_smtbx_masks_special_details',
+        'title'               : 'Olex2/SMTBX Masks \u2013 Assign Solvent Content',
+        'info'                : (
             'Olex2/SMTBX solvent masks were used. '
             'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'
         ),
-        'details_label': 'Masks details (<i>_smtbx_masks_special_details</i>):',
+        'details_label'       : 'Masks details (<i>_smtbx_masks_special_details</i>):',
         'electrons_col_header': 'Electrons\n(Masks)',
     },
 }
 
-_COLOR_OK = QColor(200, 255, 200)      # light green
-_COLOR_WARN = QColor(255, 200, 200)    # light red
-_COLOR_NEUTRAL = QColor(255, 255, 255) # white
+_COLOR_OK = QColor(200, 255, 200)  # light green
+_COLOR_WARN = QColor(255, 200, 200)  # light red
+_COLOR_NEUTRAL = QColor(255, 255, 255)  # white
 
 
 class SqueezeSolventDialog(QDialog):
@@ -125,10 +125,10 @@ class SqueezeSolventDialog(QDialog):
     """
 
     def __init__(
-        self,
-        cif: 'CifContainer',
-        mode: str | None = None,
-        parent: QWidget | None = None,
+            self,
+            cif: 'CifContainer',
+            mode: str | None = None,
+            parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self.cif = cif
@@ -438,10 +438,10 @@ class SqueezeSolventDialog(QDialog):
             formula_item = self.table.item(row_idx, _COL_FORMULA)
             elec_item = self.table.item(row_idx, _COL_ELEC_PLATON)
             void_rows.append({
-                'nr': row_idx + 1,
-                'volume': vol_item.text() if vol_item else '?',
+                'nr'              : row_idx + 1,
+                'volume'          : vol_item.text() if vol_item else '?',
                 'electrons_platon': elec_item.text() if elec_item else '?',
-                'formula': formula_item.text() if formula_item else '',
+                'formula'         : formula_item.text() if formula_item else '',
             })
         text = build_details_text(void_rows, method=self._loop_mode)
         # Block textChanged so our programmatic update doesn't set _details_user_modified
@@ -531,10 +531,19 @@ class SqueezeSolventDialog(QDialog):
 # Module-level helpers (usable without instantiating the dialog)
 # ---------------------------------------------------------------------------
 
-def has_smtbx_masks_loop(cif: 'CifContainer') -> bool:
+def has_smtbx_masks_loop(cif: CifContainer) -> bool:
     """Return True when an Olex2/SMTBX solvent masks loop is present in *cif*."""
     try:
         loop = cif.get_loop(_SMTBX_LOOP_KEY)
         return loop is not None and loop.width() > 0
     except (AttributeError, RuntimeError, TypeError):
         return False
+
+
+if __name__ == '__main__':
+    from finalcif.cif.cif_file_io import CifContainer
+    app = QApplication([])
+    cif = CifContainer(Path('test-data/SH2185_Cu.cif').resolve())
+    dialog = SqueezeSolventDialog(cif, None)
+    dialog.show()
+    app.exec_()
