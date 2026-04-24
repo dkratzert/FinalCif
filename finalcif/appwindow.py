@@ -2040,14 +2040,17 @@ class AppWindow(QMainWindow):
         """
         self.check_Z()
         self.sources = BrukerData(self, self.cif).sources
+        squeeze_dialog_shown = False
         if self.sources:
             # Add the CCDC number in case we have a deposition mail lying around:
             self.add_ccdc_number()
             if self.cif.shx and self.cif.shx.abin and not self.cif['_platon_squeeze_void_probe_radius']:
-                self.open_squeeze_dialog()
+                self.open_squeeze_dialog(mode='squeeze')
+                squeeze_dialog_shown = True
         # Olex2/SMTBX solvent masks – trigger dialog when loop is present but details absent
-        if has_smtbx_masks_loop(self.cif) and not self.cif['_smtbx_masks_special_details']:
-            self.open_squeeze_dialog()
+        if (not squeeze_dialog_shown and has_smtbx_masks_loop(self.cif)
+                and not self.cif['_smtbx_masks_special_details']):
+            self.open_squeeze_dialog(mode='smtbx')
         vheadlist = self.ui.cif_main_table.model().vheaderitems
         for src in self.sources:
             if not self.sources[src]:
