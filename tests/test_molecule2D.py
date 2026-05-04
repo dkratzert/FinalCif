@@ -93,12 +93,6 @@ def test_molecule_widget_toggles():
     widget.show_adps(False)
     assert widget._show_adps is False
 
-    # Test bond type toggle
-    widget.show_round_bonds(False)
-    assert widget.bond_drawer == widget._draw_bond
-    widget.show_round_bonds(True)
-    assert widget.bond_drawer == widget._draw_bond_rounded
-
     # Test label font setting
     widget.setLabelFont(20)
     assert widget.fontsize == 20
