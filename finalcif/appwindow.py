@@ -1314,6 +1314,11 @@ class AppWindow(QMainWindow):
                 ok = t.make_templated_html_report(output_filename=str(report_filename),
                                                   template_path=template_path.parent,
                                                   template_file=template_path.name)
+            elif template_path.suffix in ('.tex', '.latex'):
+                t = TemplatedReport(format=ReportFormat.LATEX, options=self.options, cif=self.cif)
+                ok = t.make_templated_latex_report(output_filename=str(report_filename),
+                                                   template_path=template_path.parent,
+                                                   template_file=template_path.name)
             if not ok:
                 return None
         except FileNotFoundError as e:

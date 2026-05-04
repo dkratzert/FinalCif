@@ -1275,6 +1275,7 @@ class TemplatedReport:
         except Exception as e:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
+            raise
             return False
         return True
 
@@ -1414,10 +1415,12 @@ if __name__ == '__main__':
 
     import subprocess
 
-    report_type = ReportFormat.RICHTEXT
+    report_type = ReportFormat.LATEX
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
+    testcif = Path(data / r'..\test-data\4060314.cif').absolute()
+
     # testcif = Path(r'test-data/p31c.cif').absolute()
     #testcif = Path(r'test-data/p31c.cif').absolute()
     #testcif = Path(r"D:\Downloads\9008564.cif").absolute()

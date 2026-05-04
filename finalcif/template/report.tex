@@ -53,7 +53,9 @@
     used \VAR{ radiation } radiation \BLOCK{if wavelength} ($\lambda$ = \VAR{ wavelength }~\AA)\BLOCK{ endif }.
     All data were integrated with \VAR{ integration_progr } yielding \VAR{ cif._diffrn_reflns_number }
     reflections of which \VAR{ cif._reflns_number_total } where independent and
+    \BLOCK{ if cif._reflns_number_total|float() > 0 }
     \VAR{ '%0.1f'| format((cif._reflns_number_gt|float() / cif._reflns_number_total|float()) * 100) } \%
+    \BLOCK{ endif }
     were greater than 2$\sigma$(\textit{F}$^2$).$^{[\VAR{ literature.integration|ref_num }]}$ A
     \VAR{ abstype } absorption correction using \VAR{ abs_details } was applied.$^{[\VAR{ literature.absorption|ref_num }]}$
     The structure was solved by
