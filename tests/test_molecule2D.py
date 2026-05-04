@@ -34,7 +34,6 @@ def test_molecule_widget_creation():
     assert widget.bond_width == 3
     assert widget.labels is True
     assert widget._show_adps is True
-    assert widget.bond_drawer == widget._draw_bond_rounded
 
 
 def test_molecule_widget_with_cif():

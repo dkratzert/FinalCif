@@ -204,7 +204,7 @@ class AppWindow(QMainWindow):
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         # Just too slow for large structures:
-        self.ui.growCheckBox.setChecked(False)
+        self.ui.growCheckBox.setChecked(True)
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.CheckcifStartButton.setDisabled(True)
         self.ui.ReportPicPushButton.setDisabled(True)
