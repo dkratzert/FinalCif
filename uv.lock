@@ -230,29 +230,28 @@ wheels = [
 
 [[package]]
 name = "fastmolwidget"
-version = "0.6.3"
+version = "0.7.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gemmi" },
     { name = "numpy" },
     { name = "pyopengl" },
-    { name = "pyopengl-accelerate" },
     { name = "qtpy" },
     { name = "shelxfile" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/83/50/55237ff814d39305ace7f1efbf5191fb2c5ee58c739b648ffd689408d7a0/fastmolwidget-0.6.3-cp312-cp312-macosx_14_0_arm64.whl", hash = "sha256:090fd6424c1af8e590b8915c7bffaa9d63bb2f23505c4c9461bdb628beb33f33", size = 412429, upload-time = "2026-05-01T06:37:00.343Z" },
-    { url = "https://files.pythonhosted.org/packages/43/13/9bcf4ef23f3f3d8d6ac3fefed6f623522e9ec6ae6e36f6585833b43dbb04/fastmolwidget-0.6.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:705d986846ce8039807477f6d3439978af73bda46ce4cbfc8614a1d7c3a9e5ea", size = 1400003, upload-time = "2026-05-01T06:37:02.11Z" },
-    { url = "https://files.pythonhosted.org/packages/47/cd/75a8341e0c2151141136529a49ae1c6c140bec877d86e7ab1ba020af713f/fastmolwidget-0.6.3-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:c6920c932595f2e6c59718c57cd02503e1c3a570559a7de5046550f4f49d0c9f", size = 2460921, upload-time = "2026-05-01T06:37:04.28Z" },
-    { url = "https://files.pythonhosted.org/packages/69/6a/941fb9ed4cedebd57745d613a1990f48b0c10de3b0a8fc86622b18fa3831/fastmolwidget-0.6.3-cp312-cp312-win_amd64.whl", hash = "sha256:49053f7d50c2e435a78fe6ae4a82d582c19b40f1a66405938c5d17e63880a82b", size = 159088, upload-time = "2026-05-01T06:37:06.331Z" },
-    { url = "https://files.pythonhosted.org/packages/50/94/a8b64909a4d988ab675567d92dade521540a11fb685720c867ba68584483/fastmolwidget-0.6.3-cp313-cp313-macosx_14_0_arm64.whl", hash = "sha256:d281266236bc0acf85e41866cefb57762c75725145f6a194b7c5a48f05f90acb", size = 412524, upload-time = "2026-05-01T06:37:08.155Z" },
-    { url = "https://files.pythonhosted.org/packages/f9/d4/983ee547781a0f766fab1a8145e57325ffce2b38f549c871b42fd9a828d0/fastmolwidget-0.6.3-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:31627c4d96f94c2c54d6e122a8927142ba3a157a55c8864e5c37e0b46e9e8775", size = 1399799, upload-time = "2026-05-01T06:37:10.103Z" },
-    { url = "https://files.pythonhosted.org/packages/fb/34/46bd90e393ad8c29b766c97234e131884ff799960294a4b78157e4500e8f/fastmolwidget-0.6.3-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:7e96a31cbc9b4ca05480bbe94f6766db328680ed0d4b88a32b7d902ba2f53580", size = 2461126, upload-time = "2026-05-01T06:37:11.815Z" },
-    { url = "https://files.pythonhosted.org/packages/9a/9f/7ee0d8e3834fe98c5d9da3226eeb18b4ace00c20e8cb52ee31d129d28dae/fastmolwidget-0.6.3-cp313-cp313-win_amd64.whl", hash = "sha256:6ca7700447c0ad3f105fbc39f1a762ad1fbfc0dcf020f15e4e79164e04c58880", size = 159101, upload-time = "2026-05-01T06:37:13.841Z" },
-    { url = "https://files.pythonhosted.org/packages/01/5b/12427d44a4c3cf08465f7ef708f7978706dc27565f5bcbec1206310830d9/fastmolwidget-0.6.3-cp314-cp314-macosx_14_0_arm64.whl", hash = "sha256:8faf6b5c85b131881d85eb13987fdbe25d1cc012e23f670c2e457d6d49f31c9e", size = 412467, upload-time = "2026-05-01T06:37:15.42Z" },
-    { url = "https://files.pythonhosted.org/packages/04/e8/1fccae47ab024c6f9667b9c6e23fc9f1b1be015042ae6734b66b2546b91c/fastmolwidget-0.6.3-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:23735f35fc1a4a733b744c2597e95a1011580fb1bfb89dbff7bc085fcb16208c", size = 1400000, upload-time = "2026-05-01T06:37:17.188Z" },
-    { url = "https://files.pythonhosted.org/packages/8e/9e/2c4fd25805bfdc7c79144732ee0d20ea517880a12b0f9014f5afa0b1925c/fastmolwidget-0.6.3-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:007271099830623e42773ab0d5a27766fb887ee74fe4a1739ef15cfc738bc17c", size = 2460583, upload-time = "2026-05-01T06:37:19.573Z" },
-    { url = "https://files.pythonhosted.org/packages/07/f4/4a691aac4c94e6f0bb35a7ab94da2769304be69170c96dc033a401efa846/fastmolwidget-0.6.3-cp314-cp314-win_amd64.whl", hash = "sha256:1281fd44439d6e5601869191ba0ad598737038a384d423dcc78cb575098696c2", size = 161821, upload-time = "2026-05-01T06:37:21.168Z" },
+    { url = "https://files.pythonhosted.org/packages/38/52/cd74264e4a2286add22ac2344e7db0b28bc92f745f49ad3287e400ae9ddf/fastmolwidget-0.7.3-cp312-cp312-macosx_14_0_universal2.whl", hash = "sha256:e65a3ac91a702a69a92a69c83d06b50215e50a2b959d88bb740a236d6596731c", size = 254065, upload-time = "2026-05-05T20:39:05.646Z" },
+    { url = "https://files.pythonhosted.org/packages/cb/c2/874572878967c2031fd33b2dd999a8872ea939339386a08fe4450fa2918e/fastmolwidget-0.7.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:45ac6bdc71b73f839670f9c7d858e43f6d7703a2dd3b9c95e5b0bd22b723a1be", size = 1409042, upload-time = "2026-05-05T20:39:07.56Z" },
+    { url = "https://files.pythonhosted.org/packages/78/52/5321d36ca4d414d08e0bf62b36bdb5b428100a4e33f89eab3d4a225a1956/fastmolwidget-0.7.3-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:746d81e08f158c60c39e6321d1c0336947e242b9c22f5bb44f48c0f4c8809994", size = 2469958, upload-time = "2026-05-05T20:39:09.352Z" },
+    { url = "https://files.pythonhosted.org/packages/86/21/8527966381efd319d366e4f837d70b87f24deaa4a19ec2f045bc308b33b1/fastmolwidget-0.7.3-cp312-cp312-win_amd64.whl", hash = "sha256:ef49b2a6642f32dce3d36a3cffa04a57fef77b721bd76a7eaea56d9fee195918", size = 168184, upload-time = "2026-05-05T20:39:10.938Z" },
+    { url = "https://files.pythonhosted.org/packages/cc/87/23c208a0efc9dfac3f66acfc8ff2ad725ba87dbbfa081bc5ed7a9d2934c3/fastmolwidget-0.7.3-cp313-cp313-macosx_14_0_universal2.whl", hash = "sha256:3ec272a66f1465be7fec750da219e9b949d557162ddcca182438ca2ea6754605", size = 254231, upload-time = "2026-05-05T20:39:12.806Z" },
+    { url = "https://files.pythonhosted.org/packages/03/5c/a816d6518ad3eecf90a9869c7dfa835c035b45a190db13342526ebe34ccd/fastmolwidget-0.7.3-cp313-cp313-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:f3a90362a21194fe5a7076f0cb0b3985f31c84803b02faa81472c6c25b3139bd", size = 1408838, upload-time = "2026-05-05T20:39:14.778Z" },
+    { url = "https://files.pythonhosted.org/packages/c3/32/f94e2ed3ae9c322a6d127357b292679bf69daf7ace900cda1719526c7901/fastmolwidget-0.7.3-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:005988ff454ab9c464d50ca6a4c7b3359e5006ecff99e45817d29c991b75b4d1", size = 2470159, upload-time = "2026-05-05T20:39:16.746Z" },
+    { url = "https://files.pythonhosted.org/packages/7b/30/a23a0e91abbdd0f439acab4808c65872f3b85c8f79fc763b85b17ff64cc7/fastmolwidget-0.7.3-cp313-cp313-win_amd64.whl", hash = "sha256:6661555044d0547fd9a04058690068450e4f5f705a5f3e562edb271a3ed03c9f", size = 168198, upload-time = "2026-05-05T20:39:18.785Z" },
+    { url = "https://files.pythonhosted.org/packages/cc/af/fd4bf27b01fdf51f7547ebfbf5f67bf2db517bb25b9dea46f532c836e08a/fastmolwidget-0.7.3-cp314-cp314-macosx_14_0_universal2.whl", hash = "sha256:2fe5b9822f15151a7a8e87d85c43f15e5bd30f1108b3cabfa74e9292cafc03b5", size = 254207, upload-time = "2026-05-05T20:39:20.284Z" },
+    { url = "https://files.pythonhosted.org/packages/08/4e/8480a5eefd385001a95a0ccd29672c4b22c2970b5367bc6811984e3d6e21/fastmolwidget-0.7.3-cp314-cp314-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d6cbd0d0d0ccc32a371f371df6faf2dfbabb10763f6665f831649a232403d38c", size = 1409038, upload-time = "2026-05-05T20:39:21.942Z" },
+    { url = "https://files.pythonhosted.org/packages/ff/65/f84f7b7ae7bc8b0d1f5e4b676a8b999177b990cc95459273c9ede4eae695/fastmolwidget-0.7.3-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:75c6a2725d253ba5d4b50b3ebcebfa3b410c987d76369072a7e12686e1b34c56", size = 2469626, upload-time = "2026-05-05T20:39:23.97Z" },
+    { url = "https://files.pythonhosted.org/packages/8d/09/285cab9465fb63346deee281b1c1eab7cb225c5056a5ace6bb13d889f0b0/fastmolwidget-0.7.3-cp314-cp314-win_amd64.whl", hash = "sha256:c2fa556f69071e8258dfe45d6f544d6bcb59261449e17f1f1bcdb96eeb363e97", size = 170917, upload-time = "2026-05-05T20:39:26.144Z" },
 ]
 
 [[package]]
@@ -304,7 +303,7 @@ requires-dist = [
     { name = "charset-normalizer" },
     { name = "crossrefapi" },
     { name = "docxtpl", extras = ["subdoc"], specifier = ">=0.20.2" },
-    { name = "fastmolwidget", specifier = ">=0.6.3" },
+    { name = "fastmolwidget", specifier = ">=0.7.3" },
     { name = "gemmi", specifier = ">=0.7.5" },
     { name = "hatchling" },
     { name = "html2text" },
@@ -921,34 +920,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/6f/16/912b7225d56284859cd9a672827f18be43f8012f8b7b932bc4bd959a298e/pyopengl-3.1.10.tar.gz", hash = "sha256:c4a02d6866b54eb119c8e9b3fb04fa835a95ab802dd96607ab4cdb0012df8335", size = 1915580, upload-time = "2025-08-18T02:33:01.76Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/de/e4/1ba6f44e491c4eece978685230dde56b14d51a0365bc1b774ddaa94d14cd/pyopengl-3.1.10-py3-none-any.whl", hash = "sha256:794a943daced39300879e4e47bd94525280685f42dbb5a998d336cfff151d74f", size = 3194996, upload-time = "2025-08-18T02:32:59.902Z" },
-]
-
-[[package]]
-name = "pyopengl-accelerate"
-version = "3.1.10"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/6d/49/dffa946f07e84eb4666d7fb5553a1d569d54405c863ff7a19b71758712f6/pyopengl_accelerate-3.1.10.tar.gz", hash = "sha256:82751c83f0a6f732b8b5923990edc2441d38176a98756b1718e8d6c4379f5a71", size = 21930, upload-time = "2025-08-18T02:34:06.752Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4c/6b/ba5b6aeff08ef764f9625f092fef27aab07279fbffe0ec50c60359020b6e/pyopengl_accelerate-3.1.10-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:a0adc05a0585f98128dcfea80bca5fd016336a6f571a372721dc8e0406b12c2e", size = 424760, upload-time = "2025-08-18T02:33:24.431Z" },
-    { url = "https://files.pythonhosted.org/packages/a4/3d/8a6dde7092eeba0ddb0d75359e2cc1c7b61947b6f73da0bb73ac7ef9e997/pyopengl_accelerate-3.1.10-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:3282e7edd22d7126a3874c08ebcb146122031d0cea774c52f872ae56aaf17f39", size = 3279849, upload-time = "2025-08-18T02:33:25.628Z" },
-    { url = "https://files.pythonhosted.org/packages/50/4f/b4de3294248fcf0739356cc3730fb651b2106ddbe05fc528307df4331955/pyopengl_accelerate-3.1.10-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:7366b6be51aca799d6b4bfbe6a5e9e6e4b0968956d0920676498e6ac2b9ce028", size = 3140923, upload-time = "2025-08-18T02:33:27.106Z" },
-    { url = "https://files.pythonhosted.org/packages/2a/03/913312996a6345fec9436dc57069ac8c8bc31e306d3fba9e4825fc04ece2/pyopengl_accelerate-3.1.10-cp312-cp312-win32.whl", hash = "sha256:f014f2f5a0d68c751ad31c89805c043a08c423a8d6d5e7be620f6d819c6fa971", size = 328551, upload-time = "2025-08-18T02:33:28.619Z" },
-    { url = "https://files.pythonhosted.org/packages/fe/1f/6e839b7ba4823c34f762d3f3e9e8f8405bd3e210314b60df862e030ad8ad/pyopengl_accelerate-3.1.10-cp312-cp312-win_amd64.whl", hash = "sha256:6fa0963d686462dc3a03d10123af385f012001c8b020e908774df29741136bd5", size = 389822, upload-time = "2025-08-18T02:33:29.685Z" },
-    { url = "https://files.pythonhosted.org/packages/71/52/54b93275b76ea2beed7ffbf7e2e2392254c6f5927c438a2db9b972aec255/pyopengl_accelerate-3.1.10-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:bec9014f702997578b5e797d81b3e041cc5b41f0457c0184473f867c38d52665", size = 413558, upload-time = "2025-08-18T02:33:30.846Z" },
-    { url = "https://files.pythonhosted.org/packages/32/08/a491f4c74e53d22189e1aa9049b51ec44ed993e596d41c85d1732cd33ea2/pyopengl_accelerate-3.1.10-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:171e22f7d5055479b0bd7f98192525f8890af4bf19765bea7e860885cbce622e", size = 3139831, upload-time = "2025-08-18T02:33:32.415Z" },
-    { url = "https://files.pythonhosted.org/packages/d6/56/ffdf6adff65022d4df844100d6510c26def358b012c25766983f402b35ff/pyopengl_accelerate-3.1.10-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:5eea15130bc248ca83dce31736afb190c21a0186aa02cefdf4019bc0f3f857f1", size = 3000578, upload-time = "2025-08-18T02:33:33.69Z" },
-    { url = "https://files.pythonhosted.org/packages/6b/a1/6c7a6da865e07665f196ce3a443ed5d6ebd297f459bfa61288a577abaef9/pyopengl_accelerate-3.1.10-cp313-cp313-win32.whl", hash = "sha256:2354d2a2eb1266c984f061148460b2cb02146e90bd501b984d03bcc34f48b8d8", size = 325101, upload-time = "2025-08-18T02:33:34.963Z" },
-    { url = "https://files.pythonhosted.org/packages/7c/d4/93cd104a967dca51cf8ee2edf18bea2b697e9d87ece0beaa6f3ca5f5515d/pyopengl_accelerate-3.1.10-cp313-cp313-win_amd64.whl", hash = "sha256:551a46e907ea24884b6795b290b3b3b0618d217d38cf7cae9c825641375a74fe", size = 385238, upload-time = "2025-08-18T02:33:36.19Z" },
-    { url = "https://files.pythonhosted.org/packages/ae/8d/f86cb315b34fdc670c747b5041bec468258bbda55f9809f004dcbf3ff0fe/pyopengl_accelerate-3.1.10-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:415b6ddceaa6a3fed699f1e7a6aac0de6f37e5ae19349c4ed3a7c38e17a8e09e", size = 416781, upload-time = "2025-08-18T02:33:38.021Z" },
-    { url = "https://files.pythonhosted.org/packages/5e/14/215c66da71a065734217ea53d884c5c008a35757d5d17f667799cdee8fbc/pyopengl_accelerate-3.1.10-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d6b8aabfb227ad579f3dfabe8f0e9909026d1af540baf6405b38efa4f10fb9eb", size = 3090132, upload-time = "2025-08-18T02:33:39.517Z" },
-    { url = "https://files.pythonhosted.org/packages/20/7e/3a4fa502e6e1531af3a89b736a001886f2c2a88f83fc44b853ef177beb89/pyopengl_accelerate-3.1.10-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:3d521cd41a4e62c38ec315770049dfc5c4b25e5c1debd4038cfbf75e05022f7c", size = 2963250, upload-time = "2025-08-18T02:33:41.211Z" },
-    { url = "https://files.pythonhosted.org/packages/29/64/2216644cd1d58771634ec7decbfe973f3eb6ac545224181efaaf30b15197/pyopengl_accelerate-3.1.10-cp314-cp314-win32.whl", hash = "sha256:fce5e6015ba2db99f0ebb07e4cd98ca4e70b419f186ea042cb70379228c1a339", size = 334199, upload-time = "2025-08-18T02:33:42.519Z" },
-    { url = "https://files.pythonhosted.org/packages/04/f0/da152261f49e248b1530460367ee35fcc78c0878685fc07b39a6f53223d4/pyopengl_accelerate-3.1.10-cp314-cp314-win_amd64.whl", hash = "sha256:081b6b0f39f35f750ddf60fc865556e6d01481eb818ce1482f79cfde2abe598b", size = 394806, upload-time = "2025-08-18T02:33:43.638Z" },
-    { url = "https://files.pythonhosted.org/packages/b0/25/7516f1fdeba4d13da3941b198a368cf72d6d17f9bcc48d76476f75973866/pyopengl_accelerate-3.1.10-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:a35503ee877b35264172903eb6c8110b021531090a4647a81252f52a68757d4d", size = 462905, upload-time = "2025-08-18T02:33:45.15Z" },
-    { url = "https://files.pythonhosted.org/packages/9b/72/d8bcd7a2264098dfe36ac15dfded7a8a513d56e4e6adfc9e651fd17cccb1/pyopengl_accelerate-3.1.10-cp314-cp314t-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:db2005912defa77a1e7390024d52b295c85a1c7ebd85ba073f1839d4bfffe855", size = 3379961, upload-time = "2025-08-18T02:33:46.602Z" },
-    { url = "https://files.pythonhosted.org/packages/17/a7/e74bf3a52d7e97f92e8a3cdd7edba7f50c6053536f54a7124772fcbbcf62/pyopengl_accelerate-3.1.10-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:fcf6827b1fff244ca6953068c17285b9eae173a20fccc1d9c193779f71b88d0f", size = 3254293, upload-time = "2025-08-18T02:33:48.105Z" },
-    { url = "https://files.pythonhosted.org/packages/fa/e4/c840324bab4efed955f258422a88a621e7462cafd627b3d2c9d314d4279d/pyopengl_accelerate-3.1.10-cp314-cp314t-win32.whl", hash = "sha256:e55ea6a85894ad74d6f09953e3d359fe27def9fed220588787993e49e42db1d0", size = 408410, upload-time = "2025-08-18T02:33:49.441Z" },
-    { url = "https://files.pythonhosted.org/packages/87/97/6312caecc721cf4e4fdac2a156dc57e403e3d9a17553d72e86653cbc92ef/pyopengl_accelerate-3.1.10-cp314-cp314t-win_amd64.whl", hash = "sha256:a2866cb65c45b013c2bf9995010824cc1b50ae91a4166746beb9ce241803e62a", size = 484776, upload-time = "2025-08-18T02:33:51.342Z" },
 ]
 
 [[package]]
