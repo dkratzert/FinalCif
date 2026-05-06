@@ -59,7 +59,6 @@ def test_molecule_widget_with_cif():
     # Test setting parameters and re-drawing
     widget.labels = False
     widget._show_adps = False
-    widget.atoms_size = 15
     widget.bond_width = 4
     widget.repaint()
 
