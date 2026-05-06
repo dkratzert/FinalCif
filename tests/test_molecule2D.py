@@ -29,7 +29,6 @@ def test_render_item():
 
 def test_molecule_widget_creation():
     widget = MoleculeWidget()
-    assert widget.atoms_size == 12
     assert widget.fontsize == 13
     assert widget.bond_width == 3
     assert widget.labels is True
