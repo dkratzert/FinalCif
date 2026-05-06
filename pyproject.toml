@@ -49,7 +49,7 @@ dependencies = [
     "docxtpl[subdoc]>=0.20.2",
     "shelxfile",
     "crossrefapi",
-    "fastmolwidget>=0.7.3",
+    "fastmolwidget>=0.7.4",
     "pyenchant",
     "hatchling",
     "charset-normalizer",
@@ -71,7 +71,7 @@ doc = [
 ]
 
 [tool.uv]
-exclude-newer = "3 days"
+# exclude-newer = "1 days"
 
 [project.urls]
 "Homepage" = "https://dkratzert.de/finalcif.html"
