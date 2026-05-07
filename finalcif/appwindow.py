@@ -116,7 +116,7 @@ class AppWindow(QMainWindow):
         self.ui.setupUi(self)
         self.ui.page_MainTable.setParent(self.ui.MainStackedWidget)
         # Parts selector widget – inserted after adpCheckBox in horizontalLayout_7
-        self.parts_combo = PartFilterWidget(parent=self.ui.molGroupBox)
+        self.parts_combo = PartFilterWidget(parent=self.ui.molGroupBox, label=' ', min_combo_width=90)
         self.parts_combo.setObjectName('partsFilterWidget')
         self.ui.horizontalLayout_7.insertWidget(3, self.parts_combo)
         # Inject the Author Editor tab (defined in the .ui file) into LoopsPage
