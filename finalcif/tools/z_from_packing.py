@@ -25,6 +25,7 @@ which lets callers cross-check the geometry without importing gemmi separately.
 """
 from __future__ import annotations
 
+import dataclasses
 import math
 from collections import Counter, deque
 from functools import reduce
@@ -39,6 +40,65 @@ from finalcif.cif.atoms import element2cov as _ELEMENT2COV
 # A small fallback covers elements absent from that table.
 DEFAULT_RADIUS: float = 1.50
 BOND_TOLERANCE: float = 0.40
+
+# Tolerance used when testing whether Z' is close to a simple fraction.
+_ZPRIME_TOLERANCE: float = 0.05
+
+
+@dataclasses.dataclass(frozen=True)
+class ZResult:
+    """Result of Z estimation with Z' and a reliability indicator.
+
+    Attributes:
+        z:        Estimated formula units per unit cell (GCD bond-graph method).
+        z_prime:  ``z / z_sg`` — formula units per asymmetric unit.
+        z_sg:     Number of general positions in the space group (symmetry-derived Z).
+
+    The ``reliable`` property is ``True`` when *z_prime* is within
+    :data:`_ZPRIME_TOLERANCE` of a positive multiple of 0.5 (the set of
+    crystallographically meaningful fractions: ½, 1, 1½, 2, …).
+    Values outside this set indicate that the bond-graph GCD algorithm
+    lost track of the true formula-unit count (e.g. infinite frameworks,
+    polymers, or multi-component systems whose species counts share no
+    common factor with the correct Z).
+    """
+
+    z: int
+    z_prime: float
+    z_sg: int
+
+    @property
+    def reliable(self) -> bool:
+        """``True`` when *z_prime* is a plausible crystallographic value.
+
+        Checks whether *z_prime* is within :data:`_ZPRIME_TOLERANCE` of
+        k/2 for any positive integer *k* up to 16 (i.e. Z′ ≤ 8).
+        """
+        if self.z_prime <= 0 or self.z_prime > 8.0:
+            return False
+        for k in range(1, 17):          # 0.5, 1.0, 1.5, … 8.0
+            if abs(self.z_prime - k / 2) < _ZPRIME_TOLERANCE:
+                return True
+        return False
+
+    @property
+    def confidence(self) -> str:
+        """A short human-readable confidence indicator: ``'high'``, ``'medium'``, or ``'low'``.
+
+        * **high**   — Z′ is a positive integer (1, 2, 3, …): the most common,
+          most reliable case.
+        * **medium** — Z′ is a half-integer (0.5, 1.5, …): the molecule may sit
+          on a crystallographic special position; the bond-graph Z could be half
+          of the true value.
+        * **low**    — Z′ is not a multiple of 0.5, or is outside (0, 8]:
+          the estimate is unlikely to match the true crystallographic Z.
+        """
+        if not self.reliable:
+            return 'low'
+        # Distinguish integer Z' from half-integer Z'
+        if abs(self.z_prime - round(self.z_prime)) < _ZPRIME_TOLERANCE:
+            return 'high'
+        return 'medium'
 
 
 def _get_radius(element: str) -> float:
@@ -298,6 +358,22 @@ def _z_from_components(components: list[list[str]]) -> int:
 # Public API
 # ---------------------------------------------------------------------------
 
+def _z_sg_from_symmops(symmops: list[str]) -> int:
+    """Return the number of general positions (Z_sg) for the given symmetry operations.
+
+    Builds a :class:`gemmi.GroupOps` from *symmops* and looks up the space group.
+    If the space group is unrecognised (non-standard setting not in gemmi's table),
+    falls back to ``len(symmops)``, which equals the total number of symmetry
+    operations including centering translations.
+    """
+    group_ops = gemmi.GroupOps([gemmi.Op(s) for s in symmops])
+    sg = gemmi.find_spacegroup_by_ops(group_ops)
+    if sg is not None:
+        ops = sg.operations()
+        return len(ops.sym_ops) * len(ops.cen_ops)
+    return len(symmops)  # fallback: count all provided ops
+
+
 def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
             max_atoms: int = 5000) -> int:
     """Determine Z by packing the unit cell and counting molecular graphs.
@@ -346,3 +422,43 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
     components = _get_components(adj, expanded)
     z = _z_from_components(components)
     return max(1, z)
+
+
+def count_z_and_zprime(
+        atoms_fract,
+        symmops: list[str],
+        cell: tuple[float, ...],
+        max_atoms: int = 5000,
+) -> ZResult:
+    """Determine Z and Z′ by packing the unit cell and counting molecular graphs.
+
+    Extends :func:`count_z` with a Z′ value and a reliability indicator.
+
+    Z′ = Z / Z_sg, where Z_sg is the number of general positions in the space
+    group (the maximum Z for a structure with all atoms in general positions).
+
+    A Z′ that is a positive multiple of 0.5 is crystallographically meaningful:
+
+    * **Z′ = 1** (most common) — one formula unit per asymmetric unit.
+    * **Z′ = 0.5** — molecule on a 2-fold special position.
+    * **Z′ = 2, 3, …** — multiple independent formula units in the ASU.
+
+    A Z′ that is *not* a multiple of 0.5 signals that the bond-graph GCD
+    algorithm returned an incorrect Z (typically an undercount for polymeric or
+    multi-component structures).
+
+    Args:
+        atoms_fract:  Atom records as yielded by ``CifContainer.atoms_fract``.
+        symmops:      Symmetry-operation strings from ``CifContainer.symmops``.
+        cell:         Cell parameters ``(a, b, c, alpha, beta, gamma)`` in Å/deg.
+        max_atoms:    Expansion guard (see :func:`count_z`).
+
+    Returns:
+        A :class:`ZResult` with ``z``, ``z_prime``, ``z_sg``, ``reliable``,
+        and ``confidence`` attributes.
+    """
+    z = count_z(atoms_fract, symmops, cell, max_atoms)
+    z_sg = _z_sg_from_symmops(symmops) if symmops and symmops != [''] else 1
+    z_prime = round(z / z_sg, 6) if z_sg > 0 else float('nan')
+    return ZResult(z=z, z_prime=z_prime, z_sg=z_sg)
+

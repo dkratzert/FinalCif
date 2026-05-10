@@ -75,7 +75,7 @@ from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools.shred import ShredCIF
 from finalcif.tools.space_groups import SpaceGroups
-from finalcif.tools.z_from_packing import count_z
+from finalcif.tools.z_from_packing import count_z_and_zprime
 from finalcif.tools.spgr_format import spgrps
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
@@ -1991,16 +1991,41 @@ class AppWindow(QMainWindow):
         self._update_z_label()
 
     def _update_z_label(self) -> None:
-        """Compute Z from unit-cell packing and display it next to the molecule view.
+        """Compute Z and Z′ from unit-cell packing and display them next to the molecule view.
 
         Uses the full symmetry expansion of the asymmetric unit to fill the unit
         cell, then counts discrete connected molecular graphs. Disorder is handled
         by retaining only the primary component of each disordered site so that
         each atomic position is populated exactly once.
+
+        Z′ = Z / Z_sg indicates the number of formula units per asymmetric unit:
+        * Z′ = 1  → one molecule per ASU (most common, high confidence).
+        * Z′ = 0.5 → molecule on a special position (medium confidence).
+        * Z′ not a multiple of ½ → estimate likely unreliable (low confidence).
         """
         try:
-            z_packed = count_z(self.cif.atoms_fract, self.cif.symmops, self.cif.cell[:6])
-            self.ui.zEstimateLabel.setText(f'Z (packed): {z_packed}')
+            result = count_z_and_zprime(self.cif.atoms_fract, self.cif.symmops, self.cif.cell[:6])
+            confidence_icon = {'high': '✓', 'medium': '~', 'low': '?'}[result.confidence]
+            self.ui.zEstimateLabel.setText(
+                f"Z* = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}"
+            )
+            tip_lines = [
+                f"Estimated Z = {result.z} formula units per unit cell",
+                f"Z′ = {result.z_prime:.4f}  (formula units per asymmetric unit)",
+                f"Z_sg = {result.z_sg}  (general positions in space group)",
+                "",
+            ]
+            if result.confidence == 'high':
+                tip_lines.append("Confidence: HIGH — Z′ is a positive integer.")
+            elif result.confidence == 'medium':
+                tip_lines.append("Confidence: MEDIUM — Z′ = ½ suggests the molecule")
+                tip_lines.append("may sit on a crystallographic special position;")
+                tip_lines.append("the true Z could be twice the estimated value.")
+            else:
+                tip_lines.append("Confidence: LOW — Z′ is not a multiple of ½.")
+                tip_lines.append("The bond-graph estimate is likely incorrect")
+                tip_lines.append("(common for polymers, frameworks, or salts).")
+            self.ui.zEstimateLabel.setToolTip('\n'.join(tip_lines))
         except Exception:
             self.ui.zEstimateLabel.setText('')
 

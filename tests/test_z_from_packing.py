@@ -11,7 +11,10 @@ from finalcif.tools.z_from_packing import (
     _get_components,
     _z_from_components,
     _build_bond_graph,
+    _z_sg_from_symmops,
     count_z,
+    count_z_and_zprime,
+    ZResult,
 )
 
 
@@ -230,9 +233,88 @@ class TestCountZWithDisorder:
         assert z == 2
 
 
+# ---------------------------------------------------------------------------
+# Tests for Z' determination and ZResult
+# ---------------------------------------------------------------------------
 
+class TestZPrime:
+    """Unit tests for ZResult attributes and count_z_and_zprime()."""
 
+    def test_zresult_zprime_integer_is_high_confidence(self):
+        """Z′ = 1 (Z=4, Z_sg=4) → high confidence."""
+        r = ZResult(z=4, z_prime=1.0, z_sg=4)
+        assert r.reliable is True
+        assert r.confidence == 'high'
 
+    def test_zresult_zprime_half_is_medium_confidence(self):
+        """Z′ = 0.5 (molecule on special position) → medium confidence."""
+        r = ZResult(z=2, z_prime=0.5, z_sg=4)
+        assert r.reliable is True
+        assert r.confidence == 'medium'
+
+    def test_zresult_zprime_non_half_is_low_confidence(self):
+        """Z′ = 0.25 → not a recognised fraction → low confidence."""
+        r = ZResult(z=1, z_prime=0.25, z_sg=4)
+        assert r.reliable is False
+        assert r.confidence == 'low'
+
+    def test_zresult_zprime_zero_is_unreliable(self):
+        r = ZResult(z=0, z_prime=0.0, z_sg=4)
+        assert r.reliable is False
+        assert r.confidence == 'low'
+
+    def test_zresult_zprime_large_integer_is_high(self):
+        """Z′ = 4 is unusual but still a positive integer → high."""
+        r = ZResult(z=16, z_prime=4.0, z_sg=4)
+        assert r.reliable is True
+        assert r.confidence == 'high'
+
+    def test_zresult_zprime_exceeds_eight_is_low(self):
+        """Z′ > 8 is physically unreasonable even if it is an integer."""
+        r = ZResult(z=36, z_prime=9.0, z_sg=4)
+        assert r.reliable is False
+        assert r.confidence == 'low'
+
+    def test_z_sg_from_symmops_p21c(self):
+        """P 2₁/c has 4 general positions."""
+        ops = ['x,y,z', '-x,y+1/2,-z+1/2', '-x,-y,-z', 'x,-y+1/2,z+1/2']
+        assert _z_sg_from_symmops(ops) == 4
+
+    def test_z_sg_from_symmops_p1(self):
+        """P 1 has 1 general position."""
+        assert _z_sg_from_symmops(['x,y,z']) == 1
+
+    def test_z_sg_from_symmops_p212121(self):
+        """P 2₁2₁2₁ has 4 general positions."""
+        ops = ['x,y,z', '-x+1/2,-y,z+1/2', '-x,y+1/2,-z+1/2', 'x+1/2,-y+1/2,-z']
+        assert _z_sg_from_symmops(ops) == 4
+
+    def test_count_z_and_zprime_returns_zresult(self):
+        """Return type is ZResult with the expected fields."""
+        cif = _load('test-data/1000006-finalcif.cif')
+        result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
+        assert isinstance(result, ZResult)
+        assert result.z == 4
+        assert result.z_sg == 4
+        assert abs(result.z_prime - 1.0) < 0.01
+        assert result.confidence == 'high'
+
+    def test_count_z_and_zprime_triclinic(self):
+        """P -1 structure: Z=2, Z_sg=2 → Z′=1, high confidence."""
+        cif = _load('test-data/DK_ML7-66-final.cif')
+        result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
+        assert result.z == 2
+        assert result.z_sg == 2
+        assert abs(result.z_prime - 1.0) < 0.01
+        assert result.confidence == 'high'
+
+    def test_count_z_and_zprime_no_symmops(self):
+        """No symmops → Z=1, Z_sg=1, Z′=1."""
+        atoms = [['C1', 'C', 0.5, 0.5, 0.5, 0, 1.0, 0.02]]
+        result = count_z_and_zprime(atoms, [], (10.0, 10.0, 10.0, 90.0, 90.0, 90.0))
+        assert result.z == 1
+        assert result.z_sg == 1
+        assert abs(result.z_prime - 1.0) < 0.01
 
 
 
