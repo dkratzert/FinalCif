@@ -247,14 +247,42 @@ class TestZPrime:
         assert r.confidence == 'high'
 
     def test_zresult_zprime_half_is_medium_confidence(self):
-        """Z′ = 0.5 (molecule on special position) → medium confidence."""
+        """Z′ = 0.5 (molecule on 2-fold special position) → medium confidence."""
         r = ZResult(z=2, z_prime=0.5, z_sg=4)
         assert r.reliable is True
         assert r.confidence == 'medium'
 
-    def test_zresult_zprime_non_half_is_low_confidence(self):
-        """Z′ = 0.25 → not a recognised fraction → low confidence."""
+    def test_zresult_zprime_third_is_medium_confidence(self):
+        """Z′ = ⅓ (molecule on 3-fold axis, trigonal/hexagonal groups) → medium."""
+        r = ZResult(z=2, z_prime=round(1 / 3, 6), z_sg=6)
+        assert r.reliable is True
+        assert r.confidence == 'medium'
+
+    def test_zresult_zprime_sixth_is_medium_confidence(self):
+        """Z′ = ⅙ (molecule on 6-fold axis, hexagonal groups) → medium."""
+        r = ZResult(z=1, z_prime=round(1 / 6, 6), z_sg=6)
+        assert r.reliable is True
+        assert r.confidence == 'medium'
+
+    def test_zresult_zprime_quarter_is_medium_confidence(self):
+        """Z′ = ¼ (molecule on 4-fold axis, tetragonal groups) → medium."""
         r = ZResult(z=1, z_prime=0.25, z_sg=4)
+        assert r.reliable is True
+        assert r.confidence == 'medium'
+
+    def test_zresult_zprime_two_thirds_is_medium_confidence(self):
+        """Z′ = ⅔ (2/3, valid for 3-fold axis) → medium."""
+        r = ZResult(z=4, z_prime=round(2 / 3, 6), z_sg=6)
+        assert r.reliable is True
+        assert r.confidence == 'medium'
+
+    def test_zresult_zprime_non_crystallographic_is_low_confidence(self):
+        """Z′ = 0.4 is not k/n for any n in {1,2,3,4,6} → low confidence.
+
+        Nearest valid fractions are ⅓ (diff=0.067) and ½ (diff=0.10),
+        both outside the 0.05 tolerance.
+        """
+        r = ZResult(z=2, z_prime=0.4, z_sg=5)
         assert r.reliable is False
         assert r.confidence == 'low'
 

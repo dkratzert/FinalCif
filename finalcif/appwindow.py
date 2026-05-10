@@ -2000,8 +2000,11 @@ class AppWindow(QMainWindow):
 
         Z′ = Z / Z_sg indicates the number of formula units per asymmetric unit:
         * Z′ = 1  → one molecule per ASU (most common, high confidence).
-        * Z′ = 0.5 → molecule on a special position (medium confidence).
-        * Z′ not a multiple of ½ → estimate likely unreliable (low confidence).
+        * Z′ = ½  → molecule on 2-fold special position (medium confidence).
+        * Z′ = ⅓  → molecule on 3-fold axis, trigonal/hexagonal (medium confidence).
+        * Z′ = ¼  → molecule on 4-fold axis, tetragonal (medium confidence).
+        * Z′ = ⅙  → molecule on 6-fold axis, hexagonal (medium confidence).
+        * Z′ not a multiple of 1/n (n∈{1,2,3,4,6}) → estimate likely unreliable (low).
         """
         try:
             result = count_z_and_zprime(self.cif.atoms_fract, self.cif.symmops, self.cif.cell[:6])
@@ -2018,9 +2021,9 @@ class AppWindow(QMainWindow):
             if result.confidence == 'high':
                 tip_lines.append("Confidence: HIGH — Z′ is a positive integer.")
             elif result.confidence == 'medium':
-                tip_lines.append("Confidence: MEDIUM — Z′ = ½ suggests the molecule")
-                tip_lines.append("may sit on a crystallographic special position;")
-                tip_lines.append("the true Z could be twice the estimated value.")
+                tip_lines.append("Confidence: MEDIUM — Z′ is a non-integer crystallographic")
+                tip_lines.append("fraction (½, ⅓, ¼, or ⅙), suggesting the molecule sits")
+                tip_lines.append("on a special position; the true Z may be higher.")
             else:
                 tip_lines.append("Confidence: LOW — Z′ is not a multiple of ½.")
                 tip_lines.append("The bond-graph estimate is likely incorrect")

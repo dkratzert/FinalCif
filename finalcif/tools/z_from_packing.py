@@ -44,6 +44,10 @@ BOND_TOLERANCE: float = 0.40
 # Tolerance used when testing whether Z' is close to a simple fraction.
 _ZPRIME_TOLERANCE: float = 0.05
 
+# Valid rotation-symmetry denominators in crystals (1-, 2-, 3-, 4-, 6-fold axes).
+# Z' must be k/n for n in this set (k ≥ 1) to be crystallographically meaningful.
+_VALID_Z_DENOMINATORS: tuple[int, ...] = (1, 2, 3, 4, 6)
+
 
 @dataclasses.dataclass(frozen=True)
 class ZResult:
@@ -55,8 +59,18 @@ class ZResult:
         z_sg:     Number of general positions in the space group (symmetry-derived Z).
 
     The ``reliable`` property is ``True`` when *z_prime* is within
-    :data:`_ZPRIME_TOLERANCE` of a positive multiple of 0.5 (the set of
-    crystallographically meaningful fractions: ½, 1, 1½, 2, …).
+    :data:`_ZPRIME_TOLERANCE` of a crystallographically valid fraction k/n,
+    where n is from :data:`_VALID_Z_DENOMINATORS` (1, 2, 3, 4, 6) and k ≥ 1.
+
+    This covers all site multiplicities that can arise from the rotation symmetries
+    allowed by the crystallographic restriction theorem:
+
+    * n=1 → Z′ = 1, 2, 3, …  (general positions only)
+    * n=2 → Z′ = ½, 1, 1½, … (molecule on 2-fold axis or inversion centre)
+    * n=3 → Z′ = ⅓, ⅔, 1, … (molecule on 3-fold axis; trigonal/hexagonal groups)
+    * n=4 → Z′ = ¼, ½, ¾, … (molecule on 4-fold axis; tetragonal groups)
+    * n=6 → Z′ = ⅙, ⅓, ½, … (molecule on 6-fold axis; hexagonal groups)
+
     Values outside this set indicate that the bond-graph GCD algorithm
     lost track of the true formula-unit count (e.g. infinite frameworks,
     polymers, or multi-component systems whose species counts share no
@@ -71,14 +85,17 @@ class ZResult:
     def reliable(self) -> bool:
         """``True`` when *z_prime* is a plausible crystallographic value.
 
-        Checks whether *z_prime* is within :data:`_ZPRIME_TOLERANCE` of
-        k/2 for any positive integer *k* up to 16 (i.e. Z′ ≤ 8).
+        Checks whether *z_prime* is within :data:`_ZPRIME_TOLERANCE` of k/n
+        for any *n* in :data:`_VALID_Z_DENOMINATORS` and positive integer *k*,
+        restricted to Z′ ≤ 8.  Examples of valid fractions: ⅙, ¼, ⅓, ½, ⅔,
+        ¾, 1, 1½, 2, …
         """
         if self.z_prime <= 0 or self.z_prime > 8.0:
             return False
-        for k in range(1, 17):          # 0.5, 1.0, 1.5, … 8.0
-            if abs(self.z_prime - k / 2) < _ZPRIME_TOLERANCE:
-                return True
+        for denom in _VALID_Z_DENOMINATORS:
+            for k in range(1, int(8.0 * denom) + 1):
+                if abs(self.z_prime - k / denom) < _ZPRIME_TOLERANCE:
+                    return True
         return False
 
     @property
@@ -87,15 +104,16 @@ class ZResult:
 
         * **high**   — Z′ is a positive integer (1, 2, 3, …): the most common,
           most reliable case.
-        * **medium** — Z′ is a half-integer (0.5, 1.5, …): the molecule may sit
-          on a crystallographic special position; the bond-graph Z could be half
-          of the true value.
-        * **low**    — Z′ is not a multiple of 0.5, or is outside (0, 8]:
-          the estimate is unlikely to match the true crystallographic Z.
+        * **medium** — Z′ is a non-integer crystallographic fraction (½, ⅓, ¼,
+          ⅙, ⅔, …): the molecule may sit on a crystallographic special position;
+          the bond-graph Z could be an integer multiple of the true value.
+        * **low**    — Z′ is not a multiple of any of 1, ½, ⅓, ¼, or ⅙, or is
+          outside (0, 8]: the estimate is unlikely to match the true
+          crystallographic Z.
         """
         if not self.reliable:
             return 'low'
-        # Distinguish integer Z' from half-integer Z'
+        # Distinguish integer Z' from non-integer crystallographic fraction
         if abs(self.z_prime - round(self.z_prime)) < _ZPRIME_TOLERANCE:
             return 'high'
         return 'medium'
@@ -437,15 +455,19 @@ def count_z_and_zprime(
     Z′ = Z / Z_sg, where Z_sg is the number of general positions in the space
     group (the maximum Z for a structure with all atoms in general positions).
 
-    A Z′ that is a positive multiple of 0.5 is crystallographically meaningful:
+    Crystallographically valid Z′ values are positive multiples of 1/n where
+    n is a permitted rotation-symmetry order (1, 2, 3, 4, or 6):
 
     * **Z′ = 1** (most common) — one formula unit per asymmetric unit.
-    * **Z′ = 0.5** — molecule on a 2-fold special position.
+    * **Z′ = ½** — molecule on a 2-fold axis or inversion centre.
+    * **Z′ = ⅓** — molecule on a 3-fold axis (trigonal / hexagonal groups).
+    * **Z′ = ¼** — molecule on a 4-fold axis (tetragonal groups).
+    * **Z′ = ⅙** — molecule on a 6-fold axis (hexagonal groups).
     * **Z′ = 2, 3, …** — multiple independent formula units in the ASU.
 
-    A Z′ that is *not* a multiple of 0.5 signals that the bond-graph GCD
-    algorithm returned an incorrect Z (typically an undercount for polymeric or
-    multi-component structures).
+    A Z′ that is *not* close to any k/n (n ∈ {1,2,3,4,6}) signals that the
+    bond-graph GCD algorithm returned an incorrect Z (typically an undercount
+    for polymeric or multi-component structures).
 
     Args:
         atoms_fract:  Atom records as yielded by ``CifContainer.atoms_fract``.
@@ -461,4 +483,5 @@ def count_z_and_zprime(
     z_sg = _z_sg_from_symmops(symmops) if symmops and symmops != [''] else 1
     z_prime = round(z / z_sg, 6) if z_sg > 0 else float('nan')
     return ZResult(z=z, z_prime=z_prime, z_sg=z_sg)
+
 
