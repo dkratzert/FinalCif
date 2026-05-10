@@ -75,6 +75,7 @@ from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools.shred import ShredCIF
 from finalcif.tools.space_groups import SpaceGroups
+from finalcif.tools.z_from_packing import count_z
 from finalcif.tools.spgr_format import spgrps
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
@@ -1986,6 +1987,22 @@ class AppWindow(QMainWindow):
             else:
                 self.ui.render_widget.grow_molecule(atom_tuples,
                                                     cell=self.cif.cell[:6])
+
+        self._update_z_label()
+
+    def _update_z_label(self) -> None:
+        """Compute Z from unit-cell packing and display it next to the molecule view.
+
+        Uses the full symmetry expansion of the asymmetric unit to fill the unit
+        cell, then counts discrete connected molecular graphs. Disorder is handled
+        by retaining only the primary component of each disordered site so that
+        each atomic position is populated exactly once.
+        """
+        try:
+            z_packed = count_z(self.cif.atoms_fract, self.cif.symmops, self.cif.cell[:6])
+            self.ui.zEstimateLabel.setText(f'Z (packed): {z_packed}')
+        except Exception:
+            self.ui.zEstimateLabel.setText('')
 
     def _calc_grown_atoms(self):
         """Helper to generate the symmetry expanded atoms without drawing them."""

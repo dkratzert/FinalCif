@@ -1180,6 +1180,11 @@ class Ui_FinalCifWindow(object):
 
         self.horizontalLayout_7.addWidget(self.adpCheckBox)
 
+        self.zEstimateLabel = QLabel(self.molGroupBox)
+        self.zEstimateLabel.setObjectName(u"zEstimateLabel")
+
+        self.horizontalLayout_7.addWidget(self.zEstimateLabel)
+
         self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.horizontalLayout_7.addItem(self.horizontalSpacer_5)
@@ -2792,6 +2797,10 @@ class Ui_FinalCifWindow(object):
         self.growCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Grow Structure", None))
         self.labelsCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Show Labels", None))
         self.adpCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"ADPs", None))
+#if QT_CONFIG(tooltip)
+        self.zEstimateLabel.setToolTip(QCoreApplication.translate("FinalCifWindow", u"Z estimated from unit-cell packing (disorder-aware). Each disordered site is counted once.", None))
+#endif // QT_CONFIG(tooltip)
+        self.zEstimateLabel.setText("")
         self.drawImagePushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Use as Image for Report", None))
         self.picturesTabWidget.setTabText(self.picturesTabWidget.indexOf(self.tab_structure), QCoreApplication.translate("FinalCifWindow", u"Structure", None))
         self.videoLineEdit.setPlaceholderText(QCoreApplication.translate("FinalCifWindow", u"*.vzs; *.jpg file", None))
