@@ -104,26 +104,46 @@ class TestZFromComponents:
 
     def test_single_molecule(self):
         # One molecule = one component; GCD(1) = 1.
-        assert _z_from_components([['C', 'H', 'O']]) == 1
+        assert _z_from_components([[('C', 1.0), ('H', 1.0), ('O', 1.0)]]) == 1
 
     def test_two_copies_same_formula(self):
         # Z=2 structure: 2 components with identical composition.
-        assert _z_from_components([['C', 'O'], ['C', 'O']]) == 2
+        assert _z_from_components([[('C', 1.0), ('O', 1.0)], [('C', 1.0), ('O', 1.0)]]) == 2
 
     def test_salt_four_copies(self):
         # Tetracycline HCl: 4 organic + 4 Cl  →  GCD(4, 4) = 4.
-        org = ['C'] * 22 + ['H'] * 25 + ['N'] * 2 + ['O'] * 8
-        components = [org] * 4 + [['Cl']] * 4
+        org = [('C', 1.0)] * 22 + [('H', 1.0)] * 25 + [('N', 1.0)] * 2 + [('O', 1.0)] * 8
+        components = [org] * 4 + [[('Cl', 1.0)]] * 4
         assert _z_from_components(components) == 4
 
     def test_cocrystal_two_species(self):
         # 1:1 co-crystal, Z=2: two copies of each species → GCD(2, 2) = 2.
-        a = ['C', 'C', 'O']
-        b = ['N', 'H']
+        a = [('C', 1.0), ('C', 1.0), ('O', 1.0)]
+        b = [('N', 1.0), ('H', 1.0)]
         assert _z_from_components([a, a, b, b]) == 2
 
     def test_empty_returns_one(self):
         assert _z_from_components([]) == 1
+
+    def test_minor_partial_occ_component_excluded_from_gcd(self):
+        """Two full-occ molecules + one minor partial-occ fragment → Z=2, not 1.
+
+        This replicates the 1519506.cif scenario: a disordered solvent (dg=0,
+        occ=0.5, no disorder-group label) expands to a small isolated fragment
+        that appears only once in the component list.  Without filtering it would
+        drag GCD(2, 1) down to 1; the fix excludes it so GCD(2) = 2.
+        """
+        mol = [('C', 1.0)] * 70 + [('O', 1.0)] * 15 + [('Si', 1.0)] * 10
+        minor = [('O', 0.5)] * 4  # disordered solvent, all partial occ
+        components = [mol, mol, minor]
+        assert _z_from_components(components) == 2
+
+    def test_all_partial_occ_falls_back_to_all_components(self):
+        """When every component is partial-occupancy (molecule on special position),
+        no filtering is applied and the GCD is computed from all components."""
+        # Centrosymmetric molecule on inversion centre: all occ=0.5, appears once.
+        mol = [('C', 0.5)] * 10 + [('O', 0.5)] * 3
+        assert _z_from_components([mol]) == 1
 
 
 # ---------------------------------------------------------------------------
@@ -183,6 +203,17 @@ class TestCountZRealStructures:
         """Without symmetry operations the function cannot expand the unit cell."""
         atoms = [['C1', 'C', 0.5, 0.5, 0.5, 0, 1.0, 0.02]]
         assert count_z(atoms, [], (10.0, 10.0, 10.0, 90.0, 90.0, 90.0)) == 1
+
+    def test_partial_occ_solvent_dg0_does_not_reduce_z(self):
+        """1519506.cif — P -1, Z=2, siloxane framework with two disordered O atoms
+        (dg=0, occ=0.5) that form an isolated minor solvent fragment.
+
+        Without the minor-component filter the isolated {O:4} fragment (count=1)
+        forces GCD(2, 1)=1.  With the fix, the minor component is excluded and
+        GCD(2)=2 is returned correctly.
+        """
+        cif = _load('test-data/1519506.cif')
+        assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 2
 
 
 # ---------------------------------------------------------------------------

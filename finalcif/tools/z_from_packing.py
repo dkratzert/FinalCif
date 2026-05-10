@@ -44,6 +44,17 @@ BOND_TOLERANCE: float = 0.40
 # Tolerance used when testing whether Z' is close to a simple fraction.
 _ZPRIME_TOLERANCE: float = 0.05
 
+# Minimum occupancy for an atom to be considered "fully ordered".
+# Components whose *highest* occupancy is below this threshold consist entirely
+# of partial-occupancy atoms and are treated as minor disordered fragments
+# (e.g. disordered solvent with dg=0 and occ=0.5) that should not contribute
+# to the GCD-based Z estimate.
+# The fallback: when *all* components are below this threshold (e.g. a
+# centrosymmetric molecule that sits entirely on an inversion centre and
+# therefore has occ=0.5 for every atom), no filtering is applied so that the
+# GCD calculation can still proceed correctly.
+PARTIAL_OCC_THRESHOLD: float = 0.85
+
 # Valid rotation-symmetry denominators in crystals (1-, 2-, 3-, 4-, 6-fold axes).
 # Z' must be k/n for n in this set (k ≥ 1) to be crystallographically meaningful.
 _VALID_Z_DENOMINATORS: tuple[int, ...] = (1, 2, 3, 4, 6)
@@ -196,7 +207,7 @@ def _expand_to_unit_cell(
     all_sites = ss.get_all_unit_cell_sites()
 
     return [
-        (s.type_symbol, (s.fract.x, s.fract.y, s.fract.z))
+        (s.type_symbol, (s.fract.x, s.fract.y, s.fract.z), s.occ)
         for s in all_sites
     ]
 
@@ -232,8 +243,8 @@ def _build_bond_graph(
     uc = gemmi.UnitCell(a, b, c, alpha, beta, gamma)
 
     # Cartesian coordinates for all expanded atoms via gemmi.
-    orth = [uc.orthogonalize(gemmi.Fractional(*pos)) for _, pos in expanded]
-    radii = [_get_radius(el) for el, _ in expanded]
+    orth = [uc.orthogonalize(gemmi.Fractional(*pos)) for _, pos, _occ in expanded]
+    radii = [_get_radius(el) for el, _pos, _occ in expanded]
 
     # Maximum possible bond cutoff (largest atom pair + tolerance).
     max_radius = max(radii)
@@ -322,19 +333,20 @@ def _count_components(adj: dict[int, set[int]]) -> int:
 
 def _get_components(
         adj: dict[int, set[int]],
-        expanded: list[tuple[str, tuple[float, float, float]]],
-) -> list[list[str]]:
-    """Return each connected component as a list of element symbols."""
+        expanded: list[tuple[str, tuple[float, float, float], float]],
+) -> list[list[tuple[str, float]]]:
+    """Return each connected component as a list of ``(element, occupancy)`` pairs."""
     visited: set[int] = set()
-    components: list[list[str]] = []
+    components: list[list[tuple[str, float]]] = []
     for start in adj:
         if start not in visited:
             queue: deque[int] = deque([start])
             visited.add(start)
-            comp: list[str] = []
+            comp: list[tuple[str, float]] = []
             while queue:
                 node = queue.popleft()
-                comp.append(expanded[node][0])
+                el, _pos, occ = expanded[node]
+                comp.append((el, occ))
                 for nbr in adj[node]:
                     if nbr not in visited:
                         visited.add(nbr)
@@ -343,18 +355,28 @@ def _get_components(
     return components
 
 
-def _z_from_components(components: list[list[str]]) -> int:
+def _z_from_components(components: list[list[tuple[str, float]]]) -> int:
     """Derive Z as the GCD of per-composition component multiplicities.
 
     Each distinct molecular species (identified by its elemental composition)
     appears exactly Z times in the unit cell.  Taking the GCD of those
     per-species counts gives Z without needing a packing coefficient.
 
+    Minor disordered fragments — components in which *every* atom has an
+    occupancy below :data:`PARTIAL_OCC_THRESHOLD` (e.g. a pair of disordered
+    solvent oxygens with ``dg=0, occ=0.5`` and no disorder-group label) — are
+    excluded from the GCD calculation because they do not represent complete
+    formula units.  If, however, *all* components fall below the threshold
+    (e.g. a centrosymmetric molecule sitting entirely on an inversion centre),
+    no filtering is applied so that the algorithm can still return a meaningful
+    result.
+
     Examples
     --------
     * Simple organic (2 copies, same formula): GCD({formula: 2}) = 2.
     * Salt like R·HCl (4 organic + 4 Cl⁻): GCD({org: 4, Cl: 4}) = 4.
     * 1:1 co-crystal (4+4 of two different species): GCD = 4.
+    * Z=2 organic + disordered solvent (occ=0.5, count=1): GCD({org: 2}) = 2.
 
     Known limitation
     ----------------
@@ -365,9 +387,20 @@ def _z_from_components(components: list[list[str]]) -> int:
     """
     if not components:
         return 1
+
+    # Separate components into "major" (contain at least one fully-ordered atom)
+    # and "minor" (all atoms are partially occupied — likely disordered solvent).
+    major = [
+        comp for comp in components
+        if max(occ for _el, occ in comp) >= PARTIAL_OCC_THRESHOLD
+    ]
+    # Fallback: if every component is partial-occupancy (e.g. the whole molecule
+    # sits on an inversion centre), do not exclude anything.
+    active = major if major else components
+
     comp_counts: dict[tuple, int] = {}
-    for comp in components:
-        key = tuple(sorted(Counter(comp).items()))
+    for comp in active:
+        key = tuple(sorted(Counter(el for el, _occ in comp).items()))
         comp_counts[key] = comp_counts.get(key, 0) + 1
     return reduce(gcd, comp_counts.values())
 
