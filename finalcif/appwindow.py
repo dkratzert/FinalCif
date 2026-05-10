@@ -2053,10 +2053,10 @@ class AppWindow(QMainWindow):
             symmops = list(self.cif.symmops)
             cell = tuple(self.cif.cell[:6])
         except Exception:
-            self.ui.zEstimateLabel.setText('')
+            self.ui.zEstimateLabel.setText('?')
             return
 
-        self.ui.zEstimateLabel.setText('Z* = …')
+        self.ui.zEstimateLabel.setText('Z = ')
         self.ui.zEstimateLabel.setToolTip('')
 
         self._z_thread = _ZEstimatorThread(atoms, symmops, cell, parent=self)
@@ -2066,7 +2066,7 @@ class AppWindow(QMainWindow):
     def _on_z_result(self, result: ZResult | None) -> None:
         """Receive the computed :class:`ZResult` from the background thread and update the label."""
         if result is None:
-            self.ui.zEstimateLabel.setText('')
+            self.ui.zEstimateLabel.setText('?')
             return
         confidence_icon = {'high': '✓', 'medium': '~', 'low': '?'}[result.confidence]
         self.ui.zEstimateLabel.setText(

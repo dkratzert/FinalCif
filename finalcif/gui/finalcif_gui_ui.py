@@ -522,10 +522,20 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_6.addItem(self.horizontalSpacer_11, 0, 3, 1, 1)
 
+        self.ZMainLabel = QLabel(self.CifDataItemsFrame)
+        self.ZMainLabel.setObjectName(u"ZMainLabel")
+
+        self.gridLayout_6.addWidget(self.ZMainLabel, 0, 12, 1, 1)
+
+        self.zEstimateLabel = QLabel(self.CifDataItemsFrame)
+        self.zEstimateLabel.setObjectName(u"zEstimateLabel")
+
+        self.gridLayout_6.addWidget(self.zEstimateLabel, 0, 13, 1, 1)
+
         self.HelpPushButton = QPushButton(self.CifDataItemsFrame)
         self.HelpPushButton.setObjectName(u"HelpPushButton")
 
-        self.gridLayout_6.addWidget(self.HelpPushButton, 0, 12, 1, 1)
+        self.gridLayout_6.addWidget(self.HelpPushButton, 0, 14, 1, 1)
 
         self.SumFormMainLineEdit = QTextEdit(self.CifDataItemsFrame)
         self.SumFormMainLineEdit.setObjectName(u"SumFormMainLineEdit")
@@ -1179,11 +1189,6 @@ class Ui_FinalCifWindow(object):
         self.adpCheckBox.setChecked(True)
 
         self.horizontalLayout_7.addWidget(self.adpCheckBox)
-
-        self.zEstimateLabel = QLabel(self.molGroupBox)
-        self.zEstimateLabel.setObjectName(u"zEstimateLabel")
-
-        self.horizontalLayout_7.addWidget(self.zEstimateLabel)
 
         self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
@@ -2740,6 +2745,11 @@ class Ui_FinalCifWindow(object):
         self.spacegroupLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Space-Group Type", None))
         self.appendCifPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Append CIF", None))
         self.CCDCNumLabel.setText(QCoreApplication.translate("FinalCifWindow", u"CCDC Number", None))
+        self.ZMainLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Z", None))
+#if QT_CONFIG(tooltip)
+        self.zEstimateLabel.setToolTip(QCoreApplication.translate("FinalCifWindow", u"Z estimated from unit-cell packing (disorder-aware). Each disordered site is counted once.", None))
+#endif // QT_CONFIG(tooltip)
+        self.zEstimateLabel.setText(QCoreApplication.translate("FinalCifWindow", u"?", None))
         self.HelpPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Help", None))
         self.datanameLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data Name", None))
         self.SumFormMainLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Sum Formula", None))
@@ -2797,10 +2807,6 @@ class Ui_FinalCifWindow(object):
         self.growCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Grow Structure", None))
         self.labelsCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Show Labels", None))
         self.adpCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"ADPs", None))
-#if QT_CONFIG(tooltip)
-        self.zEstimateLabel.setToolTip(QCoreApplication.translate("FinalCifWindow", u"Z estimated from unit-cell packing (disorder-aware). Each disordered site is counted once.", None))
-#endif // QT_CONFIG(tooltip)
-        self.zEstimateLabel.setText("")
         self.drawImagePushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Use as Image for Report", None))
         self.picturesTabWidget.setTabText(self.picturesTabWidget.indexOf(self.tab_structure), QCoreApplication.translate("FinalCifWindow", u"Structure", None))
         self.videoLineEdit.setPlaceholderText(QCoreApplication.translate("FinalCifWindow", u"*.vzs; *.jpg file", None))
