@@ -2,7 +2,7 @@
 import sys
 sys.path.insert(0, '.')
 from gemmi import cif as gcif
-from finalcif.tools.z_from_packing import count_z, _filter_disorder, _expand_to_unit_cell, _frac_to_orth_matrix, _build_bond_graph, _get_components, _z_from_components
+from finalcif.tools.z_from_packing import count_z, _filter_disorder, _expand_to_unit_cell, _build_bond_graph, _get_components, _z_from_components
 
 def get_block(p):
     doc = gcif.read(str(p))
@@ -61,9 +61,8 @@ for cid in ['1533225', '1538553', '4305701', '1527022', '7241349']:
     formula = gcif.as_string(formula_tag) if formula_tag else '?'
     filtered = _filter_disorder(a_list)
     expected_expansion = len(filtered) * len(ops)
-    expanded = _expand_to_unit_cell(filtered, ops)
-    M = _frac_to_orth_matrix(c)
-    adj = _build_bond_graph(expanded, M)
+    expanded = _expand_to_unit_cell(filtered, ops, c)
+    adj = _build_bond_graph(expanded, c)
     comps = _get_components(adj, expanded)
     z_calc = _z_from_components(comps)
     comp_sizes = sorted([len(c2) for c2 in comps], reverse=True)[:10]

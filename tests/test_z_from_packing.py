@@ -11,7 +11,6 @@ from finalcif.tools.z_from_packing import (
     _get_components,
     _z_from_components,
     _build_bond_graph,
-    _frac_to_orth_matrix,
     count_z,
 )
 
