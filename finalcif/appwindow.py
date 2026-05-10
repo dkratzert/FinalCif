@@ -18,6 +18,8 @@ from math import sin, radians
 from pathlib import Path, WindowsPath
 from typing import cast
 
+from fastmolwidget import Atomtuple
+from fastmolwidget.part_combo import PartFilterWidget
 from fastmolwidget.sdm import SDM
 
 from finalcif.gui.vzs_viewer import VZSImageViewer
@@ -114,6 +116,10 @@ class AppWindow(QMainWindow):
         self.ui = Ui_FinalCifWindow()
         self.ui.setupUi(self)
         self.ui.page_MainTable.setParent(self.ui.MainStackedWidget)
+        # Parts selector widget – inserted after adpCheckBox in horizontalLayout_7
+        self.parts_combo = PartFilterWidget(parent=self.ui.molGroupBox, label=' ', min_combo_width=90)
+        self.parts_combo.setObjectName('partsFilterWidget')
+        self.ui.horizontalLayout_7.insertWidget(3, self.parts_combo)
         # Inject the Author Editor tab (defined in the .ui file) into LoopsPage
         self.ui.loops_page.set_author_editor_tab(self.ui.author_editor_widget)
         self.fixfont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
@@ -205,7 +211,7 @@ class AppWindow(QMainWindow):
         self.ui.PictureWidthDoubleSpinBox.setRange(0.0, 25)
         self.ui.PictureWidthDoubleSpinBox.setSingleStep(0.5)
         # Just too slow for large structures:
-        self.ui.growCheckBox.setChecked(False)
+        self.ui.growCheckBox.setChecked(True)
         self.ui.CheckcifButton.setDisabled(True)
         self.ui.CheckcifStartButton.setDisabled(True)
         self.ui.ReportPicPushButton.setDisabled(True)
@@ -420,6 +426,7 @@ class AppWindow(QMainWindow):
         self.ui.growCheckBox.toggled.connect(lambda: self.redraw_molecule(reset_view=False))
         self.ui.labelsCheckBox.toggled.connect(self.show_labels)
         self.ui.adpCheckBox.toggled.connect(self.show_adp)
+        self.parts_combo.selectionChanged.connect(self._on_parts_selection_changed)
         self.ui.SourcesPushButton.clicked.connect(self.show_sources)
         self.ui.BackSourcesPushButton.clicked.connect(self.back_to_main_noload)
         self.ui.BackFromOptionspPushButton.clicked.connect(self.back_to_main_noload)
@@ -1333,6 +1340,11 @@ class AppWindow(QMainWindow):
                 ok = t.make_templated_html_report(output_filename=str(report_filename),
                                                   template_path=template_path.parent,
                                                   template_file=template_path.name)
+            elif template_path.suffix in ('.tex', '.latex'):
+                t = TemplatedReport(format=ReportFormat.LATEX, options=self.options, cif=self.cif)
+                ok = t.make_templated_latex_report(output_filename=str(report_filename),
+                                                   template_path=template_path.parent,
+                                                   template_file=template_path.name)
             if not ok:
                 return None
         except FileNotFoundError as e:
@@ -1984,14 +1996,15 @@ class AppWindow(QMainWindow):
             atoms = self.cif.atoms_orth
 
         with suppress(Exception):
+            atom_tuples = self._atoms_with_adps(atoms)
+            self._update_parts_combo(atom_tuples)
             if reset_view:
-                self.ui.render_widget.open_molecule(atoms,
+                self.ui.render_widget.open_molecule(atom_tuples,
                                                     cell=self.cif.cell[:6],
-                                                    adps=self.get_adps(), keep_view=not reset_view)
+                                                    keep_view=not reset_view)
             else:
-                self.ui.render_widget.grow_molecule(atoms,
-                                                    cell=self.cif.cell[:6],
-                                                    adps=self.get_adps())
+                self.ui.render_widget.grow_molecule(atom_tuples,
+                                                    cell=self.cif.cell[:6])
 
     def _calc_grown_atoms(self):
         """Helper to generate the symmetry expanded atoms without drawing them."""
@@ -2009,6 +2022,35 @@ class AppWindow(QMainWindow):
             adp_dict[dp.label] = (to_float(dp.U11), to_float(dp.U22), to_float(dp.U33),
                                   to_float(dp.U23), to_float(dp.U13), to_float(dp.U12))
         return adp_dict
+
+    def _atoms_with_adps(self, atoms) -> list[Atomtuple]:
+        """Convert atom objects to Atomtuple instances with ADP data embedded directly."""
+        adp_dict = self.get_adps()
+        result = []
+        for at in atoms:
+            adp = adp_dict.get(at.label)
+            if isinstance(at, Atomtuple):
+                result.append(at._replace(adp=adp))
+            else:
+                result.append(Atomtuple(label=at.label, type=at.type,
+                                        x=at.x, y=at.y, z=at.z,
+                                        part=at.part, adp=adp))
+        return result
+
+    def _update_parts_combo(self, atoms: list[Atomtuple]) -> None:
+        """Repopulate the parts selector with the unique disorder parts present in *atoms*.
+
+        The widget is shown only when more than one distinct part is found (i.e. disorder exists).
+        """
+        parts = frozenset(at.part for at in atoms)
+        self.parts_combo.update_parts(parts)
+
+    def _on_parts_selection_changed(self) -> None:
+        """Forward the current parts selection to the molecule widget."""
+        checked = self.parts_combo.checked_values()
+        visible: set[int] | None = set(checked) if checked else None
+        with suppress(Exception):
+            self.ui.render_widget.set_visible_parts(visible)
 
     def redraw_molecule(self, reset_view: bool = False) -> None:
         try:

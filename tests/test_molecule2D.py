@@ -29,12 +29,10 @@ def test_render_item():
 
 def test_molecule_widget_creation():
     widget = MoleculeWidget()
-    assert widget.atoms_size == 12
     assert widget.fontsize == 13
     assert widget.bond_width == 3
     assert widget.labels is True
     assert widget._show_adps is True
-    assert widget.bond_drawer == widget._draw_bond_rounded
 
 
 def test_molecule_widget_with_cif():
@@ -60,7 +58,6 @@ def test_molecule_widget_with_cif():
     # Test setting parameters and re-drawing
     widget.labels = False
     widget._show_adps = False
-    widget.atoms_size = 15
     widget.bond_width = 4
     widget.repaint()
 
@@ -92,12 +89,6 @@ def test_molecule_widget_toggles():
     # Test ADP visibility
     widget.show_adps(False)
     assert widget._show_adps is False
-
-    # Test bond type toggle
-    widget.show_round_bonds(False)
-    assert widget.bond_drawer == widget._draw_bond
-    widget.show_round_bonds(True)
-    assert widget.bond_drawer == widget._draw_bond_rounded
 
     # Test label font setting
     widget.setLabelFont(20)

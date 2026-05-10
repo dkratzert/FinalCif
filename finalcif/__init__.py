@@ -1,2 +1,3 @@
 
-VERSION = 160
+VERSION = 161
+__version__ = VERSION

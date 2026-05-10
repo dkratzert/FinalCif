@@ -35,6 +35,6 @@ You only need them if you want to make report tables that differ from the defaul
 
 ![FinalCif CheckCIF](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_checkcif.png)
 
-![FinalCif responses](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_responses.png)
+![FinalCif responses](https://github.com/dkratzert/FinalCif/raw/master/docs/pics/finalcif_responses.png)
 
-![FinalCif responses](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_loops.png)
+![FinalCif loops](https://github.com/dkratzert/FinalCif/raw/master/screenshots/finalcif_loops.png)
