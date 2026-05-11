@@ -162,7 +162,7 @@ class TestCountZRealStructures:
 
     def test_monoclinic_z2_sucrose(self):
         """DK_Zucker2 — P 1 21 1 (sucrose), Z=2, single molecule, no disorder."""
-        cif = _load('test-data/DK_Zucker2_0m-finalcif.cif')
+        cif = _load('test-data/DK_Zucker2_0m.cif')
         assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 2
 
     def test_triclinic_z2_ntd106c(self):
@@ -187,12 +187,12 @@ class TestCountZRealStructures:
         assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 4
 
     def test_salt_1000006_finalcif(self):
-        """1000006-finalcif.cif — same tetracycline HCl in P 21 21 21, Z=4.
+        """1000006.cif — same tetracycline HCl in P 21 21 21, Z=4.
 
         Regression test: previously returned 8 (raw entity count) instead of
         the crystallographic Z=4.
         """
-        cif = _load('test-data/1000006-finalcif.cif')
+        cif = _load('test-data/1000006.cif')
         assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 4
 
     def test_empty_atoms_returns_one(self):
@@ -350,7 +350,7 @@ class TestZPrime:
 
     def test_count_z_and_zprime_returns_zresult(self):
         """Return type is ZResult with the expected fields."""
-        cif = _load('test-data/1000006-finalcif.cif')
+        cif = _load('test-data/1000006.cif')
         result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
         assert isinstance(result, ZResult)
         assert result.z == 4
