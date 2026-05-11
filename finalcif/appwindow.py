@@ -1799,6 +1799,7 @@ class AppWindow(QMainWindow):
             if self.ui.MainStackedWidget.on_info_page():
                 self.show_residuals()
                 self.redraw_molecule()
+            self._update_z_label()
             t = QtCore.QTimer(self)
             t.singleShot(1000, self.check_cecksums)
 
@@ -2020,8 +2021,6 @@ class AppWindow(QMainWindow):
                 self.ui.render_widget.grow_molecule(atom_tuples,
                                                     cell=self.cif.cell[:6])
 
-        self._update_z_label()
-
     def _update_z_label(self) -> None:
         """Start a background computation of Z and Z′ and show a placeholder.
 
@@ -2054,10 +2053,13 @@ class AppWindow(QMainWindow):
             cell = tuple(self.cif.cell[:6])
         except Exception:
             self.ui.zEstimateLabel.setText('?')
+            self.ui.zEstimateLabel2.setText('?')
             return
 
         self.ui.zEstimateLabel.setText('Z = ')
+        self.ui.zEstimateLabel2.setText('Z = ')
         self.ui.zEstimateLabel.setToolTip('')
+        self.ui.zEstimateLabel2.setToolTip('')
 
         self._z_thread = _ZEstimatorThread(atoms, symmops, cell, parent=self)
         self._z_thread.result.connect(self._on_z_result)
@@ -2067,11 +2069,11 @@ class AppWindow(QMainWindow):
         """Receive the computed :class:`ZResult` from the background thread and update the label."""
         if result is None:
             self.ui.zEstimateLabel.setText('?')
+            self.ui.zEstimateLabel2.setText('?')
             return
         confidence_icon = {'high': '✓', 'medium': '~', 'low': '?'}[result.confidence]
-        self.ui.zEstimateLabel.setText(
-            f"Z* = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}"
-        )
+        self.ui.zEstimateLabel.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")
+        self.ui.zEstimateLabel2.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")
         tip_lines = [
             f"Estimated Z = {result.z} formula units per unit cell",
             f"Z′ = {result.z_prime:.4f}  (formula units per asymmetric unit)",
@@ -2089,6 +2091,7 @@ class AppWindow(QMainWindow):
             tip_lines.append("The bond-graph estimate is likely incorrect")
             tip_lines.append("(common for polymers, frameworks, or salts).")
         self.ui.zEstimateLabel.setToolTip('\n'.join(tip_lines))
+        self.ui.zEstimateLabel2.setToolTip('\n'.join(tip_lines))
 
     def _calc_grown_atoms(self):
         """Helper to generate the symmetry expanded atoms without drawing them."""
