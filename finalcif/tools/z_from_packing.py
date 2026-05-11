@@ -35,6 +35,7 @@ import gemmi
 
 from fastmolwidget.molecule2D import calc_volume  # re-exported for callers
 from finalcif.cif.atoms import element2cov as _ELEMENT2COV
+from finalcif.tools.chemparse import parse_formula as _parse_formula
 
 # Covalent radii sourced from finalcif.cif.atoms.element2cov (Å).
 # A small fallback covers elements absent from that table.
@@ -409,6 +410,86 @@ def _z_from_components(components: list[list[tuple[str, float]]]) -> int:
 # Public API
 # ---------------------------------------------------------------------------
 
+def _parse_formula_sum(formula_sum: str | None) -> dict[str, float] | None:
+    """Parse a ``_chemical_formula_sum`` string into ``{element: count}``.
+
+    Returns ``None`` if the input is empty or cannot be parsed.  Whitespace
+    between elements is stripped before parsing (matching the convention
+    used by :mod:`finalcif.tools.sumformula`).
+    """
+    if not formula_sum:
+        return None
+    text = str(formula_sum).strip()
+    if not text or text in {'?', '.'}:
+        return None
+    try:
+        return _parse_formula(text.replace(' ', ''))
+    except Exception:
+        return None
+
+
+def _expanded_element_counts(
+        expanded: list[tuple[str, tuple[float, float, float], float]],
+) -> dict[str, int]:
+    """Return total atom count per element across all expanded unit-cell sites."""
+    counts: dict[str, int] = {}
+    for el, _pos, _occ in expanded:
+        key = el.capitalize()
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def _gcd_matches_formula(
+        z_gcd: int,
+        cell_counts: dict[str, int],
+        formula: dict[str, float],
+) -> bool:
+    """Return True iff ``cell_counts == formula × z_gcd`` for every non-H element.
+
+    Hydrogen is excluded because riding/omitted hydrogens commonly cause a
+    benign mismatch that has no bearing on Z.  All other elements present in
+    the formula must match exactly (the expanded unit cell is integer-valued
+    by construction once disorder has been collapsed).
+    """
+    for el, n_per_fu in formula.items():
+        if el == 'H' or n_per_fu <= 0:
+            continue
+        expected = int(round(n_per_fu * z_gcd))
+        if cell_counts.get(el.capitalize(), 0) != expected:
+            return False
+    return True
+
+
+def _z_from_formula(
+        cell_counts: dict[str, int],
+        formula: dict[str, float],
+) -> int | None:
+    """Derive Z from the per-element ratio ``cell_counts / formula``.
+
+    Hydrogen is ignored (see :func:`_gcd_matches_formula`).  Every remaining
+    element in the formula must yield the *same* positive integer Z (spread
+    of zero, exact integer ratio); otherwise ``None`` is returned and the
+    caller falls back to the bond-graph GCD.
+    """
+    zs: list[int] = []
+    for el, n_per_fu in formula.items():
+        if el == 'H' or n_per_fu <= 0:
+            continue
+        n_in_cell = cell_counts.get(el.capitalize(), 0)
+        if n_in_cell <= 0:
+            return None
+        ratio = n_in_cell / n_per_fu
+        z = int(round(ratio))
+        if z < 1 or abs(ratio - z) > 1e-6:
+            return None
+        zs.append(z)
+    if not zs:
+        return None
+    if min(zs) != max(zs):
+        return None
+    return zs[0]
+
+
 def _z_sg_from_symmops(symmops: list[str]) -> int:
     """Return the number of general positions (Z_sg) for the given symmetry operations.
 
@@ -426,7 +507,8 @@ def _z_sg_from_symmops(symmops: list[str]) -> int:
 
 
 def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
-            max_atoms: int = 5000) -> int:
+            max_atoms: int = 5000,
+            formula_sum: str | None = None) -> int:
     """Determine Z by packing the unit cell and counting molecular graphs.
 
     Disorder is handled correctly: only the first component of each disordered
@@ -442,6 +524,18 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
     Fractional→Cartesian conversion in the bond-graph step uses
     ``gemmi.UnitCell.orthogonalize()``, the project's canonical converter.
 
+    When *formula_sum* is supplied (e.g. ``_chemical_formula_sum``), the
+    bond-graph GCD result is cross-checked against the expanded unit-cell
+    elemental composition.  The GCD is kept whenever it is consistent with
+    ``formula × Z_gcd`` for every non-H element.  If the GCD is provably
+    inconsistent with the formula — which happens for polymeric/extended
+    structures where one connected component spans several formula units
+    (e.g. coordination polymers bridged through inversion centres) — Z is
+    recomputed from the per-element ratio ``cell_counts / formula`` and used
+    instead, provided every non-H element agrees on the same positive
+    integer.  Hydrogen is always excluded from this check because riding /
+    omitted hydrogens commonly cause benign mismatches.
+
     Args:
         atoms_fract:  Iterable of atom records as yielded by
                       ``CifContainer.atoms_fract``:
@@ -450,6 +544,9 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
         cell:         Cell parameters ``(a, b, c, alpha, beta, gamma)`` in Å/deg.
         max_atoms:    Skip expansion if the expected unit-cell atom count would
                       exceed this limit (avoids quadratic cost for huge structures).
+        formula_sum:  Optional value of ``_chemical_formula_sum``; when given
+                      and parseable, used to detect and correct cases where
+                      the bond-graph GCD undercounts Z (see above).
 
     Returns:
         Number of formula units per unit cell (Z), at minimum 1.
@@ -472,7 +569,20 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
     adj = _build_bond_graph(expanded, cell)
     components = _get_components(adj, expanded)
     z = _z_from_components(components)
-    return max(1, z)
+    z = max(1, z)
+
+    try:
+        # Optional formula-based consistency check / correction.
+        formula = _parse_formula_sum(formula_sum)
+        if formula:
+            cell_counts = _expanded_element_counts(expanded)
+            if not _gcd_matches_formula(z, cell_counts, formula):
+                z_from_form = _z_from_formula(cell_counts, formula)
+                if z_from_form is not None:
+                    z = z_from_form
+    except Exception:
+        return z
+    return z
 
 
 def count_z_and_zprime(
@@ -480,6 +590,7 @@ def count_z_and_zprime(
         symmops: list[str],
         cell: tuple[float, ...],
         max_atoms: int = 5000,
+        formula_sum: str | None = None,
 ) -> ZResult:
     """Determine Z and Z′ by packing the unit cell and counting molecular graphs.
 
@@ -507,14 +618,14 @@ def count_z_and_zprime(
         symmops:      Symmetry-operation strings from ``CifContainer.symmops``.
         cell:         Cell parameters ``(a, b, c, alpha, beta, gamma)`` in Å/deg.
         max_atoms:    Expansion guard (see :func:`count_z`).
+        formula_sum:  Optional ``_chemical_formula_sum`` string; see
+                      :func:`count_z` for how it is used to correct Z.
 
     Returns:
         A :class:`ZResult` with ``z``, ``z_prime``, ``z_sg``, ``reliable``,
         and ``confidence`` attributes.
     """
-    z = count_z(atoms_fract, symmops, cell, max_atoms)
+    z = count_z(atoms_fract, symmops, cell, max_atoms, formula_sum=formula_sum)
     z_sg = _z_sg_from_symmops(symmops) if symmops and symmops != [''] else 1
     z_prime = round(z / z_sg, 6) if z_sg > 0 else float('nan')
     return ZResult(z=z, z_prime=z_prime, z_sg=z_sg)
-
-

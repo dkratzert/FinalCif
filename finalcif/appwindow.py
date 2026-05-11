@@ -97,24 +97,29 @@ class _ZEstimatorThread(QtCore.QThread):
     the label consistently.
     """
 
-    result = QtCore.Signal(object)   # emits a ZResult
+    result = QtCore.Signal(object)  # emits a ZResult
 
     def __init__(
-        self,
-        atoms_fract: list,
-        symmops: list[str],
-        cell: tuple[float, ...],
-        parent: QtCore.QObject | None = None,
+            self,
+            atoms_fract: list,
+            symmops: list[str],
+            cell: tuple[float, ...],
+            formula_sum: str | None = None,
+            parent: QtCore.QObject | None = None,
     ) -> None:
         super().__init__(parent)
         # Take immutable snapshots so the background thread never touches CIF state.
         self._atoms_fract = list(atoms_fract)
         self._symmops = list(symmops)
         self._cell = tuple(cell)
+        self._formula_sum = formula_sum
 
     def run(self) -> None:
         try:
-            res = count_z_and_zprime(self._atoms_fract, self._symmops, self._cell)
+            res = count_z_and_zprime(
+                self._atoms_fract, self._symmops, self._cell,
+                formula_sum=self._formula_sum,
+            )
         except Exception:
             res = None
         self.result.emit(res)
@@ -2044,13 +2049,14 @@ class AppWindow(QMainWindow):
         if self._z_thread is not None and self._z_thread.isRunning():
             self._z_thread.result.disconnect()
             self._z_thread.quit()
-            self._z_thread.wait(50)   # give it 50 ms to stop cleanly
+            self._z_thread.wait(50)  # give it 50 ms to stop cleanly
             self._z_thread = None
 
         try:
             atoms = list(self.cif.atoms_fract)
             symmops = list(self.cif.symmops)
             cell = tuple(self.cif.cell[:6])
+            formula_sum = self.cif['_chemical_formula_sum'] or None
         except Exception:
             self.ui.zEstimateLabel.setText('?')
             self.ui.zEstimateLabel2.setText('?')
@@ -2061,7 +2067,7 @@ class AppWindow(QMainWindow):
         self.ui.zEstimateLabel.setToolTip('')
         self.ui.zEstimateLabel2.setToolTip('')
 
-        self._z_thread = _ZEstimatorThread(atoms, symmops, cell, parent=self)
+        self._z_thread = _ZEstimatorThread(atoms, symmops, cell, formula_sum, parent=self)
         self._z_thread.result.connect(self._on_z_result)
         self._z_thread.start()
 
