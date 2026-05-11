@@ -1589,306 +1589,6 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_9 = QVBoxLayout(self.page_Loops)
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
         self.verticalLayout_9.setContentsMargins(-1, 12, -1, -1)
-        self.author_editor_widget = QWidget(self.page_Loops)
-        self.author_editor_widget.setObjectName(u"author_editor_widget")
-        self.author_editor_widget.setVisible(False)
-        self.gridLayout_2 = QGridLayout(self.author_editor_widget)
-        self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.verticalSpacer_16 = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_2.addItem(self.verticalSpacer_16, 0, 1, 1, 1)
-
-        self.authorEditTabWidget = QTabWidget(self.author_editor_widget)
-        self.authorEditTabWidget.setObjectName(u"authorEditTabWidget")
-        sizePolicy26 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy26.setHorizontalStretch(45)
-        sizePolicy26.setVerticalStretch(0)
-        sizePolicy26.setHeightForWidth(self.authorEditTabWidget.sizePolicy().hasHeightForWidth())
-        self.authorEditTabWidget.setSizePolicy(sizePolicy26)
-        self.page_publication = QWidget()
-        self.page_publication.setObjectName(u"page_publication")
-        self.verticalLayout_23 = QVBoxLayout(self.page_publication)
-        self.verticalLayout_23.setObjectName(u"verticalLayout_23")
-        self.verticalLayout_24 = QVBoxLayout()
-        self.verticalLayout_24.setObjectName(u"verticalLayout_24")
-        self.label_20 = QLabel(self.page_publication)
-        self.label_20.setObjectName(u"label_20")
-
-        self.verticalLayout_24.addWidget(self.label_20)
-
-        self.gridLayout_5 = QGridLayout()
-        self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.label_34 = QLabel(self.page_publication)
-        self.label_34.setObjectName(u"label_34")
-        self.label_34.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.gridLayout_5.addWidget(self.label_34, 5, 0, 1, 1)
-
-        self.footnote_label = QLabel(self.page_publication)
-        self.footnote_label.setObjectName(u"footnote_label")
-        self.footnote_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.gridLayout_5.addWidget(self.footnote_label, 7, 0, 1, 1)
-
-        self.label_21 = QLabel(self.page_publication)
-        self.label_21.setObjectName(u"label_21")
-        self.label_21.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.gridLayout_5.addWidget(self.label_21, 2, 0, 1, 1)
-
-        self.label_28 = QLabel(self.page_publication)
-        self.label_28.setObjectName(u"label_28")
-        self.label_28.setScaledContents(False)
-
-        self.gridLayout_5.addWidget(self.label_28, 2, 2, 1, 1)
-
-        self.PhoneLineEdit = QLineEdit(self.page_publication)
-        self.PhoneLineEdit.setObjectName(u"PhoneLineEdit")
-
-        self.gridLayout_5.addWidget(self.PhoneLineEdit, 4, 1, 1, 1)
-
-        self.ContactAuthorCheckBox = QCheckBox(self.page_publication)
-        self.ContactAuthorCheckBox.setObjectName(u"ContactAuthorCheckBox")
-
-        self.gridLayout_5.addWidget(self.ContactAuthorCheckBox, 1, 1, 1, 1)
-
-        self.label_22 = QLabel(self.page_publication)
-        self.label_22.setObjectName(u"label_22")
-        self.label_22.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-        self.label_22.setOpenExternalLinks(True)
-
-        self.gridLayout_5.addWidget(self.label_22, 0, 0, 1, 1)
-
-        self.EmailLabel = QLabel(self.page_publication)
-        self.EmailLabel.setObjectName(u"EmailLabel")
-        self.EmailLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.gridLayout_5.addWidget(self.EmailLabel, 3, 0, 1, 1)
-
-        self.FootNoteLineEdit = QLineEdit(self.page_publication)
-        self.FootNoteLineEdit.setObjectName(u"FootNoteLineEdit")
-
-        self.gridLayout_5.addWidget(self.FootNoteLineEdit, 7, 1, 1, 1)
-
-        self.label_27 = QLabel(self.page_publication)
-        self.label_27.setObjectName(u"label_27")
-        self.label_27.setScaledContents(False)
-
-        self.gridLayout_5.addWidget(self.label_27, 0, 2, 1, 1)
-
-        self.PhoneLabel = QLabel(self.page_publication)
-        self.PhoneLabel.setObjectName(u"PhoneLabel")
-        self.PhoneLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.gridLayout_5.addWidget(self.PhoneLabel, 4, 0, 1, 1)
-
-        self.AddressTextedit = QTextEdit(self.page_publication)
-        self.AddressTextedit.setObjectName(u"AddressTextedit")
-
-        self.gridLayout_5.addWidget(self.AddressTextedit, 2, 1, 1, 1)
-
-        self.FullNameLineEdit = QLineEdit(self.page_publication)
-        self.FullNameLineEdit.setObjectName(u"FullNameLineEdit")
-
-        self.gridLayout_5.addWidget(self.FullNameLineEdit, 0, 1, 1, 1)
-
-        self.EMailLineEdit = QLineEdit(self.page_publication)
-        self.EMailLineEdit.setObjectName(u"EMailLineEdit")
-
-        self.gridLayout_5.addWidget(self.EMailLineEdit, 3, 1, 1, 1)
-
-        self.ORCIDLineEdit = QLineEdit(self.page_publication)
-        self.ORCIDLineEdit.setObjectName(u"ORCIDLineEdit")
-
-        self.gridLayout_5.addWidget(self.ORCIDLineEdit, 5, 1, 1, 1)
-
-        self.label_36 = QLabel(self.page_publication)
-        self.label_36.setObjectName(u"label_36")
-        self.label_36.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.gridLayout_5.addWidget(self.label_36, 6, 0, 1, 1)
-
-        self.IUCRIDLineEdit = QLineEdit(self.page_publication)
-        self.IUCRIDLineEdit.setObjectName(u"IUCRIDLineEdit")
-
-        self.gridLayout_5.addWidget(self.IUCRIDLineEdit, 6, 1, 1, 1)
-
-
-        self.verticalLayout_24.addLayout(self.gridLayout_5)
-
-
-        self.verticalLayout_23.addLayout(self.verticalLayout_24)
-
-        self.verticalLayout_32 = QVBoxLayout()
-        self.verticalLayout_32.setObjectName(u"verticalLayout_32")
-        self.SaveAuthorLoopToTemplateButton = QPushButton(self.page_publication)
-        self.SaveAuthorLoopToTemplateButton.setObjectName(u"SaveAuthorLoopToTemplateButton")
-
-        self.verticalLayout_32.addWidget(self.SaveAuthorLoopToTemplateButton, 0, Qt.AlignmentFlag.AlignRight)
-
-        self.AddThisAuthorToLoopPushButton = QPushButton(self.page_publication)
-        self.AddThisAuthorToLoopPushButton.setObjectName(u"AddThisAuthorToLoopPushButton")
-
-        self.verticalLayout_32.addWidget(self.AddThisAuthorToLoopPushButton)
-
-
-        self.verticalLayout_23.addLayout(self.verticalLayout_32)
-
-        self.authorEditTabWidget.addTab(self.page_publication, "")
-        self.page_audit = QWidget()
-        self.page_audit.setObjectName(u"page_audit")
-        self.verticalLayout_40 = QVBoxLayout(self.page_audit)
-        self.verticalLayout_40.setObjectName(u"verticalLayout_40")
-        self.verticalLayout_38 = QVBoxLayout()
-        self.verticalLayout_38.setObjectName(u"verticalLayout_38")
-        self.label_23 = QLabel(self.page_audit)
-        self.label_23.setObjectName(u"label_23")
-
-        self.verticalLayout_38.addWidget(self.label_23)
-
-        self.gridLayout_25 = QGridLayout()
-        self.gridLayout_25.setObjectName(u"gridLayout_25")
-        self.label_29 = QLabel(self.page_audit)
-        self.label_29.setObjectName(u"label_29")
-        self.label_29.setScaledContents(False)
-
-        self.gridLayout_25.addWidget(self.label_29, 0, 2, 1, 1)
-
-        self.label_24 = QLabel(self.page_audit)
-        self.label_24.setObjectName(u"label_24")
-        self.label_24.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-        self.label_24.setOpenExternalLinks(True)
-
-        self.gridLayout_25.addWidget(self.label_24, 0, 0, 1, 1)
-
-        self.label_30 = QLabel(self.page_audit)
-        self.label_30.setObjectName(u"label_30")
-        self.label_30.setScaledContents(False)
-
-        self.gridLayout_25.addWidget(self.label_30, 2, 2, 1, 1)
-
-        self.EmailLabel_cif = QLabel(self.page_audit)
-        self.EmailLabel_cif.setObjectName(u"EmailLabel_cif")
-        self.EmailLabel_cif.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.gridLayout_25.addWidget(self.EmailLabel_cif, 3, 0, 1, 1)
-
-        self.PhoneLineEdit_cif = QLineEdit(self.page_audit)
-        self.PhoneLineEdit_cif.setObjectName(u"PhoneLineEdit_cif")
-
-        self.gridLayout_25.addWidget(self.PhoneLineEdit_cif, 4, 1, 1, 1)
-
-        self.ContactAuthorCheckBox_cif = QCheckBox(self.page_audit)
-        self.ContactAuthorCheckBox_cif.setObjectName(u"ContactAuthorCheckBox_cif")
-
-        self.gridLayout_25.addWidget(self.ContactAuthorCheckBox_cif, 1, 1, 1, 1)
-
-        self.AddressTextedit_cif = QTextEdit(self.page_audit)
-        self.AddressTextedit_cif.setObjectName(u"AddressTextedit_cif")
-
-        self.gridLayout_25.addWidget(self.AddressTextedit_cif, 2, 1, 1, 1)
-
-        self.label_25 = QLabel(self.page_audit)
-        self.label_25.setObjectName(u"label_25")
-        self.label_25.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.gridLayout_25.addWidget(self.label_25, 2, 0, 1, 1)
-
-        self.FullNameLineEdit_cif = QLineEdit(self.page_audit)
-        self.FullNameLineEdit_cif.setObjectName(u"FullNameLineEdit_cif")
-
-        self.gridLayout_25.addWidget(self.FullNameLineEdit_cif, 0, 1, 1, 1)
-
-        self.PhoneLabel_cif = QLabel(self.page_audit)
-        self.PhoneLabel_cif.setObjectName(u"PhoneLabel_cif")
-        self.PhoneLabel_cif.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.gridLayout_25.addWidget(self.PhoneLabel_cif, 4, 0, 1, 1)
-
-        self.EMailLineEdit_cif = QLineEdit(self.page_audit)
-        self.EMailLineEdit_cif.setObjectName(u"EMailLineEdit_cif")
-
-        self.gridLayout_25.addWidget(self.EMailLineEdit_cif, 3, 1, 1, 1)
-
-        self.label_16 = QLabel(self.page_audit)
-        self.label_16.setObjectName(u"label_16")
-
-        self.gridLayout_25.addWidget(self.label_16, 6, 0, 1, 3)
-
-        self.label_19 = QLabel(self.page_audit)
-        self.label_19.setObjectName(u"label_19")
-
-        self.gridLayout_25.addWidget(self.label_19, 7, 0, 1, 3)
-
-        self.label_13 = QLabel(self.page_audit)
-        self.label_13.setObjectName(u"label_13")
-        sizePolicy27 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy27.setHorizontalStretch(0)
-        sizePolicy27.setVerticalStretch(0)
-        sizePolicy27.setHeightForWidth(self.label_13.sizePolicy().hasHeightForWidth())
-        self.label_13.setSizePolicy(sizePolicy27)
-        self.label_13.setWordWrap(True)
-
-        self.gridLayout_25.addWidget(self.label_13, 5, 1, 1, 2)
-
-
-        self.verticalLayout_38.addLayout(self.gridLayout_25)
-
-
-        self.verticalLayout_40.addLayout(self.verticalLayout_38)
-
-        self.verticalLayout_39 = QVBoxLayout()
-        self.verticalLayout_39.setObjectName(u"verticalLayout_39")
-        self.SaveAuthorLoopToTemplateButton_cif = QPushButton(self.page_audit)
-        self.SaveAuthorLoopToTemplateButton_cif.setObjectName(u"SaveAuthorLoopToTemplateButton_cif")
-
-        self.verticalLayout_39.addWidget(self.SaveAuthorLoopToTemplateButton_cif, 0, Qt.AlignmentFlag.AlignRight)
-
-        self.AddThisAuthorToLoopPushButton_cif = QPushButton(self.page_audit)
-        self.AddThisAuthorToLoopPushButton_cif.setObjectName(u"AddThisAuthorToLoopPushButton_cif")
-        sizePolicy28 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy28.setHorizontalStretch(0)
-        sizePolicy28.setVerticalStretch(0)
-        sizePolicy28.setHeightForWidth(self.AddThisAuthorToLoopPushButton_cif.sizePolicy().hasHeightForWidth())
-        self.AddThisAuthorToLoopPushButton_cif.setSizePolicy(sizePolicy28)
-
-        self.verticalLayout_39.addWidget(self.AddThisAuthorToLoopPushButton_cif)
-
-
-        self.verticalLayout_40.addLayout(self.verticalLayout_39)
-
-        self.authorEditTabWidget.addTab(self.page_audit, "")
-
-        self.gridLayout_2.addWidget(self.authorEditTabWidget, 2, 1, 1, 1)
-
-        self.horizontalSpacer_21 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_2.addItem(self.horizontalSpacer_21, 2, 0, 1, 1)
-
-        self.verticalSpacer_10 = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.gridLayout_2.addItem(self.verticalSpacer_10, 3, 1, 1, 1)
-
-        self.frame_2 = QFrame(self.author_editor_widget)
-        self.frame_2.setObjectName(u"frame_2")
-        sizePolicy29 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        sizePolicy29.setHorizontalStretch(55)
-        sizePolicy29.setVerticalStretch(0)
-        sizePolicy29.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
-        self.frame_2.setSizePolicy(sizePolicy29)
-        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
-
-        self.gridLayout_2.addWidget(self.frame_2, 2, 2, 1, 1)
-
-        self.verticalSpacer_15 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-
-        self.gridLayout_2.addItem(self.verticalSpacer_15, 1, 1, 1, 1)
-
-
-        self.verticalLayout_9.addWidget(self.author_editor_widget)
-
         self.loops_page = LoopsPage(self.page_Loops)
         self.loops_page.setObjectName(u"loops_page")
 
@@ -1941,11 +1641,11 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_8.setObjectName(u"gridLayout_8")
         self.CheckCIFResultsTabWidget = QTabWidget(self.page_checkcif)
         self.CheckCIFResultsTabWidget.setObjectName(u"CheckCIFResultsTabWidget")
-        sizePolicy30 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy30.setHorizontalStretch(0)
-        sizePolicy30.setVerticalStretch(4)
-        sizePolicy30.setHeightForWidth(self.CheckCIFResultsTabWidget.sizePolicy().hasHeightForWidth())
-        self.CheckCIFResultsTabWidget.setSizePolicy(sizePolicy30)
+        sizePolicy26 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy26.setHorizontalStretch(0)
+        sizePolicy26.setVerticalStretch(4)
+        sizePolicy26.setHeightForWidth(self.CheckCIFResultsTabWidget.sizePolicy().hasHeightForWidth())
+        self.CheckCIFResultsTabWidget.setSizePolicy(sizePolicy26)
         self.CheckCIFResultsTabWidget.setDocumentMode(False)
         self.CheckCIFResultsTabWidget.setTabBarAutoHide(False)
         self.platon_page = QWidget()
@@ -1981,11 +1681,11 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_13.setObjectName(u"verticalLayout_13")
         self.label_5 = QLabel(self.pdf_page)
         self.label_5.setObjectName(u"label_5")
-        sizePolicy31 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
-        sizePolicy31.setHorizontalStretch(0)
-        sizePolicy31.setVerticalStretch(0)
-        sizePolicy31.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
-        self.label_5.setSizePolicy(sizePolicy31)
+        sizePolicy27 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        sizePolicy27.setHorizontalStretch(0)
+        sizePolicy27.setVerticalStretch(0)
+        sizePolicy27.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
+        self.label_5.setSizePolicy(sizePolicy27)
         self.label_5.setMinimumSize(QSize(0, 20))
 
         self.verticalLayout_13.addWidget(self.label_5)
@@ -2013,11 +1713,11 @@ class Ui_FinalCifWindow(object):
 
         self.groupBox_7 = QGroupBox(self.page_checkcif)
         self.groupBox_7.setObjectName(u"groupBox_7")
-        sizePolicy32 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy32.setHorizontalStretch(0)
-        sizePolicy32.setVerticalStretch(1)
-        sizePolicy32.setHeightForWidth(self.groupBox_7.sizePolicy().hasHeightForWidth())
-        self.groupBox_7.setSizePolicy(sizePolicy32)
+        sizePolicy28 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy28.setHorizontalStretch(0)
+        sizePolicy28.setVerticalStretch(1)
+        sizePolicy28.setHeightForWidth(self.groupBox_7.sizePolicy().hasHeightForWidth())
+        self.groupBox_7.setSizePolicy(sizePolicy28)
         self.verticalLayout_10 = QVBoxLayout(self.groupBox_7)
         self.verticalLayout_10.setSpacing(6)
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
@@ -2447,11 +2147,11 @@ class Ui_FinalCifWindow(object):
 
         self.StructuresListGroupBox = QGroupBox(self.page_cod)
         self.StructuresListGroupBox.setObjectName(u"StructuresListGroupBox")
-        sizePolicy33 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
-        sizePolicy33.setHorizontalStretch(0)
-        sizePolicy33.setVerticalStretch(0)
-        sizePolicy33.setHeightForWidth(self.StructuresListGroupBox.sizePolicy().hasHeightForWidth())
-        self.StructuresListGroupBox.setSizePolicy(sizePolicy33)
+        sizePolicy29 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy29.setHorizontalStretch(0)
+        sizePolicy29.setVerticalStretch(0)
+        sizePolicy29.setHeightForWidth(self.StructuresListGroupBox.sizePolicy().hasHeightForWidth())
+        self.StructuresListGroupBox.setSizePolicy(sizePolicy29)
         self.StructuresListGroupBox.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
         self.gridLayout_18 = QGridLayout(self.StructuresListGroupBox)
         self.gridLayout_18.setObjectName(u"gridLayout_18")
@@ -2526,6 +2226,302 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_33 = QVBoxLayout(self.page_textTemplate)
         self.verticalLayout_33.setObjectName(u"verticalLayout_33")
         self.MainStackedWidget.addWidget(self.page_textTemplate)
+        self.author_editor_widget = QWidget()
+        self.author_editor_widget.setObjectName(u"author_editor_widget")
+        self.gridLayout_2 = QGridLayout(self.author_editor_widget)
+        self.gridLayout_2.setObjectName(u"gridLayout_2")
+        self.verticalSpacer_16 = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_2.addItem(self.verticalSpacer_16, 0, 1, 1, 1)
+
+        self.authorEditTabWidget = QTabWidget(self.author_editor_widget)
+        self.authorEditTabWidget.setObjectName(u"authorEditTabWidget")
+        sizePolicy30 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy30.setHorizontalStretch(45)
+        sizePolicy30.setVerticalStretch(0)
+        sizePolicy30.setHeightForWidth(self.authorEditTabWidget.sizePolicy().hasHeightForWidth())
+        self.authorEditTabWidget.setSizePolicy(sizePolicy30)
+        self.page_publication = QWidget()
+        self.page_publication.setObjectName(u"page_publication")
+        self.verticalLayout_23 = QVBoxLayout(self.page_publication)
+        self.verticalLayout_23.setObjectName(u"verticalLayout_23")
+        self.verticalLayout_24 = QVBoxLayout()
+        self.verticalLayout_24.setObjectName(u"verticalLayout_24")
+        self.label_20 = QLabel(self.page_publication)
+        self.label_20.setObjectName(u"label_20")
+
+        self.verticalLayout_24.addWidget(self.label_20)
+
+        self.gridLayout_5 = QGridLayout()
+        self.gridLayout_5.setObjectName(u"gridLayout_5")
+        self.label_34 = QLabel(self.page_publication)
+        self.label_34.setObjectName(u"label_34")
+        self.label_34.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_5.addWidget(self.label_34, 5, 0, 1, 1)
+
+        self.footnote_label = QLabel(self.page_publication)
+        self.footnote_label.setObjectName(u"footnote_label")
+        self.footnote_label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_5.addWidget(self.footnote_label, 7, 0, 1, 1)
+
+        self.label_21 = QLabel(self.page_publication)
+        self.label_21.setObjectName(u"label_21")
+        self.label_21.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_5.addWidget(self.label_21, 2, 0, 1, 1)
+
+        self.label_28 = QLabel(self.page_publication)
+        self.label_28.setObjectName(u"label_28")
+        self.label_28.setScaledContents(False)
+
+        self.gridLayout_5.addWidget(self.label_28, 2, 2, 1, 1)
+
+        self.PhoneLineEdit = QLineEdit(self.page_publication)
+        self.PhoneLineEdit.setObjectName(u"PhoneLineEdit")
+
+        self.gridLayout_5.addWidget(self.PhoneLineEdit, 4, 1, 1, 1)
+
+        self.ContactAuthorCheckBox = QCheckBox(self.page_publication)
+        self.ContactAuthorCheckBox.setObjectName(u"ContactAuthorCheckBox")
+
+        self.gridLayout_5.addWidget(self.ContactAuthorCheckBox, 1, 1, 1, 1)
+
+        self.label_22 = QLabel(self.page_publication)
+        self.label_22.setObjectName(u"label_22")
+        self.label_22.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_22.setOpenExternalLinks(True)
+
+        self.gridLayout_5.addWidget(self.label_22, 0, 0, 1, 1)
+
+        self.EmailLabel = QLabel(self.page_publication)
+        self.EmailLabel.setObjectName(u"EmailLabel")
+        self.EmailLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_5.addWidget(self.EmailLabel, 3, 0, 1, 1)
+
+        self.FootNoteLineEdit = QLineEdit(self.page_publication)
+        self.FootNoteLineEdit.setObjectName(u"FootNoteLineEdit")
+
+        self.gridLayout_5.addWidget(self.FootNoteLineEdit, 7, 1, 1, 1)
+
+        self.label_27 = QLabel(self.page_publication)
+        self.label_27.setObjectName(u"label_27")
+        self.label_27.setScaledContents(False)
+
+        self.gridLayout_5.addWidget(self.label_27, 0, 2, 1, 1)
+
+        self.PhoneLabel = QLabel(self.page_publication)
+        self.PhoneLabel.setObjectName(u"PhoneLabel")
+        self.PhoneLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_5.addWidget(self.PhoneLabel, 4, 0, 1, 1)
+
+        self.AddressTextedit = QTextEdit(self.page_publication)
+        self.AddressTextedit.setObjectName(u"AddressTextedit")
+
+        self.gridLayout_5.addWidget(self.AddressTextedit, 2, 1, 1, 1)
+
+        self.FullNameLineEdit = QLineEdit(self.page_publication)
+        self.FullNameLineEdit.setObjectName(u"FullNameLineEdit")
+
+        self.gridLayout_5.addWidget(self.FullNameLineEdit, 0, 1, 1, 1)
+
+        self.EMailLineEdit = QLineEdit(self.page_publication)
+        self.EMailLineEdit.setObjectName(u"EMailLineEdit")
+
+        self.gridLayout_5.addWidget(self.EMailLineEdit, 3, 1, 1, 1)
+
+        self.ORCIDLineEdit = QLineEdit(self.page_publication)
+        self.ORCIDLineEdit.setObjectName(u"ORCIDLineEdit")
+
+        self.gridLayout_5.addWidget(self.ORCIDLineEdit, 5, 1, 1, 1)
+
+        self.label_36 = QLabel(self.page_publication)
+        self.label_36.setObjectName(u"label_36")
+        self.label_36.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_5.addWidget(self.label_36, 6, 0, 1, 1)
+
+        self.IUCRIDLineEdit = QLineEdit(self.page_publication)
+        self.IUCRIDLineEdit.setObjectName(u"IUCRIDLineEdit")
+
+        self.gridLayout_5.addWidget(self.IUCRIDLineEdit, 6, 1, 1, 1)
+
+
+        self.verticalLayout_24.addLayout(self.gridLayout_5)
+
+
+        self.verticalLayout_23.addLayout(self.verticalLayout_24)
+
+        self.verticalLayout_32 = QVBoxLayout()
+        self.verticalLayout_32.setObjectName(u"verticalLayout_32")
+        self.SaveAuthorLoopToTemplateButton = QPushButton(self.page_publication)
+        self.SaveAuthorLoopToTemplateButton.setObjectName(u"SaveAuthorLoopToTemplateButton")
+
+        self.verticalLayout_32.addWidget(self.SaveAuthorLoopToTemplateButton, 0, Qt.AlignmentFlag.AlignRight)
+
+        self.AddThisAuthorToLoopPushButton = QPushButton(self.page_publication)
+        self.AddThisAuthorToLoopPushButton.setObjectName(u"AddThisAuthorToLoopPushButton")
+
+        self.verticalLayout_32.addWidget(self.AddThisAuthorToLoopPushButton)
+
+
+        self.verticalLayout_23.addLayout(self.verticalLayout_32)
+
+        self.authorEditTabWidget.addTab(self.page_publication, "")
+        self.page_audit = QWidget()
+        self.page_audit.setObjectName(u"page_audit")
+        self.verticalLayout_40 = QVBoxLayout(self.page_audit)
+        self.verticalLayout_40.setObjectName(u"verticalLayout_40")
+        self.verticalLayout_38 = QVBoxLayout()
+        self.verticalLayout_38.setObjectName(u"verticalLayout_38")
+        self.label_23 = QLabel(self.page_audit)
+        self.label_23.setObjectName(u"label_23")
+
+        self.verticalLayout_38.addWidget(self.label_23)
+
+        self.gridLayout_25 = QGridLayout()
+        self.gridLayout_25.setObjectName(u"gridLayout_25")
+        self.label_29 = QLabel(self.page_audit)
+        self.label_29.setObjectName(u"label_29")
+        self.label_29.setScaledContents(False)
+
+        self.gridLayout_25.addWidget(self.label_29, 0, 2, 1, 1)
+
+        self.label_24 = QLabel(self.page_audit)
+        self.label_24.setObjectName(u"label_24")
+        self.label_24.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+        self.label_24.setOpenExternalLinks(True)
+
+        self.gridLayout_25.addWidget(self.label_24, 0, 0, 1, 1)
+
+        self.label_30 = QLabel(self.page_audit)
+        self.label_30.setObjectName(u"label_30")
+        self.label_30.setScaledContents(False)
+
+        self.gridLayout_25.addWidget(self.label_30, 2, 2, 1, 1)
+
+        self.EmailLabel_cif = QLabel(self.page_audit)
+        self.EmailLabel_cif.setObjectName(u"EmailLabel_cif")
+        self.EmailLabel_cif.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_25.addWidget(self.EmailLabel_cif, 3, 0, 1, 1)
+
+        self.PhoneLineEdit_cif = QLineEdit(self.page_audit)
+        self.PhoneLineEdit_cif.setObjectName(u"PhoneLineEdit_cif")
+
+        self.gridLayout_25.addWidget(self.PhoneLineEdit_cif, 4, 1, 1, 1)
+
+        self.ContactAuthorCheckBox_cif = QCheckBox(self.page_audit)
+        self.ContactAuthorCheckBox_cif.setObjectName(u"ContactAuthorCheckBox_cif")
+
+        self.gridLayout_25.addWidget(self.ContactAuthorCheckBox_cif, 1, 1, 1, 1)
+
+        self.AddressTextedit_cif = QTextEdit(self.page_audit)
+        self.AddressTextedit_cif.setObjectName(u"AddressTextedit_cif")
+
+        self.gridLayout_25.addWidget(self.AddressTextedit_cif, 2, 1, 1, 1)
+
+        self.label_25 = QLabel(self.page_audit)
+        self.label_25.setObjectName(u"label_25")
+        self.label_25.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_25.addWidget(self.label_25, 2, 0, 1, 1)
+
+        self.FullNameLineEdit_cif = QLineEdit(self.page_audit)
+        self.FullNameLineEdit_cif.setObjectName(u"FullNameLineEdit_cif")
+
+        self.gridLayout_25.addWidget(self.FullNameLineEdit_cif, 0, 1, 1, 1)
+
+        self.PhoneLabel_cif = QLabel(self.page_audit)
+        self.PhoneLabel_cif.setObjectName(u"PhoneLabel_cif")
+        self.PhoneLabel_cif.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.gridLayout_25.addWidget(self.PhoneLabel_cif, 4, 0, 1, 1)
+
+        self.EMailLineEdit_cif = QLineEdit(self.page_audit)
+        self.EMailLineEdit_cif.setObjectName(u"EMailLineEdit_cif")
+
+        self.gridLayout_25.addWidget(self.EMailLineEdit_cif, 3, 1, 1, 1)
+
+        self.label_16 = QLabel(self.page_audit)
+        self.label_16.setObjectName(u"label_16")
+
+        self.gridLayout_25.addWidget(self.label_16, 6, 0, 1, 3)
+
+        self.label_19 = QLabel(self.page_audit)
+        self.label_19.setObjectName(u"label_19")
+
+        self.gridLayout_25.addWidget(self.label_19, 7, 0, 1, 3)
+
+        self.label_13 = QLabel(self.page_audit)
+        self.label_13.setObjectName(u"label_13")
+        sizePolicy31 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy31.setHorizontalStretch(0)
+        sizePolicy31.setVerticalStretch(0)
+        sizePolicy31.setHeightForWidth(self.label_13.sizePolicy().hasHeightForWidth())
+        self.label_13.setSizePolicy(sizePolicy31)
+        self.label_13.setWordWrap(True)
+
+        self.gridLayout_25.addWidget(self.label_13, 5, 1, 1, 2)
+
+
+        self.verticalLayout_38.addLayout(self.gridLayout_25)
+
+
+        self.verticalLayout_40.addLayout(self.verticalLayout_38)
+
+        self.verticalLayout_39 = QVBoxLayout()
+        self.verticalLayout_39.setObjectName(u"verticalLayout_39")
+        self.SaveAuthorLoopToTemplateButton_cif = QPushButton(self.page_audit)
+        self.SaveAuthorLoopToTemplateButton_cif.setObjectName(u"SaveAuthorLoopToTemplateButton_cif")
+
+        self.verticalLayout_39.addWidget(self.SaveAuthorLoopToTemplateButton_cif, 0, Qt.AlignmentFlag.AlignRight)
+
+        self.AddThisAuthorToLoopPushButton_cif = QPushButton(self.page_audit)
+        self.AddThisAuthorToLoopPushButton_cif.setObjectName(u"AddThisAuthorToLoopPushButton_cif")
+        sizePolicy32 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy32.setHorizontalStretch(0)
+        sizePolicy32.setVerticalStretch(0)
+        sizePolicy32.setHeightForWidth(self.AddThisAuthorToLoopPushButton_cif.sizePolicy().hasHeightForWidth())
+        self.AddThisAuthorToLoopPushButton_cif.setSizePolicy(sizePolicy32)
+
+        self.verticalLayout_39.addWidget(self.AddThisAuthorToLoopPushButton_cif)
+
+
+        self.verticalLayout_40.addLayout(self.verticalLayout_39)
+
+        self.authorEditTabWidget.addTab(self.page_audit, "")
+
+        self.gridLayout_2.addWidget(self.authorEditTabWidget, 2, 1, 1, 1)
+
+        self.horizontalSpacer_21 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_2.addItem(self.horizontalSpacer_21, 2, 0, 1, 1)
+
+        self.verticalSpacer_10 = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.gridLayout_2.addItem(self.verticalSpacer_10, 3, 1, 1, 1)
+
+        self.frame_2 = QFrame(self.author_editor_widget)
+        self.frame_2.setObjectName(u"frame_2")
+        sizePolicy33 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy33.setHorizontalStretch(55)
+        sizePolicy33.setVerticalStretch(0)
+        sizePolicy33.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
+        self.frame_2.setSizePolicy(sizePolicy33)
+        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
+
+        self.gridLayout_2.addWidget(self.frame_2, 2, 2, 1, 1)
+
+        self.verticalSpacer_15 = QSpacerItem(20, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+
+        self.gridLayout_2.addItem(self.verticalSpacer_15, 1, 1, 1, 1)
+
+        self.MainStackedWidget.addWidget(self.author_editor_widget)
 
         self.gridLayout_6.addWidget(self.MainStackedWidget, 2, 0, 1, 13)
 
@@ -2679,9 +2675,9 @@ class Ui_FinalCifWindow(object):
         self.MainStackedWidget.setCurrentIndex(6)
         self.picturesTabWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.authorEditTabWidget.setCurrentIndex(1)
         self.CheckCIFResultsTabWidget.setCurrentIndex(1)
         self.depositionOptionsStackedWidget.setCurrentIndex(3)
+        self.authorEditTabWidget.setCurrentIndex(1)
 
     # setupUi
 
@@ -2839,36 +2835,6 @@ class Ui_FinalCifWindow(object):
         self.SavePropertiesButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save", None))
         self.CancelPropertiesButton.setText(QCoreApplication.translate("FinalCifWindow", u"Cancel", None))
         self.ExportPropertyButton.setText(QCoreApplication.translate("FinalCifWindow", u"Export", None))
-        self.label_20.setText(QCoreApplication.translate("FinalCifWindow", u"Details about the author(s) of a manuscript submitted for publication.\n"
-"Contact authors should always also appear as regular authors.", None))
-        self.label_34.setText(QCoreApplication.translate("FinalCifWindow", u"ORCID", None))
-        self.footnote_label.setText(QCoreApplication.translate("FinalCifWindow", u"footnote", None))
-        self.label_21.setText(QCoreApplication.translate("FinalCifWindow", u"Adresss", None))
-        self.label_28.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">The adress of an author</span></p><p><span style=\" color:#666666;\">Department<br/>Institute<br/>Street<br/>City and postcode<br/>COUNTRY</span></p></body></html>", None))
-        self.ContactAuthorCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"This is a contact author", None))
-        self.label_22.setText(QCoreApplication.translate("FinalCifWindow", u"Full Name", None))
-        self.EmailLabel.setText(QCoreApplication.translate("FinalCifWindow", u"e-mail", None))
-        self.label_27.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Family name, first name</span></p></body></html>", None))
-        self.PhoneLabel.setText(QCoreApplication.translate("FinalCifWindow", u"phone number", None))
-        self.label_36.setText(QCoreApplication.translate("FinalCifWindow", u"IUCr Id", None))
-        self.SaveAuthorLoopToTemplateButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
-        self.AddThisAuthorToLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add Publication Author to CIF Loop", None))
-        self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_publication), QCoreApplication.translate("FinalCifWindow", u"Publication Authors", None))
-        self.label_23.setText(QCoreApplication.translate("FinalCifWindow", u"Details about the author(s) of this CIF data block (most often the crystallographer).\n"
-"Contact authors should always also appear as regular authors.", None))
-        self.label_29.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Family name, first name</span></p></body></html>", None))
-        self.label_24.setText(QCoreApplication.translate("FinalCifWindow", u"Full Name", None))
-        self.label_30.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">The adress of an author</span></p><p><span style=\" color:#666666;\">Department<br/>Institute<br/>Street<br/>City and postcode<br/>COUNTRY</span></p></body></html>", None))
-        self.EmailLabel_cif.setText(QCoreApplication.translate("FinalCifWindow", u"e-mail", None))
-        self.ContactAuthorCheckBox_cif.setText(QCoreApplication.translate("FinalCifWindow", u"This is a contact author", None))
-        self.label_25.setText(QCoreApplication.translate("FinalCifWindow", u"Adresss", None))
-        self.PhoneLabel_cif.setText(QCoreApplication.translate("FinalCifWindow", u"phone number", None))
-        self.label_16.setText("")
-        self.label_19.setText("")
-        self.label_13.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Audit authors have less possibilities than publication authors.</span></p></body></html>", None))
-        self.SaveAuthorLoopToTemplateButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
-        self.AddThisAuthorToLoopPushButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Add Audit Author to CIF Loop", None))
-        self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_audit), QCoreApplication.translate("FinalCifWindow", u"Audit (CIF) Authors", None))
         self.revertLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Revert Changes", None))
         self.BackFromLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.newLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Loop", None))
@@ -2926,5 +2892,35 @@ class Ui_FinalCifWindow(object):
         ___qtablewidgetitem6.setText(QCoreApplication.translate("FinalCifWindow", u"Time", None))
         self.BackFromDepositPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.depositCIFpushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Deposit CIF", None))
+        self.label_20.setText(QCoreApplication.translate("FinalCifWindow", u"Details about the author(s) of a manuscript submitted for publication.\n"
+"Contact authors should always also appear as regular authors.", None))
+        self.label_34.setText(QCoreApplication.translate("FinalCifWindow", u"ORCID", None))
+        self.footnote_label.setText(QCoreApplication.translate("FinalCifWindow", u"footnote", None))
+        self.label_21.setText(QCoreApplication.translate("FinalCifWindow", u"Adresss", None))
+        self.label_28.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">The adress of an author</span></p><p><span style=\" color:#666666;\">Department<br/>Institute<br/>Street<br/>City and postcode<br/>COUNTRY</span></p></body></html>", None))
+        self.ContactAuthorCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"This is a contact author", None))
+        self.label_22.setText(QCoreApplication.translate("FinalCifWindow", u"Full Name", None))
+        self.EmailLabel.setText(QCoreApplication.translate("FinalCifWindow", u"e-mail", None))
+        self.label_27.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Family name, first name</span></p></body></html>", None))
+        self.PhoneLabel.setText(QCoreApplication.translate("FinalCifWindow", u"phone number", None))
+        self.label_36.setText(QCoreApplication.translate("FinalCifWindow", u"IUCr Id", None))
+        self.SaveAuthorLoopToTemplateButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
+        self.AddThisAuthorToLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add Publication Author to CIF Loop", None))
+        self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_publication), QCoreApplication.translate("FinalCifWindow", u"Publication Authors", None))
+        self.label_23.setText(QCoreApplication.translate("FinalCifWindow", u"Details about the author(s) of this CIF data block (most often the crystallographer).\n"
+"Contact authors should always also appear as regular authors.", None))
+        self.label_29.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Family name, first name</span></p></body></html>", None))
+        self.label_24.setText(QCoreApplication.translate("FinalCifWindow", u"Full Name", None))
+        self.label_30.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">The adress of an author</span></p><p><span style=\" color:#666666;\">Department<br/>Institute<br/>Street<br/>City and postcode<br/>COUNTRY</span></p></body></html>", None))
+        self.EmailLabel_cif.setText(QCoreApplication.translate("FinalCifWindow", u"e-mail", None))
+        self.ContactAuthorCheckBox_cif.setText(QCoreApplication.translate("FinalCifWindow", u"This is a contact author", None))
+        self.label_25.setText(QCoreApplication.translate("FinalCifWindow", u"Adresss", None))
+        self.PhoneLabel_cif.setText(QCoreApplication.translate("FinalCifWindow", u"phone number", None))
+        self.label_16.setText("")
+        self.label_19.setText("")
+        self.label_13.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Audit authors have less possibilities than publication authors.</span></p></body></html>", None))
+        self.SaveAuthorLoopToTemplateButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
+        self.AddThisAuthorToLoopPushButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Add Audit Author to CIF Loop", None))
+        self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_audit), QCoreApplication.translate("FinalCifWindow", u"Audit (CIF) Authors", None))
     # retranslateUi
 
