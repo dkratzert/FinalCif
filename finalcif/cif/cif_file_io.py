@@ -70,8 +70,12 @@ class CifContainer:
                 raise GemmiError(e)
         # Starting with first block, but can use others with subsequent self._onload():
         self.block: gemmi.cif.Block = self.doc[0]
-        self.shx = Shelxfile(verbose=True)
-        self.shx.read_string(self.res_file_data[1:-1])
+        try:
+            self.shx = Shelxfile(verbose=True)
+            self.shx.read_string(self.res_file_data[1:-1])
+        except Exception:
+            print('Shelx file parsing failed.')
+            self.shx = None
         self._on_load()
         self.order = []
         self.essential_keys = []

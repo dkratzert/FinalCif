@@ -75,6 +75,7 @@ from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools.shred import ShredCIF
 from finalcif.tools.space_groups import SpaceGroups
+from finalcif.tools.z_from_packing import count_z_and_zprime, ZResult
 from finalcif.tools.spgr_format import spgrps
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
@@ -88,6 +89,37 @@ with suppress(ImportError):
     import qtawesome as qta
 
 
+class _ZEstimatorThread(QtCore.QThread):
+    """Background thread that computes Z and Z′ without blocking the UI.
+
+    Emits ``result`` (a :class:`ZResult`) on success, or ``failed`` (with an
+    empty :class:`ZResult`) on any exception so the caller can always clear
+    the label consistently.
+    """
+
+    result = QtCore.Signal(object)   # emits a ZResult
+
+    def __init__(
+        self,
+        atoms_fract: list,
+        symmops: list[str],
+        cell: tuple[float, ...],
+        parent: QtCore.QObject | None = None,
+    ) -> None:
+        super().__init__(parent)
+        # Take immutable snapshots so the background thread never touches CIF state.
+        self._atoms_fract = list(atoms_fract)
+        self._symmops = list(symmops)
+        self._cell = tuple(cell)
+
+    def run(self) -> None:
+        try:
+            res = count_z_and_zprime(self._atoms_fract, self._symmops, self._cell)
+        except Exception:
+            res = None
+        self.result.emit(res)
+
+
 class AppWindow(QMainWindow):
 
     def __init__(self, file: Path | None = None):
@@ -96,6 +128,7 @@ class AppWindow(QMainWindow):
         self.ckf = None
         self.thread_version = None
         self.worker = None
+        self._z_thread: _ZEstimatorThread | None = None
         self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
         # This prevents some things to happen during unit tests:
         # Open of target dir of shred cif,
@@ -1766,6 +1799,7 @@ class AppWindow(QMainWindow):
             if self.ui.MainStackedWidget.on_info_page():
                 self.show_residuals()
                 self.redraw_molecule()
+            self._update_z_label()
             t = QtCore.QTimer(self)
             t.singleShot(1000, self.check_cecksums)
 
@@ -1986,6 +2020,78 @@ class AppWindow(QMainWindow):
             else:
                 self.ui.render_widget.grow_molecule(atom_tuples,
                                                     cell=self.cif.cell[:6])
+
+    def _update_z_label(self) -> None:
+        """Start a background computation of Z and Z′ and show a placeholder.
+
+        Cancels any in-flight worker before starting a new one so that opening
+        files in rapid succession never delivers a stale result to the label.
+
+        Uses the full symmetry expansion of the asymmetric unit to fill the unit
+        cell, then counts discrete connected molecular graphs. Disorder is handled
+        by retaining only the primary component of each disordered site so that
+        each atomic position is populated exactly once.
+
+        Z′ = Z / Z_sg indicates the number of formula units per asymmetric unit:
+        * Z′ = 1  → one molecule per ASU (most common, high confidence).
+        * Z′ = ½  → molecule on 2-fold special position (medium confidence).
+        * Z′ = ⅓  → molecule on 3-fold axis, trigonal/hexagonal (medium confidence).
+        * Z′ = ¼  → molecule on 4-fold axis, tetragonal (medium confidence).
+        * Z′ = ⅙  → molecule on 6-fold axis, hexagonal (medium confidence).
+        * Z′ not a multiple of 1/n (n∈{1,2,3,4,6}) → estimate likely unreliable (low).
+        """
+        # Abort any previous worker still running.
+        if self._z_thread is not None and self._z_thread.isRunning():
+            self._z_thread.result.disconnect()
+            self._z_thread.quit()
+            self._z_thread.wait(50)   # give it 50 ms to stop cleanly
+            self._z_thread = None
+
+        try:
+            atoms = list(self.cif.atoms_fract)
+            symmops = list(self.cif.symmops)
+            cell = tuple(self.cif.cell[:6])
+        except Exception:
+            self.ui.zEstimateLabel.setText('?')
+            self.ui.zEstimateLabel2.setText('?')
+            return
+
+        self.ui.zEstimateLabel.setText('Z = ')
+        self.ui.zEstimateLabel2.setText('Z = ')
+        self.ui.zEstimateLabel.setToolTip('')
+        self.ui.zEstimateLabel2.setToolTip('')
+
+        self._z_thread = _ZEstimatorThread(atoms, symmops, cell, parent=self)
+        self._z_thread.result.connect(self._on_z_result)
+        self._z_thread.start()
+
+    def _on_z_result(self, result: ZResult | None) -> None:
+        """Receive the computed :class:`ZResult` from the background thread and update the label."""
+        if result is None:
+            self.ui.zEstimateLabel.setText('?')
+            self.ui.zEstimateLabel2.setText('?')
+            return
+        confidence_icon = {'high': '✓', 'medium': '~', 'low': '?'}[result.confidence]
+        self.ui.zEstimateLabel.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")
+        self.ui.zEstimateLabel2.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")
+        tip_lines = [
+            f"Estimated Z = {result.z} formula units per unit cell",
+            f"Z′ = {result.z_prime:.4f}  (formula units per asymmetric unit)",
+            f"Z_sg = {result.z_sg}  (general positions in space group)",
+            "",
+        ]
+        if result.confidence == 'high':
+            tip_lines.append("Confidence: HIGH — Z′ is a positive integer.")
+        elif result.confidence == 'medium':
+            tip_lines.append("Confidence: MEDIUM — Z′ is a non-integer crystallographic")
+            tip_lines.append("fraction (½, ⅓, ¼, or ⅙), suggesting the molecule sits")
+            tip_lines.append("on a special position; the true Z may be higher.")
+        else:
+            tip_lines.append("Confidence: LOW — Z′ is not a multiple of ½.")
+            tip_lines.append("The bond-graph estimate is likely incorrect")
+            tip_lines.append("(common for polymers, frameworks, or salts).")
+        self.ui.zEstimateLabel.setToolTip('\n'.join(tip_lines))
+        self.ui.zEstimateLabel2.setToolTip('\n'.join(tip_lines))
 
     def _calc_grown_atoms(self):
         """Helper to generate the symmetry expanded atoms without drawing them."""
