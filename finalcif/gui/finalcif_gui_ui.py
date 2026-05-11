@@ -1589,11 +1589,6 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_9 = QVBoxLayout(self.page_Loops)
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
         self.verticalLayout_9.setContentsMargins(-1, 12, -1, -1)
-        self.loops_page = LoopsPage(self.page_Loops)
-        self.loops_page.setObjectName(u"loops_page")
-
-        self.verticalLayout_9.addWidget(self.loops_page)
-
         self.author_editor_widget = QWidget(self.page_Loops)
         self.author_editor_widget.setObjectName(u"author_editor_widget")
         self.author_editor_widget.setVisible(False)
@@ -1893,6 +1888,11 @@ class Ui_FinalCifWindow(object):
 
 
         self.verticalLayout_9.addWidget(self.author_editor_widget)
+
+        self.loops_page = LoopsPage(self.page_Loops)
+        self.loops_page.setObjectName(u"loops_page")
+
+        self.verticalLayout_9.addWidget(self.loops_page)
 
         self.gridLayout_16 = QGridLayout()
         self.gridLayout_16.setObjectName(u"gridLayout_16")

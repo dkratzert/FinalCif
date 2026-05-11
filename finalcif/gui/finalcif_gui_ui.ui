@@ -2782,14 +2782,11 @@ The data source will be ignored until next program restart.</string>
           </widget>
           <widget class="QWidget" name="page_Loops">
            <layout class="QVBoxLayout" name="verticalLayout_9">
-            <property name="topMargin">
-             <number>12</number>
-            </property>
-            <item>
-             <widget class="LoopsPage" name="loops_page" native="true"/>
-            </item>
-            <item>
-             <widget class="QWidget" name="author_editor_widget">
+             <property name="topMargin">
+              <number>12</number>
+             </property>
+             <item>
+              <widget class="QWidget" name="author_editor_widget">
               <property name="visible">
                <bool>false</bool>
               </property>
@@ -3203,10 +3200,13 @@ Contact authors should always also appear as regular authors.</string>
                  </spacer>
                 </item>
                </layout>
-             </widget>
-            </item>
-            <item>
-             <layout class="QGridLayout" name="gridLayout_16">
+              </widget>
+             </item>
+             <item>
+              <widget class="LoopsPage" name="loops_page" native="true"/>
+             </item>
+             <item>
+              <layout class="QGridLayout" name="gridLayout_16">
               <item row="0" column="2">
                <widget class="QPushButton" name="revertLoopsPushButton">
                 <property name="text">
