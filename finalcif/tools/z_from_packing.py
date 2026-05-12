@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import dataclasses
 import math
+import re
 from collections import Counter, deque
 from functools import reduce
 from math import gcd
@@ -37,9 +38,36 @@ from fastmolwidget.molecule2D import calc_volume  # re-exported for callers
 from finalcif.cif.atoms import element2cov as _ELEMENT2COV
 from finalcif.tools.chemparse import parse_formula as _parse_formula
 
+# Regex matching the bare element letters at the start of a type_symbol string.
+# CIF _atom_site_type_symbol values often include oxidation-state suffixes such
+# as 'Fe3+', 'O1-', 'Ni0+'; this pattern strips everything after the letters.
+_ELEMENT_LETTERS_RE: re.Pattern[str] = re.compile(r'^[A-Za-z]+')
+
 # Covalent radii sourced from finalcif.cif.atoms.element2cov (Å).
 # A small fallback covers elements absent from that table.
 DEFAULT_RADIUS: float = 1.50
+
+
+def _normalize_element(symbol: str) -> str:
+    """Return the bare element symbol, stripping any oxidation-state suffix.
+
+    CIF ``_atom_site_type_symbol`` values may include oxidation-state suffixes
+    such as ``'Fe3+'``, ``'O1-'``, or ``'Ni0+'``.  This function returns the
+    leading letters only (capitalized), e.g. ``'Fe3+' → 'Fe'``.
+
+    Examples::
+
+        >>> _normalize_element('Ni0+')
+        'Ni'
+        >>> _normalize_element('Fe3+')
+        'Fe'
+        >>> _normalize_element('O1-')
+        'O'
+        >>> _normalize_element('C')
+        'C'
+    """
+    m = _ELEMENT_LETTERS_RE.match(symbol)
+    return m.group(0).capitalize() if m else symbol.capitalize()
 BOND_TOLERANCE: float = 0.40
 
 # Tolerance used when testing whether Z' is close to a simple fraction.
@@ -66,9 +94,15 @@ class ZResult:
     """Result of Z estimation with Z' and a reliability indicator.
 
     Attributes:
-        z:        Estimated formula units per unit cell (GCD bond-graph method).
-        z_prime:  ``z / z_sg`` — formula units per asymmetric unit.
-        z_sg:     Number of general positions in the space group (symmetry-derived Z).
+        z:               Estimated formula units per unit cell.
+        z_prime:         ``z / z_sg`` — formula units per asymmetric unit.
+        z_sg:            Number of general positions in the space group.
+        formula_derived: ``True`` when Z was obtained from the per-element
+                         ratio ``cell_counts / formula`` rather than from the
+                         bond-graph GCD.  This happens for polymeric, extended,
+                         or inorganic structures where all (or many) atoms in
+                         the unit cell form a single connected network, making
+                         the GCD method unreliable.
 
     The ``reliable`` property is ``True`` when *z_prime* is within
     :data:`_ZPRIME_TOLERANCE` of a crystallographically valid fraction k/n,
@@ -92,6 +126,7 @@ class ZResult:
     z: int
     z_prime: float
     z_sg: int
+    formula_derived: bool = False
 
     @property
     def reliable(self) -> bool:
@@ -101,6 +136,14 @@ class ZResult:
         for any *n* in :data:`_VALID_Z_DENOMINATORS` and positive integer *k*,
         restricted to Z′ ≤ 8.  Examples of valid fractions: ⅙, ¼, ⅓, ½, ⅔,
         ¾, 1, 1½, 2, …
+
+        When :attr:`formula_derived` is ``True`` the Z value comes from the
+        chemical formula rather than the bond graph, so the Z′ fraction may
+        not be a standard molecular-crystal value (e.g. inorganic networks
+        can legitimately have Z′ = 1/12 in high-symmetry space groups).
+        In that case ``reliable`` is still evaluated by the same rules, but
+        the ``confidence`` property returns ``'formula'`` instead of ``'low'``
+        so callers can distinguish the two situations.
         """
         if self.z_prime <= 0 or self.z_prime > 8.0:
             return False
@@ -112,17 +155,22 @@ class ZResult:
 
     @property
     def confidence(self) -> str:
-        """A short human-readable confidence indicator: ``'high'``, ``'medium'``, or ``'low'``.
+        """A short human-readable confidence indicator.
 
-        * **high**   — Z′ is a positive integer (1, 2, 3, …): the most common,
+        * **high**    — Z′ is a positive integer (1, 2, 3, …): the most common,
           most reliable case.
-        * **medium** — Z′ is a non-integer crystallographic fraction (½, ⅓, ¼,
+        * **medium**  — Z′ is a non-integer crystallographic fraction (½, ⅓, ¼,
           ⅙, ⅔, …): the molecule may sit on a crystallographic special position;
           the bond-graph Z could be an integer multiple of the true value.
-        * **low**    — Z′ is not a multiple of any of 1, ½, ⅓, ¼, or ⅙, or is
+        * **formula** — Z was derived from the chemical formula because the
+          bond-graph GCD is unreliable (typical for coordination polymers,
+          metal–organic frameworks, or inorganic extended structures).
+        * **low**     — Z′ is not a multiple of any of 1, ½, ⅓, ¼, or ⅙, or is
           outside (0, 8]: the estimate is unlikely to match the true
           crystallographic Z.
         """
+        if self.formula_derived:
+            return 'formula'
         if not self.reliable:
             return 'low'
         # Distinguish integer Z' from non-integer crystallographic fraction
@@ -132,8 +180,13 @@ class ZResult:
 
 
 def _get_radius(element: str) -> float:
-    """Return the covalent radius (Å) for *element*, falling back to DEFAULT_RADIUS."""
-    return _ELEMENT2COV.get(element.capitalize(), DEFAULT_RADIUS)
+    """Return the covalent radius (Å) for *element*, falling back to DEFAULT_RADIUS.
+
+    The *element* string is first passed through :func:`_normalize_element` to
+    strip any oxidation-state suffix (e.g. ``'Fe3+'`` → ``'Fe'``) before the
+    table lookup, ensuring correct bond cutoffs for ionic/inorganic structures.
+    """
+    return _ELEMENT2COV.get(_normalize_element(element), DEFAULT_RADIUS)
 
 
 # ---------------------------------------------------------------------------
@@ -401,7 +454,7 @@ def _z_from_components(components: list[list[tuple[str, float]]]) -> int:
 
     comp_counts: dict[tuple, int] = {}
     for comp in active:
-        key = tuple(sorted(Counter(el for el, _occ in comp).items()))
+        key = tuple(sorted(Counter(_normalize_element(el) for el, _occ in comp).items()))
         comp_counts[key] = comp_counts.get(key, 0) + 1
     return reduce(gcd, comp_counts.values())
 
@@ -431,10 +484,15 @@ def _parse_formula_sum(formula_sum: str | None) -> dict[str, float] | None:
 def _expanded_element_counts(
         expanded: list[tuple[str, tuple[float, float, float], float]],
 ) -> dict[str, int]:
-    """Return total atom count per element across all expanded unit-cell sites."""
+    """Return total atom count per element across all expanded unit-cell sites.
+
+    Element symbols are normalised via :func:`_normalize_element` so that
+    oxidation-state suffixes (e.g. ``'Ni0+'``, ``'O1-'``) are stripped before
+    aggregation, enabling correct comparison with parsed formula strings.
+    """
     counts: dict[str, int] = {}
     for el, _pos, _occ in expanded:
-        key = el.capitalize()
+        key = _normalize_element(el)
         counts[key] = counts.get(key, 0) + 1
     return counts
 
@@ -551,25 +609,45 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
     Returns:
         Number of formula units per unit cell (Z), at minimum 1.
     """
+    z, _formula_derived = _count_z_with_source(
+        atoms_fract, symmops, cell, max_atoms, formula_sum
+    )
+    return z
+
+
+def _count_z_with_source(
+        atoms_fract,
+        symmops: list[str],
+        cell: tuple[float, ...],
+        max_atoms: int = 5000,
+        formula_sum: str | None = None,
+) -> tuple[int, bool]:
+    """Internal implementation of Z estimation returning ``(z, formula_derived)``.
+
+    ``formula_derived`` is ``True`` when the formula-based correction overrode
+    the bond-graph GCD result.  Used by :func:`count_z_and_zprime` to set the
+    :attr:`ZResult.formula_derived` flag for caller-visible confidence reporting.
+    """
     if not symmops or symmops == ['']:
-        return 1
+        return 1, False
 
     filtered = _filter_disorder(list(atoms_fract))
     if not filtered:
-        return 1
+        return 1, False
 
     # Guard against unreasonably large structures (e.g. proteins, MOFs).
     if len(filtered) * len(symmops) > max_atoms:
-        return 1
+        return 1, False
 
     expanded = _expand_to_unit_cell(filtered, symmops, cell)
     if not expanded:
-        return 1
+        return 1, False
 
     adj = _build_bond_graph(expanded, cell)
     components = _get_components(adj, expanded)
     z = _z_from_components(components)
     z = max(1, z)
+    formula_derived = False
 
     try:
         # Optional formula-based consistency check / correction.
@@ -580,9 +658,11 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
                 z_from_form = _z_from_formula(cell_counts, formula)
                 if z_from_form is not None:
                     z = z_from_form
+                    formula_derived = True
     except Exception:
-        return z
-    return z
+        return z, formula_derived
+    return z, formula_derived
+
 
 
 def count_z_and_zprime(
@@ -611,7 +691,9 @@ def count_z_and_zprime(
 
     A Z′ that is *not* close to any k/n (n ∈ {1,2,3,4,6}) signals that the
     bond-graph GCD algorithm returned an incorrect Z (typically an undercount
-    for polymeric or multi-component structures).
+    for polymeric or multi-component structures).  When the chemical formula is
+    provided and overrides the bond-graph result, :attr:`ZResult.formula_derived`
+    is set to ``True`` and :attr:`ZResult.confidence` returns ``'formula'``.
 
     Args:
         atoms_fract:  Atom records as yielded by ``CifContainer.atoms_fract``.
@@ -622,10 +704,12 @@ def count_z_and_zprime(
                       :func:`count_z` for how it is used to correct Z.
 
     Returns:
-        A :class:`ZResult` with ``z``, ``z_prime``, ``z_sg``, ``reliable``,
-        and ``confidence`` attributes.
+        A :class:`ZResult` with ``z``, ``z_prime``, ``z_sg``, ``formula_derived``,
+        ``reliable``, and ``confidence`` attributes.
     """
-    z = count_z(atoms_fract, symmops, cell, max_atoms, formula_sum=formula_sum)
+    z, formula_derived = _count_z_with_source(
+        atoms_fract, symmops, cell, max_atoms, formula_sum
+    )
     z_sg = _z_sg_from_symmops(symmops) if symmops and symmops != [''] else 1
     z_prime = round(z / z_sg, 6) if z_sg > 0 else float('nan')
-    return ZResult(z=z, z_prime=z_prime, z_sg=z_sg)
+    return ZResult(z=z, z_prime=z_prime, z_sg=z_sg, formula_derived=formula_derived)

@@ -12,6 +12,7 @@ from finalcif.tools.z_from_packing import (
     _z_from_components,
     _build_bond_graph,
     _z_sg_from_symmops,
+    _normalize_element,
     count_z,
     count_z_and_zprime,
     ZResult,
@@ -334,6 +335,21 @@ class TestZPrime:
         assert r.reliable is False
         assert r.confidence == 'low'
 
+    def test_zresult_formula_derived_gives_formula_confidence(self):
+        """formula_derived=True always yields confidence='formula' regardless of Z'."""
+        r = ZResult(z=2, z_prime=round(1 / 12, 6), z_sg=24, formula_derived=True)
+        assert r.confidence == 'formula'
+
+    def test_zresult_formula_derived_false_gives_normal_confidence(self):
+        """formula_derived=False (default) does not affect confidence logic."""
+        r = ZResult(z=4, z_prime=1.0, z_sg=4, formula_derived=False)
+        assert r.confidence == 'high'
+
+    def test_zresult_default_formula_derived_is_false(self):
+        """ZResult.formula_derived defaults to False."""
+        r = ZResult(z=4, z_prime=1.0, z_sg=4)
+        assert r.formula_derived is False
+
     def test_z_sg_from_symmops_p21c(self):
         """P 2₁/c has 4 general positions."""
         ops = ['x,y,z', '-x,y+1/2,-z+1/2', '-x,-y,-z', 'x,-y+1/2,z+1/2']
@@ -357,6 +373,7 @@ class TestZPrime:
         assert result.z_sg == 4
         assert abs(result.z_prime - 1.0) < 0.01
         assert result.confidence == 'high'
+        assert result.formula_derived is False
 
     def test_count_z_and_zprime_triclinic(self):
         """P -1 structure: Z=2, Z_sg=2 → Z′=1, high confidence."""
@@ -366,6 +383,7 @@ class TestZPrime:
         assert result.z_sg == 2
         assert abs(result.z_prime - 1.0) < 0.01
         assert result.confidence == 'high'
+        assert result.formula_derived is False
 
     def test_count_z_and_zprime_no_symmops(self):
         """No symmops → Z=1, Z_sg=1, Z′=1."""
@@ -374,6 +392,117 @@ class TestZPrime:
         assert result.z == 1
         assert result.z_sg == 1
         assert abs(result.z_prime - 1.0) < 0.01
+
+
+# ---------------------------------------------------------------------------
+# Tests for element-symbol normalization
+# ---------------------------------------------------------------------------
+
+class TestNormalizeElement:
+    """Unit tests for _normalize_element() — stripping oxidation-state suffixes."""
+
+    def test_plain_element_unchanged(self):
+        assert _normalize_element('C') == 'C'
+
+    def test_plain_element_capitalized(self):
+        assert _normalize_element('c') == 'C'
+
+    def test_two_letter_element(self):
+        assert _normalize_element('Fe') == 'Fe'
+
+    def test_two_letter_element_lowercase(self):
+        assert _normalize_element('fe') == 'Fe'
+
+    def test_positive_oxidation_state_stripped(self):
+        assert _normalize_element('Fe3+') == 'Fe'
+
+    def test_negative_oxidation_state_stripped(self):
+        assert _normalize_element('O1-') == 'O'
+
+    def test_zero_oxidation_stripped(self):
+        assert _normalize_element('Ni0+') == 'Ni'
+
+    def test_arsenic_ionic_stripped(self):
+        assert _normalize_element('As0+') == 'As'
+
+    def test_chloride_stripped(self):
+        assert _normalize_element('Cl1-') == 'Cl'
+
+    def test_nitrogen_anion_stripped(self):
+        assert _normalize_element('N1-') == 'N'
+
+
+# ---------------------------------------------------------------------------
+# Tests for inorganic / polymeric structures
+# ---------------------------------------------------------------------------
+
+class TestCountZPolymeric:
+    """Tests for Z estimation in polymeric and extended inorganic structures."""
+
+    def test_nicas_z2_with_formula(self):
+        """NiAs — P 6₃/mmc, Z=2, fully polymeric inorganic structure.
+
+        All unit-cell atoms form one connected network (Ni and As are bonded
+        throughout the crystal), so the bond-graph GCD alone gives Z=1.  With
+        the chemical formula 'As1 Ni1' the per-element ratio correction recovers
+        the correct Z=2.  The result is marked formula_derived=True.
+
+        Also exercises element-symbol normalization: the CIF stores type symbols
+        as 'Ni0+' and 'As0+'; after normalization the formula comparison works.
+        """
+        cif = _load('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
+        # Read the formula_sum from the CIF (as the appwindow does).
+        import gemmi as _g
+        formula_val = _g.cif.as_string(cif.block.find_value('_chemical_formula_sum'))
+        result = count_z_and_zprime(
+            cif.atoms_fract, cif.symmops, cif.cell[:6], formula_sum=formula_val
+        )
+        assert result.z == 2
+        assert result.formula_derived is True
+        assert result.confidence == 'formula'
+
+    def test_ionic_element_symbols_covalent_radii(self):
+        """Bond detection still works when type_symbol contains oxidation states.
+
+        Two 'Fe3+' atoms placed 2.3 Å apart (well within Fe covalent bond range
+        of ~2*1.32+0.40=3.04 Å) must bond; two 'Fe3+' atoms at 5.0 Å must not.
+        """
+        # Orthorhombic cell 10×10×10 Å, P1.
+        symmops = ['x, y, z']
+        cell = (10.0, 10.0, 10.0, 90.0, 90.0, 90.0)
+        # Two iron atoms 2.3 Å apart along x (fractional: 0.23/10 = 0.023)
+        close_atoms = [
+            ['Fe1', 'Fe3+', 0.10, 0.10, 0.10, 0, 1.0, 0.02],
+            ['Fe2', 'Fe3+', 0.33, 0.10, 0.10, 0, 1.0, 0.02],  # 2.3 Å from Fe1
+        ]
+        z_close = count_z(close_atoms, symmops, cell)
+        assert z_close == 1, "Bonded Fe atoms should form one component"
+
+        # Two iron atoms far apart (5 Å)
+        far_atoms = [
+            ['Fe1', 'Fe3+', 0.10, 0.10, 0.10, 0, 1.0, 0.02],
+            ['Fe2', 'Fe3+', 0.60, 0.10, 0.10, 0, 1.0, 0.02],  # 5 Å from Fe1
+        ]
+        z_far = count_z(far_atoms, symmops, cell)
+        assert z_far == 2, "Distant Fe atoms should be two separate components"
+
+    def test_ionic_element_symbols_composition_grouping(self):
+        """Composition-based GCD still groups components correctly for ionic symbols.
+
+        Two identical 'Fe3+Cl1-' ion pairs should give Z=2.
+        """
+        symmops = ['x, y, z']
+        cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+        # Two ion-pair clusters separated by ~7 Å — no bonds between them.
+        # Within each cluster Fe and Cl are 1.5 Å apart (bonded).
+        atoms = [
+            ['Fe1', 'Fe3+', 0.10, 0.10, 0.10, 0, 1.0, 0.02],
+            ['Cl1', 'Cl1-', 0.175, 0.10, 0.10, 0, 1.0, 0.02],  # ~1.5 Å from Fe1
+            ['Fe2', 'Fe3+', 0.60, 0.60, 0.60, 0, 1.0, 0.02],
+            ['Cl2', 'Cl1-', 0.675, 0.60, 0.60, 0, 1.0, 0.02],  # ~1.5 Å from Fe2
+        ]
+        z = count_z(atoms, symmops, cell)
+        assert z == 2
 
 
 
