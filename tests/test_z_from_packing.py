@@ -1,6 +1,7 @@
 """Tests for the unit-cell packing Z estimator."""
 from pathlib import Path
 
+import gemmi as _g
 import pytest
 
 from finalcif.cif.cif_file_io import CifContainer
@@ -452,7 +453,6 @@ class TestCountZPolymeric:
         """
         cif = _load('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
         # Read the formula_sum from the CIF (as the appwindow does).
-        import gemmi as _g
         formula_val = _g.cif.as_string(cif.block.find_value('_chemical_formula_sum'))
         result = count_z_and_zprime(
             cif.atoms_fract, cif.symmops, cif.cell[:6], formula_sum=formula_val
@@ -470,18 +470,19 @@ class TestCountZPolymeric:
         # Orthorhombic cell 10×10×10 Å, P1.
         symmops = ['x, y, z']
         cell = (10.0, 10.0, 10.0, 90.0, 90.0, 90.0)
-        # Two iron atoms 2.3 Å apart along x (fractional: 0.23/10 = 0.023)
+        # Two iron atoms 2.3 Å apart along x.
+        # Fractional difference = 0.23; Cartesian distance = 0.23 × 10.0 Å = 2.3 Å.
         close_atoms = [
             ['Fe1', 'Fe3+', 0.10, 0.10, 0.10, 0, 1.0, 0.02],
-            ['Fe2', 'Fe3+', 0.33, 0.10, 0.10, 0, 1.0, 0.02],  # 2.3 Å from Fe1
+            ['Fe2', 'Fe3+', 0.33, 0.10, 0.10, 0, 1.0, 0.02],  # Δx=0.23 → 2.3 Å
         ]
         z_close = count_z(close_atoms, symmops, cell)
         assert z_close == 1, "Bonded Fe atoms should form one component"
 
-        # Two iron atoms far apart (5 Å)
+        # Two iron atoms 5.0 Å apart (fractional 0.50 in 10 Å cell).
         far_atoms = [
             ['Fe1', 'Fe3+', 0.10, 0.10, 0.10, 0, 1.0, 0.02],
-            ['Fe2', 'Fe3+', 0.60, 0.10, 0.10, 0, 1.0, 0.02],  # 5 Å from Fe1
+            ['Fe2', 'Fe3+', 0.60, 0.10, 0.10, 0, 1.0, 0.02],  # Δx=0.50 → 5.0 Å
         ]
         z_far = count_z(far_atoms, symmops, cell)
         assert z_far == 2, "Distant Fe atoms should be two separate components"
@@ -495,14 +496,14 @@ class TestCountZPolymeric:
         cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
         # Two ion-pair clusters separated by ~7 Å — no bonds between them.
         # Within each cluster Fe and Cl are 1.5 Å apart (bonded).
+        # Fractional Δx=0.075 in a 20 Å cell → 20 × 0.075 = 1.5 Å (Cartesian).
         atoms = [
             ['Fe1', 'Fe3+', 0.10, 0.10, 0.10, 0, 1.0, 0.02],
-            ['Cl1', 'Cl1-', 0.175, 0.10, 0.10, 0, 1.0, 0.02],  # ~1.5 Å from Fe1
+            ['Cl1', 'Cl1-', 0.175, 0.10, 0.10, 0, 1.0, 0.02],  # Δx=0.075 → 1.5 Å
             ['Fe2', 'Fe3+', 0.60, 0.60, 0.60, 0, 1.0, 0.02],
-            ['Cl2', 'Cl1-', 0.675, 0.60, 0.60, 0, 1.0, 0.02],  # ~1.5 Å from Fe2
+            ['Cl2', 'Cl1-', 0.675, 0.60, 0.60, 0, 1.0, 0.02],  # Δx=0.075 → 1.5 Å
         ]
         z = count_z(atoms, symmops, cell)
         assert z == 2
-
 
 

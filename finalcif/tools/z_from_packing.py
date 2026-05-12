@@ -55,6 +55,11 @@ def _normalize_element(symbol: str) -> str:
     such as ``'Fe3+'``, ``'O1-'``, or ``'Ni0+'``.  This function returns the
     leading letters only (capitalized), e.g. ``'Fe3+' → 'Fe'``.
 
+    If *symbol* contains no leading ASCII letters (e.g. an empty string or a
+    purely numeric token) it is returned as-is after ``.capitalize()``.  Such
+    inputs are not valid CIF element symbols and will simply fail the downstream
+    covalent-radius lookup, falling back to :data:`DEFAULT_RADIUS`.
+
     Examples::
 
         >>> _normalize_element('Ni0+')
