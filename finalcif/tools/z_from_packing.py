@@ -73,6 +73,8 @@ def _normalize_element(symbol: str) -> str:
     """
     m = _ELEMENT_LETTERS_RE.match(symbol)
     return m.group(0).capitalize() if m else symbol.capitalize()
+
+
 BOND_TOLERANCE: float = 0.40
 
 # Tolerance used when testing whether Z' is close to a simple fraction.
@@ -621,7 +623,7 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
 
 
 def _count_z_with_source(
-        atoms_fract,
+        atoms_fract: list,
         symmops: list[str],
         cell: tuple[float, ...],
         max_atoms: int = 5000,

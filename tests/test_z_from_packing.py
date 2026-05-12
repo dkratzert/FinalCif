@@ -1,4 +1,5 @@
 """Tests for the unit-cell packing Z estimator."""
+import math
 from pathlib import Path
 
 import gemmi as _g
@@ -511,7 +512,7 @@ class TestCountZPolymeric:
 # Comprehensive parametrized test suite covering COD-database structure types
 # ---------------------------------------------------------------------------
 
-def _load_cif_raw(path: str) -> tuple:
+def _load_cif_raw(path: str) -> tuple[list, list[str], tuple[float, ...], str | None, int | None]:
     """Load a CIF file directly via gemmi and return (atoms, symmops, cell, formula, z_cif).
 
     Works with any CIF layout — does not require CifContainer — so it can read
@@ -706,7 +707,7 @@ class TestZCodSuite:
         """Z′ must always be a finite positive number."""
         atoms, symmops, cell, formula, _z_cif = _load_cif_raw(cif_path)
         result = count_z_and_zprime(atoms, symmops, cell, formula_sum=formula)
-        assert result.z_prime > 0 and not (result.z_prime != result.z_prime), (
+        assert result.z_prime > 0 and math.isfinite(result.z_prime), (
             f"{description} — Z′={result.z_prime!r} is not a positive finite number"
         )
 
