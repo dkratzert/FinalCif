@@ -2077,7 +2077,7 @@ class AppWindow(QMainWindow):
             self.ui.zEstimateLabel.setText('?')
             self.ui.zEstimateLabel2.setText('?')
             return
-        confidence_icon = {'high': '✓', 'medium': '~', 'low': '?'}[result.confidence]
+        confidence_icon = {'high': '✓', 'medium': '~', 'formula': '≡', 'low': '?'}[result.confidence]
         self.ui.zEstimateLabel.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")
         self.ui.zEstimateLabel2.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")
         tip_lines = [
@@ -2092,6 +2092,11 @@ class AppWindow(QMainWindow):
             tip_lines.append("Confidence: MEDIUM — Z′ is a non-integer crystallographic")
             tip_lines.append("fraction (½, ⅓, ¼, or ⅙), suggesting the molecule sits")
             tip_lines.append("on a special position; the true Z may be higher.")
+        elif result.confidence == 'formula':
+            tip_lines.append("Confidence: FORMULA — Z was derived from the chemical formula.")
+            tip_lines.append("The bond-graph method is unreliable for this structure")
+            tip_lines.append("(typical for coordination polymers, metal–organic frameworks,")
+            tip_lines.append("or other extended inorganic networks).")
         else:
             tip_lines.append("Confidence: LOW — Z′ is not a multiple of ½.")
             tip_lines.append("The bond-graph estimate is likely incorrect")

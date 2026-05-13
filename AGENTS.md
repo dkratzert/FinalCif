@@ -33,7 +33,7 @@
   - SHELX parsing via the external `shelxfile` package (used in `report/templated_report.py`); in-tree `.lst` parser in `datafiles/shelx_lst.py`.
 - **CIF Parsing:** Standardized on `gemmi` (>=0.7.5); `gemmi.set_leak_warnings(False)` is set at startup.
 - **Key Third-Party Runtime Deps:** `qtpy` + `pyside6` / `pyside6-addons`, `gemmi`, `docxtpl[subdoc]`, `python-docx`, `shelxfile`, `fastmolwidget`, `crossrefapi`, `QtAwesome` (icon fonts), `pyenchant` (spell-check), `html2text`, `lxml`, `numpy<2.4`, `chardet` / `charset-normalizer`, `requests`/`urllib3`, `packaging`, `pefile` (see `pyproject.toml`).
-
+- Use gemmi for CIF parsinf if many files need to be processed, because it is much faster than CifContainer. CifContainer is a wrapper around gemmi.cif that provides a dict-like interface and additional features, but it is slower than using gemmi directly.
 ## Conventions
 - **UI Files:** Edit `.ui` files in Qt Designer (`scripts/designer.py`), then regenerate via `python scripts/compile_ui_files.py`. Never hand-edit generated `*_ui.py`.
 - **qtpy Imports:** `from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets, compat` — `QtWebEngine` is used and requires `PySide6-Addons`.
