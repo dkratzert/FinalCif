@@ -1089,7 +1089,7 @@ class AppWindow(QMainWindow):
                 pos = i + 1
         return pos
 
-    def _display_structure_factor_report(self, parser: MyHTMLParser) -> None:
+    def _display_structure_factor_report(self, parser: 'MyHTMLParser') -> None:
         self.ui.ckf_textedit.setPlainText(parser.get_ckf())
 
     def do_html_checkcif(self) -> None:
@@ -2129,7 +2129,7 @@ class AppWindow(QMainWindow):
                                   to_float(dp.U23), to_float(dp.U13), to_float(dp.U12))
         return adp_dict
 
-    def _atoms_with_adps(self, atoms) -> list[Atomtuple]:
+    def _atoms_with_adps(self, atoms) -> list['Atomtuple']:
         """Convert atom objects to Atomtuple instances with ADP data embedded directly."""
         from fastmolwidget import Atomtuple
         adp_dict = self.get_adps()
@@ -2144,7 +2144,7 @@ class AppWindow(QMainWindow):
                                         part=at.part, adp=adp))
         return result
 
-    def _update_parts_combo(self, atoms: list[Atomtuple]) -> None:
+    def _update_parts_combo(self, atoms: list['Atomtuple']) -> None:
         """Repopulate the parts selector with the unique disorder parts present in *atoms*.
 
         The widget is shown only when more than one distinct part is found (i.e. disorder exists).
