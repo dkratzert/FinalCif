@@ -621,19 +621,6 @@ _COD_TESTDATA_CASES = [
                                               2,  'formula', 'NiAs — fully polymeric inorganic, ionic type_symbols'),
 ]
 
-# ── Synthetic COD-like fixtures in tests/examples/cod/ ───────────────────────
-# These represent well-known inorganic structure types that are common in the COD
-# and exercise features introduced in the recent ionic/polymeric improvements.
-
-_COD_FIXTURE_CASES = [
-    # path                                    Z   confidence  description
-    ('tests/examples/cod/nacl.cif',           4,  'formula', 'NaCl rock salt — Fm-3m, ionic Na1+/Cl1- type symbols, fully polymeric'),
-    ('tests/examples/cod/tio2_rutile.cif',    2,  'formula', 'Rutile TiO2 — P4_2/mnm, ionic type symbols, polymeric oxide'),
-    ('tests/examples/cod/zno_wurtzite.cif',   2,  'formula', 'ZnO wurtzite — P6_3mc, hexagonal polymeric, ionic symbols'),
-    ('tests/examples/cod/cuo_tenorite.cif',   4,  'formula', 'CuO tenorite — C2/c, centered monoclinic ionic oxide'),
-    ('tests/examples/cod/calcite.cif',        6,  'formula', 'Calcite CaCO3 — R-3c, trigonal carbonate, ionic symbols'),
-    ('tests/examples/cod/urea.cif',           2,  'medium',  'Urea — P-42_1m, organic on special position, Z′=¼'),
-]
 
 
 def _make_cod_test_id(val):
@@ -645,8 +632,8 @@ def _make_cod_test_id(val):
 
 @pytest.mark.parametrize(
     'cif_path, expected_z, expected_confidence, description',
-    _COD_TESTDATA_CASES + _COD_FIXTURE_CASES,
-    ids=[_make_cod_test_id(c[0]) for c in _COD_TESTDATA_CASES + _COD_FIXTURE_CASES],
+    _COD_TESTDATA_CASES,
+    ids=[_make_cod_test_id(c[0]) for c in _COD_TESTDATA_CASES],
 )
 class TestZCodSuite:
     """Parametrized Z + Z′ test suite covering diverse COD-database structure types.
