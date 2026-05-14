@@ -16,13 +16,9 @@ from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
-from typing import cast
+from typing import cast, TYPE_CHECKING
 
-from fastmolwidget import Atomtuple
 from fastmolwidget.part_combo import PartFilterWidget
-from fastmolwidget.sdm import SDM
-
-from finalcif.gui.vzs_viewer import VZSImageViewer
 
 warnings.filterwarnings("ignore", category=RuntimeWarning, module="shibokensupport.signature.parser")
 
@@ -32,7 +28,7 @@ if hasattr(gemmi, 'set_leak_warnings'):
     gemmi.set_leak_warnings(False)
 
 import requests
-from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets, compat
+from qtpy import QtCore, QtGui, QtWidgets, compat
 from qtpy.QtCore import Qt, QEvent
 from qtpy.QtWidgets import (QMainWindow, QCheckBox, QApplication,
                             QPlainTextEdit, QMessageBox, QScrollBar)
@@ -40,12 +36,8 @@ from gemmi import cif
 
 from finalcif import VERSION
 from finalcif.app_path import application_path
-from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer, GemmiError
-from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
-from finalcif.datafiles.bruker_data import BrukerData
-from finalcif.datafiles.ccdc_mail import CCDCMail
 from finalcif.equip_property.author_loop_templates import AuthorLoops
 from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
@@ -58,27 +50,26 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question, \
     video_file_open_dialog
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
-from finalcif.gui.import_selector import ImportSelector
-from finalcif.gui.loop_creator import LoopCreator
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.cif.vrf_entry import VRFEntry
 from finalcif.gui.vrf_classes import MyVRFContainer
-from finalcif.report.templated_report import ReportFormat
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
 from finalcif.tools.misc import (next_path, celltxt, to_float, is_database_number,
                                  open_file, strip_finalcif_of_name, file_age_in_days)
 from finalcif.tools.options import Options
-from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
-from finalcif.tools.shred import ShredCIF
 from finalcif.tools.space_groups import SpaceGroups
 from finalcif.tools.z_from_packing import count_z_and_zprime, ZResult
 from finalcif.tools.spgr_format import spgrps
 from finalcif.tools.statusbar import StatusBar
 from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
+
+if TYPE_CHECKING:
+    from fastmolwidget import Atomtuple
+    from finalcif.cif.checkcif.checkcif import MyHTMLParser
 
 DEBUG = False
 app = QApplication.instance()
@@ -166,7 +157,7 @@ class AppWindow(QMainWindow):
         self.settings = FinalCifSettings()
         self.load_fontsize_from_settings()
         self.options = Options(self.ui, self.settings)
-        self.deposit = CODdeposit(self.ui, self.cif, self.options)
+        self.deposit = None
         self.equipment = Equipment(app=self, settings=self.settings)
         self.properties = Properties(parent=self, settings=self.settings)
         self.status_bar = StatusBar(ui=self.ui)
@@ -185,6 +176,7 @@ class AppWindow(QMainWindow):
         self.ui.TemplatesStackedWidget.setCurrentIndex(0)
         self.ui.MainStackedWidget.got_to_main_page()
         self.set_initial_button_states()
+        from finalcif.gui.vzs_viewer import VZSImageViewer
         self.video = VZSImageViewer(self)
         self.ui.picturesTabWidget.setCurrentIndex(0)
         self.ui.video_vLayout.addWidget(self.video)
@@ -739,8 +731,9 @@ class AppWindow(QMainWindow):
         """
         input_txt = self.ui.SelectCif_LineEdit.text().strip()
         if is_database_number(input_txt):
+            deposit = self._ensure_deposit()
             self.status_bar.show_message('Request sent to COD...')
-            r = requests.get(f'{self.deposit.main_url}{input_txt}.cif', timeout=8)
+            r = requests.get(f'{deposit.main_url}{input_txt}.cif', timeout=8)
             self.status_bar.show_message('Got a result.')
             if r.status_code == 200:
                 filename = cif_file_save_dialog(f'{input_txt}.cif')
@@ -757,10 +750,16 @@ class AppWindow(QMainWindow):
     def current_block(self) -> int:
         return self.ui.datanameComboBox.currentIndex()
 
+    def _ensure_deposit(self):
+        if self.deposit is None:
+            from finalcif.cif.cod.deposit import CODdeposit
+            self.deposit = CODdeposit(self.ui, self.cif, self.options)
+        return self.deposit
+
     def open_cod_page(self) -> None:
         self.save_current_cif_file()
         self.load_cif_file(self.cif.finalcif_file, self.current_block, load_changes=False)
-        self.deposit.cif = self.cif
+        self._ensure_deposit().cif = self.cif
         self.ui.MainStackedWidget.got_to_cod_page()
 
     def event(self, event: QtCore.QEvent) -> bool:
@@ -812,6 +811,7 @@ class AppWindow(QMainWindow):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
 
     def do_shred_cif(self):
+        from finalcif.tools.shred import ShredCIF
         shred = ShredCIF(cif=self.cif, statusbar=self.status_bar)
         shred.shred_cif()
         if not self.running_inside_unit_test:
@@ -1009,6 +1009,8 @@ class AppWindow(QMainWindow):
         """
         Loads the html checkcif results and displays them in a checkcif_browser window.
         """
+        from qtpy import QtWebEngineWidgets
+        from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         try:
@@ -1094,6 +1096,7 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
+        from finalcif.cif.checkcif.checkcif import CheckCif
         current_block = self.ui.datanameComboBox.currentIndex()
         self._get_check_def()
         self.ui.CheckCifLogPlainTextEdit.clear()
@@ -1198,6 +1201,7 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif and shows the result as pdf.
         """
+        from finalcif.cif.checkcif.checkcif import CheckCif
         current_block = self.ui.datanameComboBox.currentIndex()
         self.ui.CheckCifLogPlainTextEdit.clear()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(2)
@@ -1231,6 +1235,7 @@ class AppWindow(QMainWindow):
             pass
 
     def do_offline_checkcif(self) -> None:
+        from finalcif.tools.platon import PlatonRunner
         self.ui.CheckcifButton.setDisabled(True)
         app.processEvents()
         self.ui.CheckCifLogPlainTextEdit.clear()
@@ -1325,7 +1330,7 @@ class AppWindow(QMainWindow):
         Generates a report document.
         """
         from finalcif.report.tables import make_multi_tables
-        from finalcif.report.templated_report import TemplatedReport
+        from finalcif.report.templated_report import TemplatedReport, ReportFormat
         current_block = self.ui.datanameComboBox.currentIndex()
         if self.cif.doc[current_block].name == 'global':
             return
@@ -1610,6 +1615,7 @@ class AppWindow(QMainWindow):
         """
         Import an additional cif file to the main table.
         """
+        from finalcif.gui.import_selector import ImportSelector
         imp_cif: CifContainer
         if not filename:
             filename = cif_file_open_dialog(parent=self, filter="CIF file (*.cif *.pcf *.cif_od *.cfx *.sqf)")
@@ -1800,7 +1806,7 @@ class AppWindow(QMainWindow):
             self.authors = AuthorLoops(ui=self.ui, cif=self.cif, app=self)
             if not (self.ui.MainStackedWidget.on_checkcif_page() or self.ui.MainStackedWidget.on_info_page()):
                 self.ui.MainStackedWidget.got_to_main_page()
-            self.deposit.cif = self.cif
+            self._ensure_deposit().cif = self.cif
             if self.ui.MainStackedWidget.on_info_page():
                 self.show_residuals()
                 self.redraw_molecule()
@@ -1849,6 +1855,7 @@ class AppWindow(QMainWindow):
             self.ui.Spacegroup_top_LineEdit.setText(self.cif.space_group)
 
     def set_shredcif_state(self) -> None:
+        from finalcif.tools.shred import ShredCIF
         if ShredCIF(cif=self.cif, statusbar=self.status_bar).cif_has_hkl_or_res_file():
             self.ui.ShredCifButton.setEnabled(True)
         else:
@@ -2106,6 +2113,7 @@ class AppWindow(QMainWindow):
 
     def _calc_grown_atoms(self):
         """Helper to generate the symmetry expanded atoms without drawing them."""
+        from fastmolwidget.sdm import SDM
         atoms_fract = tuple(self.cif.atoms_fract)
         if not atoms_fract:
             return []
@@ -2123,6 +2131,7 @@ class AppWindow(QMainWindow):
 
     def _atoms_with_adps(self, atoms) -> list[Atomtuple]:
         """Convert atom objects to Atomtuple instances with ADP data embedded directly."""
+        from fastmolwidget import Atomtuple
         adp_dict = self.get_adps()
         result = []
         for at in atoms:
@@ -2182,6 +2191,7 @@ class AppWindow(QMainWindow):
         """
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
+        from finalcif.datafiles.bruker_data import BrukerData
         self.check_Z()
         self.sources = BrukerData(self, self.cif).sources
         if self.sources:
@@ -2223,6 +2233,7 @@ class AppWindow(QMainWindow):
                 pass
 
     def add_ccdc_number(self):
+        from finalcif.datafiles.ccdc_mail import CCDCMail
         ccdc = CCDCMail(self.cif)
         if ccdc.depnum > 0:
             # The next line is necessary, otherwise reopening of a cif would not add the CCDC number:
@@ -2335,6 +2346,7 @@ class AppWindow(QMainWindow):
         # Phase 3 – create widgets (with view repaints suspended)
         # ------------------------------------------------------------------
         table.setUpdatesEnabled(False)
+        from finalcif.cif.checkcif.checkcif import AlertHelp
         alert_help = AlertHelp(self.checkdef)
         try:
             for row_num, row_data in enumerate(model_rows):
