@@ -237,10 +237,49 @@ class CifContainer:
         options.align_pairs = 33
         options.align_loops = 15
         options.misuse_hash = False
+        normalized_text = doc.as_string(options=options)
+        translated_text = CifContainer._translate_keywords_to_cif11(normalized_text)
         converted = gemmi.cif.Document()
         converted.source = doc.source
-        converted.parse_string(doc.as_string(options=options))
+        converted.parse_string(translated_text)
         return converted
+
+    @staticmethod
+    def _translate_keywords_to_cif11(cif_text: str) -> str:
+        """
+        Translate CIF2/mmCIF keyword notation to CIF 1.1-compatible names.
+        Uses the CIVET-style legacy conversion approach for data names:
+        modern dotted names are converted to underscore names.
+        """
+        translated_lines: list[str] = []
+        in_text_block = False
+        for line in cif_text.split('\n'):
+            stripped = line.strip()
+            if stripped == ';':
+                in_text_block = not in_text_block
+                translated_lines.append(line)
+                continue
+            if in_text_block or stripped.startswith('#') or not stripped:
+                translated_lines.append(line)
+                continue
+            field_match = re.match(r'^(\s*)(_[a-zA-Z][a-zA-Z0-9_.\-\[\]()/]*)(?=\s|$)', line)
+            if field_match:
+                indent, field_name = field_match.groups()
+                translated_field = CifContainer._translate_keyword_to_cif11(field_name)
+                if translated_field != field_name:
+                    remainder = line[field_match.end(2):]
+                    line = f'{indent}{translated_field}{remainder}'
+            translated_lines.append(line)
+        return '\n'.join(translated_lines)
+
+    @staticmethod
+    def _translate_keyword_to_cif11(keyword: str) -> str:
+        """
+        Translate one CIF2/mmCIF keyword to CIF 1.1 legacy naming.
+        """
+        if '.' not in keyword:
+            return keyword
+        return keyword.replace('.', '_')
 
     def read_string(self, cif_string: str) -> gemmi.cif.Document:
         """

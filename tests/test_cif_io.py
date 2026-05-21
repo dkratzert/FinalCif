@@ -296,6 +296,22 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         self.assertIsInstance(container, CifContainer)
         mocked.assert_not_called()
 
+    def test_cif2_keywords_are_translated_to_cif11_names(self) -> None:
+        modern_cif = Path('tests/statics/test_import_input_cif2_keywords.cif')
+        modern_cif.write_text("#\\#CIF_2.0\ndata_test\n_cell.length_a 10.1\n", encoding='utf-8')
+        self.addCleanup(modern_cif.unlink, missing_ok=True)
+        container = CifContainer(modern_cif)
+        self.assertEqual('10.1', container['_cell_length_a'])
+        self.assertEqual('', container['_cell.length_a'])
+
+    def test_mmcif_keywords_are_translated_to_cif11_names(self) -> None:
+        modern_mmcif = Path('tests/statics/test_import_input_mmcif_keywords.mmcif')
+        modern_mmcif.write_text("data_test\n_cell.length_a 11.2\n", encoding='utf-8')
+        self.addCleanup(modern_mmcif.unlink, missing_ok=True)
+        container = CifContainer(modern_mmcif)
+        self.assertEqual('11.2', container['_cell_length_a'])
+        self.assertEqual('', container['_cell.length_a'])
+
     def test_from_cif_pair_parses_problem_and_response(self):
         """from_cif_pair() correctly extracts problem and response from a raw CIF value."""
         import gemmi
