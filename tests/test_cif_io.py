@@ -329,6 +329,25 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         self.assertNotIn('_diffrn_ambient_temperature', container.keys())
         self.assertNotIn('_diffrn.ambient_temperature', container.keys())
 
+    def test_translation_table_handles_space_group_aliases(self) -> None:
+        modern_cif = Path('tests/statics/test_import_input_cif2_translation_table_space_group.cif')
+        modern_cif.write_text(
+            "#\\#CIF_2.0\n"
+            "data_test\n"
+            "_space_group.IT_number 14\n"
+            "_space_group.name_H-M_alt 'P 21/c'\n"
+            "_space_group_symop.operation_xyz 'x,y,z'\n",
+            encoding='utf-8',
+        )
+        self.addCleanup(modern_cif.unlink, missing_ok=True)
+        container = CifContainer(modern_cif)
+        self.assertEqual('14', container['_symmetry_Int_Tables_number'])
+        self.assertEqual('P 21/c', container['_symmetry_space_group_name_H-M'])
+        self.assertEqual('x,y,z', container['_symmetry_equiv_pos_as_xyz'])
+        self.assertNotIn('_space_group_IT_number', container.keys())
+        self.assertNotIn('_space_group_name_H-M_alt', container.keys())
+        self.assertNotIn('_space_group_symop_operation_xyz', container.keys())
+
     def test_text_block_content_is_not_keyword_translated(self) -> None:
         modern_cif = Path('tests/statics/test_import_input_cif2_text_block.cif')
         modern_cif.write_text(

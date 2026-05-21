@@ -36,6 +36,12 @@ CIF_KEYWORD_PATTERN = re.compile(r'^(\s*)(_[a-zA-Z][a-zA-Z0-9_.\-\[\]()/]*)(?=\s
 # dot-to-underscore rewrite is not the preferred CIF 1.1 alias.
 CIF2_TO_CIF11_KEYWORD_TABLE = {
     '_diffrn.ambient_temperature': '_cell_measurement_temperature',
+    '_space_group.IT_number': '_symmetry_Int_Tables_number',
+    '_space_group.crystal_system': '_symmetry_cell_setting',
+    '_space_group.name_H-M_alt': '_symmetry_space_group_name_H-M',
+    '_space_group.name_Hall': '_symmetry_space_group_name_Hall',
+    '_space_group_symop.id': '_symmetry_equiv_pos_site_id',
+    '_space_group_symop.operation_xyz': '_symmetry_equiv_pos_as_xyz',
 }
 
 
