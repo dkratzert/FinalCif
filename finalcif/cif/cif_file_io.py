@@ -218,6 +218,7 @@ class CifContainer:
         options = gemmi.cif.WriteOptions()
         options.prefer_pairs = False
         options.compact = False
+        # Keep alignment settings identical to the regular CifContainer text output.
         options.align_pairs = 33
         options.align_loops = 15
         options.misuse_hash = False

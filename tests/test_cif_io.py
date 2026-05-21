@@ -278,12 +278,12 @@ class TestCif2AndMmcifNormalization(unittest.TestCase):
     def test_cif2_is_normalized_to_cif11(self) -> None:
         with patch.object(CifContainer, '_convert_doc_to_cif11', wraps=CifContainer._convert_doc_to_cif11) as mocked:
             CifContainer(self.temp_cif2)
-        self.assertTrue(mocked.called)
+        mocked.assert_called_once()
 
     def test_mmcif_is_normalized_to_cif11(self) -> None:
         with patch.object(CifContainer, '_convert_doc_to_cif11', wraps=CifContainer._convert_doc_to_cif11) as mocked:
             CifContainer(self.temp_mmcif)
-        self.assertTrue(mocked.called)
+        mocked.assert_called_once()
 
     def test_cif_stays_unchanged(self) -> None:
         with patch.object(CifContainer, '_convert_doc_to_cif11', wraps=CifContainer._convert_doc_to_cif11) as mocked:
