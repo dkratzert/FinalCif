@@ -303,6 +303,7 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         container = CifContainer(modern_cif)
         self.assertEqual('10.1', container['_cell_length_a'])
         self.assertNotIn('_cell.length_a', container.keys())
+        self.assertNotIn('_cell.length_a', container)
         self.assertEqual('', container['_cell.length_a'])
 
     def test_mmcif_keywords_are_translated_to_cif11_names(self) -> None:
@@ -312,6 +313,7 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         container = CifContainer(modern_mmcif)
         self.assertEqual('11.2', container['_cell_length_a'])
         self.assertNotIn('_cell.length_a', container.keys())
+        self.assertNotIn('_cell.length_a', container)
         self.assertEqual('', container['_cell.length_a'])
 
     def test_from_cif_pair_parses_problem_and_response(self):
