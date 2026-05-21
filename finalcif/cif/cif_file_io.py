@@ -23,6 +23,7 @@ from gemmi.cif import as_string, Document, Loop
 from packaging.version import Version
 from shelxfile import Shelxfile
 
+from finalcif.cif.cif_keyword_mapping import CIF2_TO_CIF11_KEYWORD_TABLE
 from finalcif.cif.cif_order import order, special_keys, essential_keys, non_centrosymm_keys
 from finalcif.cif.hkl import HKL, Limit
 from finalcif.cif.text import utf8_to_str, quote, retranslate_delimiter
@@ -32,97 +33,6 @@ from finalcif.tools.misc import isnumeric, grouper, strip_finalcif_of_name, _ang
 # Match CIF data names at line start (pairs or loop tags), allowing common
 # CIF2/mmCIF token characters (dot, hyphen, brackets, parentheses and slash variants).
 CIF_KEYWORD_PATTERN = re.compile(r'^(\s*)(_[a-zA-Z][a-zA-Z0-9_.\-\[\]()/]*)(?=\s|$)')
-# CIVET-style modern->legacy keyword overrides for cases where a plain
-# dot-to-underscore rewrite is not the preferred CIF 1.1 alias.
-# Entries were derived from CIVET dictionary-manager alias mapping logic
-# against cif_core_3.3.0.dic (DDL2/DDLm -> preferred DDL1 aliases),
-# filtered to legacy aliases that keep underscore (non-dotted) CIF1-style names.
-CIF2_TO_CIF11_KEYWORD_TABLE = {
-    '_atom_scat_versus_stol.atom_type': '_atom_type_scat_versus_stol_list',
-    '_atom_site.refinement_flags_posn': '_atom_site_refinement_flags',
-    '_atom_sites_cartn_transform.mat_11': '_atom_sites_cartn_tran_matrix_11',
-    '_atom_sites_cartn_transform.mat_12': '_atom_sites_cartn_tran_matrix_12',
-    '_atom_sites_cartn_transform.mat_13': '_atom_sites_cartn_tran_matrix_13',
-    '_atom_sites_cartn_transform.mat_21': '_atom_sites_cartn_tran_matrix_21',
-    '_atom_sites_cartn_transform.mat_22': '_atom_sites_cartn_tran_matrix_22',
-    '_atom_sites_cartn_transform.mat_23': '_atom_sites_cartn_tran_matrix_23',
-    '_atom_sites_cartn_transform.mat_31': '_atom_sites_cartn_tran_matrix_31',
-    '_atom_sites_cartn_transform.mat_32': '_atom_sites_cartn_tran_matrix_32',
-    '_atom_sites_cartn_transform.mat_33': '_atom_sites_cartn_tran_matrix_33',
-    '_atom_sites_cartn_transform.vec_1': '_atom_sites_cartn_tran_vector_1',
-    '_atom_sites_cartn_transform.vec_2': '_atom_sites_cartn_tran_vector_2',
-    '_atom_sites_cartn_transform.vec_3': '_atom_sites_cartn_tran_vector_3',
-    '_atom_sites_fract_transform.mat_11': '_atom_sites_fract_tran_matrix_11',
-    '_atom_sites_fract_transform.mat_12': '_atom_sites_fract_tran_matrix_12',
-    '_atom_sites_fract_transform.mat_13': '_atom_sites_fract_tran_matrix_13',
-    '_atom_sites_fract_transform.mat_21': '_atom_sites_fract_tran_matrix_21',
-    '_atom_sites_fract_transform.mat_22': '_atom_sites_fract_tran_matrix_22',
-    '_atom_sites_fract_transform.mat_23': '_atom_sites_fract_tran_matrix_23',
-    '_atom_sites_fract_transform.mat_31': '_atom_sites_fract_tran_matrix_31',
-    '_atom_sites_fract_transform.mat_32': '_atom_sites_fract_tran_matrix_32',
-    '_atom_sites_fract_transform.mat_33': '_atom_sites_fract_tran_matrix_33',
-    '_atom_sites_fract_transform.vec_1': '_atom_sites_fract_tran_vector_1',
-    '_atom_sites_fract_transform.vec_2': '_atom_sites_fract_tran_vector_2',
-    '_atom_sites_fract_transform.vec_3': '_atom_sites_fract_tran_vector_3',
-    '_atom_type.analytical_mass_percent': '_atom_type_analytical_mass_%',
-    '_citation_editor.name': '_citation_editor',
-    '_computing.diffrn_collection': '_computing_data_collection',
-    '_computing.diffrn_reduction': '_computing_data_reduction',
-    '_diffrn.ambient_temperature': '_cell_measurement_temperature',
-    '_diffrn.ambient_temperature_details': '_diffrn_ambient_temp_details',
-    '_diffrn.ambient_temperature_gt': '_diffrn_ambient_temp_gt',
-    '_diffrn.ambient_temperature_lt': '_diffrn_ambient_temp_lt',
-    '_diffrn_detector.description': '_diffrn_radiation_detector',
-    '_diffrn_detector.make': '_diffrn_detector_type',
-    '_diffrn_measurement.device_class': '_diffrn_measurement_device',
-    '_diffrn_measurement.device_make': '_diffrn_measurement_device_type',
-    '_diffrn_radiation_wavelength.type': '_diffrn_radiation_type',
-    '_diffrn_radiation_wavelength.value': '_cell_measurement_wavelength',
-    '_diffrn_radiation_wavelength.value_su': '_diffrn_radiation_wavelength_su',
-    '_diffrn_radiation_wavelength.xray_symbol': '_diffrn_radiation_xray_symbol',
-    '_diffrn_refln.intensity_net_su': '_diffrn_refln_intensity_u',
-    '_diffrn_refln.sin_theta_over_lambda': '_diffrn_refln_sint/lambda',
-    '_diffrn_reflns.av_suneti_over_neti': '_diffrn_reflns_av_sigmai/neti',
-    '_diffrn_reflns.point_measured_fraction_full': '_diffrn_reflns_point_group_measured_fraction_full',
-    '_diffrn_reflns.point_measured_fraction_max': '_diffrn_reflns_point_group_measured_fraction_max',
-    '_diffrn_reflns_class.av_sui_over_i': '_diffrn_reflns_class_av_ui_over_i',
-    '_diffrn_source.device': '_diffrn_source',
-    '_diffrn_source.take_off_angle': '_diffrn_source_take-off_angle',
-    '_diffrn_standards.decay_percent': '_diffrn_standards_decay_%',
-    '_diffrn_standards.scale_su_average': '_diffrn_standards_scale_sigma',
-    '_exptl_crystal_appearance.general': '_exptl_crystal_colour_lustre',
-    '_exptl_crystal_appearance.hue': '_exptl_crystal_colour_primary',
-    '_exptl_crystal_appearance.intensity': '_exptl_crystal_colour_modifier',
-    '_geom_angle.value': '_geom_angle',
-    '_geom_angle.value_su': '_geom_angle_su',
-    '_geom_torsion.angle': '_geom_torsion',
-    '_geom_torsion.angle_su': '_geom_torsion_su',
-    '_journal.validation_number': '_journal_data_validation_number',
-    '_publ_contact_author.name': '_publ_contact_author',
-    '_refine_ls.r_factor_gt': '_refine_ls_r_factor_obs',
-    '_refine_ls.restrained_s_gt': '_refine_ls_restrained_s_obs',
-    '_refine_ls.shift_over_su_max_lt': '_refine_ls_shift/su_max_lt',
-    '_refine_ls.shift_over_su_mean_lt': '_refine_ls_shift/su_mean_lt',
-    '_refine_ls.wr_factor_gt': '_refine_ls_wr_factor_obs',
-    '_refln.f_meas_su': '_refln_f_sigma',
-    '_refln.f_squared_meas_su': '_refln_f_squared_sigma',
-    '_refln.sin_theta_over_lambda': '_refln_sint/lambda',
-    '_reflns_class.number_gt': '_reflns_class_number_observed',
-    '_reflns_shell.meani_over_sui_all': '_reflns_shell_meani_over_ui_all',
-    '_reflns_shell.meani_over_sui_gt': '_reflns_shell_meani_over_sigi_obs',
-    '_reflns_shell.number_measured_gt': '_reflns_shell_number_measured_obs',
-    '_reflns_shell.rmerge_f_gt': '_reflns_shell_rmerge_f_obs',
-    '_reflns_shell.rmerge_i_gt': '_reflns_shell_rmerge_i_obs',
-    '_space_group.IT_number': '_symmetry_Int_Tables_number',
-    '_space_group.crystal_system': '_symmetry_cell_setting',
-    '_space_group.name_h-m_full': '_symmetry_space_group_name_h-m',
-    '_space_group.name_H-M_alt': '_symmetry_space_group_name_H-M',
-    '_space_group.name_Hall': '_symmetry_space_group_name_Hall',
-    '_space_group_symop.id': '_symmetry_equiv_pos_site_id',
-    '_space_group_symop.operation_xyz': '_symmetry_equiv_pos_as_xyz',
-}
-
-
 class GemmiError(Exception):
     pass
 
