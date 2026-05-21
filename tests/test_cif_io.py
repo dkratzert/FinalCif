@@ -288,7 +288,7 @@ class TestCif2AndMmcifNormalization(unittest.TestCase):
     def test_cif_stays_unchanged(self) -> None:
         with patch.object(CifContainer, '_convert_doc_to_cif11', wraps=CifContainer._convert_doc_to_cif11) as mocked:
             CifContainer(self.temp_cif)
-        self.assertFalse(mocked.called)
+        mocked.assert_not_called()
 
     def test_from_cif_pair_parses_problem_and_response(self):
         """from_cif_pair() correctly extracts problem and response from a raw CIF value."""

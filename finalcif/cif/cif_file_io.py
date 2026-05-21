@@ -214,6 +214,8 @@ class CifContainer:
     def _convert_doc_to_cif11(doc: gemmi.cif.Document) -> gemmi.cif.Document:
         """
         Normalizes CIF2/mmCIF input to CIF 1.1 text representation.
+        This keeps downstream processing compatible with code paths that assume CIF 1.1 tokens.
+        Conversion is done as a round-trip serialization/parsing step with stable write options.
         """
         options = gemmi.cif.WriteOptions()
         options.prefer_pairs = False
