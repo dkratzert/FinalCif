@@ -29,6 +29,8 @@ from finalcif.cif.text import utf8_to_str, quote, retranslate_delimiter
 from finalcif.datafiles.utils import DSRFind
 from finalcif.tools.misc import isnumeric, grouper, strip_finalcif_of_name, _angstrom_to_x
 
+CIF_KEYWORD_PATTERN = re.compile(r'^(\s*)(_[a-zA-Z][a-zA-Z0-9_.\-\[\]()/]*)(?=\s|$)')
+
 
 class GemmiError(Exception):
     pass
@@ -262,7 +264,7 @@ class CifContainer:
             if in_text_block or stripped.startswith('#') or not stripped:
                 translated_lines.append(line)
                 continue
-            field_match = re.match(r'^(\s*)(_[a-zA-Z][a-zA-Z0-9_.\-\[\]()/]*)(?=\s|$)', line)
+            field_match = CIF_KEYWORD_PATTERN.match(line)
             if field_match:
                 indent, field_name = field_match.groups()
                 translated_field = CifContainer._translate_keyword_to_cif11(field_name)
