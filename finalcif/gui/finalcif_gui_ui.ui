@@ -439,7 +439,7 @@
               <item>
                <widget class="QPushButton" name="ImportCifPushButton">
                  <property name="text">
-                  <string>Import .cif, .cif2, .mmcif, .pcf, .cif_od, .cfx or .sqf file</string>
+                  <string>Import .cif, .mmcif, .pcf, .cif_od, .cfx or .sqf file</string>
                  </property>
                </widget>
               </item>

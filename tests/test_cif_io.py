@@ -260,25 +260,25 @@ class TestVRFEntry(unittest.TestCase):
         self.assertEqual('PLAT035_ALERT_1_B', entry.level)
 
 
-class TestCif2AndMmcifNormalization(unittest.TestCase):
+class TestCifAndMmcifNormalization(unittest.TestCase):
     def setUp(self) -> None:
-        self.temp_cif2 = Path('tests/statics/test_import_input.cif2')
+        self.temp_cif_with_cif2_header = Path('tests/statics/test_import_input_with_cif2_header.cif')
         self.temp_mmcif = Path('tests/statics/test_import_input.mmcif')
         self.temp_cif = Path('tests/statics/test_import_input.cif')
         cif_content = "data_test\n_foo_bar 'baz'\n"
-        self.temp_cif2.write_text("#\\#CIF_2.0\n" + cif_content, encoding='utf-8')
+        self.temp_cif_with_cif2_header.write_text("#\\#CIF_2.0\n" + cif_content, encoding='utf-8')
         self.temp_mmcif.write_text(cif_content, encoding='utf-8')
         self.temp_cif.write_text(cif_content, encoding='utf-8')
 
     def tearDown(self) -> None:
-        self.temp_cif2.unlink(missing_ok=True)
+        self.temp_cif_with_cif2_header.unlink(missing_ok=True)
         self.temp_mmcif.unlink(missing_ok=True)
         self.temp_cif.unlink(missing_ok=True)
 
-    def test_cif2_is_normalized_to_cif11(self) -> None:
+    def test_cif_with_cif2_header_is_normalized_to_cif11(self) -> None:
         with patch('finalcif.cif.cif_file_io.CifContainer._convert_doc_to_cif11',
                    wraps=CifContainer._convert_doc_to_cif11) as mocked:
-            container = CifContainer(self.temp_cif2)
+            container = CifContainer(self.temp_cif_with_cif2_header)
         self.assertIsInstance(container, CifContainer)
         mocked.assert_called_once()
 
