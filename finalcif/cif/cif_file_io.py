@@ -30,7 +30,7 @@ from finalcif.datafiles.utils import DSRFind
 from finalcif.tools.misc import isnumeric, grouper, strip_finalcif_of_name, _angstrom_to_x
 
 # Match CIF data names at line start (pairs or loop tags), allowing common
-# CIF2/mmCIF token characters (dot, hyphen, brackets and slash variants).
+# CIF2/mmCIF token characters (dot, hyphen, brackets, parentheses and slash variants).
 CIF_KEYWORD_PATTERN = re.compile(r'^(\s*)(_[a-zA-Z][a-zA-Z0-9_.\-\[\]()/]*)(?=\s|$)')
 
 

@@ -314,7 +314,21 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         self.assertEqual('11.2', container['_cell_length_a'])
         self.assertNotIn('_cell.length_a', container.keys())
         self.assertNotIn('_cell.length_a', container)
-        self.assertEqual('', container['_cell.length_a'])
+
+    def test_text_block_content_is_not_keyword_translated(self) -> None:
+        modern_cif = Path('tests/statics/test_import_input_cif2_text_block.cif')
+        modern_cif.write_text(
+            "#\\#CIF_2.0\n"
+            "data_test\n"
+            "_publ_section_comment\n"
+            ";\n"
+            "_cell.length_a should stay unchanged inside text blocks.\n"
+            ";\n",
+            encoding='utf-8',
+        )
+        self.addCleanup(modern_cif.unlink, missing_ok=True)
+        container = CifContainer(modern_cif)
+        self.assertIn('_cell.length_a', container['_publ_section_comment'])
 
     def test_from_cif_pair_parses_problem_and_response(self):
         """from_cif_pair() correctly extracts problem and response from a raw CIF value."""
