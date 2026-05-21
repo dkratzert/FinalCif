@@ -35,12 +35,11 @@ CIF_KEYWORD_PATTERN = re.compile(r'^(\s*)(_[a-zA-Z][a-zA-Z0-9_.\-\[\]()/]*)(?=\s
 # CIVET-style modern->legacy keyword overrides for cases where a plain
 # dot-to-underscore rewrite is not the preferred CIF 1.1 alias.
 # Entries were derived from CIVET dictionary-manager alias mapping logic
-# against cif_core_3.3.0.dic (DDL2/DDLm -> preferred DDL1 aliases).
+# against cif_core_3.3.0.dic (DDL2/DDLm -> preferred DDL1 aliases),
+# filtered to legacy aliases that keep underscore (non-dotted) CIF1-style names.
 CIF2_TO_CIF11_KEYWORD_TABLE = {
     '_atom_scat_versus_stol.atom_type': '_atom_type_scat_versus_stol_list',
     '_atom_site.refinement_flags_posn': '_atom_site_refinement_flags',
-    '_atom_site_aniso.matrix_beta': '_atom_site.tensor_beta',
-    '_atom_site_aniso.matrix_beta_su': '_atom_site.tensor_beta_su',
     '_atom_sites_cartn_transform.mat_11': '_atom_sites_cartn_tran_matrix_11',
     '_atom_sites_cartn_transform.mat_12': '_atom_sites_cartn_tran_matrix_12',
     '_atom_sites_cartn_transform.mat_13': '_atom_sites_cartn_tran_matrix_13',
@@ -66,7 +65,6 @@ CIF2_TO_CIF11_KEYWORD_TABLE = {
     '_atom_sites_fract_transform.vec_2': '_atom_sites_fract_tran_vector_2',
     '_atom_sites_fract_transform.vec_3': '_atom_sites_fract_tran_vector_3',
     '_atom_type.analytical_mass_percent': '_atom_type_analytical_mass_%',
-    '_chemical_conn_bond.distance': '_chem_comp_bond.value_dist',
     '_citation_editor.name': '_citation_editor',
     '_computing.diffrn_collection': '_computing_data_collection',
     '_computing.diffrn_reduction': '_computing_data_reduction',
