@@ -1612,7 +1612,10 @@ class AppWindow(QMainWindow):
         """
         imp_cif: CifContainer
         if not filename:
-            filename = cif_file_open_dialog(parent=self, filter="CIF file (*.cif *.pcf *.cif_od *.cfx *.sqf)")
+            filename = cif_file_open_dialog(
+                parent=self,
+                filter="CIF file (*.cif *.cif2 *.mmcif *.pcf *.cif_od *.cfx *.sqf)",
+            )
         if not filename:
             return
         try:

@@ -197,15 +197,34 @@ class CifContainer:
         Reads a cif file and returns a gemmi document object.
         """
         doc = gemmi.cif.Document()
+        suffix = path.suffix.lower()
         # support for platon squeeze files:
-        if path.suffix == '.sqf':
+        if suffix == '.sqf':
             txt = path.read_text(encoding='ascii')
             txt = 'data_justrandomlkdsadflkmcn\n' + txt
             doc.parse_string(txt)
         else:
             doc.source = str(path.resolve())
             doc.parse_file(str(path.resolve()))
+        if suffix in {'.cif2', '.mmcif'}:
+            doc = self._convert_doc_to_cif11(doc)
         return doc
+
+    @staticmethod
+    def _convert_doc_to_cif11(doc: gemmi.cif.Document) -> gemmi.cif.Document:
+        """
+        Normalizes CIF2/mmCIF input to CIF 1.1 text representation.
+        """
+        options = gemmi.cif.WriteOptions()
+        options.prefer_pairs = False
+        options.compact = False
+        options.align_pairs = 33
+        options.align_loops = 15
+        options.misuse_hash = False
+        converted = gemmi.cif.Document()
+        converted.source = doc.source
+        converted.parse_string(doc.as_string(options=options))
+        return converted
 
     def read_string(self, cif_string: str) -> gemmi.cif.Document:
         """

@@ -1,6 +1,7 @@
 import shutil
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from finalcif.cif.cif_file_io import CifContainer
 
@@ -257,6 +258,37 @@ class TestVRFEntry(unittest.TestCase):
         self.assertEqual('?', entry.response)
         self.assertEqual('PLAT035', entry.alert_num)
         self.assertEqual('PLAT035_ALERT_1_B', entry.level)
+
+
+class TestCif2AndMmcifNormalization(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp_cif2 = data / 'tests/statics/test_import_input.cif2'
+        self.temp_mmcif = data / 'tests/statics/test_import_input.mmcif'
+        self.temp_cif = data / 'tests/statics/test_import_input.cif'
+        cif_content = "data_test\n_foo_bar 'baz'\n"
+        self.temp_cif2.write_text("#\\#CIF_2.0\n" + cif_content, encoding='utf-8')
+        self.temp_mmcif.write_text(cif_content, encoding='utf-8')
+        self.temp_cif.write_text(cif_content, encoding='utf-8')
+
+    def tearDown(self) -> None:
+        self.temp_cif2.unlink(missing_ok=True)
+        self.temp_mmcif.unlink(missing_ok=True)
+        self.temp_cif.unlink(missing_ok=True)
+
+    def test_cif2_is_normalized_to_cif11(self) -> None:
+        with patch.object(CifContainer, '_convert_doc_to_cif11', wraps=CifContainer._convert_doc_to_cif11) as mocked:
+            CifContainer(self.temp_cif2)
+        self.assertTrue(mocked.called)
+
+    def test_mmcif_is_normalized_to_cif11(self) -> None:
+        with patch.object(CifContainer, '_convert_doc_to_cif11', wraps=CifContainer._convert_doc_to_cif11) as mocked:
+            CifContainer(self.temp_mmcif)
+        self.assertTrue(mocked.called)
+
+    def test_cif_stays_unchanged(self) -> None:
+        with patch.object(CifContainer, '_convert_doc_to_cif11', wraps=CifContainer._convert_doc_to_cif11) as mocked:
+            CifContainer(self.temp_cif)
+        self.assertFalse(mocked.called)
 
     def test_from_cif_pair_parses_problem_and_response(self):
         """from_cif_pair() correctly extracts problem and response from a raw CIF value."""
