@@ -2724,7 +2724,7 @@ class Ui_FinalCifWindow(object):
         self.SaveEquipmentButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save", None))
         self.CancelEquipmentButton.setText(QCoreApplication.translate("FinalCifWindow", u"Cancel", None))
         self.ExportEquipmentButton.setText(QCoreApplication.translate("FinalCifWindow", u"Export", None))
-        self.ImportCifPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Import .cif, .pcf, .cif_od, .cfx or .sqf file", None))
+        self.ImportCifPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Import .cif, .mmcif, .pcf, .cif_od, .cfx or .sqf file", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("FinalCifWindow", u"Report Options", None))
         self.ADPTableCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Add ADP table", None))
         self.ReportTextCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"No report text in structure report", None))
@@ -2943,4 +2943,3 @@ class Ui_FinalCifWindow(object):
         self.HelpPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Help", None))
         self.zEstimateLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Z = ?", None))
     # retranslateUi
-

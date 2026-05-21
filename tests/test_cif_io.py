@@ -1,6 +1,7 @@
 import shutil
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from finalcif.cif.cif_file_io import CifContainer
 
@@ -257,6 +258,126 @@ class TestVRFEntry(unittest.TestCase):
         self.assertEqual('?', entry.response)
         self.assertEqual('PLAT035', entry.alert_num)
         self.assertEqual('PLAT035_ALERT_1_B', entry.level)
+
+
+class TestCifAndMmcifNormalization(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp_cif_with_cif2_header = Path('tests/statics/test_import_input_with_cif2_header.cif')
+        self.temp_mmcif = Path('tests/statics/test_import_input.mmcif')
+        self.temp_cif = Path('tests/statics/test_import_input.cif')
+        cif_content = "data_test\n_foo_bar 'baz'\n"
+        self.temp_cif_with_cif2_header.write_text("#\\#CIF_2.0\n" + cif_content, encoding='utf-8')
+        self.temp_mmcif.write_text(cif_content, encoding='utf-8')
+        self.temp_cif.write_text(cif_content, encoding='utf-8')
+
+    def tearDown(self) -> None:
+        self.temp_cif_with_cif2_header.unlink(missing_ok=True)
+        self.temp_mmcif.unlink(missing_ok=True)
+        self.temp_cif.unlink(missing_ok=True)
+
+    def test_cif_with_cif2_header_is_normalized_to_cif11(self) -> None:
+        with patch('finalcif.cif.cif_file_io.CifContainer._convert_doc_to_cif11',
+                   wraps=CifContainer._convert_doc_to_cif11) as mocked:
+            container = CifContainer(self.temp_cif_with_cif2_header)
+        self.assertIsInstance(container, CifContainer)
+        mocked.assert_called_once()
+
+    def test_mmcif_is_normalized_to_cif11(self) -> None:
+        with patch('finalcif.cif.cif_file_io.CifContainer._convert_doc_to_cif11',
+                   wraps=CifContainer._convert_doc_to_cif11) as mocked:
+            container = CifContainer(self.temp_mmcif)
+        self.assertIsInstance(container, CifContainer)
+        mocked.assert_called_once()
+
+    def test_cif_stays_unchanged(self) -> None:
+        with patch('finalcif.cif.cif_file_io.CifContainer._convert_doc_to_cif11',
+                   wraps=CifContainer._convert_doc_to_cif11) as mocked:
+            container = CifContainer(self.temp_cif)
+        self.assertIsInstance(container, CifContainer)
+        mocked.assert_not_called()
+
+    def test_cif2_keywords_are_translated_to_cif11_names(self) -> None:
+        modern_cif = Path('tests/statics/test_import_input_cif2_keywords.cif')
+        modern_cif.write_text("#\\#CIF_2.0\ndata_test\n_cell.length_a 10.1\n", encoding='utf-8')
+        self.addCleanup(modern_cif.unlink, missing_ok=True)
+        container = CifContainer(modern_cif)
+        self.assertEqual('10.1', container['_cell_length_a'])
+        self.assertNotIn('_cell.length_a', container.keys())
+        self.assertNotIn('_cell.length_a', container)
+        self.assertEqual('', container['_cell.length_a'])
+
+    def test_mmcif_keywords_are_translated_to_cif11_names(self) -> None:
+        modern_mmcif = Path('tests/statics/test_import_input_mmcif_keywords.mmcif')
+        modern_mmcif.write_text("data_test\n_cell.length_a 11.2\n", encoding='utf-8')
+        self.addCleanup(modern_mmcif.unlink, missing_ok=True)
+        container = CifContainer(modern_mmcif)
+        self.assertEqual('11.2', container['_cell_length_a'])
+        self.assertNotIn('_cell.length_a', container.keys())
+        self.assertNotIn('_cell.length_a', container)
+
+    def test_translation_table_overrides_simple_dot_conversion(self) -> None:
+        modern_cif = Path('tests/statics/test_import_input_cif2_translation_table.cif')
+        modern_cif.write_text(
+            "#\\#CIF_2.0\n"
+            "data_test\n"
+            "_diffrn.ambient_temperature 120\n",
+            encoding='utf-8',
+        )
+        self.addCleanup(modern_cif.unlink, missing_ok=True)
+        container = CifContainer(modern_cif)
+        self.assertEqual('120', container['_cell_measurement_temperature'])
+        self.assertNotIn('_diffrn_ambient_temperature', container.keys())
+        self.assertNotIn('_diffrn.ambient_temperature', container.keys())
+
+    def test_translation_table_handles_space_group_aliases(self) -> None:
+        modern_cif = Path('tests/statics/test_import_input_cif2_translation_table_space_group.cif')
+        modern_cif.write_text(
+            "#\\#CIF_2.0\n"
+            "data_test\n"
+            "_space_group.IT_number 14\n"
+            "_space_group.name_H-M_alt 'P 21/c'\n"
+            "_space_group_symop.operation_xyz 'x,y,z'\n",
+            encoding='utf-8',
+        )
+        self.addCleanup(modern_cif.unlink, missing_ok=True)
+        container = CifContainer(modern_cif)
+        self.assertEqual('14', container['_symmetry_Int_Tables_number'])
+        self.assertEqual('P 21/c', container['_symmetry_space_group_name_H-M'])
+        self.assertEqual('x,y,z', container['_symmetry_equiv_pos_as_xyz'])
+        self.assertNotIn('_space_group_IT_number', container.keys())
+        self.assertNotIn('_space_group_name_H-M_alt', container.keys())
+        self.assertNotIn('_space_group_symop_operation_xyz', container.keys())
+
+    def test_translation_table_uses_civet_aliases_for_nontrivial_mappings(self) -> None:
+        modern_cif = Path('tests/statics/test_import_input_cif2_translation_table_civet_aliases.cif')
+        modern_cif.write_text(
+            "#\\#CIF_2.0\n"
+            "data_test\n"
+            "_computing.diffrn_collection 'CrysAlisPro'\n"
+            "_refine_ls.shift_over_su_max_lt 0.001\n",
+            encoding='utf-8',
+        )
+        self.addCleanup(modern_cif.unlink, missing_ok=True)
+        container = CifContainer(modern_cif)
+        self.assertEqual('CrysAlisPro', container['_computing_data_collection'])
+        self.assertEqual('0.001', container['_refine_ls_shift/su_max_lt'])
+        self.assertNotIn('_computing_diffrn_collection', container.keys())
+        self.assertNotIn('_refine_ls_shift_over_su_max_lt', container.keys())
+
+    def test_text_block_content_is_not_keyword_translated(self) -> None:
+        modern_cif = Path('tests/statics/test_import_input_cif2_text_block.cif')
+        modern_cif.write_text(
+            "#\\#CIF_2.0\n"
+            "data_test\n"
+            "_publ_section_comment\n"
+            ";\n"
+            "_cell.length_a should stay unchanged inside text blocks.\n"
+            ";\n",
+            encoding='utf-8',
+        )
+        self.addCleanup(modern_cif.unlink, missing_ok=True)
+        container = CifContainer(modern_cif)
+        self.assertIn('_cell.length_a', container['_publ_section_comment'])
 
     def test_from_cif_pair_parses_problem_and_response(self):
         """from_cif_pair() correctly extracts problem and response from a raw CIF value."""
