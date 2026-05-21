@@ -315,6 +315,20 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         self.assertNotIn('_cell.length_a', container.keys())
         self.assertNotIn('_cell.length_a', container)
 
+    def test_translation_table_overrides_simple_dot_conversion(self) -> None:
+        modern_cif = Path('tests/statics/test_import_input_cif2_translation_table.cif')
+        modern_cif.write_text(
+            "#\\#CIF_2.0\n"
+            "data_test\n"
+            "_diffrn.ambient_temperature 120\n",
+            encoding='utf-8',
+        )
+        self.addCleanup(modern_cif.unlink, missing_ok=True)
+        container = CifContainer(modern_cif)
+        self.assertEqual('120', container['_cell_measurement_temperature'])
+        self.assertNotIn('_diffrn_ambient_temperature', container.keys())
+        self.assertNotIn('_diffrn.ambient_temperature', container.keys())
+
     def test_text_block_content_is_not_keyword_translated(self) -> None:
         modern_cif = Path('tests/statics/test_import_input_cif2_text_block.cif')
         modern_cif.write_text(

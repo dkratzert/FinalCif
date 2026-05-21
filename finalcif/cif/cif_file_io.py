@@ -32,6 +32,11 @@ from finalcif.tools.misc import isnumeric, grouper, strip_finalcif_of_name, _ang
 # Match CIF data names at line start (pairs or loop tags), allowing common
 # CIF2/mmCIF token characters (dot, hyphen, brackets, parentheses and slash variants).
 CIF_KEYWORD_PATTERN = re.compile(r'^(\s*)(_[a-zA-Z][a-zA-Z0-9_.\-\[\]()/]*)(?=\s|$)')
+# CIVET-style modern->legacy keyword overrides for cases where a plain
+# dot-to-underscore rewrite is not the preferred CIF 1.1 alias.
+CIF2_TO_CIF11_KEYWORD_TABLE = {
+    '_diffrn.ambient_temperature': '_cell_measurement_temperature',
+}
 
 
 class GemmiError(Exception):
@@ -281,6 +286,8 @@ class CifContainer:
         """
         Translate one CIF2/mmCIF keyword to CIF 1.1 legacy naming.
         """
+        if keyword in CIF2_TO_CIF11_KEYWORD_TABLE:
+            return CIF2_TO_CIF11_KEYWORD_TABLE[keyword]
         if '.' not in keyword:
             return keyword
         return keyword.replace('.', '_')
