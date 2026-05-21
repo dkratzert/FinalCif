@@ -348,6 +348,22 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         self.assertNotIn('_space_group_name_H-M_alt', container.keys())
         self.assertNotIn('_space_group_symop_operation_xyz', container.keys())
 
+    def test_translation_table_uses_civet_aliases_for_nontrivial_mappings(self) -> None:
+        modern_cif = Path('tests/statics/test_import_input_cif2_translation_table_civet_aliases.cif')
+        modern_cif.write_text(
+            "#\\#CIF_2.0\n"
+            "data_test\n"
+            "_computing.diffrn_collection 'CrysAlisPro'\n"
+            "_refine_ls.shift_over_su_max_lt 0.001\n",
+            encoding='utf-8',
+        )
+        self.addCleanup(modern_cif.unlink, missing_ok=True)
+        container = CifContainer(modern_cif)
+        self.assertEqual('CrysAlisPro', container['_computing_data_collection'])
+        self.assertEqual('0.001', container['_refine_ls_shift/su_max_lt'])
+        self.assertNotIn('_computing_diffrn_collection', container.keys())
+        self.assertNotIn('_refine_ls_shift_over_su_max_lt', container.keys())
+
     def test_text_block_content_is_not_keyword_translated(self) -> None:
         modern_cif = Path('tests/statics/test_import_input_cif2_text_block.cif')
         modern_cif.write_text(
