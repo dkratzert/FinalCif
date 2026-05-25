@@ -1614,7 +1614,7 @@ class AppWindow(QMainWindow):
         if not filename:
             filename = cif_file_open_dialog(
                 parent=self,
-                filter="CIF file (*.cif *.mmcif *.pcf *.cif_od *.cfx *.sqf)",
+                filter="CIF file (*.cif *.pcf *.cif_od *.cfx *.sqf)",
             )
         if not filename:
             return

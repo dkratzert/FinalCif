@@ -33,6 +33,8 @@ from finalcif.tools.misc import isnumeric, grouper, strip_finalcif_of_name, _ang
 # Match CIF data names at line start (pairs or loop tags), allowing common
 # CIF2/mmCIF token characters (dot, hyphen, brackets, parentheses and slash variants).
 CIF_KEYWORD_PATTERN = re.compile(r'^(\s*)(_[a-zA-Z][a-zA-Z0-9_.\-\[\]()/]*)(?=\s|$)')
+
+
 class GemmiError(Exception):
     pass
 
@@ -167,7 +169,8 @@ class CifContainer:
         self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
         # A dictionary to convert Atom names like 'C1_2' or 'Ga3' into Element names like 'C' or 'Ga'
         self._name2elements = dict(zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
-                                       [y.upper() for y in self.block.find_loop('_atom_site_type_symbol')], strict=False))
+                                       [y.upper() for y in self.block.find_loop('_atom_site_type_symbol')],
+                                       strict=False))
         self.check_hkl_min_max()
 
     @property
@@ -948,9 +951,9 @@ class CifContainer:
         publ_loop = self.block.find_loop('_geom_angle_publ_flag') or len(label1) * ['?']
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in (
-                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=False)):
+            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=False)):
             if ((without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3))) or
-                    self.yes_not_set(publ)):
+                self.yes_not_set(publ)):
                 continue
             else:
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
@@ -1024,7 +1027,7 @@ class CifContainer:
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in (
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop, strict=False)):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop, strict=False)):
             if self.yes_not_set(publ):
                 continue
             if self.picometer:
