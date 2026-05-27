@@ -364,6 +364,42 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         self.assertNotIn('_computing_diffrn_collection', container.keys())
         self.assertNotIn('_refine_ls_shift_over_su_max_lt', container.keys())
 
+    def test_keyword_translation_is_case_insensitive(self) -> None:
+        """CIF data names are case-insensitive; the translator must honour that."""
+        # Mixed-case DDLm names that exist only with canonical case in the
+        # mapping table must still be translated when written in lower case.
+        self.assertEqual(
+            '_refln_F_sigma',
+            CifContainer._translate_keyword_to_cif11('_refln.f_meas_su'),
+        )
+        self.assertEqual(
+            '_refln_F_sigma',
+            CifContainer._translate_keyword_to_cif11('_REFLN.F_MEAS_SU'),
+        )
+        # Trivial dot-to-underscore fallback also handles unknown names.
+        self.assertEqual(
+            '_unknown_dotted_name',
+            CifContainer._translate_keyword_to_cif11('_unknown.dotted_name'),
+        )
+
+    def test_translation_table_covers_powder_and_modulation_dictionaries(self) -> None:
+        """Entries derived from cif_pow.dic and cif_ms.dic are present."""
+        from finalcif.cif.cif_keyword_mapping import CIF2_TO_CIF11_KEYWORD_TABLE
+        # At least one powder-dictionary alias must be present.
+        powder_keys = [
+            key for key in CIF2_TO_CIF11_KEYWORD_TABLE
+            if key.startswith('_pd_')
+        ]
+        self.assertGreater(len(powder_keys), 0,
+                           'Expected at least one _pd_* CIF2 keyword in the mapping table.')
+        # And at least one modulated-structures alias (jana / _atom_site_displace_* etc.)
+        modulation_keys = [
+            key for key in CIF2_TO_CIF11_KEYWORD_TABLE
+            if '_atom_site_displace_' in key or '_atom_site_U_' in key
+        ]
+        self.assertGreater(len(modulation_keys), 0,
+                           'Expected modulated-structures keywords in the mapping table.')
+
     def test_text_block_content_is_not_keyword_translated(self) -> None:
         modern_cif = Path('tests/statics/test_import_input_cif2_text_block.cif')
         modern_cif.write_text(

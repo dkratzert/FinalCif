@@ -237,3 +237,7 @@ finalcif_keys_order.cif
 /tests/examples/work/report_cu_BruecknerJK_153F40_0m-finalcif.html
 /test-data/checkcif-DK_Zucker2_0m-finalcif.html
 /test-data/report_DK_Zucker2_0m-finalcif.html
+/work/dicts/cif_core.dic
+/work/dicts/cif_ms.dic
+/work/dicts/cif_pow.dic
+/work/dicts/ddl.dic
