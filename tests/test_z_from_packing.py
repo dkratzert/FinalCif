@@ -15,6 +15,8 @@ from finalcif.tools.z_from_packing import (
     _build_bond_graph,
     _z_sg_from_symmops,
     _normalize_element,
+    _composition_to_hill_str,
+    moiety_formula_from_components,
     count_z,
     count_z_and_zprime,
     ZResult,
@@ -432,6 +434,157 @@ class TestNormalizeElement:
 
     def test_nitrogen_anion_stripped(self):
         assert _normalize_element('N1-') == 'N'
+
+
+# ---------------------------------------------------------------------------
+# Tests for _composition_to_hill_str and moiety_formula_from_components
+# ---------------------------------------------------------------------------
+
+class TestCompositionToHillStr:
+    """Unit tests for _composition_to_hill_str()."""
+
+    def test_simple_organic(self):
+        assert _composition_to_hill_str({'C': 10, 'H': 8, 'N': 2, 'O': 1}) == 'C10 H8 N2 O'
+
+    def test_water(self):
+        assert _composition_to_hill_str({'H': 2, 'O': 1}) == 'H2 O'
+
+    def test_single_element(self):
+        assert _composition_to_hill_str({'Cl': 1}) == 'Cl'
+
+    def test_two_element_inorganic(self):
+        # No C → alphabetical order; H comes before O alphabetically but Hill only promotes H
+        # when C is present.
+        result = _composition_to_hill_str({'Na': 1, 'Cl': 1})
+        assert result == 'Cl Na'
+
+    def test_c_comes_before_h_and_rest(self):
+        result = _composition_to_hill_str({'O': 3, 'H': 6, 'C': 2})
+        assert result.startswith('C2 H6')
+
+    def test_counts_of_one_omitted(self):
+        result = _composition_to_hill_str({'C': 1, 'H': 4})
+        assert result == 'C H4'
+
+    def test_h_without_c_goes_alphabetically(self):
+        # Without C present, H should appear in alphabetical position.
+        result = _composition_to_hill_str({'H': 2, 'O': 1, 'S': 1})
+        # H < O < S alphabetically → H2 O S
+        assert result == 'H2 O S'
+
+
+class TestMoietyFormulaFromComponents:
+    """Unit tests for moiety_formula_from_components()."""
+
+    def _org(self, n: int = 1) -> list[tuple[str, float]]:
+        """Minimal organic component with n copies of a C10H8N2 molecule."""
+        return [('C', 1.0)] * 10 + [('H', 1.0)] * 8 + [('N', 1.0)] * 2
+
+    def test_empty_components_returns_empty(self):
+        assert moiety_formula_from_components([], 1) == ''
+
+    def test_zero_z_returns_empty(self):
+        assert moiety_formula_from_components([self._org()], 0) == ''
+
+    def test_formula_derived_returns_empty(self):
+        assert moiety_formula_from_components([self._org(), self._org()], 2,
+                                              formula_derived=True) == ''
+
+    def test_single_species_z1(self):
+        """One organic molecule, Z=1 → just the formula, no prefix."""
+        result = moiety_formula_from_components([self._org()], z=1)
+        assert result == 'C10 H8 N2'
+
+    def test_single_species_z2(self):
+        """Two identical components, Z=2 → ratio=1, no prefix."""
+        result = moiety_formula_from_components([self._org(), self._org()], z=2)
+        assert result == 'C10 H8 N2'
+
+    def test_salt_organic_plus_chloride(self):
+        """4 organics + 4 Cl, Z=4 → 'formula, Cl' (both ratio=1)."""
+        components = [self._org()] * 4 + [[('Cl', 1.0)]] * 4
+        result = moiety_formula_from_components(components, z=4)
+        # Main molecule first (heavier), then Cl
+        assert result == 'C10 H8 N2, Cl'
+
+    def test_cocrystal_2_of_each(self):
+        """2 copies of A, 2 of B (different sizes) → 'A, B' (both ratio=1)."""
+        a = [('C', 1.0)] * 12 + [('H', 1.0)] * 10 + [('O', 1.0)] * 3
+        b = [('C', 1.0)] * 6 + [('H', 1.0)] * 6
+        result = moiety_formula_from_components([a, a, b, b], z=2)
+        assert result == 'C12 H10 O3, C6 H6'
+
+    def test_fractional_solvent(self):
+        """4 organics (occ=1) + 3 waters (occ=0.75 each) → '0.75(H2 O)' solvate."""
+        org = [('C', 1.0)] * 10 + [('H', 1.0)] * 8 + [('N', 1.0)] * 2
+        # 4 water components at partial occupancy 0.75
+        water = [('H', 0.75), ('H', 0.75), ('O', 0.75)]
+        components = [org] * 4 + [water] * 4
+        result = moiety_formula_from_components(components, z=4)
+        # org ratio=1 (no prefix), water effective=4*0.75=3.0, ratio=3/4=0.75
+        assert 'C10 H8 N2' in result
+        assert '0.75(H2 O)' in result
+
+    def test_half_occupied_solvent(self):
+        """2 organics (occ=1) + 2 waters (occ=0.5) → 'org, 0.5(H2 O)'."""
+        org = [('C', 1.0)] * 5 + [('O', 1.0)] * 2
+        water = [('H', 0.5), ('H', 0.5), ('O', 0.5)]
+        components = [org, org, water, water]
+        result = moiety_formula_from_components(components, z=2)
+        assert 'C5 O2' in result
+        # water effective=2*0.5=1.0, ratio=0.5
+        assert '0.5(H2 O)' in result
+
+    def test_solvent_with_higher_multiplier(self):
+        """2 organics + 3 full-occ waters → Z=2, water ratio=1.5 → '1.5(H2 O)'."""
+        org = [('C', 1.0)] * 10 + [('H', 1.0)] * 8
+        water = [('H', 1.0), ('H', 1.0), ('O', 1.0)]
+        components = [org, org, water, water, water]
+        result = moiety_formula_from_components(components, z=2)
+        assert 'C10 H8' in result
+        assert '1.5(H2 O)' in result
+
+    def test_main_molecule_with_prefix_when_ratio_gt_1(self):
+        """4 A + 2 B, Z=2 → A ratio=2 → '2(formula_A), formula_B'."""
+        a = [('C', 1.0)] * 5 + [('N', 1.0)]
+        b = [('C', 1.0)] * 10 + [('O', 1.0)] * 2
+        # b is heavier (more atoms), so it will be main
+        components = [a, a, a, a, b, b]
+        result = moiety_formula_from_components(components, z=2)
+        # b ratio = 2/2 = 1 (no prefix), a ratio = 4/2 = 2 → '2(C5 N)'
+        assert 'C10 O2' in result
+        assert '2(C5 N)' in result
+
+    def test_zresult_has_moiety_formula_field(self):
+        """ZResult produced by count_z_and_zprime has a moiety_formula attribute."""
+        cif = _load('test-data/DK_ML7-66-final.cif')
+        result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
+        assert hasattr(result, 'moiety_formula')
+        assert isinstance(result.moiety_formula, str)
+        assert len(result.moiety_formula) > 0
+
+    def test_zresult_moiety_empty_for_polymeric(self):
+        """ZResult.moiety_formula is empty string when formula_derived=True."""
+        import gemmi as _g2
+        doc = _g2.cif.read('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
+        block = doc[0]
+        fv = block.find_value('_chemical_formula_sum')
+        formula_val = _g2.cif.as_string(fv).strip("'\" ")
+        cif = _load('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
+        result = count_z_and_zprime(
+            cif.atoms_fract, cif.symmops, cif.cell[:6], formula_sum=formula_val
+        )
+        assert result.formula_derived is True
+        assert result.moiety_formula == ''
+
+    def test_zresult_moiety_salt(self):
+        """Tetracycline HCl: moiety formula contains organic + Cl."""
+        cif = _load('test-data/1000006.cif')
+        result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
+        moiety = result.moiety_formula
+        # Should mention Cl as a separate species after the organic
+        assert 'Cl' in moiety
+        assert ', ' in moiety  # two species separated by comma
 
 
 # ---------------------------------------------------------------------------

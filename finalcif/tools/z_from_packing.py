@@ -110,6 +110,11 @@ class ZResult:
                          or inorganic structures where all (or many) atoms in
                          the unit cell form a single connected network, making
                          the GCD method unreliable.
+        moiety_formula:  IUCr-formatted ``_chemical_formula_moiety`` string
+                         derived from the bond-graph connected components.
+                         Empty string when the structure is polymeric/extended
+                         (``formula_derived=True``), when there are no atoms,
+                         or when generation fails for any reason.
 
     The ``reliable`` property is ``True`` when *z_prime* is within
     :data:`_ZPRIME_TOLERANCE` of a crystallographically valid fraction k/n,
@@ -134,6 +139,7 @@ class ZResult:
     z_prime: float
     z_sg: int
     formula_derived: bool = False
+    moiety_formula: str = ''
 
     @property
     def reliable(self) -> bool:
@@ -231,7 +237,7 @@ def _expand_to_unit_cell(
         filtered: list,
         symmops: list[str],
         cell: tuple[float, ...],
-) -> list[tuple[str, tuple[float, float, float]]]:
+) -> list[tuple[str, tuple[float, float, float], float]]:
     """Expand the filtered ASU atoms to the full unit cell using gemmi.
 
     A minimal :class:`gemmi.SmallStructure` is constructed from *filtered*,
@@ -278,7 +284,7 @@ def _expand_to_unit_cell(
 # ---------------------------------------------------------------------------
 
 def _build_bond_graph(
-        expanded: list[tuple[str, tuple[float, float, float]]],
+        expanded: list[tuple[str, tuple[float, float, float], float]],
         cell: tuple[float, ...],
 ) -> dict[int, set[int]]:
     """Build an adjacency dict for all unit-cell atoms.
@@ -467,6 +473,163 @@ def _z_from_components(components: list[list[tuple[str, float]]]) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Moiety formula generation
+# ---------------------------------------------------------------------------
+
+def _composition_to_hill_str(comp_dict: dict[str, int]) -> str:
+    """Format an element-count dict as a Hill-ordered CIF moiety formula token.
+
+    Hill order: C first, H second (when C is present), then all remaining
+    elements alphabetically.  Elements with count 1 are written without a
+    numeric suffix (e.g. ``O`` not ``O1``), matching IUCr CIF convention.
+    The returned parts are joined with a single space so that the result
+    looks like ``'C10 H8 N2 O'`` — matching the style used in COD CIF files
+    and accepted by IUCr validation.
+
+    Examples::
+
+        >>> _composition_to_hill_str({'C': 10, 'H': 8, 'N': 2, 'O': 1})
+        'C10 H8 N2 O'
+        >>> _composition_to_hill_str({'H': 2, 'O': 1})
+        'H2 O'
+        >>> _composition_to_hill_str({'Cl': 1})
+        'Cl'
+    """
+    parts: list[str] = []
+    has_c = 'C' in comp_dict
+
+    if has_c:
+        n = comp_dict['C']
+        parts.append('C' if n == 1 else f'C{n}')
+
+    if 'H' in comp_dict and has_c:
+        n = comp_dict['H']
+        parts.append('H' if n == 1 else f'H{n}')
+
+    for el in sorted(comp_dict):
+        if el == 'C' and has_c:
+            continue
+        if el == 'H' and has_c:
+            continue
+        n = comp_dict[el]
+        parts.append(el if n == 1 else f'{el}{n}')
+
+    return ' '.join(parts)
+
+
+def moiety_formula_from_components(
+        components: list[list[tuple[str, float]]],
+        z: int,
+        formula_derived: bool = False,
+) -> str:
+    """Generate an IUCr ``_chemical_formula_moiety`` string from bond-graph components.
+
+    Uses the occupancy-weighted effective count of each molecular species to
+    derive the per-formula-unit multipliers, following the convention discussed
+    in the crystallographic community (Peter Zavalij / Alejandro Metta et al.):
+
+    * The **main molecule** (highest effective count) always gets an integer
+      multiplier ≥ 1.  For the simplest case (one formula unit per ASU,
+      Z′ = 1) the multiplier is exactly 1 and the parentheses are omitted.
+    * **Solvent / co-former** counts may be fractional (e.g. ``0.75(H2 O)``
+      when a water site has occupancy 0.75 and the same Wyckoff multiplicity
+      as the main molecule).
+
+    The effective count for a species accounts for partial occupancy: each
+    component contributes ``max(occ)`` to the total, so a pair of half-occupied
+    water molecules (occ = 0.5) contribute 1.0 to the effective count, giving
+    a ratio of ``1.0 / Z`` per formula unit.
+
+    Returns an empty string when:
+
+    * ``formula_derived=True`` — the bond graph found a single connected
+      network (polymer / MOF / inorganic); discrete species cannot be
+      identified.
+    * ``z ≤ 0`` or *components* is empty.
+    * Any unexpected exception during generation.
+
+    Args:
+        components:      Output of :func:`_get_components` — a list of
+                         components where each component is a list of
+                         ``(element, occupancy)`` pairs.
+        z:               Number of formula units per unit cell (from
+                         :func:`_z_from_components` after formula correction).
+        formula_derived: Set to ``True`` for polymeric/extended structures
+                         (see :class:`ZResult`).
+
+    Returns:
+        IUCr-formatted moiety formula string, e.g.
+        ``'C10 H8 N2, 0.75(H2 O)'``, or ``''`` on failure.
+    """
+    if formula_derived or not components or z <= 0:
+        return ''
+
+    try:
+        return _moiety_formula_impl(components, z)
+    except Exception:  # noqa: BLE001
+        return ''
+
+
+def _moiety_formula_impl(
+        components: list[list[tuple[str, float]]],
+        z: int,
+) -> str:
+    """Inner implementation — called only by :func:`moiety_formula_from_components`."""
+    # Group components by normalized composition.
+    # key = sorted tuple of (element, count) pairs for the component.
+    comp_groups: dict[tuple, list[list[tuple[str, float]]]] = {}
+    for comp in components:
+        raw_counts = Counter(_normalize_element(el) for el, _occ in comp)
+        key = tuple(sorted(raw_counts.items()))
+        comp_groups.setdefault(key, []).append(comp)
+
+    if not comp_groups:
+        return ''
+
+    # For each species compute:
+    #   effective_count — sum of max_occ-per-component (handles partial occ)
+    #   is_major        — any component has max_occ ≥ PARTIAL_OCC_THRESHOLD
+    #   atoms_per_mol   — total atoms in one molecule (for sorting)
+    species: list[tuple[tuple, float, bool, int]] = []
+    for key, group in comp_groups.items():
+        reps = [max(occ for _el, occ in comp) for comp in group]
+        effective = sum(reps)
+        is_major = max(reps) >= PARTIAL_OCC_THRESHOLD
+        atoms_per_mol = sum(v for _, v in key)
+        species.append((key, effective, is_major, atoms_per_mol))
+
+    # Sort: major species first (most abundant main molecule),
+    # then by descending atom count (heavier molecule first), then by effective count.
+    species.sort(key=lambda x: (-x[2], -x[3], -x[1]))
+
+    parts: list[str] = []
+    for comp_key, effective, _is_major, _atoms in species:
+        comp_dict = dict(comp_key)
+        formula_str = _composition_to_hill_str(comp_dict)
+        ratio = round(effective / z, 6)
+
+        if ratio <= 0:
+            continue
+
+        # Decide how to format the multiplier.
+        nearest_int = round(ratio)
+        if abs(ratio - nearest_int) < 1e-4:
+            # Integer multiplier
+            n = nearest_int
+            if n == 1:
+                parts.append(formula_str)
+            else:
+                parts.append(f'{n}({formula_str})')
+        else:
+            # Fractional multiplier — express as a compact decimal.
+            # Use up to 4 significant figures; strip trailing zeros.
+            ratio_str = f'{ratio:.4g}'
+            parts.append(f'{ratio_str}({formula_str})')
+
+    return ', '.join(parts)
+
+
+# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
@@ -616,7 +779,7 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
     Returns:
         Number of formula units per unit cell (Z), at minimum 1.
     """
-    z, _formula_derived = _count_z_with_source(
+    z, _formula_derived, _moiety = _count_z_with_source(
         atoms_fract, symmops, cell, max_atoms, formula_sum
     )
     return z
@@ -628,27 +791,31 @@ def _count_z_with_source(
         cell: tuple[float, ...],
         max_atoms: int = 5000,
         formula_sum: str | None = None,
-) -> tuple[int, bool]:
-    """Internal implementation of Z estimation returning ``(z, formula_derived)``.
+) -> tuple[int, bool, str]:
+    """Internal implementation of Z estimation returning ``(z, formula_derived, moiety_formula)``.
 
     ``formula_derived`` is ``True`` when the formula-based correction overrode
     the bond-graph GCD result.  Used by :func:`count_z_and_zprime` to set the
     :attr:`ZResult.formula_derived` flag for caller-visible confidence reporting.
+
+    ``moiety_formula`` is an IUCr-formatted ``_chemical_formula_moiety`` string
+    derived from the bond-graph connected components.  It is an empty string
+    when the structure is polymeric/extended or when generation fails.
     """
     if not symmops or symmops == ['']:
-        return 1, False
+        return 1, False, ''
 
     filtered = _filter_disorder(list(atoms_fract))
     if not filtered:
-        return 1, False
+        return 1, False, ''
 
     # Guard against unreasonably large structures (e.g. proteins, MOFs).
     if len(filtered) * len(symmops) > max_atoms:
-        return 1, False
+        return 1, False, ''
 
     expanded = _expand_to_unit_cell(filtered, symmops, cell)
     if not expanded:
-        return 1, False
+        return 1, False, ''
 
     adj = _build_bond_graph(expanded, cell)
     components = _get_components(adj, expanded)
@@ -667,8 +834,10 @@ def _count_z_with_source(
                     z = z_from_form
                     formula_derived = True
     except Exception:
-        return z, formula_derived
-    return z, formula_derived
+        return z, formula_derived, ''
+
+    moiety = moiety_formula_from_components(components, z, formula_derived)
+    return z, formula_derived, moiety
 
 
 
@@ -714,9 +883,10 @@ def count_z_and_zprime(
         A :class:`ZResult` with ``z``, ``z_prime``, ``z_sg``, ``formula_derived``,
         ``reliable``, and ``confidence`` attributes.
     """
-    z, formula_derived = _count_z_with_source(
+    z, formula_derived, moiety = _count_z_with_source(
         atoms_fract, symmops, cell, max_atoms, formula_sum
     )
     z_sg = _z_sg_from_symmops(symmops) if symmops and symmops != [''] else 1
     z_prime = round(z / z_sg, 6) if z_sg > 0 else float('nan')
-    return ZResult(z=z, z_prime=z_prime, z_sg=z_sg, formula_derived=formula_derived)
+    return ZResult(z=z, z_prime=z_prime, z_sg=z_sg, formula_derived=formula_derived,
+                   moiety_formula=moiety)

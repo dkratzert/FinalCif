@@ -2077,6 +2077,9 @@ class AppWindow(QMainWindow):
             self.ui.zEstimateLabel.setText('?')
             self.ui.zEstimateLabel2.setText('?')
             return
+        # Propagate moiety formula to the CIF table if not already filled.
+        if result.moiety_formula:
+            self.add_moiety_furmula(result.moiety_formula)
         confidence_icon = {'high': '✓', 'medium': '~', 'formula': '≡', 'low': '?'}[result.confidence]
         self.ui.zEstimateLabel.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")
         self.ui.zEstimateLabel2.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")
