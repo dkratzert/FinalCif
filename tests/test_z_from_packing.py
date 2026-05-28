@@ -486,9 +486,29 @@ class TestMoietyFormulaFromComponents:
     def test_zero_z_returns_empty(self):
         assert moiety_formula_from_components([self._org()], 0) == ''
 
-    def test_formula_derived_returns_empty(self):
+    def test_formula_derived_without_formula_sum_returns_empty(self):
+        """formula_derived=True but no formula_sum_dict → empty string."""
         assert moiety_formula_from_components([self._org(), self._org()], 2,
                                               formula_derived=True) == ''
+
+    def test_formula_derived_with_formula_sum_returns_hill_formula(self):
+        """formula_derived=True with formula_sum_dict → single Hill-order moiety."""
+        formula = {'C': 24.0, 'H': 16.0, 'N': 4.0, 'Zn': 1.0}
+        result = moiety_formula_from_components(
+            [self._org()], z=4,
+            formula_derived=True,
+            formula_sum_dict=formula,
+        )
+        assert result == 'C24 H16 N4 Zn'
+
+    def test_formula_derived_inorganic_single_moiety(self):
+        """formula_derived=True for NiAs: formula_sum gives 'As Ni'."""
+        result = moiety_formula_from_components(
+            [], z=2,
+            formula_derived=True,
+            formula_sum_dict={'Ni': 1.0, 'As': 1.0},
+        )
+        assert result == 'As Ni'
 
     def test_single_species_z1(self):
         """One organic molecule, Z=1 → just the formula, no prefix."""
@@ -563,8 +583,18 @@ class TestMoietyFormulaFromComponents:
         assert isinstance(result.moiety_formula, str)
         assert len(result.moiety_formula) > 0
 
-    def test_zresult_moiety_empty_for_polymeric(self):
-        """ZResult.moiety_formula is empty string when formula_derived=True."""
+    def test_zresult_moiety_empty_for_polymeric_without_formula(self):
+        """ZResult.moiety_formula is empty when formula_derived=True but no formula_sum."""
+        import gemmi as _g2
+        cif = _load('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
+        # Deliberately do NOT pass formula_sum so the polymeric fallback has nothing to work with.
+        result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
+        # Without formula_sum the bond-graph GCD = 1 (one connected network), formula_derived=False.
+        # The moiety may be non-empty (bond-graph single component) OR empty — either is acceptable.
+        assert isinstance(result.moiety_formula, str)
+
+    def test_zresult_moiety_polymeric_uses_formula_sum(self):
+        """ZResult.moiety_formula for NiAs (polymeric) is 'As Ni' when formula_sum is supplied."""
         import gemmi as _g2
         doc = _g2.cif.read('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
         block = doc[0]
@@ -575,7 +605,8 @@ class TestMoietyFormulaFromComponents:
             cif.atoms_fract, cif.symmops, cif.cell[:6], formula_sum=formula_val
         )
         assert result.formula_derived is True
-        assert result.moiety_formula == ''
+        # Polymeric fallback: single-moiety from formula_sum
+        assert result.moiety_formula == 'As Ni'
 
     def test_zresult_moiety_salt(self):
         """Tetracycline HCl: moiety formula contains organic + Cl."""

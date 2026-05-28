@@ -521,6 +521,7 @@ def moiety_formula_from_components(
         components: list[list[tuple[str, float]]],
         z: int,
         formula_derived: bool = False,
+        formula_sum_dict: dict[str, float] | None = None,
 ) -> str:
     """Generate an IUCr ``_chemical_formula_moiety`` string from bond-graph components.
 
@@ -540,34 +541,74 @@ def moiety_formula_from_components(
     water molecules (occ = 0.5) contribute 1.0 to the effective count, giving
     a ratio of ``1.0 / Z`` per formula unit.
 
+    **Polymeric / extended structures** (``formula_derived=True``):
+    When *formula_sum_dict* is supplied, the per-formula-unit chemical formula
+    is expressed as a single moiety token (e.g. ``'C24 H16 N4 Zn'`` for a Zn-MOF
+    or ``'As Ni'`` for NiAs).  This matches what crystallographic software such as
+    PLATON reports for coordination polymers and inorganic frameworks, where no
+    discrete molecular species can be identified.  Returns ``''`` if
+    *formula_derived=True* but *formula_sum_dict* is ``None``.
+
     Returns an empty string when:
 
-    * ``formula_derived=True`` — the bond graph found a single connected
-      network (polymer / MOF / inorganic); discrete species cannot be
-      identified.
-    * ``z ≤ 0`` or *components* is empty.
+    * ``formula_derived=True`` and no *formula_sum_dict* is provided.
+    * ``z ≤ 0`` or *components* is empty (and no formula fallback).
     * Any unexpected exception during generation.
 
     Args:
-        components:      Output of :func:`_get_components` — a list of
-                         components where each component is a list of
-                         ``(element, occupancy)`` pairs.
-        z:               Number of formula units per unit cell (from
-                         :func:`_z_from_components` after formula correction).
-        formula_derived: Set to ``True`` for polymeric/extended structures
-                         (see :class:`ZResult`).
+        components:       Output of :func:`_get_components` — a list of
+                          components where each component is a list of
+                          ``(element, occupancy)`` pairs.
+        z:                Number of formula units per unit cell (from
+                          :func:`_z_from_components` after formula correction).
+        formula_derived:  Set to ``True`` for polymeric/extended structures
+                          (see :class:`ZResult`).
+        formula_sum_dict: Parsed ``_chemical_formula_sum`` dict (from
+                          :func:`_parse_formula_sum`), used as a fallback
+                          moiety for polymeric structures.
 
     Returns:
         IUCr-formatted moiety formula string, e.g.
         ``'C10 H8 N2, 0.75(H2 O)'``, or ``''`` on failure.
     """
-    if formula_derived or not components or z <= 0:
+    if formula_derived:
+        # Polymeric / extended: express per-formula-unit composition as one moiety.
+        if formula_sum_dict:
+            return _formula_dict_to_moiety_str(formula_sum_dict)
+        return ''
+
+    if not components or z <= 0:
         return ''
 
     try:
         return _moiety_formula_impl(components, z)
     except Exception:  # noqa: BLE001
         return ''
+
+
+def _formula_dict_to_moiety_str(formula: dict[str, float]) -> str:
+    """Format a parsed ``_chemical_formula_sum`` dict as a Hill-ordered moiety string.
+
+    Used for polymeric / extended structures where discrete molecular components
+    cannot be identified by the bond graph.  The per-formula-unit composition
+    from ``_chemical_formula_sum`` is expressed as a single moiety token.
+
+    Non-positive or very small counts (< 0.1) are discarded.  All remaining
+    counts are rounded to the nearest integer before formatting, producing a
+    valid IUCr formula token.  Returns an empty string when no valid elements
+    remain.
+
+    Examples::
+
+        >>> _formula_dict_to_moiety_str({'As': 1.0, 'Ni': 1.0})
+        'As Ni'
+        >>> _formula_dict_to_moiety_str({'C': 24.0, 'H': 16.0, 'N': 4.0, 'Zn': 1.0})
+        'C24 H16 N4 Zn'
+    """
+    int_counts = {el: round(n) for el, n in formula.items() if n >= 0.1}
+    if not int_counts:
+        return ''
+    return _composition_to_hill_str(int_counts)
 
 
 def _moiety_formula_impl(
@@ -822,21 +863,28 @@ def _count_z_with_source(
     z = _z_from_components(components)
     z = max(1, z)
     formula_derived = False
+    # Preserved after the try block so polymeric structures can use it for moiety.
+    parsed_formula: dict[str, float] | None = None
 
     try:
         # Optional formula-based consistency check / correction.
-        formula = _parse_formula_sum(formula_sum)
-        if formula:
+        parsed_formula = _parse_formula_sum(formula_sum)
+        if parsed_formula:
             cell_counts = _expanded_element_counts(expanded)
-            if not _gcd_matches_formula(z, cell_counts, formula):
-                z_from_form = _z_from_formula(cell_counts, formula)
+            if not _gcd_matches_formula(z, cell_counts, parsed_formula):
+                z_from_form = _z_from_formula(cell_counts, parsed_formula)
                 if z_from_form is not None:
                     z = z_from_form
                     formula_derived = True
     except Exception:
-        return z, formula_derived, ''
+        moiety = moiety_formula_from_components(components, z, formula_derived=False)
+        return z, formula_derived, moiety
 
-    moiety = moiety_formula_from_components(components, z, formula_derived)
+    moiety = moiety_formula_from_components(
+        components, z,
+        formula_derived=formula_derived,
+        formula_sum_dict=parsed_formula,
+    )
     return z, formula_derived, moiety
 
 
