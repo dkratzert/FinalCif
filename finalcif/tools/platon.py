@@ -14,7 +14,6 @@ from qtpy.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, 
 
 class PlatonRunner(QtCore.QObject):
     finished = QtCore.Signal(bool)
-    formula = QtCore.Signal(str)
     tick = QtCore.Signal(str)
 
     def __init__(self, parent, output_widget: QPlainTextEdit, log_widget: QPlainTextEdit, cif_file: Path):
@@ -83,7 +82,6 @@ class PlatonRunner(QtCore.QObject):
         for num, line in enumerate(self.chk_file_text.splitlines(keepends=False)):
             if line.startswith('# MoietyFormula'):
                 self.formula_moiety = ' '.join(line.split(' ')[2:])
-                self.formula.emit(self.formula_moiety)
             if line.startswith('# Z'):
                 self.Z = line[19:24].strip(' ')
 
