@@ -229,6 +229,44 @@ def _filter_disorder(atoms_fract: list) -> list:
     return kept
 
 
+def _split_disorder(atoms_fract: list) -> tuple[list, list]:
+    """Split ASU atoms into *regular* and *PART -1 special-position* lists.
+
+    SHELXL ``PART -1`` (``disorder_group = -1``) marks atoms that are
+    disordered over a crystallographic special position of higher symmetry
+    than the molecule can occupy (e.g. a methanol on a 2-fold axis).
+    The SHELXL manual explicitly states that bonds to symmetry-generated
+    copies of PART -1 atoms must be *excluded*.  Expanding them with the
+    full space-group symmetry and then running the bond graph therefore
+    produces wrong molecular components (copies that are sub-Å apart get
+    incorrectly fused).
+
+    Returns:
+        ``(regular, special)`` where:
+
+        * *regular* — atoms with ``disorder_group`` in ``{0, 1}``; safe to
+          expand with all symmetry operations.
+        * *special* — atoms with ``disorder_group == -1``; must **not** be
+          symmetry-expanded.  Their moiety contribution is computed directly
+          from the ASU occupancy via :func:`_asu_components`.
+        * Atoms with ``|disorder_group| >= 2`` are dropped from both lists.
+    """
+    regular: list = []
+    special: list = []
+    for atom in atoms_fract:
+        dg = atom[5]
+        try:
+            dg = int(dg)
+        except (TypeError, ValueError):
+            dg = 0
+        if dg == 0 or dg == 1:
+            regular.append(atom)
+        elif dg == -1:
+            special.append(atom)
+        # |dg| >= 2 → dropped
+    return regular, special
+
+
 # ---------------------------------------------------------------------------
 # Step 2 - unit-cell expansion via gemmi SmallStructure
 # ---------------------------------------------------------------------------
@@ -420,6 +458,40 @@ def _get_components(
                         queue.append(nbr)
             components.append(comp)
     return components
+
+
+def _asu_components(
+        special_atoms: list,
+        cell: tuple[float, ...],
+) -> list[list[tuple[str, float]]]:
+    """Return connected components for PART -1 ASU atoms without symmetry expansion.
+
+    Reuses :func:`_build_bond_graph` and :func:`_get_components` on the raw
+    ASU atom list — no symmetry operations are applied — so atoms from distinct
+    symmetry copies are never placed in the same graph and cannot be incorrectly
+    fused.
+
+    The ±1-cell-image search in :func:`_build_bond_graph` correctly handles
+    O–H bonds whose donor and acceptor straddle a cell face (e.g. O at
+    z = 1.04 bonded to H at z = 0.97).
+
+    Args:
+        special_atoms: Atoms with ``disorder_group == -1`` from
+                       ``CifContainer.atoms_fract`` (same record format).
+        cell:          Cell parameters ``(a, b, c, alpha, beta, gamma)``.
+
+    Returns:
+        List of connected components, each a list of ``(element, occupancy)``
+        pairs — identical in structure to the output of :func:`_get_components`.
+    """
+    if not special_atoms:
+        return []
+    expanded = [
+        (str(atom[1]), (float(atom[2]), float(atom[3]), float(atom[4])), float(atom[6]))
+        for atom in special_atoms
+    ]
+    adj = _build_bond_graph(expanded, cell)
+    return _get_components(adj, expanded)
 
 
 def _z_from_components(components: list[list[tuple[str, float]]]) -> int:
@@ -826,6 +898,34 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
     return z
 
 
+def _combine_components(
+        regular_components: list[list[tuple[str, float]]],
+        special_atoms: list,
+        z: int,
+        cell: tuple[float, ...],
+) -> list[list[tuple[str, float]]]:
+    """Combine regular bond-graph components with PART -1 special-position fragments.
+
+    For each connected component found in the PART -1 ASU atoms (via
+    :func:`_asu_components`), *z* synthetic copies are appended to
+    *regular_components*.  This makes the effective count inside
+    :func:`_moiety_formula_impl` equal to ``max_occ × z``, which yields
+    the correct fractional multiplier (e.g. 0.5 for a half-occupied solvent).
+
+    Example — methanol at occ = 0.5 in a Z = 4 structure::
+
+        ASU component: [(C, 0.5), (H, 0.5), (H, 0.5), (H, 0.5), (H, 0.5), (O, 0.5)]
+        z copies appended → effective = 4 × 0.5 = 2.0
+        ratio = 2.0 / 4 = 0.5  →  '0.5(C H4 O)'  ✓
+    """
+    if not special_atoms:
+        return regular_components
+    asu_comps = _asu_components(special_atoms, cell)
+    if not asu_comps:
+        return regular_components
+    return regular_components + asu_comps * z
+
+
 def _count_z_with_source(
         atoms_fract: list,
         symmops: list[str],
@@ -846,15 +946,26 @@ def _count_z_with_source(
     if not symmops or symmops == ['']:
         return 1, False, ''
 
-    filtered = _filter_disorder(list(atoms_fract))
-    if not filtered:
+    # Separate regular atoms (dg in {0, 1}) from PART -1 special-position atoms
+    # (dg == -1).  Only regular atoms are symmetry-expanded; PART -1 atoms are
+    # processed as ASU components to avoid spurious inter-copy bonds.
+    regular, special = _split_disorder(list(atoms_fract))
+    if not regular and not special:
         return 1, False, ''
 
     # Guard against unreasonably large structures (e.g. proteins, MOFs).
-    if len(filtered) * len(symmops) > max_atoms:
+    # Only regular atoms are expanded; special atoms stay in the ASU.
+    if len(regular) * len(symmops) > max_atoms:
         return 1, False, ''
 
-    expanded = _expand_to_unit_cell(filtered, symmops, cell)
+    if not regular:
+        # Edge case: only PART -1 atoms (unusual).  Fall back to Z=1 and
+        # derive the moiety solely from the ASU special components.
+        asu_comps = _asu_components(special, cell)
+        moiety = moiety_formula_from_components(asu_comps * 1, 1)
+        return 1, False, moiety
+
+    expanded = _expand_to_unit_cell(regular, symmops, cell)
     if not expanded:
         return 1, False, ''
 
@@ -877,11 +988,13 @@ def _count_z_with_source(
                     z = z_from_form
                     formula_derived = True
     except Exception:
-        moiety = moiety_formula_from_components(components, z, formula_derived=False)
+        moiety = moiety_formula_from_components(
+            _combine_components(components, special, z, cell), z, formula_derived=False,
+        )
         return z, formula_derived, moiety
 
     moiety = moiety_formula_from_components(
-        components, z,
+        _combine_components(components, special, z, cell), z,
         formula_derived=formula_derived,
         formula_sum_dict=parsed_formula,
     )

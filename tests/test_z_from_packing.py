@@ -617,6 +617,26 @@ class TestMoietyFormulaFromComponents:
         assert 'Cl' in moiety
         assert ', ' in moiety  # two species separated by comma
 
+    def test_part_minus1_solvent_half_methanol(self):
+        """PART -1 methanol solvate: 1979688 (P 2₁ 2₁ 2, Z=4).
+
+        The methanol (O13/C39/H13A/H39A-C, all occ=0.5, disorder_group=-1)
+        sits near the 2-fold axis at (0, 0.5, z).  After symmetry expansion
+        its copies are < 0.5 Å apart — within the C-C covalent bond cutoff —
+        which previously caused incorrect fusion of distinct methanol copies
+        into scrambled components.
+
+        The correct moiety formula is 'C38 H38 O12, 0.5(C H4 O)':
+        one main molecule per formula unit plus half a methanol (occ=0.5 per ASU,
+        four copies × 0.5 = 2 effective in Z=4 cell → ratio=0.5).
+        """
+        cif = _load('tests/examples/1979688.cif')
+        result = count_z_and_zprime(
+            cif.atoms_fract, cif.symmops, cif.cell[:6],
+            formula_sum=cif['_chemical_formula_sum'],
+        )
+        assert result.moiety_formula == 'C38 H38 O12, 0.5(C H4 O)'
+
 
 # ---------------------------------------------------------------------------
 # Tests for inorganic / polymeric structures
