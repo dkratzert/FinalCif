@@ -1248,17 +1248,18 @@ class AppWindow(QMainWindow):
                               log_widget=self.ui.CheckCifLogPlainTextEdit,
                               output_widget=self.ui.CheckcifPlaintextEdit,
                               cif_file=self.cif.fileobj)
-        if runner.platon_exe is not None and not Path(runner.platon_exe).exists():
+        if not Path(runner.platon_exe).exists():
             self.ui.CheckCifLogPlainTextEdit.setPlainText('\nPlaton executable not found!')
             self.ui.CheckCifLogPlainTextEdit.appendPlainText(
                 'You can download Platon at http://www.platonsoft.nl/platon/\n')
+            self.ui.CheckcifButton.setEnabled(True)
+            return None
         runner.tick.connect(self.append_to_ciflog_without_newline)
         runner.finished.connect(lambda: self.ui.CheckcifButton.setEnabled(True))
         runner.run_process()
-        runner.formula.connect(self.add_moiety_furmula)
         return None
 
-    def add_moiety_furmula(self, formula_moiety):
+    def add_moiety_furmula(self, formula_moiety: str) -> None:
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=Column.CIF)
         if formula_moiety and moiety in ['', '?'] and not self.cif.is_multi_cif:
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=formula_moiety, column=Column.EDIT)
@@ -2092,6 +2093,9 @@ class AppWindow(QMainWindow):
             self.ui.zEstimateLabel.setText('?')
             self.ui.zEstimateLabel2.setText('?')
             return
+        # Propagate moiety formula to the CIF table if not already filled.
+        if result.moiety_formula:
+            self.add_moiety_furmula(result.moiety_formula)
         confidence_icon = {'high': '✓', 'medium': '~', 'formula': '≡', 'low': '?'}[result.confidence]
         self.ui.zEstimateLabel.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")
         self.ui.zEstimateLabel2.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")

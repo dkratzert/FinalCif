@@ -14,7 +14,6 @@ from qtpy.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, 
 
 class PlatonRunner(QtCore.QObject):
     finished = QtCore.Signal(bool)
-    formula = QtCore.Signal(str)
     tick = QtCore.Signal(str)
 
     def __init__(self, parent, output_widget: QPlainTextEdit, log_widget: QPlainTextEdit, cif_file: Path):
@@ -56,23 +55,41 @@ class PlatonRunner(QtCore.QObject):
         self.log_widget.appendPlainText(output)
 
     def _monitor_output_log(self) -> None:
-        while not self.is_stopped:
+        """Poll the .chk file for PLATON completion markers.
+
+        Runs in a daemon thread.  Uses ``continue`` (not ``break``) when the
+        .chk file does not yet exist so the monitor is not prematurely killed
+        during the window between startup (old .chk deleted) and PLATON writing
+        the first content.  A hard timeout of ~120 s prevents infinite looping
+        if PLATON never creates the file.
+        """
+        max_ticks = 400  # ~120 s at 0.3 s/tick
+        ticks = 0
+        while not self.is_stopped and ticks < max_ticks:
             self.tick.emit('#')
             time.sleep(0.3)
+            ticks += 1
             try:
                 log_file = self.cif_file.with_suffix('.chk').read_text('latin1', errors='ignore')
                 if 'Unresolved or to be Checked Issue' in log_file:
                     self._stop_program()
+                    break
                 if '! Congratulations !' in log_file:
                     self._stop_program()
+                    break
             except FileNotFoundError:
-                break
+                continue  # .chk not yet created; keep waiting
 
     def _stop_program(self) -> None:
+        """Signal PLATON to terminate.  Safe to call from any thread."""
         self.is_stopped = True
-        # if self.process and self.process.state() == QProcess.Running:
-        self.process.terminate()
-        self.finished.emit(True)
+        # QProcess.terminate() must be called from the main (Qt) thread.
+        # Using a queued invoke ensures thread safety without adding a signal.
+        QtCore.QMetaObject.invokeMethod(
+            self.process,
+            'terminate',
+            QtCore.Qt.ConnectionType.QueuedConnection,
+        )
 
     def _parse_chk_file(self) -> None:
         try:
@@ -83,25 +100,32 @@ class PlatonRunner(QtCore.QObject):
         for num, line in enumerate(self.chk_file_text.splitlines(keepends=False)):
             if line.startswith('# MoietyFormula'):
                 self.formula_moiety = ' '.join(line.split(' ')[2:])
-                self.formula.emit(self.formula_moiety)
             if line.startswith('# Z'):
                 self.Z = line[19:24].strip(' ')
 
     @property
     def platon_exe(self) -> str:
-        special_platon = Path(__file__).resolve().parent.parent.parent.joinpath('platon/platon_special.exe')
-        if special_platon.exists():
-            return str(special_platon)
+        """Return the path to the PLATON executable for the current platform.
+
+        On **Windows** the lookup order is:
+
+        1. Bundled ``platon/platon_special.exe`` (ships with FinalCif on Windows).
+        2. ``C:\\pwt\\platon.exe`` (traditional PLATON install location).
+        3. Any ``platon.exe`` found on ``PATH`` via :func:`shutil.which`.
+
+        On **macOS / Linux** only ``PATH`` is searched; the Windows ``.exe``
+        files are never considered because they cannot run on these platforms
+        even if the file happens to be present in the repository checkout.
+        """
         if sys.platform.startswith('win'):
-            in_pwt = r'C:\pwt\platon.exe'
-        else:
-            in_pwt = 'platon'
-        if Path(in_pwt).exists():
-            return in_pwt
-        elif which('platon'):
-            return which('platon')
-        else:
-            return 'platon'
+            special_platon = Path(__file__).resolve().parent.parent.parent / 'platon' / 'platon_special.exe'
+            if special_platon.exists():
+                return str(special_platon)
+            in_pwt = Path(r'C:\pwt\platon.exe')
+            if in_pwt.exists():
+                return str(in_pwt)
+        found = which('platon')
+        return found if found else 'platon'
 
     def kill(self):
         if sys.platform.startswith('win'):
