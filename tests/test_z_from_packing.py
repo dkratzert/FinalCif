@@ -637,6 +637,25 @@ class TestMoietyFormulaFromComponents:
         )
         assert result.moiety_formula == 'C38 H38 O12, 0.5(C H4 O)'
 
+    def test_multi_part_bf4_disorder_esser_jw367(self):
+        """Esser_JW367_0m: BF4 anion disordered over PART 1 (occ=0.904) and PART 2 (occ=0.096).
+
+        Previously the moiety reported ``0.904(B F4)`` because PART 2 atoms were
+        discarded and PART 1 contributed only its raw occupancy.  After the
+        occupancy-weighted fix all parts are kept; their per-site occupancies
+        sum to 1, so the BF4 anion is correctly reported as a whole unit.
+
+        Expected: organic cation + tetrafluoroborate anion, one of each per
+        formula unit (P 2₁/n, Z=4).
+        """
+        cif = _load('tests/examples/Esser_JW367_0m.cif')
+        result = count_z_and_zprime(
+            cif.atoms_fract, cif.symmops, cif.cell[:6],
+            formula_sum=cif['_chemical_formula_sum'],
+        )
+        assert result.z == 4
+        assert result.moiety_formula == 'C9 H9 Br Cl N2, B F4'
+
 
 # ---------------------------------------------------------------------------
 # Tests for inorganic / polymeric structures

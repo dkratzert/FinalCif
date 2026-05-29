@@ -77,6 +77,56 @@ def _normalize_element(symbol: str) -> str:
 
 BOND_TOLERANCE: float = 0.40
 
+# Decimal precision for occupancy-weighted element counts.  Two decimal places
+# is generous enough to absorb rounding errors in SHELXL .res / CIF output
+# (e.g. occupancies written as 0.55 + 0.44 summing to 0.99) and small
+# imperfections in disorder models, while still preserving meaningful
+# fractional ratios (e.g. 0.6 / 0.4 mixed-element disorder).
+_OCC_DECIMALS: int = 2
+
+# When a weighted element count is within this tolerance of an integer, snap
+# it to that integer for display.  Catches sums like 1.01 / 0.99 that arise
+# from rounded occupancies (PART 1 occ=0.55 + PART 2 occ=0.44 = 0.99 → 1).
+_OCC_INT_SNAP_TOL: float = 0.05
+
+# A bond-graph component is treated as "uniform occupancy" (a single fractional
+# copy of a molecule) when max(occ) − min(occ) ≤ this tolerance.  Otherwise
+# the component is treated as multi-part disorder (e.g. PART 1 + PART 2 of
+# the same site fused into one component by the bond graph).
+_UNIFORM_OCC_TOL: float = 0.05
+
+
+def _weighted_element_counts(
+        component: list[tuple[str, float]],
+) -> dict[str, float]:
+    """Return occupancy-weighted element counts for one bond-graph component.
+
+    Each atom contributes its occupancy (not 1) to the corresponding element
+    tally.  Element symbols are normalized via :func:`_normalize_element` so
+    oxidation-state suffixes are stripped.  Totals are rounded to
+    :data:`_OCC_DECIMALS` decimal places.
+
+    This is the central helper that lets the moiety-formula generator handle
+    multi-part disorder correctly: a site refined as PART 1 (occ=0.6) + PART 2
+    (occ=0.4) of the same element contributes 1.0 to that element's count.
+    For mixed-element disorder (e.g. Cl 0.6 / Br 0.4) the fractional values
+    are preserved.
+    """
+    weighted: dict[str, float] = {}
+    for el, occ in component:
+        key = _normalize_element(el)
+        weighted[key] = weighted.get(key, 0.0) + float(occ)
+    return {el: round(n, _OCC_DECIMALS) for el, n in weighted.items()}
+
+
+def _snap_to_int_if_close(value: float) -> float:
+    """Return ``round(value)`` if *value* is within :data:`_OCC_INT_SNAP_TOL` of an integer, else *value*."""
+    nearest = round(value)
+    if abs(value - nearest) <= _OCC_INT_SNAP_TOL:
+        return float(nearest)
+    return value
+
+
 # Tolerance used when testing whether Z' is close to a simple fraction.
 _ZPRIME_TOLERANCE: float = 0.05
 
@@ -241,15 +291,23 @@ def _split_disorder(atoms_fract: list) -> tuple[list, list]:
     produces wrong molecular components (copies that are sub-Å apart get
     incorrectly fused).
 
+    All other disorder groups (0, 1, 2, 3, …) are retained as *regular*
+    atoms.  Per-site occupancies of all parts always sum to ≈1, so keeping
+    every part is the correct way to obtain occupancy-weighted element
+    counts for moiety-formula generation.  Bond detection across partial
+    copies of the same site is harmless because the copies sit within a
+    fraction of an Å of each other and end up in the same connected
+    component, and the occupancy-weighted element counter in
+    :func:`_moiety_formula_impl` then collapses them to integer counts.
+
     Returns:
         ``(regular, special)`` where:
 
-        * *regular* — atoms with ``disorder_group`` in ``{0, 1}``; safe to
-          expand with all symmetry operations.
+        * *regular* — atoms with ``disorder_group >= 0`` (i.e. 0, 1, 2, …);
+          safe to expand with all symmetry operations.
         * *special* — atoms with ``disorder_group == -1``; must **not** be
           symmetry-expanded.  Their moiety contribution is computed directly
           from the ASU occupancy via :func:`_asu_components`.
-        * Atoms with ``|disorder_group| >= 2`` are dropped from both lists.
     """
     regular: list = []
     special: list = []
@@ -259,11 +317,10 @@ def _split_disorder(atoms_fract: list) -> tuple[list, list]:
             dg = int(dg)
         except (TypeError, ValueError):
             dg = 0
-        if dg == 0 or dg == 1:
-            regular.append(atom)
-        elif dg == -1:
+        if dg == -1:
             special.append(atom)
-        # |dg| >= 2 → dropped
+        else:
+            regular.append(atom)
     return regular, special
 
 
@@ -539,7 +596,10 @@ def _z_from_components(components: list[list[tuple[str, float]]]) -> int:
 
     comp_counts: dict[tuple, int] = {}
     for comp in active:
-        key = tuple(sorted(Counter(_normalize_element(el) for el, _occ in comp).items()))
+        weighted = _weighted_element_counts(comp)
+        # Snap near-integer counts so 0.99/1.01 group with 1.0 (rounding tolerance).
+        snapped = {el: _snap_to_int_if_close(n) for el, n in weighted.items()}
+        key = tuple(sorted(snapped.items()))
         comp_counts[key] = comp_counts.get(key, 0) + 1
     return reduce(gcd, comp_counts.values())
 
@@ -548,35 +608,56 @@ def _z_from_components(components: list[list[tuple[str, float]]]) -> int:
 # Moiety formula generation
 # ---------------------------------------------------------------------------
 
-def _composition_to_hill_str(comp_dict: dict[str, int]) -> str:
+def _composition_to_hill_str(comp_dict: dict[str, float]) -> str:
     """Format an element-count dict as a Hill-ordered CIF moiety formula token.
 
     Hill order: C first, H second (when C is present), then all remaining
-    elements alphabetically.  Elements with count 1 are written without a
-    numeric suffix (e.g. ``O`` not ``O1``), matching IUCr CIF convention.
-    The returned parts are joined with a single space so that the result
-    looks like ``'C10 H8 N2 O'`` — matching the style used in COD CIF files
-    and accepted by IUCr validation.
+    elements alphabetically.  Counts may be ``int`` or ``float``:
+
+    * A count of exactly 1 (or 1.0) is written without a numeric suffix
+      (``O`` not ``O1``), matching IUCr CIF convention.
+    * Integer-valued floats are formatted as plain integers (``C10`` not
+      ``C10.0``).  A count is treated as integer when it is within
+      :data:`_OCC_INT_SNAP_TOL` of the nearest whole number.
+    * Genuine fractional counts (e.g. partial-occupancy mixed-element
+      disorder such as ``Cl0.6 Br0.4``) are formatted with up to
+      :data:`_OCC_DECIMALS` decimal places, with trailing zeros stripped.
+    * Counts that round to 0 at :data:`_OCC_DECIMALS` precision are
+      omitted entirely.
+
+    The returned parts are joined with a single space so the result looks
+    like ``'C10 H8 N2 O'`` — matching the style used in COD CIF files and
+    accepted by IUCr validation.
 
     Examples::
 
         >>> _composition_to_hill_str({'C': 10, 'H': 8, 'N': 2, 'O': 1})
         'C10 H8 N2 O'
-        >>> _composition_to_hill_str({'H': 2, 'O': 1})
-        'H2 O'
+        >>> _composition_to_hill_str({'C': 9.0, 'H': 9.0, 'Br': 0.6, 'Cl': 0.4})
+        'C9 H9 Br0.6 Cl0.4'
         >>> _composition_to_hill_str({'Cl': 1})
         'Cl'
     """
+
+    def _format_count(n: float) -> str:
+        nearest = round(n)
+        if abs(n - nearest) <= _OCC_INT_SNAP_TOL:
+            return '' if nearest == 1 else str(int(nearest))
+        # Fractional: keep up to _OCC_DECIMALS, strip trailing zeros.
+        text = f'{n:.{_OCC_DECIMALS}f}'.rstrip('0').rstrip('.')
+        return text or '0'
+
+    def _is_visible(n: float) -> bool:
+        return round(n, _OCC_DECIMALS) > 0
+
     parts: list[str] = []
-    has_c = 'C' in comp_dict
+    has_c = 'C' in comp_dict and _is_visible(comp_dict['C'])
 
     if has_c:
-        n = comp_dict['C']
-        parts.append('C' if n == 1 else f'C{n}')
+        parts.append(f'C{_format_count(comp_dict["C"])}')
 
-    if 'H' in comp_dict and has_c:
-        n = comp_dict['H']
-        parts.append('H' if n == 1 else f'H{n}')
+    if 'H' in comp_dict and has_c and _is_visible(comp_dict['H']):
+        parts.append(f'H{_format_count(comp_dict["H"])}')
 
     for el in sorted(comp_dict):
         if el == 'C' and has_c:
@@ -584,7 +665,9 @@ def _composition_to_hill_str(comp_dict: dict[str, int]) -> str:
         if el == 'H' and has_c:
             continue
         n = comp_dict[el]
-        parts.append(el if n == 1 else f'{el}{n}')
+        if not _is_visible(n):
+            continue
+        parts.append(f'{el}{_format_count(n)}')
 
     return ' '.join(parts)
 
@@ -687,38 +770,65 @@ def _moiety_formula_impl(
         components: list[list[tuple[str, float]]],
         z: int,
 ) -> str:
-    """Inner implementation — called only by :func:`moiety_formula_from_components`."""
-    # Group components by normalized composition.
-    # key = sorted tuple of (element, count) pairs for the component.
-    comp_groups: dict[tuple, list[list[tuple[str, float]]]] = {}
-    for comp in components:
-        raw_counts = Counter(_normalize_element(el) for el, _occ in comp)
-        key = tuple(sorted(raw_counts.items()))
-        comp_groups.setdefault(key, []).append(comp)
+    """Inner implementation — called only by :func:`moiety_formula_from_components`.
 
-    if not comp_groups:
+    Each component is classified as either *uniform-occupancy* (all atoms share
+    the same occupancy within :data:`_UNIFORM_OCC_TOL`) or *multi-part disorder*
+    (atoms with varied occupancies, typically PART 1 + PART 2 of the same site
+    that fused into one bond-graph component):
+
+    * **Uniform**: composition keeps raw element counts; ``effective`` = the
+      uniform occupancy.  This preserves fractional multipliers for half-
+      occupancy solvates (e.g. ``0.5(C H4 O)``).
+    * **Multi-part**: composition uses occupancy-weighted, snap-to-integer
+      element counts (so PART 1 occ=0.6 + PART 2 occ=0.4 of the same atom
+      yield count 1); ``effective`` = 1.0 because the parts together represent
+      one whole physical molecule.
+    """
+    # Classify components and build per-component (comp_dict, effective) pairs.
+    classified: list[tuple[dict[str, float], float]] = []
+    for comp in components:
+        occs = [occ for _el, occ in comp]
+        if not occs:
+            continue
+        is_uniform = (max(occs) - min(occs)) <= _UNIFORM_OCC_TOL
+        if is_uniform:
+            comp_dict = {el: float(c) for el, c in
+                         Counter(_normalize_element(el) for el, _occ in comp).items()}
+            effective = max(occs)
+        else:
+            weighted = _weighted_element_counts(comp)
+            comp_dict = {el: _snap_to_int_if_close(n) for el, n in weighted.items()}
+            effective = 1.0
+        classified.append((comp_dict, effective))
+
+    if not classified:
         return ''
 
-    # For each species compute:
-    #   effective_count — sum of max_occ-per-component (handles partial occ)
-    #   is_major        — any component has max_occ ≥ PARTIAL_OCC_THRESHOLD
-    #   atoms_per_mol   — total atoms in one molecule (for sorting)
-    species: list[tuple[tuple, float, bool, int]] = []
-    for key, group in comp_groups.items():
-        reps = [max(occ for _el, occ in comp) for comp in group]
-        effective = sum(reps)
-        is_major = max(reps) >= PARTIAL_OCC_THRESHOLD
-        atoms_per_mol = sum(v for _, v in key)
-        species.append((key, effective, is_major, atoms_per_mol))
+    # Group by composition (rounded for float-stable equality).
+    comp_groups: dict[tuple, list[tuple[dict[str, float], float]]] = {}
+    for comp_dict, effective in classified:
+        key = tuple(sorted((el, round(n, _OCC_DECIMALS)) for el, n in comp_dict.items()))
+        comp_groups.setdefault(key, []).append((comp_dict, effective))
+
+    # For each species compute total effective count and an "is_major" flag.
+    species: list[tuple[dict[str, float], float, bool, float]] = []
+    for _key, group in comp_groups.items():
+        total_effective = sum(eff for _cd, eff in group)
+        is_major = max(eff for _cd, eff in group) >= PARTIAL_OCC_THRESHOLD
+        comp_dict = group[0][0]
+        atoms_per_mol = sum(comp_dict.values())
+        species.append((comp_dict, total_effective, is_major, atoms_per_mol))
 
     # Sort: major species first (most abundant main molecule),
     # then by descending atom count (heavier molecule first), then by effective count.
     species.sort(key=lambda x: (-x[2], -x[3], -x[1]))
 
     parts: list[str] = []
-    for comp_key, effective, _is_major, _atoms in species:
-        comp_dict = dict(comp_key)
+    for comp_dict, effective, _is_major, _atoms in species:
         formula_str = _composition_to_hill_str(comp_dict)
+        if not formula_str:
+            continue
         ratio = round(effective / z, 6)
 
         if ratio <= 0:
@@ -767,17 +877,21 @@ def _parse_formula_sum(formula_sum: str | None) -> dict[str, float] | None:
 def _expanded_element_counts(
         expanded: list[tuple[str, tuple[float, float, float], float]],
 ) -> dict[str, int]:
-    """Return total atom count per element across all expanded unit-cell sites.
+    """Return occupancy-weighted total atom count per element across all expanded unit-cell sites.
 
-    Element symbols are normalised via :func:`_normalize_element` so that
-    oxidation-state suffixes (e.g. ``'Ni0+'``, ``'O1-'``) are stripped before
-    aggregation, enabling correct comparison with parsed formula strings.
+    Each atom contributes its occupancy (not 1) so that PART 1 + PART 2
+    disorder, whose per-site occupancies sum to ≈1, yields the same total
+    as the corresponding ordered structure.  Element symbols are normalised
+    via :func:`_normalize_element` so that oxidation-state suffixes (e.g.
+    ``'Ni0+'``, ``'O1-'``) are stripped before aggregation.  Each total is
+    rounded to the nearest integer (occupancies of all parts at one site
+    sum to 1 by convention, with at most rounding-error noise).
     """
-    counts: dict[str, int] = {}
-    for el, _pos, _occ in expanded:
+    weighted: dict[str, float] = {}
+    for el, _pos, occ in expanded:
         key = _normalize_element(el)
-        counts[key] = counts.get(key, 0) + 1
-    return counts
+        weighted[key] = weighted.get(key, 0.0) + float(occ)
+    return {el: int(round(n)) for el, n in weighted.items()}
 
 
 def _gcd_matches_formula(
