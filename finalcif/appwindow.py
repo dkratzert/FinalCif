@@ -41,7 +41,7 @@ from gemmi import cif
 from finalcif import VERSION
 from finalcif.app_path import application_path
 from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
-from finalcif.cif.cif_file_io import CifContainer, GemmiError
+from finalcif.cif.cif_file_io import CifContainer, GemmiError, has_cif2_header
 from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
 from finalcif.datafiles.bruker_data import BrukerData
@@ -1862,6 +1862,12 @@ class AppWindow(QMainWindow):
             cif_file = self.get_file_from_dialog()
         if not cif_file:
             return
+        if has_cif2_header(cif_file):
+            show_general_warning(
+                self,
+                "This is a CIF2 file and cannot be opened directly.\n",
+            )
+            return
         cif2 = CifContainer(cif_file)
         if cif2.is_multi_cif:
             show_general_warning(self, 'Can add single data CIFs only!')
@@ -1921,6 +1927,12 @@ class AppWindow(QMainWindow):
             return False
         if filepath.stat().st_size == 0:
             show_general_warning(self, 'This file has zero byte size!')
+            return False
+        if has_cif2_header(filepath):
+            show_general_warning(
+                self,
+                "This is a CIF2 file and cannot be opened directly.\n",
+            )
             return False
         return True
 

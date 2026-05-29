@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from finalcif.cif.cif_file_io import CifContainer
+from finalcif.cif.cif_file_io import CifContainer, has_cif2_header
 
 data = Path('.')
 
@@ -445,6 +445,33 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         raw_value = block.find_value('_vrf_PLAT413_mydata')
         entry = VRFEntry.from_cif_pair('_vrf_PLAT413_mydata', raw_value)
         self.assertEqual('line one\nline two\nline three', entry.response)
+
+
+class TestHasCif2Header(unittest.TestCase):
+    def setUp(self) -> None:
+        self.cif1_file = Path('tests/statics/test_has_cif2_header_cif1.cif')
+        self.cif2_file = Path('tests/statics/test_has_cif2_header_cif2.cif')
+        self.cif1_file.write_text("data_test\n_foo_bar 'baz'\n", encoding='utf-8')
+        self.cif2_file.write_text("#\\#CIF_2.0\ndata_test\n_foo_bar 'baz'\n", encoding='utf-8')
+
+    def tearDown(self) -> None:
+        self.cif1_file.unlink(missing_ok=True)
+        self.cif2_file.unlink(missing_ok=True)
+
+    def test_cif1_file_returns_false(self) -> None:
+        self.assertFalse(has_cif2_header(self.cif1_file))
+
+    def test_cif2_file_returns_true(self) -> None:
+        self.assertTrue(has_cif2_header(self.cif2_file))
+
+    def test_nonexistent_file_returns_false(self) -> None:
+        self.assertFalse(has_cif2_header(Path('tests/statics/nonexistent_file.cif')))
+
+    def test_cif2_with_bom_returns_true(self) -> None:
+        bom_file = Path('tests/statics/test_has_cif2_header_bom.cif')
+        bom_file.write_text("\ufeff#\\#CIF_2.0\ndata_test\n_foo_bar 'baz'\n", encoding='utf-8')
+        self.addCleanup(bom_file.unlink, missing_ok=True)
+        self.assertTrue(has_cif2_header(bom_file))
 
 
 if __name__ == '__main__':

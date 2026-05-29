@@ -46,6 +46,18 @@ class GemmiError(Exception):
     pass
 
 
+def has_cif2_header(path: Path) -> bool:
+    """
+    Detect CIF2 content by header marker independent of file suffix.
+    """
+    with suppress(OSError, UnicodeDecodeError):
+        with path.open('r', encoding='utf-8', errors='ignore') as file:
+            header = file.read(512)
+        header = header.lstrip('\ufeff \t\r\n')
+        return header.startswith('#\\#CIF_2.0')
+    return False
+
+
 class CifContainer:
     """
     This class holds the content of a cif file, independent of the file parser used.
@@ -226,15 +238,7 @@ class CifContainer:
 
     @staticmethod
     def _has_cif2_header(path: Path) -> bool:
-        """
-        Detect CIF2 content by header marker independent of file suffix.
-        """
-        with suppress(OSError, UnicodeDecodeError):
-            with path.open('r', encoding='utf-8', errors='ignore') as file:
-                header = file.read(512)
-            header = header.lstrip('\ufeff \t\r\n')
-            return header.startswith('#\\#CIF_2.0')
-        return False
+        return has_cif2_header(path)
 
     @staticmethod
     def _convert_doc_to_cif11(doc: gemmi.cif.Document) -> gemmi.cif.Document:
