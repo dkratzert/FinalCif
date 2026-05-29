@@ -2943,4 +2943,3 @@ class Ui_FinalCifWindow(object):
         self.HelpPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Help", None))
         self.zEstimateLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Z = ?", None))
     # retranslateUi
-

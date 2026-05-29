@@ -23,15 +23,39 @@ from gemmi.cif import as_string, Document, Loop
 from packaging.version import Version
 from shelxfile import Shelxfile
 
+from finalcif.cif.cif_keyword_mapping import CIF2_TO_CIF11_KEYWORD_TABLE
+
+# CIF data names are case-insensitive per the CIF specification. Build a
+# case-folded lookup once at import time so the translator finds aliases
+# regardless of the source file's casing.
+_CIF2_TO_CIF11_LOWERCASE_LOOKUP = {
+    key.lower(): value for key, value in CIF2_TO_CIF11_KEYWORD_TABLE.items()
+}
 from finalcif.cif.cif_order import order, special_keys, essential_keys, non_centrosymm_keys
 from finalcif.cif.hkl import HKL, Limit
 from finalcif.cif.text import utf8_to_str, quote, retranslate_delimiter
 from finalcif.datafiles.utils import DSRFind
 from finalcif.tools.misc import isnumeric, grouper, strip_finalcif_of_name, _angstrom_to_x
 
+# Match CIF data names at line start (pairs or loop tags), allowing common
+# CIF2/mmCIF token characters (dot, hyphen, brackets, parentheses and slash variants).
+CIF_KEYWORD_PATTERN = re.compile(r'^(\s*)(_[a-zA-Z][a-zA-Z0-9_.\-\[\]()/]*)(?=\s|$)')
+
 
 class GemmiError(Exception):
     pass
+
+
+def has_cif2_header(path: Path) -> bool:
+    """
+    Detect CIF2 content by header marker independent of file suffix.
+    """
+    with suppress(OSError, UnicodeDecodeError):
+        with path.open('r', encoding='utf-8', errors='ignore') as file:
+            header = file.read(512)
+        header = header.lstrip('\ufeff \t\r\n')
+        return header.startswith('#\\#CIF_2.0')
+    return False
 
 
 class CifContainer:
@@ -164,7 +188,8 @@ class CifContainer:
         self.atomic_struct: gemmi.SmallStructure = gemmi.make_small_structure_from_block(self.block)
         # A dictionary to convert Atom names like 'C1_2' or 'Ga3' into Element names like 'C' or 'Ga'
         self._name2elements = dict(zip([x.upper() for x in self.block.find_loop('_atom_site_label')],
-                                       [y.upper() for y in self.block.find_loop('_atom_site_type_symbol')], strict=False))
+                                       [y.upper() for y in self.block.find_loop('_atom_site_type_symbol')],
+                                       strict=False))
         self.check_hkl_min_max()
 
     @property
@@ -197,15 +222,91 @@ class CifContainer:
         Reads a cif file and returns a gemmi document object.
         """
         doc = gemmi.cif.Document()
+        suffix = path.suffix.lower()
+        has_cif2_header = self._has_cif2_header(path)
         # support for platon squeeze files:
-        if path.suffix == '.sqf':
+        if suffix == '.sqf':
             txt = path.read_text(encoding='ascii')
             txt = 'data_justrandomlkdsadflkmcn\n' + txt
             doc.parse_string(txt)
         else:
             doc.source = str(path.resolve())
             doc.parse_file(str(path.resolve()))
+        if suffix == '.mmcif' or has_cif2_header:
+            doc = self._convert_doc_to_cif11(doc)
         return doc
+
+    @staticmethod
+    def _has_cif2_header(path: Path) -> bool:
+        return has_cif2_header(path)
+
+    @staticmethod
+    def _convert_doc_to_cif11(doc: gemmi.cif.Document) -> gemmi.cif.Document:
+        """
+        Normalizes CIF2/mmCIF input to CIF 1.1 text representation.
+        This keeps downstream processing compatible with code paths that assume CIF 1.1 tokens.
+        Conversion is done as a round-trip serialization/parsing step with stable write options.
+        """
+        options = gemmi.cif.WriteOptions()
+        options.prefer_pairs = False
+        options.compact = False
+        # Keep alignment settings identical to the regular CifContainer text output.
+        options.align_pairs = 33
+        options.align_loops = 15
+        options.misuse_hash = False
+        normalized_text = doc.as_string(options=options)
+        translated_text = CifContainer._translate_keywords_to_cif11(normalized_text)
+        converted = gemmi.cif.Document()
+        converted.source = doc.source
+        converted.parse_string(translated_text)
+        return converted
+
+    @staticmethod
+    def _translate_keywords_to_cif11(cif_text: str) -> str:
+        """
+        Translate CIF2/mmCIF keyword notation to CIF 1.1-compatible names.
+        Uses the CIVET-style legacy conversion approach for data names:
+        modern dotted names are converted to underscore names.
+        """
+        translated_lines: list[str] = []
+        in_text_block = False
+        for line in cif_text.split('\n'):
+            stripped = line.strip()
+            if stripped == ';':
+                in_text_block = not in_text_block
+                translated_lines.append(line)
+                continue
+            if in_text_block or stripped.startswith('#') or not stripped:
+                translated_lines.append(line)
+                continue
+            field_match = CIF_KEYWORD_PATTERN.match(line)
+            if field_match:
+                indent, field_name = field_match.groups()
+                translated_field = CifContainer._translate_keyword_to_cif11(field_name)
+                if translated_field != field_name:
+                    remainder = line[field_match.end(2):]
+                    line = f'{indent}{translated_field}{remainder}'
+            translated_lines.append(line)
+        return '\n'.join(translated_lines)
+
+    @staticmethod
+    def _translate_keyword_to_cif11(keyword: str) -> str:
+        """
+        Translate one CIF2/mmCIF keyword to CIF 1.1 legacy naming.
+
+        The lookup is case-insensitive (CIF data names are case-insensitive
+        per the CIF specification). When no explicit alias is registered in
+        ``CIF2_TO_CIF11_KEYWORD_TABLE``, a trivial dot-to-underscore rewrite
+        is applied. The mapping table is regenerated by
+        ``scripts/generate_keyword_mapping.py`` from the upstream DDLm
+        dictionaries.
+        """
+        mapped = _CIF2_TO_CIF11_LOWERCASE_LOOKUP.get(keyword.lower())
+        if mapped is not None:
+            return mapped
+        if '.' not in keyword:
+            return keyword
+        return keyword.replace('.', '_')
 
     def read_string(self, cif_string: str) -> gemmi.cif.Document:
         """
@@ -869,9 +970,9 @@ class CifContainer:
         publ_loop = self.block.find_loop('_geom_angle_publ_flag') or len(label1) * ['?']
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in (
-                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=False)):
+            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=False)):
             if ((without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3))) or
-                    self.yes_not_set(publ)):
+                self.yes_not_set(publ)):
                 continue
             else:
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
@@ -945,7 +1046,7 @@ class CifContainer:
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in (
-                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop, strict=False)):
+            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop, strict=False)):
             if self.yes_not_set(publ):
                 continue
             if self.picometer:
