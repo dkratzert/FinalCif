@@ -16,6 +16,7 @@ from finalcif.tools.z_from_packing import (
     _z_sg_from_symmops,
     _normalize_element,
     _composition_to_hill_str,
+    _split_disorder,
     moiety_formula_from_components,
     count_z,
     count_z_and_zprime,
@@ -76,6 +77,55 @@ class TestFilterDisorder:
         ordered = self._make_atom(0)
         filtered = _filter_disorder([site_a, site_b, ordered])
         assert len(filtered) == 2
+
+
+class TestSplitDisorder:
+    """Unit tests for _split_disorder — the production-code path used by count_z."""
+
+    def _make_atom(self, dg: int, occ: float = 1.0) -> list:
+        return ['C1', 'C', 0.1, 0.2, 0.3, dg, occ, 0.02]
+
+    def test_ordered_goes_to_regular(self):
+        regular, special = _split_disorder([self._make_atom(0)])
+        assert len(regular) == 1 and len(special) == 0
+
+    def test_positive_parts_all_go_to_regular(self):
+        """All dg ≥ 0 (PART 0, 1, 2, 3, …) are kept and treated as regular."""
+        atoms = [self._make_atom(g) for g in (0, 1, 2, 3, 5)]
+        regular, special = _split_disorder(atoms)
+        assert len(regular) == 5
+        assert len(special) == 0
+
+    def test_part_minus1_goes_to_special(self):
+        regular, special = _split_disorder([self._make_atom(-1)])
+        assert len(regular) == 0 and len(special) == 1
+
+    def test_part_minus2_goes_to_special(self):
+        """SHELXL PART -2: bonds to symmetry copies must also be suppressed."""
+        regular, special = _split_disorder([self._make_atom(-2)])
+        assert len(regular) == 0 and len(special) == 1
+
+    def test_part_minus3_goes_to_special(self):
+        """SHELXL PART -3: same semantics as PART -1 / -2."""
+        regular, special = _split_disorder([self._make_atom(-3)])
+        assert len(regular) == 0 and len(special) == 1
+
+    def test_mixed_negative_parts_all_special(self):
+        """A mix of PART -1, -2, -3 all routed to *special*; PART 0/1/2 to *regular*."""
+        atoms = [self._make_atom(g, occ=0.5) for g in (-1, -2, -3, 0, 1, 2)]
+        regular, special = _split_disorder(atoms)
+        assert len(special) == 3
+        assert len(regular) == 3
+        assert all(int(a[5]) < 0 for a in special)
+        assert all(int(a[5]) >= 0 for a in regular)
+
+    def test_non_integer_dg_treated_as_zero(self):
+        """Malformed disorder_group (None, '?') is coerced to 0 → regular."""
+        regular, special = _split_disorder([
+            ['X', 'C', 0, 0, 0, None, 1.0, 0.02],
+            ['Y', 'C', 0, 0, 0, '?', 1.0, 0.02],
+        ])
+        assert len(regular) == 2 and len(special) == 0
 
 
 # ---------------------------------------------------------------------------

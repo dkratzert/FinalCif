@@ -280,18 +280,19 @@ def _filter_disorder(atoms_fract: list) -> list:
 
 
 def _split_disorder(atoms_fract: list) -> tuple[list, list]:
-    """Split ASU atoms into *regular* and *PART -1 special-position* lists.
+    """Split ASU atoms into *regular* and *negative-PART special-position* lists.
 
-    SHELXL ``PART -1`` (``disorder_group = -1``) marks atoms that are
-    disordered over a crystallographic special position of higher symmetry
-    than the molecule can occupy (e.g. a methanol on a 2-fold axis).
-    The SHELXL manual explicitly states that bonds to symmetry-generated
-    copies of PART -1 atoms must be *excluded*.  Expanding them with the
-    full space-group symmetry and then running the bond graph therefore
-    produces wrong molecular components (copies that are sub-Å apart get
-    incorrectly fused).
+    SHELXL ``PART -n`` for any negative ``n`` (``disorder_group < 0``) marks
+    atoms that are disordered over a crystallographic special position of
+    higher symmetry than the molecule can occupy (e.g. a methanol on a 2-fold
+    axis, or several solvent fragments each on its own special position with
+    distinct negative PART numbers).  The SHELXL manual states that bonds to
+    symmetry-generated copies of negative-PART atoms must be *excluded*.
+    Expanding them with the full space-group symmetry and then running the
+    bond graph therefore produces wrong molecular components (copies that
+    are sub-Å apart get incorrectly fused).
 
-    All other disorder groups (0, 1, 2, 3, …) are retained as *regular*
+    All non-negative disorder groups (0, 1, 2, 3, …) are retained as *regular*
     atoms.  Per-site occupancies of all parts always sum to ≈1, so keeping
     every part is the correct way to obtain occupancy-weighted element
     counts for moiety-formula generation.  Bond detection across partial
@@ -305,9 +306,9 @@ def _split_disorder(atoms_fract: list) -> tuple[list, list]:
 
         * *regular* — atoms with ``disorder_group >= 0`` (i.e. 0, 1, 2, …);
           safe to expand with all symmetry operations.
-        * *special* — atoms with ``disorder_group == -1``; must **not** be
-          symmetry-expanded.  Their moiety contribution is computed directly
-          from the ASU occupancy via :func:`_asu_components`.
+        * *special* — atoms with ``disorder_group < 0`` (i.e. -1, -2, -3, …);
+          must **not** be symmetry-expanded.  Their moiety contribution is
+          computed directly from the ASU occupancy via :func:`_asu_components`.
     """
     regular: list = []
     special: list = []
@@ -317,7 +318,7 @@ def _split_disorder(atoms_fract: list) -> tuple[list, list]:
             dg = int(dg)
         except (TypeError, ValueError):
             dg = 0
-        if dg == -1:
+        if dg < 0:
             special.append(atom)
         else:
             regular.append(atom)
@@ -521,20 +522,25 @@ def _asu_components(
         special_atoms: list,
         cell: tuple[float, ...],
 ) -> list[list[tuple[str, float]]]:
-    """Return connected components for PART -1 ASU atoms without symmetry expansion.
+    """Return connected components for negative-PART ASU atoms without symmetry expansion.
 
     Reuses :func:`_build_bond_graph` and :func:`_get_components` on the raw
     ASU atom list — no symmetry operations are applied — so atoms from distinct
     symmetry copies are never placed in the same graph and cannot be incorrectly
-    fused.
+    fused.  Atoms from different negative PART numbers (-1, -2, -3, …) are
+    processed together; the bond graph naturally groups them into separate
+    components whenever they sit at different special positions, and into the
+    same component when they form one chemical fragment (e.g. a single solvent
+    molecule split across two negative PART labels).
 
     The ±1-cell-image search in :func:`_build_bond_graph` correctly handles
     O–H bonds whose donor and acceptor straddle a cell face (e.g. O at
     z = 1.04 bonded to H at z = 0.97).
 
     Args:
-        special_atoms: Atoms with ``disorder_group == -1`` from
-                       ``CifContainer.atoms_fract`` (same record format).
+        special_atoms: Atoms with ``disorder_group < 0`` (any negative PART —
+                       -1, -2, -3, …) from ``CifContainer.atoms_fract``
+                       (same record format).
         cell:          Cell parameters ``(a, b, c, alpha, beta, gamma)``.
 
     Returns:
@@ -1018,10 +1024,11 @@ def _combine_components(
         z: int,
         cell: tuple[float, ...],
 ) -> list[list[tuple[str, float]]]:
-    """Combine regular bond-graph components with PART -1 special-position fragments.
+    """Combine regular bond-graph components with negative-PART special-position fragments.
 
-    For each connected component found in the PART -1 ASU atoms (via
-    :func:`_asu_components`), *z* synthetic copies are appended to
+    For each connected component found in the negative-PART ASU atoms
+    (``disorder_group < 0`` — i.e. PART -1, -2, -3, …) via
+    :func:`_asu_components`, *z* synthetic copies are appended to
     *regular_components*.  This makes the effective count inside
     :func:`_moiety_formula_impl` equal to ``max_occ × z``, which yields
     the correct fractional multiplier (e.g. 0.5 for a half-occupied solvent).
@@ -1060,9 +1067,10 @@ def _count_z_with_source(
     if not symmops or symmops == ['']:
         return 1, False, ''
 
-    # Separate regular atoms (dg in {0, 1}) from PART -1 special-position atoms
-    # (dg == -1).  Only regular atoms are symmetry-expanded; PART -1 atoms are
-    # processed as ASU components to avoid spurious inter-copy bonds.
+    # Separate regular atoms (dg >= 0) from negative-PART special-position atoms
+    # (dg < 0, i.e. PART -1, -2, -3, …).  Only regular atoms are symmetry-expanded;
+    # negative-PART atoms are processed as ASU components to avoid spurious
+    # inter-copy bonds across symmetry equivalents.
     regular, special = _split_disorder(list(atoms_fract))
     if not regular and not special:
         return 1, False, ''
@@ -1073,7 +1081,7 @@ def _count_z_with_source(
         return 1, False, ''
 
     if not regular:
-        # Edge case: only PART -1 atoms (unusual).  Fall back to Z=1 and
+        # Edge case: only negative-PART atoms (unusual).  Fall back to Z=1 and
         # derive the moiety solely from the ASU special components.
         asu_comps = _asu_components(special, cell)
         moiety = moiety_formula_from_components(asu_comps * 1, 1)
