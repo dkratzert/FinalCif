@@ -733,7 +733,21 @@ def moiety_formula_from_components(
         ``'C10 H8 N2, 0.75(H2 O)'``, or ``''`` on failure.
     """
     if formula_derived:
-        # Polymeric / extended: express per-formula-unit composition as one moiety.
+        # When formula_derived is True, the bond-graph GCD didn't match the
+        # formula.  However, if the bond graph still identified multiple
+        # *distinct* molecular species (> 1 composition type), the component-
+        # based moiety is likely more informative than a flat formula.  Only
+        # fall back to the flat formula when the bond graph truly failed to
+        # separate species (≤ 1 distinct composition = polymeric network).
+        if components and z > 0:
+            try:
+                result = _moiety_formula_impl(components, z)
+                if result and ', ' in result:
+                    # Multi-species moiety found — use it instead of flat formula.
+                    return result
+            except Exception:  # noqa: BLE001
+                pass
+        # True polymeric / single-species fallback.
         if formula_sum_dict:
             return _formula_dict_to_moiety_str(formula_sum_dict)
         return ''
