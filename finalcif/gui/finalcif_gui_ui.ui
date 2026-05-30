@@ -398,6 +398,12 @@
                      </item>
                      <item>
                       <widget class="QPushButton" name="ExportEquipmentButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="text">
                         <string>Export</string>
                        </property>
@@ -741,6 +747,12 @@
                  </property>
                  <item row="0" column="1">
                   <widget class="QPushButton" name="ExportAuthorPushButton">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
                    <property name="text">
                     <string>Export Author as File</string>
                    </property>
@@ -2467,6 +2479,12 @@ The data source will be ignored until next program restart.</string>
               <layout class="QVBoxLayout" name="verticalLayout_34">
                <item alignment="Qt::AlignmentFlag::AlignLeft">
                 <widget class="QPushButton" name="ExportAllTemplatesPushButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
                   <string>Export all Templates</string>
                  </property>
@@ -2777,6 +2795,12 @@ The data source will be ignored until next program restart.</string>
                      </item>
                      <item>
                       <widget class="QPushButton" name="ExportPropertyButton">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="text">
                         <string>Export</string>
                        </property>
