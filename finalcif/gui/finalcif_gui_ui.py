@@ -21,9 +21,9 @@ from qtpy.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication
     QLabel, QLayout, QLineEdit, QListWidget,
     QListWidgetItem, QMainWindow, QPlainTextEdit, QPushButton,
     QRadioButton, QSizePolicy, QSpacerItem, QSpinBox,
-    QSplitter, QStackedWidget, QStatusBar, QTabWidget,
-    QTableWidget, QTableWidgetItem, QTextBrowser, QTextEdit,
-    QToolButton, QVBoxLayout, QWidget)
+    QSplitter, QStatusBar, QTabWidget, QTableWidget,
+    QTableWidgetItem, QTextBrowser, QTextEdit, QToolButton,
+    QVBoxLayout, QWidget)
 
 from fastmolwidget.molecule2D import MoleculeWidget
 from finalcif.ciforder.order import CifOrder
@@ -40,7 +40,7 @@ class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         if not FinalCifWindow.objectName():
             FinalCifWindow.setObjectName(u"FinalCifWindow")
-        FinalCifWindow.resize(1778, 951)
+        FinalCifWindow.resize(1854, 951)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -118,7 +118,7 @@ class Ui_FinalCifWindow(object):
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_8)
 
-        self.TemplatesStackedWidget = QStackedWidget(self.LeftFrame)
+        self.TemplatesStackedWidget = MyMainStackedWidget(self.LeftFrame)
         self.TemplatesStackedWidget.setObjectName(u"TemplatesStackedWidget")
         sizePolicy.setHeightForWidth(self.TemplatesStackedWidget.sizePolicy().hasHeightForWidth())
         self.TemplatesStackedWidget.setSizePolicy(sizePolicy)
@@ -140,7 +140,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_7.setSpacing(6)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.verticalLayout_7.setContentsMargins(6, 4, 6, 4)
-        self.EquipmentTemplatesStackedWidget = QStackedWidget(self.EquipmentGroupBox)
+        self.EquipmentTemplatesStackedWidget = MyMainStackedWidget(self.EquipmentGroupBox)
         self.EquipmentTemplatesStackedWidget.setObjectName(u"EquipmentTemplatesStackedWidget")
         sizePolicy.setHeightForWidth(self.EquipmentTemplatesStackedWidget.sizePolicy().hasHeightForWidth())
         self.EquipmentTemplatesStackedWidget.setSizePolicy(sizePolicy)
@@ -467,6 +467,14 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_6.setSpacing(6)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.gridLayout_6.setContentsMargins(3, 9, 6, 0)
+        self.horizontalSpacer_10 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_10, 0, 9, 1, 1)
+
+        self.horizontalSpacer_11 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_11, 0, 3, 1, 1)
+
         self.datanameComboBox = ComboBoxWithContextMenu(self.CifDataItemsFrame)
         self.datanameComboBox.setObjectName(u"datanameComboBox")
         self.datanameComboBox.setEditable(True)
@@ -478,15 +486,96 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_6.addWidget(self.datanameComboBox, 0, 1, 1, 1)
 
+        self.SumFormMainLabel = QLabel(self.CifDataItemsFrame)
+        self.SumFormMainLabel.setObjectName(u"SumFormMainLabel")
+
+        self.gridLayout_6.addWidget(self.SumFormMainLabel, 0, 10, 1, 1)
+
+        self.CCDCNumLineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
+        self.CCDCNumLineEdit.setObjectName(u"CCDCNumLineEdit")
+        sizePolicy3.setHeightForWidth(self.CCDCNumLineEdit.sizePolicy().hasHeightForWidth())
+        self.CCDCNumLineEdit.setSizePolicy(sizePolicy3)
+        self.CCDCNumLineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
+        self.CCDCNumLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.CCDCNumLineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.CCDCNumLineEdit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.CCDCNumLineEdit.setTabChangesFocus(True)
+        self.CCDCNumLineEdit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
+        self.CCDCNumLineEdit.setReadOnly(False)
+        self.CCDCNumLineEdit.setAcceptRichText(False)
+
+        self.gridLayout_6.addWidget(self.CCDCNumLineEdit, 0, 8, 1, 1)
+
+        self.verticalLayout_14 = QVBoxLayout()
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.HelpPushButton = QPushButton(self.CifDataItemsFrame)
+        self.HelpPushButton.setObjectName(u"HelpPushButton")
+
+        self.verticalLayout_14.addWidget(self.HelpPushButton)
+
+        self.zEstimateLabel = QLabel(self.CifDataItemsFrame)
+        self.zEstimateLabel.setObjectName(u"zEstimateLabel")
+
+        self.verticalLayout_14.addWidget(self.zEstimateLabel)
+
+
+        self.gridLayout_6.addLayout(self.verticalLayout_14, 0, 12, 1, 1)
+
         self.datanameLabel = QLabel(self.CifDataItemsFrame)
         self.datanameLabel.setObjectName(u"datanameLabel")
 
         self.gridLayout_6.addWidget(self.datanameLabel, 0, 0, 1, 1)
 
+        self.SumFormMainLineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
+        self.SumFormMainLineEdit.setObjectName(u"SumFormMainLineEdit")
+        sizePolicy3.setHeightForWidth(self.SumFormMainLineEdit.sizePolicy().hasHeightForWidth())
+        self.SumFormMainLineEdit.setSizePolicy(sizePolicy3)
+        self.SumFormMainLineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
+        self.SumFormMainLineEdit.setInputMethodHints(Qt.InputMethodHint.ImhNone)
+        self.SumFormMainLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.SumFormMainLineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.SumFormMainLineEdit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.SumFormMainLineEdit.setTabChangesFocus(True)
+        self.SumFormMainLineEdit.setUndoRedoEnabled(False)
+        self.SumFormMainLineEdit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
+        self.SumFormMainLineEdit.setReadOnly(True)
+
+        self.gridLayout_6.addWidget(self.SumFormMainLineEdit, 0, 11, 1, 1)
+
         self.CCDCNumLabel = QLabel(self.CifDataItemsFrame)
         self.CCDCNumLabel.setObjectName(u"CCDCNumLabel")
 
         self.gridLayout_6.addWidget(self.CCDCNumLabel, 0, 7, 1, 1)
+
+        self.appendCifPushButton = QPushButton(self.CifDataItemsFrame)
+        self.appendCifPushButton.setObjectName(u"appendCifPushButton")
+
+        self.gridLayout_6.addWidget(self.appendCifPushButton, 0, 2, 1, 1)
+
+        self.Spacegroup_top_LineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
+        self.Spacegroup_top_LineEdit.setObjectName(u"Spacegroup_top_LineEdit")
+        sizePolicy3.setHeightForWidth(self.Spacegroup_top_LineEdit.sizePolicy().hasHeightForWidth())
+        self.Spacegroup_top_LineEdit.setSizePolicy(sizePolicy3)
+        self.Spacegroup_top_LineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
+        self.Spacegroup_top_LineEdit.setInputMethodHints(Qt.InputMethodHint.ImhNone)
+        self.Spacegroup_top_LineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.Spacegroup_top_LineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.Spacegroup_top_LineEdit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.Spacegroup_top_LineEdit.setTabChangesFocus(True)
+        self.Spacegroup_top_LineEdit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
+        self.Spacegroup_top_LineEdit.setReadOnly(True)
+        self.Spacegroup_top_LineEdit.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
+
+        self.gridLayout_6.addWidget(self.Spacegroup_top_LineEdit, 0, 5, 1, 1)
+
+        self.spacegroupLabel = QLabel(self.CifDataItemsFrame)
+        self.spacegroupLabel.setObjectName(u"spacegroupLabel")
+
+        self.gridLayout_6.addWidget(self.spacegroupLabel, 0, 4, 1, 1)
+
+        self.horizontalSpacer_12 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_12, 0, 6, 1, 1)
 
         self.MainStackedWidget = MyMainStackedWidget(self.CifDataItemsFrame)
         self.MainStackedWidget.setObjectName(u"MainStackedWidget")
@@ -653,236 +742,203 @@ class Ui_FinalCifWindow(object):
         self.page_molinfo.setObjectName(u"page_molinfo")
         self.gridLayout_3 = QGridLayout(self.page_molinfo)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.picturesTabWidget = QTabWidget(self.page_molinfo)
+        self.picturesTabWidget.setObjectName(u"picturesTabWidget")
+        sizePolicy8 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy8.setHorizontalStretch(55)
+        sizePolicy8.setVerticalStretch(0)
+        sizePolicy8.setHeightForWidth(self.picturesTabWidget.sizePolicy().hasHeightForWidth())
+        self.picturesTabWidget.setSizePolicy(sizePolicy8)
+        self.tab_structure = QWidget()
+        self.tab_structure.setObjectName(u"tab_structure")
+        self.verticalLayout_42 = QVBoxLayout(self.tab_structure)
+        self.verticalLayout_42.setObjectName(u"verticalLayout_42")
+        self.verticalLayout_42.setContentsMargins(3, 3, 3, 3)
+        self.molGroupBox = QGroupBox(self.tab_structure)
+        self.molGroupBox.setObjectName(u"molGroupBox")
+        sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy9.setHorizontalStretch(55)
+        sizePolicy9.setVerticalStretch(80)
+        sizePolicy9.setHeightForWidth(self.molGroupBox.sizePolicy().hasHeightForWidth())
+        self.molGroupBox.setSizePolicy(sizePolicy9)
+        self.verticalLayout_8 = QVBoxLayout(self.molGroupBox)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(6, 3, 0, 6)
+        self.render_widget = MoleculeWidget(self.molGroupBox)
+        self.render_widget.setObjectName(u"render_widget")
+        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy10.setHorizontalStretch(0)
+        sizePolicy10.setVerticalStretch(0)
+        sizePolicy10.setHeightForWidth(self.render_widget.sizePolicy().hasHeightForWidth())
+        self.render_widget.setSizePolicy(sizePolicy10)
+
+        self.verticalLayout_8.addWidget(self.render_widget)
+
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.horizontalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
+        self.growCheckBox = QCheckBox(self.molGroupBox)
+        self.growCheckBox.setObjectName(u"growCheckBox")
+        self.growCheckBox.setMinimumSize(QSize(0, 20))
+
+        self.horizontalLayout_7.addWidget(self.growCheckBox)
+
+        self.labelsCheckBox = QCheckBox(self.molGroupBox)
+        self.labelsCheckBox.setObjectName(u"labelsCheckBox")
+        self.labelsCheckBox.setMinimumSize(QSize(0, 20))
+
+        self.horizontalLayout_7.addWidget(self.labelsCheckBox)
+
+        self.adpCheckBox = QCheckBox(self.molGroupBox)
+        self.adpCheckBox.setObjectName(u"adpCheckBox")
+        self.adpCheckBox.setChecked(True)
+
+        self.horizontalLayout_7.addWidget(self.adpCheckBox)
+
+        self.horizontalSpacer_5 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_7.addItem(self.horizontalSpacer_5)
+
+        self.drawImagePushButton = QPushButton(self.molGroupBox)
+        self.drawImagePushButton.setObjectName(u"drawImagePushButton")
+
+        self.horizontalLayout_7.addWidget(self.drawImagePushButton)
+
+        self.horizontalSpacer_23 = QSpacerItem(10, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_7.addItem(self.horizontalSpacer_23)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_7)
+
+
+        self.verticalLayout_42.addWidget(self.molGroupBox)
+
+        self.picturesTabWidget.addTab(self.tab_structure, "")
+        self.tab_video = QWidget()
+        self.tab_video.setObjectName(u"tab_video")
+        self.verticalLayout_44 = QVBoxLayout(self.tab_video)
+        self.verticalLayout_44.setObjectName(u"verticalLayout_44")
+        self.verticalLayout_44.setContentsMargins(3, 3, 3, 3)
+        self.videoFrame = QFrame(self.tab_video)
+        self.videoFrame.setObjectName(u"videoFrame")
+        sizePolicy7.setHeightForWidth(self.videoFrame.sizePolicy().hasHeightForWidth())
+        self.videoFrame.setSizePolicy(sizePolicy7)
+        self.videoFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.videoFrame.setFrameShadow(QFrame.Shadow.Raised)
+        self.video_vLayout = QVBoxLayout(self.videoFrame)
+        self.video_vLayout.setObjectName(u"video_vLayout")
+        self.video_vLayout.setContentsMargins(0, 0, 0, 0)
+
+        self.verticalLayout_44.addWidget(self.videoFrame)
+
+        self.horizontalLayout_17 = QHBoxLayout()
+        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.videoLineEdit = QLineEdit(self.tab_video)
+        self.videoLineEdit.setObjectName(u"videoLineEdit")
+        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy11.setHorizontalStretch(3)
+        sizePolicy11.setVerticalStretch(0)
+        sizePolicy11.setHeightForWidth(self.videoLineEdit.sizePolicy().hasHeightForWidth())
+        self.videoLineEdit.setSizePolicy(sizePolicy11)
+        self.videoLineEdit.setReadOnly(True)
+
+        self.horizontalLayout_17.addWidget(self.videoLineEdit)
+
+        self.SelectVideo_PushButton = QPushButton(self.tab_video)
+        self.SelectVideo_PushButton.setObjectName(u"SelectVideo_PushButton")
+
+        self.horizontalLayout_17.addWidget(self.SelectVideo_PushButton)
+
+        self.horizontalSpacer_14 = QSpacerItem(34, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_17.addItem(self.horizontalSpacer_14)
+
+        self.setVideoPicturePushButton = QPushButton(self.tab_video)
+        self.setVideoPicturePushButton.setObjectName(u"setVideoPicturePushButton")
+
+        self.horizontalLayout_17.addWidget(self.setVideoPicturePushButton)
+
+        self.videoLeftToolButton = QToolButton(self.tab_video)
+        self.videoLeftToolButton.setObjectName(u"videoLeftToolButton")
+
+        self.horizontalLayout_17.addWidget(self.videoLeftToolButton)
+
+        self.videoRightToolButton = QToolButton(self.tab_video)
+        self.videoRightToolButton.setObjectName(u"videoRightToolButton")
+
+        self.horizontalLayout_17.addWidget(self.videoRightToolButton)
+
+
+        self.verticalLayout_44.addLayout(self.horizontalLayout_17)
+
+        self.picturesTabWidget.addTab(self.tab_video, "")
+
+        self.gridLayout_3.addWidget(self.picturesTabWidget, 0, 0, 1, 2)
+
+        self.shelxfile_groupBox = QGroupBox(self.page_molinfo)
+        self.shelxfile_groupBox.setObjectName(u"shelxfile_groupBox")
+        sizePolicy12 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy12.setHorizontalStretch(45)
+        sizePolicy12.setVerticalStretch(80)
+        sizePolicy12.setHeightForWidth(self.shelxfile_groupBox.sizePolicy().hasHeightForWidth())
+        self.shelxfile_groupBox.setSizePolicy(sizePolicy12)
+        self.verticalLayout_41 = QVBoxLayout(self.shelxfile_groupBox)
+        self.verticalLayout_41.setObjectName(u"verticalLayout_41")
+        self.shelx_TextEdit = QPlainTextEdit(self.shelxfile_groupBox)
+        self.shelx_TextEdit.setObjectName(u"shelx_TextEdit")
+        sizePolicy13 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy13.setHorizontalStretch(0)
+        sizePolicy13.setVerticalStretch(90)
+        sizePolicy13.setHeightForWidth(self.shelx_TextEdit.sizePolicy().hasHeightForWidth())
+        self.shelx_TextEdit.setSizePolicy(sizePolicy13)
+        self.shelx_TextEdit.setFrameShape(QFrame.Shape.NoFrame)
+        self.shelx_TextEdit.setFrameShadow(QFrame.Shadow.Plain)
+        self.shelx_TextEdit.setUndoRedoEnabled(False)
+        self.shelx_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        self.shelx_TextEdit.setReadOnly(True)
+
+        self.verticalLayout_41.addWidget(self.shelx_TextEdit)
+
+        self.shelx_warn_TextEdit = QPlainTextEdit(self.shelxfile_groupBox)
+        self.shelx_warn_TextEdit.setObjectName(u"shelx_warn_TextEdit")
+        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy14.setHorizontalStretch(0)
+        sizePolicy14.setVerticalStretch(10)
+        sizePolicy14.setHeightForWidth(self.shelx_warn_TextEdit.sizePolicy().hasHeightForWidth())
+        self.shelx_warn_TextEdit.setSizePolicy(sizePolicy14)
+        font1 = QFont()
+        font1.setBold(True)
+        self.shelx_warn_TextEdit.setFont(font1)
+        self.shelx_warn_TextEdit.setUndoRedoEnabled(False)
+        self.shelx_warn_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        self.shelx_warn_TextEdit.setReadOnly(True)
+
+        self.verticalLayout_41.addWidget(self.shelx_warn_TextEdit)
+
+
+        self.gridLayout_3.addWidget(self.shelxfile_groupBox, 0, 2, 1, 2)
+
         self.groupBox_3 = QGroupBox(self.page_molinfo)
         self.groupBox_3.setObjectName(u"groupBox_3")
-        sizePolicy8 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy8.setHorizontalStretch(0)
-        sizePolicy8.setVerticalStretch(20)
-        sizePolicy8.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
-        self.groupBox_3.setSizePolicy(sizePolicy8)
+        sizePolicy15 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy15.setHorizontalStretch(0)
+        sizePolicy15.setVerticalStretch(20)
+        sizePolicy15.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
+        self.groupBox_3.setSizePolicy(sizePolicy15)
         self.gridLayout_4 = QGridLayout(self.groupBox_3)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.horizontalSpacer_7 = QSpacerItem(20, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_4.addItem(self.horizontalSpacer_7, 0, 3, 1, 1)
+
         self.verticalSpacer_2 = QSpacerItem(20, 12, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
 
         self.gridLayout_4.addItem(self.verticalSpacer_2, 1, 2, 1, 1)
 
-        self.horizontalSpacer_24 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_4.addItem(self.horizontalSpacer_24, 0, 7, 1, 1)
-
-        self.formLayout_2 = QFormLayout()
-        self.formLayout_2.setObjectName(u"formLayout_2")
-        self.reflTotalLabel = QLabel(self.groupBox_3)
-        self.reflTotalLabel.setObjectName(u"reflTotalLabel")
-        self.reflTotalLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout_2.setWidget(0, QFormLayout.ItemRole.LabelRole, self.reflTotalLabel)
-
-        self.reflTotalLineEdit = QLineEdit(self.groupBox_3)
-        self.reflTotalLineEdit.setObjectName(u"reflTotalLineEdit")
-        self.reflTotalLineEdit.setReadOnly(True)
-
-        self.formLayout_2.setWidget(0, QFormLayout.ItemRole.FieldRole, self.reflTotalLineEdit)
-
-        self.refl2sigmaLabel = QLabel(self.groupBox_3)
-        self.refl2sigmaLabel.setObjectName(u"refl2sigmaLabel")
-
-        self.formLayout_2.setWidget(1, QFormLayout.ItemRole.LabelRole, self.refl2sigmaLabel)
-
-        self.refl2sigmaLineEdit = QLineEdit(self.groupBox_3)
-        self.refl2sigmaLineEdit.setObjectName(u"refl2sigmaLineEdit")
-
-        self.formLayout_2.setWidget(1, QFormLayout.ItemRole.FieldRole, self.refl2sigmaLineEdit)
-
-        self.uniqReflLabel = QLabel(self.groupBox_3)
-        self.uniqReflLabel.setObjectName(u"uniqReflLabel")
-
-        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.LabelRole, self.uniqReflLabel)
-
-        self.uniqReflLineEdit = QLineEdit(self.groupBox_3)
-        self.uniqReflLineEdit.setObjectName(u"uniqReflLineEdit")
-
-        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.FieldRole, self.uniqReflLineEdit)
-
-        self.numParametersLabel = QLabel(self.groupBox_3)
-        self.numParametersLabel.setObjectName(u"numParametersLabel")
-        self.numParametersLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.LabelRole, self.numParametersLabel)
-
-        self.numParametersLineEdit = QLineEdit(self.groupBox_3)
-        self.numParametersLineEdit.setObjectName(u"numParametersLineEdit")
-        self.numParametersLineEdit.setMinimumSize(QSize(0, 0))
-        self.numParametersLineEdit.setReadOnly(True)
-
-        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.FieldRole, self.numParametersLineEdit)
-
-        self.dataReflnsLabel = QLabel(self.groupBox_3)
-        self.dataReflnsLabel.setObjectName(u"dataReflnsLabel")
-        font1 = QFont()
-        font1.setBold(False)
-        self.dataReflnsLabel.setFont(font1)
-        self.dataReflnsLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout_2.setWidget(4, QFormLayout.ItemRole.LabelRole, self.dataReflnsLabel)
-
-        self.dataReflnsLineEdit = QLineEdit(self.groupBox_3)
-        self.dataReflnsLineEdit.setObjectName(u"dataReflnsLineEdit")
-        self.dataReflnsLineEdit.setReadOnly(True)
-
-        self.formLayout_2.setWidget(4, QFormLayout.ItemRole.FieldRole, self.dataReflnsLineEdit)
-
-        self.wavelengthLabel = QLabel(self.groupBox_3)
-        self.wavelengthLabel.setObjectName(u"wavelengthLabel")
-        self.wavelengthLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout_2.setWidget(5, QFormLayout.ItemRole.LabelRole, self.wavelengthLabel)
-
-        self.wavelengthLineEdit = QLineEdit(self.groupBox_3)
-        self.wavelengthLineEdit.setObjectName(u"wavelengthLineEdit")
-        self.wavelengthLineEdit.setReadOnly(True)
-
-        self.formLayout_2.setWidget(5, QFormLayout.ItemRole.FieldRole, self.wavelengthLineEdit)
-
-        self.flackXLabel = QLabel(self.groupBox_3)
-        self.flackXLabel.setObjectName(u"flackXLabel")
-
-        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.LabelRole, self.flackXLabel)
-
-        self.flackXLineEdit = QLineEdit(self.groupBox_3)
-        self.flackXLineEdit.setObjectName(u"flackXLineEdit")
-
-        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.FieldRole, self.flackXLineEdit)
-
-
-        self.gridLayout_4.addLayout(self.formLayout_2, 0, 6, 1, 1)
-
-        self.groupBox_4 = QGroupBox(self.groupBox_3)
-        self.groupBox_4.setObjectName(u"groupBox_4")
-        sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy9.setHorizontalStretch(0)
-        sizePolicy9.setVerticalStretch(0)
-        sizePolicy9.setHeightForWidth(self.groupBox_4.sizePolicy().hasHeightForWidth())
-        self.groupBox_4.setSizePolicy(sizePolicy9)
-        self.gridLayout_9 = QGridLayout(self.groupBox_4)
-        self.gridLayout_9.setObjectName(u"gridLayout_9")
-        self.cellField = QLabel(self.groupBox_4)
-        self.cellField.setObjectName(u"cellField")
-        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-        sizePolicy10.setHorizontalStretch(0)
-        sizePolicy10.setVerticalStretch(0)
-        sizePolicy10.setHeightForWidth(self.cellField.sizePolicy().hasHeightForWidth())
-        self.cellField.setSizePolicy(sizePolicy10)
-        self.cellField.setMinimumSize(QSize(0, 75))
-        self.cellField.setBaseSize(QSize(0, 75))
-        self.cellField.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
-        self.cellField.setAutoFillBackground(False)
-        self.cellField.setStyleSheet(u"border-color: rgb(53, 53, 53);")
-        self.cellField.setFrameShape(QFrame.Shape.NoFrame)
-        self.cellField.setFrameShadow(QFrame.Shadow.Plain)
-        self.cellField.setTextFormat(Qt.TextFormat.RichText)
-        self.cellField.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
-
-        self.gridLayout_9.addWidget(self.cellField, 0, 2, 1, 1)
-
-
-        self.gridLayout_4.addWidget(self.groupBox_4, 0, 0, 1, 1)
-
         self.horizontalSpacer_8 = QSpacerItem(20, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_4.addItem(self.horizontalSpacer_8, 0, 5, 1, 1)
-
-        self.formLayout = QFormLayout()
-        self.formLayout.setObjectName(u"formLayout")
-        self.peakLabel = QLabel(self.groupBox_3)
-        self.peakLabel.setObjectName(u"peakLabel")
-        self.peakLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.peakLabel)
-
-        self.peakLineEdit = QLineEdit(self.groupBox_3)
-        self.peakLineEdit.setObjectName(u"peakLineEdit")
-        self.peakLineEdit.setReadOnly(True)
-
-        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.peakLineEdit)
-
-        self.rintLabel = QLabel(self.groupBox_3)
-        self.rintLabel.setObjectName(u"rintLabel")
-        self.rintLabel.setFont(font1)
-        self.rintLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.rintLabel)
-
-        self.rintLineEdit = QLineEdit(self.groupBox_3)
-        self.rintLineEdit.setObjectName(u"rintLineEdit")
-        self.rintLineEdit.setReadOnly(True)
-
-        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.rintLineEdit)
-
-        self.rsigmaLabel = QLabel(self.groupBox_3)
-        self.rsigmaLabel.setObjectName(u"rsigmaLabel")
-        self.rsigmaLabel.setFont(font1)
-        self.rsigmaLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.rsigmaLabel)
-
-        self.rsigmaLineEdit = QLineEdit(self.groupBox_3)
-        self.rsigmaLineEdit.setObjectName(u"rsigmaLineEdit")
-        self.rsigmaLineEdit.setReadOnly(True)
-
-        self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.rsigmaLineEdit)
-
-        self.numRestraintsLabel = QLabel(self.groupBox_3)
-        self.numRestraintsLabel.setObjectName(u"numRestraintsLabel")
-        self.numRestraintsLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.numRestraintsLabel)
-
-        self.numRestraintsLineEdit = QLineEdit(self.groupBox_3)
-        self.numRestraintsLineEdit.setObjectName(u"numRestraintsLineEdit")
-        self.numRestraintsLineEdit.setReadOnly(True)
-
-        self.formLayout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.numRestraintsLineEdit)
-
-        self.thetaMaxLabel = QLabel(self.groupBox_3)
-        self.thetaMaxLabel.setObjectName(u"thetaMaxLabel")
-        self.thetaMaxLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.thetaMaxLabel)
-
-        self.thetaMaxLineEdit = QLineEdit(self.groupBox_3)
-        self.thetaMaxLineEdit.setObjectName(u"thetaMaxLineEdit")
-        self.thetaMaxLineEdit.setReadOnly(True)
-
-        self.formLayout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.thetaMaxLineEdit)
-
-        self.thetaFullLabel = QLabel(self.groupBox_3)
-        self.thetaFullLabel.setObjectName(u"thetaFullLabel")
-        self.thetaFullLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout.setWidget(5, QFormLayout.ItemRole.LabelRole, self.thetaFullLabel)
-
-        self.thetaFullLineEdit = QLineEdit(self.groupBox_3)
-        self.thetaFullLineEdit.setObjectName(u"thetaFullLineEdit")
-        self.thetaFullLineEdit.setReadOnly(True)
-
-        self.formLayout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.thetaFullLineEdit)
-
-        self.dLabel = QLabel(self.groupBox_3)
-        self.dLabel.setObjectName(u"dLabel")
-        self.dLabel.setFont(font1)
-        self.dLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
-
-        self.formLayout.setWidget(6, QFormLayout.ItemRole.LabelRole, self.dLabel)
-
-        self.dLineEdit = QLineEdit(self.groupBox_3)
-        self.dLineEdit.setObjectName(u"dLineEdit")
-        self.dLineEdit.setReadOnly(True)
-
-        self.formLayout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.dLineEdit)
-
-
-        self.gridLayout_4.addLayout(self.formLayout, 0, 4, 1, 1)
 
         self.BackpushButtonDetails = QPushButton(self.groupBox_3)
         self.BackpushButtonDetails.setObjectName(u"BackpushButtonDetails")
@@ -890,21 +946,6 @@ class Ui_FinalCifWindow(object):
         self.BackpushButtonDetails.setSizePolicy(sizePolicy5)
 
         self.gridLayout_4.addWidget(self.BackpushButtonDetails, 2, 0, 1, 1)
-
-        self.horizontalSpacer_7 = QSpacerItem(20, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_4.addItem(self.horizontalSpacer_7, 0, 3, 1, 1)
-
-        self.horizontalSpacer_22 = QSpacerItem(20, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_4.addItem(self.horizontalSpacer_22, 0, 1, 1, 1)
-
-        self.SourcesPushButton = QPushButton(self.groupBox_3)
-        self.SourcesPushButton.setObjectName(u"SourcesPushButton")
-        sizePolicy5.setHeightForWidth(self.SourcesPushButton.sizePolicy().hasHeightForWidth())
-        self.SourcesPushButton.setSizePolicy(sizePolicy5)
-
-        self.gridLayout_4.addWidget(self.SourcesPushButton, 2, 7, 1, 1)
 
         self.formLayout_3 = QFormLayout()
         self.formLayout_3.setObjectName(u"formLayout_3")
@@ -996,7 +1037,9 @@ class Ui_FinalCifWindow(object):
 
         self.completeLabel = QLabel(self.groupBox_3)
         self.completeLabel.setObjectName(u"completeLabel")
-        self.completeLabel.setFont(font1)
+        font3 = QFont()
+        font3.setBold(False)
+        self.completeLabel.setFont(font3)
         self.completeLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_3.setWidget(6, QFormLayout.ItemRole.LabelRole, self.completeLabel)
@@ -1010,185 +1053,231 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_4.addLayout(self.formLayout_3, 0, 2, 1, 1)
 
+        self.groupBox_4 = QGroupBox(self.groupBox_3)
+        self.groupBox_4.setObjectName(u"groupBox_4")
+        sizePolicy16 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy16.setHorizontalStretch(0)
+        sizePolicy16.setVerticalStretch(0)
+        sizePolicy16.setHeightForWidth(self.groupBox_4.sizePolicy().hasHeightForWidth())
+        self.groupBox_4.setSizePolicy(sizePolicy16)
+        self.gridLayout_9 = QGridLayout(self.groupBox_4)
+        self.gridLayout_9.setObjectName(u"gridLayout_9")
+        self.cellField = QLabel(self.groupBox_4)
+        self.cellField.setObjectName(u"cellField")
+        sizePolicy17 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        sizePolicy17.setHorizontalStretch(0)
+        sizePolicy17.setVerticalStretch(0)
+        sizePolicy17.setHeightForWidth(self.cellField.sizePolicy().hasHeightForWidth())
+        self.cellField.setSizePolicy(sizePolicy17)
+        self.cellField.setMinimumSize(QSize(0, 75))
+        self.cellField.setBaseSize(QSize(0, 75))
+        self.cellField.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
+        self.cellField.setAutoFillBackground(False)
+        self.cellField.setStyleSheet(u"border-color: rgb(53, 53, 53);")
+        self.cellField.setFrameShape(QFrame.Shape.NoFrame)
+        self.cellField.setFrameShadow(QFrame.Shadow.Plain)
+        self.cellField.setTextFormat(Qt.TextFormat.RichText)
+        self.cellField.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+
+        self.gridLayout_9.addWidget(self.cellField, 0, 2, 1, 1)
+
+
+        self.gridLayout_4.addWidget(self.groupBox_4, 0, 0, 1, 1)
+
+        self.SourcesPushButton = QPushButton(self.groupBox_3)
+        self.SourcesPushButton.setObjectName(u"SourcesPushButton")
+        sizePolicy5.setHeightForWidth(self.SourcesPushButton.sizePolicy().hasHeightForWidth())
+        self.SourcesPushButton.setSizePolicy(sizePolicy5)
+
+        self.gridLayout_4.addWidget(self.SourcesPushButton, 2, 6, 1, 1)
+
+        self.formLayout_2 = QFormLayout()
+        self.formLayout_2.setObjectName(u"formLayout_2")
+        self.reflTotalLabel = QLabel(self.groupBox_3)
+        self.reflTotalLabel.setObjectName(u"reflTotalLabel")
+        self.reflTotalLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout_2.setWidget(0, QFormLayout.ItemRole.LabelRole, self.reflTotalLabel)
+
+        self.reflTotalLineEdit = QLineEdit(self.groupBox_3)
+        self.reflTotalLineEdit.setObjectName(u"reflTotalLineEdit")
+        self.reflTotalLineEdit.setReadOnly(True)
+
+        self.formLayout_2.setWidget(0, QFormLayout.ItemRole.FieldRole, self.reflTotalLineEdit)
+
+        self.refl2sigmaLabel = QLabel(self.groupBox_3)
+        self.refl2sigmaLabel.setObjectName(u"refl2sigmaLabel")
+
+        self.formLayout_2.setWidget(1, QFormLayout.ItemRole.LabelRole, self.refl2sigmaLabel)
+
+        self.refl2sigmaLineEdit = QLineEdit(self.groupBox_3)
+        self.refl2sigmaLineEdit.setObjectName(u"refl2sigmaLineEdit")
+
+        self.formLayout_2.setWidget(1, QFormLayout.ItemRole.FieldRole, self.refl2sigmaLineEdit)
+
+        self.uniqReflLabel = QLabel(self.groupBox_3)
+        self.uniqReflLabel.setObjectName(u"uniqReflLabel")
+
+        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.LabelRole, self.uniqReflLabel)
+
+        self.uniqReflLineEdit = QLineEdit(self.groupBox_3)
+        self.uniqReflLineEdit.setObjectName(u"uniqReflLineEdit")
+
+        self.formLayout_2.setWidget(2, QFormLayout.ItemRole.FieldRole, self.uniqReflLineEdit)
+
+        self.numParametersLabel = QLabel(self.groupBox_3)
+        self.numParametersLabel.setObjectName(u"numParametersLabel")
+        self.numParametersLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.LabelRole, self.numParametersLabel)
+
+        self.numParametersLineEdit = QLineEdit(self.groupBox_3)
+        self.numParametersLineEdit.setObjectName(u"numParametersLineEdit")
+        self.numParametersLineEdit.setMinimumSize(QSize(0, 0))
+        self.numParametersLineEdit.setReadOnly(True)
+
+        self.formLayout_2.setWidget(3, QFormLayout.ItemRole.FieldRole, self.numParametersLineEdit)
+
+        self.dataReflnsLabel = QLabel(self.groupBox_3)
+        self.dataReflnsLabel.setObjectName(u"dataReflnsLabel")
+        self.dataReflnsLabel.setFont(font3)
+        self.dataReflnsLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout_2.setWidget(4, QFormLayout.ItemRole.LabelRole, self.dataReflnsLabel)
+
+        self.dataReflnsLineEdit = QLineEdit(self.groupBox_3)
+        self.dataReflnsLineEdit.setObjectName(u"dataReflnsLineEdit")
+        self.dataReflnsLineEdit.setReadOnly(True)
+
+        self.formLayout_2.setWidget(4, QFormLayout.ItemRole.FieldRole, self.dataReflnsLineEdit)
+
+        self.wavelengthLabel = QLabel(self.groupBox_3)
+        self.wavelengthLabel.setObjectName(u"wavelengthLabel")
+        self.wavelengthLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout_2.setWidget(5, QFormLayout.ItemRole.LabelRole, self.wavelengthLabel)
+
+        self.wavelengthLineEdit = QLineEdit(self.groupBox_3)
+        self.wavelengthLineEdit.setObjectName(u"wavelengthLineEdit")
+        self.wavelengthLineEdit.setReadOnly(True)
+
+        self.formLayout_2.setWidget(5, QFormLayout.ItemRole.FieldRole, self.wavelengthLineEdit)
+
+        self.flackXLabel = QLabel(self.groupBox_3)
+        self.flackXLabel.setObjectName(u"flackXLabel")
+
+        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.LabelRole, self.flackXLabel)
+
+        self.flackXLineEdit = QLineEdit(self.groupBox_3)
+        self.flackXLineEdit.setObjectName(u"flackXLineEdit")
+
+        self.formLayout_2.setWidget(6, QFormLayout.ItemRole.FieldRole, self.flackXLineEdit)
+
+
+        self.gridLayout_4.addLayout(self.formLayout_2, 0, 6, 1, 1)
+
+        self.formLayout = QFormLayout()
+        self.formLayout.setObjectName(u"formLayout")
+        self.peakLabel = QLabel(self.groupBox_3)
+        self.peakLabel.setObjectName(u"peakLabel")
+        self.peakLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.LabelRole, self.peakLabel)
+
+        self.peakLineEdit = QLineEdit(self.groupBox_3)
+        self.peakLineEdit.setObjectName(u"peakLineEdit")
+        self.peakLineEdit.setReadOnly(True)
+
+        self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.peakLineEdit)
+
+        self.rintLabel = QLabel(self.groupBox_3)
+        self.rintLabel.setObjectName(u"rintLabel")
+        self.rintLabel.setFont(font3)
+        self.rintLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.rintLabel)
+
+        self.rintLineEdit = QLineEdit(self.groupBox_3)
+        self.rintLineEdit.setObjectName(u"rintLineEdit")
+        self.rintLineEdit.setReadOnly(True)
+
+        self.formLayout.setWidget(1, QFormLayout.ItemRole.FieldRole, self.rintLineEdit)
+
+        self.rsigmaLabel = QLabel(self.groupBox_3)
+        self.rsigmaLabel.setObjectName(u"rsigmaLabel")
+        self.rsigmaLabel.setFont(font3)
+        self.rsigmaLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.rsigmaLabel)
+
+        self.rsigmaLineEdit = QLineEdit(self.groupBox_3)
+        self.rsigmaLineEdit.setObjectName(u"rsigmaLineEdit")
+        self.rsigmaLineEdit.setReadOnly(True)
+
+        self.formLayout.setWidget(2, QFormLayout.ItemRole.FieldRole, self.rsigmaLineEdit)
+
+        self.numRestraintsLabel = QLabel(self.groupBox_3)
+        self.numRestraintsLabel.setObjectName(u"numRestraintsLabel")
+        self.numRestraintsLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout.setWidget(3, QFormLayout.ItemRole.LabelRole, self.numRestraintsLabel)
+
+        self.numRestraintsLineEdit = QLineEdit(self.groupBox_3)
+        self.numRestraintsLineEdit.setObjectName(u"numRestraintsLineEdit")
+        self.numRestraintsLineEdit.setReadOnly(True)
+
+        self.formLayout.setWidget(3, QFormLayout.ItemRole.FieldRole, self.numRestraintsLineEdit)
+
+        self.thetaMaxLabel = QLabel(self.groupBox_3)
+        self.thetaMaxLabel.setObjectName(u"thetaMaxLabel")
+        self.thetaMaxLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout.setWidget(4, QFormLayout.ItemRole.LabelRole, self.thetaMaxLabel)
+
+        self.thetaMaxLineEdit = QLineEdit(self.groupBox_3)
+        self.thetaMaxLineEdit.setObjectName(u"thetaMaxLineEdit")
+        self.thetaMaxLineEdit.setReadOnly(True)
+
+        self.formLayout.setWidget(4, QFormLayout.ItemRole.FieldRole, self.thetaMaxLineEdit)
+
+        self.thetaFullLabel = QLabel(self.groupBox_3)
+        self.thetaFullLabel.setObjectName(u"thetaFullLabel")
+        self.thetaFullLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout.setWidget(5, QFormLayout.ItemRole.LabelRole, self.thetaFullLabel)
+
+        self.thetaFullLineEdit = QLineEdit(self.groupBox_3)
+        self.thetaFullLineEdit.setObjectName(u"thetaFullLineEdit")
+        self.thetaFullLineEdit.setReadOnly(True)
+
+        self.formLayout.setWidget(5, QFormLayout.ItemRole.FieldRole, self.thetaFullLineEdit)
+
+        self.dLabel = QLabel(self.groupBox_3)
+        self.dLabel.setObjectName(u"dLabel")
+        self.dLabel.setFont(font3)
+        self.dLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
+
+        self.formLayout.setWidget(6, QFormLayout.ItemRole.LabelRole, self.dLabel)
+
+        self.dLineEdit = QLineEdit(self.groupBox_3)
+        self.dLineEdit.setObjectName(u"dLineEdit")
+        self.dLineEdit.setReadOnly(True)
+
+        self.formLayout.setWidget(6, QFormLayout.ItemRole.FieldRole, self.dLineEdit)
+
+
+        self.gridLayout_4.addLayout(self.formLayout, 0, 4, 1, 1)
+
+        self.horizontalSpacer_22 = QSpacerItem(20, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_4.addItem(self.horizontalSpacer_22, 0, 1, 1, 1)
+
+        self.horizontalSpacer_24 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_4.addItem(self.horizontalSpacer_24, 0, 7, 1, 1)
+
 
         self.gridLayout_3.addWidget(self.groupBox_3, 1, 0, 1, 4)
-
-        self.picturesTabWidget = QTabWidget(self.page_molinfo)
-        self.picturesTabWidget.setObjectName(u"picturesTabWidget")
-        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy11.setHorizontalStretch(55)
-        sizePolicy11.setVerticalStretch(0)
-        sizePolicy11.setHeightForWidth(self.picturesTabWidget.sizePolicy().hasHeightForWidth())
-        self.picturesTabWidget.setSizePolicy(sizePolicy11)
-        self.tab_structure = QWidget()
-        self.tab_structure.setObjectName(u"tab_structure")
-        self.verticalLayout_42 = QVBoxLayout(self.tab_structure)
-        self.verticalLayout_42.setObjectName(u"verticalLayout_42")
-        self.verticalLayout_42.setContentsMargins(3, 3, 3, 3)
-        self.molGroupBox = QGroupBox(self.tab_structure)
-        self.molGroupBox.setObjectName(u"molGroupBox")
-        sizePolicy12 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy12.setHorizontalStretch(55)
-        sizePolicy12.setVerticalStretch(80)
-        sizePolicy12.setHeightForWidth(self.molGroupBox.sizePolicy().hasHeightForWidth())
-        self.molGroupBox.setSizePolicy(sizePolicy12)
-        self.verticalLayout_8 = QVBoxLayout(self.molGroupBox)
-        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
-        self.verticalLayout_8.setContentsMargins(6, 3, 0, 6)
-        self.render_widget = MoleculeWidget(self.molGroupBox)
-        self.render_widget.setObjectName(u"render_widget")
-        sizePolicy13 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy13.setHorizontalStretch(0)
-        sizePolicy13.setVerticalStretch(0)
-        sizePolicy13.setHeightForWidth(self.render_widget.sizePolicy().hasHeightForWidth())
-        self.render_widget.setSizePolicy(sizePolicy13)
-
-        self.verticalLayout_8.addWidget(self.render_widget)
-
-        self.horizontalLayout_7 = QHBoxLayout()
-        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.horizontalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
-        self.growCheckBox = QCheckBox(self.molGroupBox)
-        self.growCheckBox.setObjectName(u"growCheckBox")
-        self.growCheckBox.setMinimumSize(QSize(0, 20))
-
-        self.horizontalLayout_7.addWidget(self.growCheckBox)
-
-        self.labelsCheckBox = QCheckBox(self.molGroupBox)
-        self.labelsCheckBox.setObjectName(u"labelsCheckBox")
-        self.labelsCheckBox.setMinimumSize(QSize(0, 20))
-
-        self.horizontalLayout_7.addWidget(self.labelsCheckBox)
-
-        self.adpCheckBox = QCheckBox(self.molGroupBox)
-        self.adpCheckBox.setObjectName(u"adpCheckBox")
-        self.adpCheckBox.setChecked(True)
-
-        self.horizontalLayout_7.addWidget(self.adpCheckBox)
-
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_7.addItem(self.horizontalSpacer_5)
-
-        self.drawImagePushButton = QPushButton(self.molGroupBox)
-        self.drawImagePushButton.setObjectName(u"drawImagePushButton")
-
-        self.horizontalLayout_7.addWidget(self.drawImagePushButton)
-
-        self.horizontalSpacer_23 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_7.addItem(self.horizontalSpacer_23)
-
-
-        self.verticalLayout_8.addLayout(self.horizontalLayout_7)
-
-
-        self.verticalLayout_42.addWidget(self.molGroupBox)
-
-        self.picturesTabWidget.addTab(self.tab_structure, "")
-        self.tab_video = QWidget()
-        self.tab_video.setObjectName(u"tab_video")
-        self.verticalLayout_44 = QVBoxLayout(self.tab_video)
-        self.verticalLayout_44.setObjectName(u"verticalLayout_44")
-        self.verticalLayout_44.setContentsMargins(3, 3, 3, 3)
-        self.videoFrame = QFrame(self.tab_video)
-        self.videoFrame.setObjectName(u"videoFrame")
-        sizePolicy7.setHeightForWidth(self.videoFrame.sizePolicy().hasHeightForWidth())
-        self.videoFrame.setSizePolicy(sizePolicy7)
-        self.videoFrame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.videoFrame.setFrameShadow(QFrame.Shadow.Raised)
-        self.video_vLayout = QVBoxLayout(self.videoFrame)
-        self.video_vLayout.setObjectName(u"video_vLayout")
-        self.video_vLayout.setContentsMargins(0, 0, 0, 0)
-
-        self.verticalLayout_44.addWidget(self.videoFrame)
-
-        self.horizontalLayout_17 = QHBoxLayout()
-        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
-        self.videoLineEdit = QLineEdit(self.tab_video)
-        self.videoLineEdit.setObjectName(u"videoLineEdit")
-        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy14.setHorizontalStretch(3)
-        sizePolicy14.setVerticalStretch(0)
-        sizePolicy14.setHeightForWidth(self.videoLineEdit.sizePolicy().hasHeightForWidth())
-        self.videoLineEdit.setSizePolicy(sizePolicy14)
-        self.videoLineEdit.setReadOnly(True)
-
-        self.horizontalLayout_17.addWidget(self.videoLineEdit)
-
-        self.SelectVideo_PushButton = QPushButton(self.tab_video)
-        self.SelectVideo_PushButton.setObjectName(u"SelectVideo_PushButton")
-
-        self.horizontalLayout_17.addWidget(self.SelectVideo_PushButton)
-
-        self.horizontalSpacer_14 = QSpacerItem(34, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_17.addItem(self.horizontalSpacer_14)
-
-        self.setVideoPicturePushButton = QPushButton(self.tab_video)
-        self.setVideoPicturePushButton.setObjectName(u"setVideoPicturePushButton")
-
-        self.horizontalLayout_17.addWidget(self.setVideoPicturePushButton)
-
-        self.videoLeftToolButton = QToolButton(self.tab_video)
-        self.videoLeftToolButton.setObjectName(u"videoLeftToolButton")
-
-        self.horizontalLayout_17.addWidget(self.videoLeftToolButton)
-
-        self.videoRightToolButton = QToolButton(self.tab_video)
-        self.videoRightToolButton.setObjectName(u"videoRightToolButton")
-
-        self.horizontalLayout_17.addWidget(self.videoRightToolButton)
-
-
-        self.verticalLayout_44.addLayout(self.horizontalLayout_17)
-
-        self.picturesTabWidget.addTab(self.tab_video, "")
-
-        self.gridLayout_3.addWidget(self.picturesTabWidget, 0, 0, 1, 2)
-
-        self.groupBox_9 = QGroupBox(self.page_molinfo)
-        self.groupBox_9.setObjectName(u"groupBox_9")
-        sizePolicy15 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy15.setHorizontalStretch(45)
-        sizePolicy15.setVerticalStretch(80)
-        sizePolicy15.setHeightForWidth(self.groupBox_9.sizePolicy().hasHeightForWidth())
-        self.groupBox_9.setSizePolicy(sizePolicy15)
-        self.verticalLayout_41 = QVBoxLayout(self.groupBox_9)
-        self.verticalLayout_41.setObjectName(u"verticalLayout_41")
-        self.shelx_TextEdit = QPlainTextEdit(self.groupBox_9)
-        self.shelx_TextEdit.setObjectName(u"shelx_TextEdit")
-        sizePolicy16 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy16.setHorizontalStretch(0)
-        sizePolicy16.setVerticalStretch(90)
-        sizePolicy16.setHeightForWidth(self.shelx_TextEdit.sizePolicy().hasHeightForWidth())
-        self.shelx_TextEdit.setSizePolicy(sizePolicy16)
-        self.shelx_TextEdit.setFrameShape(QFrame.Shape.NoFrame)
-        self.shelx_TextEdit.setFrameShadow(QFrame.Shadow.Plain)
-        self.shelx_TextEdit.setUndoRedoEnabled(False)
-        self.shelx_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
-        self.shelx_TextEdit.setReadOnly(True)
-
-        self.verticalLayout_41.addWidget(self.shelx_TextEdit)
-
-        self.shelx_warn_TextEdit = QPlainTextEdit(self.groupBox_9)
-        self.shelx_warn_TextEdit.setObjectName(u"shelx_warn_TextEdit")
-        sizePolicy17 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy17.setHorizontalStretch(0)
-        sizePolicy17.setVerticalStretch(10)
-        sizePolicy17.setHeightForWidth(self.shelx_warn_TextEdit.sizePolicy().hasHeightForWidth())
-        self.shelx_warn_TextEdit.setSizePolicy(sizePolicy17)
-        font3 = QFont()
-        font3.setBold(True)
-        self.shelx_warn_TextEdit.setFont(font3)
-        self.shelx_warn_TextEdit.setUndoRedoEnabled(False)
-        self.shelx_warn_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
-        self.shelx_warn_TextEdit.setReadOnly(True)
-
-        self.verticalLayout_41.addWidget(self.shelx_warn_TextEdit)
-
-
-        self.gridLayout_3.addWidget(self.groupBox_9, 0, 2, 1, 1)
 
         self.MainStackedWidget.addWidget(self.page_molinfo)
         self.page_Sources = QWidget()
@@ -1265,7 +1354,6 @@ class Ui_FinalCifWindow(object):
         self.CODURLTextedit.setObjectName(u"CODURLTextedit")
         sizePolicy3.setHeightForWidth(self.CODURLTextedit.sizePolicy().hasHeightForWidth())
         self.CODURLTextedit.setSizePolicy(sizePolicy3)
-        self.CODURLTextedit.setMinimumSize(QSize(300, 0))
 
         self.formLayout_6.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.CODURLTextedit)
 
@@ -1283,6 +1371,7 @@ class Ui_FinalCifWindow(object):
         self.formLayout_4.setObjectName(u"formLayout_4")
         self.label_4 = QLabel(self.groupBox_71)
         self.label_4.setObjectName(u"label_4")
+        self.label_4.setWordWrap(True)
 
         self.formLayout_4.setWidget(0, QFormLayout.ItemRole.SpanningRole, self.label_4)
 
@@ -1290,7 +1379,6 @@ class Ui_FinalCifWindow(object):
         self.CheckCIFServerURLTextedit.setObjectName(u"CheckCIFServerURLTextedit")
         sizePolicy3.setHeightForWidth(self.CheckCIFServerURLTextedit.sizePolicy().hasHeightForWidth())
         self.CheckCIFServerURLTextedit.setSizePolicy(sizePolicy3)
-        self.CheckCIFServerURLTextedit.setMinimumSize(QSize(300, 0))
 
         self.formLayout_4.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.CheckCIFServerURLTextedit)
 
@@ -1389,7 +1477,7 @@ class Ui_FinalCifWindow(object):
         self.PropertiesGroupBox.setSizePolicy(sizePolicy22)
         self.verticalLayout_6 = QVBoxLayout(self.PropertiesGroupBox)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
-        self.PropertiesTemplatesStackedWidget = QStackedWidget(self.PropertiesGroupBox)
+        self.PropertiesTemplatesStackedWidget = MyMainStackedWidget(self.PropertiesGroupBox)
         self.PropertiesTemplatesStackedWidget.setObjectName(u"PropertiesTemplatesStackedWidget")
         self.PropertiesSelectPage = QWidget()
         self.PropertiesSelectPage.setObjectName(u"PropertiesSelectPage")
@@ -1722,7 +1810,6 @@ class Ui_FinalCifWindow(object):
 
         self.BackFromPlatonPushButton = QPushButton(self.page_checkcif)
         self.BackFromPlatonPushButton.setObjectName(u"BackFromPlatonPushButton")
-        self.BackFromPlatonPushButton.setMinimumSize(QSize(160, 0))
 
         self.gridLayout_8.addWidget(self.BackFromPlatonPushButton, 5, 3, 1, 1)
 
@@ -1827,6 +1914,7 @@ class Ui_FinalCifWindow(object):
         self.label_2.setObjectName(u"label_2")
         self.label_2.setTextFormat(Qt.TextFormat.RichText)
         self.label_2.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.label_2.setWordWrap(True)
         self.label_2.setOpenExternalLinks(True)
         self.label_2.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByKeyboard|Qt.TextInteractionFlag.LinksAccessibleByMouse)
 
@@ -1840,7 +1928,7 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_22.addLayout(self.gridLayout_19, 1, 1, 1, 1)
 
-        self.depositionOptionsStackedWidget = QStackedWidget(self.page_cod)
+        self.depositionOptionsStackedWidget = MyMainStackedWidget(self.page_cod)
         self.depositionOptionsStackedWidget.setObjectName(u"depositionOptionsStackedWidget")
         self.depositionOptionsStackedWidget.setFrameShape(QFrame.Shape.NoFrame)
         self.depositionOptionsStackedWidget.setFrameShadow(QFrame.Shadow.Raised)
@@ -1853,6 +1941,7 @@ class Ui_FinalCifWindow(object):
         self.label_10 = QLabel(self.page_personal)
         self.label_10.setObjectName(u"label_10")
         self.label_10.setTextFormat(Qt.TextFormat.RichText)
+        self.label_10.setWordWrap(True)
 
         self.verticalLayout_30.addWidget(self.label_10)
 
@@ -2129,7 +2218,6 @@ class Ui_FinalCifWindow(object):
         self.horizontalLayout_10.setContentsMargins(-1, 0, -1, -1)
         self.BackFromDepositPushButton = QPushButton(self.page_cod)
         self.BackFromDepositPushButton.setObjectName(u"BackFromDepositPushButton")
-        self.BackFromDepositPushButton.setMinimumSize(QSize(160, 0))
 
         self.horizontalLayout_10.addWidget(self.BackFromDepositPushButton)
 
@@ -2454,95 +2542,6 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_6.addWidget(self.MainStackedWidget, 2, 0, 1, 14)
 
-        self.SumFormMainLineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
-        self.SumFormMainLineEdit.setObjectName(u"SumFormMainLineEdit")
-        sizePolicy3.setHeightForWidth(self.SumFormMainLineEdit.sizePolicy().hasHeightForWidth())
-        self.SumFormMainLineEdit.setSizePolicy(sizePolicy3)
-        self.SumFormMainLineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
-        self.SumFormMainLineEdit.setInputMethodHints(Qt.InputMethodHint.ImhNone)
-        self.SumFormMainLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.SumFormMainLineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.SumFormMainLineEdit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-        self.SumFormMainLineEdit.setTabChangesFocus(True)
-        self.SumFormMainLineEdit.setUndoRedoEnabled(False)
-        self.SumFormMainLineEdit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
-        self.SumFormMainLineEdit.setReadOnly(True)
-
-        self.gridLayout_6.addWidget(self.SumFormMainLineEdit, 0, 11, 1, 1)
-
-        self.appendCifPushButton = QPushButton(self.CifDataItemsFrame)
-        self.appendCifPushButton.setObjectName(u"appendCifPushButton")
-
-        self.gridLayout_6.addWidget(self.appendCifPushButton, 0, 2, 1, 1)
-
-        self.Spacegroup_top_LineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
-        self.Spacegroup_top_LineEdit.setObjectName(u"Spacegroup_top_LineEdit")
-        sizePolicy3.setHeightForWidth(self.Spacegroup_top_LineEdit.sizePolicy().hasHeightForWidth())
-        self.Spacegroup_top_LineEdit.setSizePolicy(sizePolicy3)
-        self.Spacegroup_top_LineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
-        self.Spacegroup_top_LineEdit.setInputMethodHints(Qt.InputMethodHint.ImhNone)
-        self.Spacegroup_top_LineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.Spacegroup_top_LineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.Spacegroup_top_LineEdit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-        self.Spacegroup_top_LineEdit.setTabChangesFocus(True)
-        self.Spacegroup_top_LineEdit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
-        self.Spacegroup_top_LineEdit.setReadOnly(True)
-        self.Spacegroup_top_LineEdit.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
-
-        self.gridLayout_6.addWidget(self.Spacegroup_top_LineEdit, 0, 5, 1, 1)
-
-        self.horizontalSpacer_11 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_11, 0, 3, 1, 1)
-
-        self.CCDCNumLineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
-        self.CCDCNumLineEdit.setObjectName(u"CCDCNumLineEdit")
-        sizePolicy3.setHeightForWidth(self.CCDCNumLineEdit.sizePolicy().hasHeightForWidth())
-        self.CCDCNumLineEdit.setSizePolicy(sizePolicy3)
-        self.CCDCNumLineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
-        self.CCDCNumLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.CCDCNumLineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.CCDCNumLineEdit.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-        self.CCDCNumLineEdit.setTabChangesFocus(True)
-        self.CCDCNumLineEdit.setLineWrapMode(QTextEdit.LineWrapMode.NoWrap)
-        self.CCDCNumLineEdit.setReadOnly(False)
-        self.CCDCNumLineEdit.setAcceptRichText(False)
-
-        self.gridLayout_6.addWidget(self.CCDCNumLineEdit, 0, 8, 1, 1)
-
-        self.horizontalSpacer_10 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_10, 0, 9, 1, 1)
-
-        self.horizontalSpacer_12 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_12, 0, 6, 1, 1)
-
-        self.spacegroupLabel = QLabel(self.CifDataItemsFrame)
-        self.spacegroupLabel.setObjectName(u"spacegroupLabel")
-
-        self.gridLayout_6.addWidget(self.spacegroupLabel, 0, 4, 1, 1)
-
-        self.SumFormMainLabel = QLabel(self.CifDataItemsFrame)
-        self.SumFormMainLabel.setObjectName(u"SumFormMainLabel")
-
-        self.gridLayout_6.addWidget(self.SumFormMainLabel, 0, 10, 1, 1)
-
-        self.verticalLayout_14 = QVBoxLayout()
-        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
-        self.HelpPushButton = QPushButton(self.CifDataItemsFrame)
-        self.HelpPushButton.setObjectName(u"HelpPushButton")
-
-        self.verticalLayout_14.addWidget(self.HelpPushButton)
-
-        self.zEstimateLabel = QLabel(self.CifDataItemsFrame)
-        self.zEstimateLabel.setObjectName(u"zEstimateLabel")
-
-        self.verticalLayout_14.addWidget(self.zEstimateLabel)
-
-
-        self.gridLayout_6.addLayout(self.verticalLayout_14, 0, 12, 1, 1)
-
         self.splitter.addWidget(self.CifDataItemsFrame)
 
         self.horizontalLayout_4.addWidget(self.splitter)
@@ -2744,8 +2743,13 @@ class Ui_FinalCifWindow(object):
         self.ExportAuthorPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Export Author as File", None))
         self.ImportAuthorPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Import Author", None))
         self.DeleteLoopAuthorTemplateButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Author", None))
+        self.SumFormMainLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Sum Formula", None))
+        self.HelpPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Help", None))
+        self.zEstimateLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Z = ?", None))
         self.datanameLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data Name", None))
         self.CCDCNumLabel.setText(QCoreApplication.translate("FinalCifWindow", u"CCDC Number", None))
+        self.appendCifPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Append CIF", None))
+        self.spacegroupLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Space-Group Type", None))
         self.groupBox.setTitle("")
 #if QT_CONFIG(tooltip)
         self.SaveCifButton.setToolTip(QCoreApplication.translate("FinalCifWindow", u"Saves the CIF file to name-finalcif.cif", None))
@@ -2768,33 +2772,6 @@ class Ui_FinalCifWindow(object):
         self.CCDCpushButton.setText(QCoreApplication.translate("FinalCifWindow", u"CCDC Deposit", None))
         self.OptionsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Options", None))
         self.BackPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
-        self.groupBox_3.setTitle(QCoreApplication.translate("FinalCifWindow", u"Properties", None))
-        self.reflTotalLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Measured Refl.", None))
-        self.refl2sigmaLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Data with [<span style=\" font-style:italic;\">I </span>&gt; 2\u03c3(<span style=\" font-style:italic;\">I</span>)]</p></body></html>", None))
-        self.uniqReflLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Independent Refl.", None))
-        self.numParametersLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Parameters", None))
-        self.dataReflnsLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data/Parameters", None))
-        self.wavelengthLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Wavelength [\u00c5]", None))
-        self.flackXLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Flack x", None))
-        self.groupBox_4.setTitle(QCoreApplication.translate("FinalCifWindow", u"Unit Cell", None))
-        self.cellField.setText("")
-        self.peakLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Peak/Hole [e\u00c5<span style=\" vertical-align:super;\">-3</span>]</p></body></html>", None))
-        self.rintLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">int</span></p></body></html>", None))
-        self.rsigmaLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">\u03c3</span></p></body></html>", None))
-        self.numRestraintsLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Restraints", None))
-        self.thetaMaxLabel.setText(QCoreApplication.translate("FinalCifWindow", u"\u03b8(max) [\u00b0]", None))
-        self.thetaFullLabel.setText(QCoreApplication.translate("FinalCifWindow", u"\u03b8(full) [\u00b0]", None))
-        self.dLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Resolution [\u00c5]</p></body></html>", None))
-        self.BackpushButtonDetails.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
-        self.SourcesPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Data Sources", None))
-        self.zLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Z</p></body></html>", None))
-        self.zEstimateLabel2.setText(QCoreApplication.translate("FinalCifWindow", u"Z(calc) = ?", None))
-        self.temperatureLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Temperature [K]", None))
-        self.wR2Label.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">wR</span><span style=\" vertical-align:sub;\">2 </span>[all ref.]</p></body></html>", None))
-        self.r1Label.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">1 </span>[<span style=\" font-style:italic;\">I </span>&gt; 2\u03c3(<span style=\" font-style:italic;\">I</span>)]</p></body></html>", None))
-        self.goofLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Goof", None))
-        self.maxShiftLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Max Shift/esd", None))
-        self.completeLabel.setText(QCoreApplication.translate("FinalCifWindow", u"complete [%]", None))
         self.molGroupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"Molecule", None))
         self.growCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Grow Structure", None))
         self.labelsCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Show Labels", None))
@@ -2807,8 +2784,35 @@ class Ui_FinalCifWindow(object):
         self.videoLeftToolButton.setText(QCoreApplication.translate("FinalCifWindow", u"<-", None))
         self.videoRightToolButton.setText(QCoreApplication.translate("FinalCifWindow", u"->", None))
         self.picturesTabWidget.setTabText(self.picturesTabWidget.indexOf(self.tab_video), QCoreApplication.translate("FinalCifWindow", u"Video", None))
-        self.groupBox_9.setTitle(QCoreApplication.translate("FinalCifWindow", u"Shelx File", None))
+        self.shelxfile_groupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"Shelx File", None))
         self.shelx_TextEdit.setPlainText(QCoreApplication.translate("FinalCifWindow", u"No Shelx file available", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("FinalCifWindow", u"Properties", None))
+        self.BackpushButtonDetails.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
+        self.zLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Z</p></body></html>", None))
+        self.zEstimateLabel2.setText(QCoreApplication.translate("FinalCifWindow", u"Z(calc) = ?", None))
+        self.temperatureLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Temperature [K]", None))
+        self.wR2Label.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">wR</span><span style=\" vertical-align:sub;\">2 </span>[all ref.]</p></body></html>", None))
+        self.r1Label.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">1 </span>[<span style=\" font-style:italic;\">I </span>&gt; 2\u03c3(<span style=\" font-style:italic;\">I</span>)]</p></body></html>", None))
+        self.goofLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Goof", None))
+        self.maxShiftLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Max Shift/esd", None))
+        self.completeLabel.setText(QCoreApplication.translate("FinalCifWindow", u"complete [%]", None))
+        self.groupBox_4.setTitle(QCoreApplication.translate("FinalCifWindow", u"Unit Cell", None))
+        self.cellField.setText("")
+        self.SourcesPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Data Sources", None))
+        self.reflTotalLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Measured Refl.", None))
+        self.refl2sigmaLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Data with [<span style=\" font-style:italic;\">I </span>&gt; 2\u03c3(<span style=\" font-style:italic;\">I</span>)]</p></body></html>", None))
+        self.uniqReflLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Independent Refl.", None))
+        self.numParametersLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Parameters", None))
+        self.dataReflnsLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data/Parameters", None))
+        self.wavelengthLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Wavelength [\u00c5]", None))
+        self.flackXLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Flack x", None))
+        self.peakLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Peak/Hole [e\u00c5<span style=\" vertical-align:super;\">-3</span>]</p></body></html>", None))
+        self.rintLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">int</span></p></body></html>", None))
+        self.rsigmaLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">\u03c3</span></p></body></html>", None))
+        self.numRestraintsLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Restraints", None))
+        self.thetaMaxLabel.setText(QCoreApplication.translate("FinalCifWindow", u"\u03b8(max) [\u00b0]", None))
+        self.thetaFullLabel.setText(QCoreApplication.translate("FinalCifWindow", u"\u03b8(full) [\u00b0]", None))
+        self.dLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Resolution [\u00c5]</p></body></html>", None))
         self.groupBox_2.setTitle("")
         self.label_3.setText(QCoreApplication.translate("FinalCifWindow", u"The list of data sources shows the origin of CIF items automatically collected by FinalCif. \n"
 "\n"
@@ -2860,7 +2864,7 @@ class Ui_FinalCifWindow(object):
         self.groupBox_7.setTitle(QCoreApplication.translate("FinalCifWindow", u"CheckCIF log messages", None))
         self.groupBox_checkcif_2.setTitle("")
         self.CheckcifPDFOnlineButton.setText(QCoreApplication.translate("FinalCifWindow", u"Checkcif Online PDF", None))
-        self.structfactCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"without structure factors (faster but not complete)", None))
+        self.structfactCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"without structure factors (fast but not complete)", None))
         self.fullIucrCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Full IUCr publication validation", None))
         self.checkDuplicatesCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Check for duplicates in CSD", None))
         self.CheckcifButton.setText(QCoreApplication.translate("FinalCifWindow", u"CheckCif Offline", None))
@@ -2935,10 +2939,5 @@ class Ui_FinalCifWindow(object):
         self.SaveAuthorLoopToTemplateButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
         self.AddThisAuthorToLoopPushButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Add Audit Author to CIF Loop", None))
         self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_audit), QCoreApplication.translate("FinalCifWindow", u"Audit (CIF) Authors", None))
-        self.appendCifPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Append CIF", None))
-        self.spacegroupLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Space-Group Type", None))
-        self.SumFormMainLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Sum Formula", None))
-        self.HelpPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Help", None))
-        self.zEstimateLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Z = ?", None))
     # retranslateUi
 

@@ -1,3 +1,4 @@
+from qtpy.QtCore import QSize
 from qtpy.QtWidgets import QStackedWidget
 
 
@@ -5,6 +6,21 @@ class MyMainStackedWidget(QStackedWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+
+    def minimumSizeHint(self) -> QSize:
+        """Return the current page's minimum size instead of the max across all pages.
+        This allows the window to be resized narrower when a compact page is active."""
+        w = self.currentWidget()
+        if w is not None:
+            return w.minimumSizeHint()
+        return super().minimumSizeHint()
+
+    def sizeHint(self) -> QSize:
+        """Delegate to the current page so the window doesn't reserve space for all pages."""
+        w = self.currentWidget()
+        if w is not None:
+            return w.sizeHint()
+        return super().sizeHint()
 
     def got_to_main_page(self):
         self.setCurrentIndex(0)
