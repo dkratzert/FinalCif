@@ -160,7 +160,9 @@ class AppWindow(QMainWindow):
         # Inject the Author Editor tab (defined in the .ui file) into LoopsPage
         self.ui.loops_page.set_author_editor_tab(self.ui.author_editor_widget)
         self.fixfont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
-        self.ui.shelx_TextEdit.setFont(self.fixfont)
+        shelx_font = QtGui.QFont(self.fixfont)
+        shelx_font.setPointSize(self.fixfont.pointSize() + 1)
+        self.ui.shelx_TextEdit.setFont(shelx_font)
         self.ui.shelx_warn_TextEdit.setFont(self.fixfont)
         self.ui.ckf_textedit.setFont(self.fixfont)
         self.settings = FinalCifSettings()
