@@ -439,7 +439,7 @@
               <item>
                <widget class="QPushButton" name="ImportCifPushButton">
                  <property name="text">
-                  <string>Import .cif, .mmcif, .pcf, .cif_od, .cfx or .sqf file</string>
+                  <string>Import .cif, .pcf, .cif_od, .cfx or .sqf file</string>
                  </property>
                </widget>
               </item>
@@ -4172,11 +4172,11 @@ Contact authors should always also appear as regular authors.</string>
          </widget>
         </item>
         <item row="0" column="11">
-         <widget class="QTextEdit" name="SumFormMainLineEdit">
+         <widget class="SingleLineTextEdit" name="SumFormMainLineEdit">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
-            <verstretch>1</verstretch>
+            <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="cursor" stdset="0">
@@ -4216,11 +4216,11 @@ Contact authors should always also appear as regular authors.</string>
          </widget>
         </item>
         <item row="0" column="5">
-         <widget class="QTextEdit" name="Spacegroup_top_LineEdit">
+         <widget class="SingleLineTextEdit" name="Spacegroup_top_LineEdit">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
-            <verstretch>1</verstretch>
+            <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="cursor" stdset="0">
@@ -4269,11 +4269,11 @@ Contact authors should always also appear as regular authors.</string>
          </spacer>
         </item>
         <item row="0" column="8">
-         <widget class="QTextEdit" name="CCDCNumLineEdit">
+         <widget class="SingleLineTextEdit" name="CCDCNumLineEdit">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
-            <verstretch>1</verstretch>
+            <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="cursor" stdset="0">
@@ -4422,6 +4422,11 @@ Contact authors should always also appear as regular authors.</string>
    <class>ComboBoxWithContextMenu</class>
    <extends>QComboBox</extends>
    <header>finalcif.gui.block_combobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>SingleLineTextEdit</class>
+   <extends>QTextEdit</extends>
+   <header>finalcif.gui.single_line_textedit.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

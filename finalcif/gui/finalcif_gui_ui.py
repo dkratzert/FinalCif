@@ -34,6 +34,7 @@ from finalcif.gui.file_editor import QCodeEditor
 from finalcif.gui.loops import LoopsPage
 from finalcif.gui.mainstackwidget import MyMainStackedWidget
 from finalcif.gui.propertytable import MyPropTableWidget
+from finalcif.gui.single_line_textedit import SingleLineTextEdit
 
 class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
@@ -2453,13 +2454,10 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_6.addWidget(self.MainStackedWidget, 2, 0, 1, 14)
 
-        self.SumFormMainLineEdit = QTextEdit(self.CifDataItemsFrame)
+        self.SumFormMainLineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
         self.SumFormMainLineEdit.setObjectName(u"SumFormMainLineEdit")
-        sizePolicy33 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy33.setHorizontalStretch(0)
-        sizePolicy33.setVerticalStretch(1)
-        sizePolicy33.setHeightForWidth(self.SumFormMainLineEdit.sizePolicy().hasHeightForWidth())
-        self.SumFormMainLineEdit.setSizePolicy(sizePolicy33)
+        sizePolicy3.setHeightForWidth(self.SumFormMainLineEdit.sizePolicy().hasHeightForWidth())
+        self.SumFormMainLineEdit.setSizePolicy(sizePolicy3)
         self.SumFormMainLineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
         self.SumFormMainLineEdit.setInputMethodHints(Qt.InputMethodHint.ImhNone)
         self.SumFormMainLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -2477,10 +2475,10 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_6.addWidget(self.appendCifPushButton, 0, 2, 1, 1)
 
-        self.Spacegroup_top_LineEdit = QTextEdit(self.CifDataItemsFrame)
+        self.Spacegroup_top_LineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
         self.Spacegroup_top_LineEdit.setObjectName(u"Spacegroup_top_LineEdit")
-        sizePolicy33.setHeightForWidth(self.Spacegroup_top_LineEdit.sizePolicy().hasHeightForWidth())
-        self.Spacegroup_top_LineEdit.setSizePolicy(sizePolicy33)
+        sizePolicy3.setHeightForWidth(self.Spacegroup_top_LineEdit.sizePolicy().hasHeightForWidth())
+        self.Spacegroup_top_LineEdit.setSizePolicy(sizePolicy3)
         self.Spacegroup_top_LineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
         self.Spacegroup_top_LineEdit.setInputMethodHints(Qt.InputMethodHint.ImhNone)
         self.Spacegroup_top_LineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -2497,10 +2495,10 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_6.addItem(self.horizontalSpacer_11, 0, 3, 1, 1)
 
-        self.CCDCNumLineEdit = QTextEdit(self.CifDataItemsFrame)
+        self.CCDCNumLineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
         self.CCDCNumLineEdit.setObjectName(u"CCDCNumLineEdit")
-        sizePolicy33.setHeightForWidth(self.CCDCNumLineEdit.sizePolicy().hasHeightForWidth())
-        self.CCDCNumLineEdit.setSizePolicy(sizePolicy33)
+        sizePolicy3.setHeightForWidth(self.CCDCNumLineEdit.sizePolicy().hasHeightForWidth())
+        self.CCDCNumLineEdit.setSizePolicy(sizePolicy3)
         self.CCDCNumLineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
         self.CCDCNumLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.CCDCNumLineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -2943,3 +2941,4 @@ class Ui_FinalCifWindow(object):
         self.HelpPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Help", None))
         self.zEstimateLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Z = ?", None))
     # retranslateUi
+
