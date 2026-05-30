@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v164 Optimized application size behavior, especially for small displays.
 * v163 Improve Z estimation and moiety formula calculation was added. Also, the CIF file import supports CIF2 and mmCIF files now.
 * v162 Added Z value estimation. Small improvement of the structure viewer in the "show details" page.
 * v161 Small fix in structure viewer.
