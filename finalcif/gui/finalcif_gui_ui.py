@@ -472,8 +472,8 @@ class Ui_FinalCifWindow(object):
         self.datanameComboBox.setEditable(True)
         self.datanameComboBox.setMaxVisibleItems(20)
         self.datanameComboBox.setInsertPolicy(QComboBox.InsertPolicy.InsertAtCurrent)
-        self.datanameComboBox.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
-        self.datanameComboBox.setMinimumContentsLength(20)
+        self.datanameComboBox.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.datanameComboBox.setMinimumContentsLength(10)
         self.datanameComboBox.setFrame(True)
 
         self.gridLayout_6.addWidget(self.datanameComboBox, 0, 1, 1, 1)
