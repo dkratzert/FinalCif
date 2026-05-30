@@ -1399,14 +1399,13 @@ class Ui_FinalCifWindow(object):
         sizePolicy21.setVerticalStretch(0)
         sizePolicy21.setHeightForWidth(self.groupBox_8.sizePolicy().hasHeightForWidth())
         self.groupBox_8.setSizePolicy(sizePolicy21)
+        self.groupBox_8.setMinimumSize(QSize(175, 0))
         self.verticalLayout_34 = QVBoxLayout(self.groupBox_8)
         self.verticalLayout_34.setObjectName(u"verticalLayout_34")
         self.ExportAllTemplatesPushButton = QPushButton(self.groupBox_8)
         self.ExportAllTemplatesPushButton.setObjectName(u"ExportAllTemplatesPushButton")
-        sizePolicy3.setHeightForWidth(self.ExportAllTemplatesPushButton.sizePolicy().hasHeightForWidth())
-        self.ExportAllTemplatesPushButton.setSizePolicy(sizePolicy3)
 
-        self.verticalLayout_34.addWidget(self.ExportAllTemplatesPushButton, 0, Qt.AlignmentFlag.AlignLeft)
+        self.verticalLayout_34.addWidget(self.ExportAllTemplatesPushButton)
 
         self.label_18 = QLabel(self.groupBox_8)
         self.label_18.setObjectName(u"label_18")
@@ -1420,7 +1419,7 @@ class Ui_FinalCifWindow(object):
         self.ImportAllTemplatesPushButton = QPushButton(self.groupBox_8)
         self.ImportAllTemplatesPushButton.setObjectName(u"ImportAllTemplatesPushButton")
 
-        self.verticalLayout_34.addWidget(self.ImportAllTemplatesPushButton, 0, Qt.AlignmentFlag.AlignLeft)
+        self.verticalLayout_34.addWidget(self.ImportAllTemplatesPushButton)
 
         self.label_17 = QLabel(self.groupBox_8)
         self.label_17.setObjectName(u"label_17")

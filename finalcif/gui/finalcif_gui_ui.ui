@@ -2473,18 +2473,18 @@ The data source will be ignored until next program restart.</string>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>175</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="title">
                <string>Export</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_34">
-               <item alignment="Qt::AlignmentFlag::AlignLeft">
+               <item>
                 <widget class="QPushButton" name="ExportAllTemplatesPushButton">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
                  <property name="text">
                   <string>Export all Templates</string>
                  </property>
@@ -2514,7 +2514,7 @@ The data source will be ignored until next program restart.</string>
                  </property>
                 </spacer>
                </item>
-               <item alignment="Qt::AlignmentFlag::AlignLeft">
+               <item>
                 <widget class="QPushButton" name="ImportAllTemplatesPushButton">
                  <property name="text">
                   <string>Import all Templates</string>
