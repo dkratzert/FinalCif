@@ -1066,7 +1066,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>2</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2475,8 +2475,8 @@ The data source will be ignored until next program restart.</string>
               </property>
               <property name="minimumSize">
                <size>
-                <width>175</width>
-                <height>0</height>
+                <width>0</width>
+                <height>140</height>
                </size>
               </property>
               <property name="title">
@@ -2485,6 +2485,12 @@ The data source will be ignored until next program restart.</string>
               <layout class="QVBoxLayout" name="verticalLayout_34">
                <item>
                 <widget class="QPushButton" name="ExportAllTemplatesPushButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
                   <string>Export all Templates</string>
                  </property>
@@ -2516,6 +2522,12 @@ The data source will be ignored until next program restart.</string>
                </item>
                <item>
                 <widget class="QPushButton" name="ImportAllTemplatesPushButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
                   <string>Import all Templates</string>
                  </property>
