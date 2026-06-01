@@ -33,6 +33,7 @@ class SqueezeMode(Enum):
     SQUEEZE = 'squeeze'
     SMTBX = 'smtbx'
 
+
 # Column indices in the void table
 _COL_NR = 0
 _COL_VOL = 1
@@ -81,7 +82,7 @@ _MODE_CONFIG: dict[SqueezeMode, dict] = {
         'details_label'       : 'SQUEEZE details (<i>_platon_squeeze_details</i>):',
         'electrons_col_header': 'Electrons\n(PLATON)',
     },
-    SqueezeMode.SMTBX: {
+    SqueezeMode.SMTBX  : {
         'loop_key'            : _SMTBX_LOOP_KEY,
         'loop_tags'           : _SMTBX_LOOP_TAGS,
         'vol_tag'             : '_smtbx_masks_void_volume',
@@ -128,6 +129,7 @@ class SqueezeSolventDialog(QDialog):
     def __init__(self, cif: CifContainer, mode: SqueezeMode | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.cif = cif
+        self._cancelled = False
         # Validate and resolve operating mode
         if mode is not None and not isinstance(mode, SqueezeMode):
             raise TypeError(
@@ -266,7 +268,7 @@ class SqueezeSolventDialog(QDialog):
             )
             msg.setIcon(QMessageBox.Icon.Information)
             open_btn = msg.addButton('Choose .sqf file\u2026', QMessageBox.ButtonRole.AcceptRole)
-            msg.addButton('Skip', QMessageBox.ButtonRole.RejectRole)
+            msg.addButton(QMessageBox.StandardButton.Cancel)
             msg.exec()
             if msg.clickedButton() is open_btn:
                 sqf_path, _ = compat.getopenfilename(
@@ -279,7 +281,11 @@ class SqueezeSolventDialog(QDialog):
 
         if sqf_path:
             self._import_sqf(Path(sqf_path))
-        # Populate table regardless (may stay empty if import failed / skipped)
+        # The "cancel" from open file case:
+        # else:
+        #    self._cancelled = True
+        #    return
+        # Populate table regardless (may stay empty if import failed)
         self._populate_table()
 
     def _import_sqf(self, sqf_path: Path) -> None:

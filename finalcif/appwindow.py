@@ -826,7 +826,7 @@ class AppWindow(QMainWindow):
         """
         self.ui.MainStackedWidget.go_to_checkcif_page()
 
-    def open_squeeze_dialog(self, mode: SqueezeMode | None = None) -> None:
+    def open_squeeze_dialog(self, mode: SqueezeMode | None = None) -> bool:
         """
         Opens the solvent content dialog for PLATON SQUEEZE or Olex2/SMTBX masks.
 
@@ -838,14 +838,19 @@ class AppWindow(QMainWindow):
             mode: ``SqueezeMode.SQUEEZE`` for PLATON SQUEEZE mode,
                   ``SqueezeMode.SMTBX`` for Olex2/SMTBX solvent masks,
                   or ``None`` (default) to auto-detect from the CIF content.
+
+        Returns:
+            True if the dialog was accepted, False if canceled or no CIF loaded.
         """
         if self.cif is None:
-            return
+            return False
         # Guard against receiving non-SqueezeMode values (e.g. bool from signal)
         if not isinstance(mode, SqueezeMode):
             mode = None
         dialog = SqueezeSolventDialog(cif=self.cif, mode=mode, parent=self)
-        dialog.exec()
+        if dialog._cancelled:
+            return False
+        return bool(dialog.exec())
 
     def _ccdc_deposit(self) -> None:
         """
