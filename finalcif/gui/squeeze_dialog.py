@@ -23,6 +23,7 @@ from qtpy.QtWidgets import (
     QVBoxLayout, QWidget, QApplication
 )
 
+from finalcif.cif.text import quote
 from finalcif.tools.squeeze import build_details_text, electrons_from_formula
 
 if TYPE_CHECKING:
@@ -313,6 +314,11 @@ class SqueezeSolventDialog(QDialog):
             return
 
         columns = [sqf_cif.get_loop_column(t) for t in existing_tags]
+        # Quote void_content values so they survive as single CIF tokens
+        content_tag = self._cfg['content_tag']
+        for idx, tag in enumerate(existing_tags):
+            if tag == content_tag:
+                columns[idx] = [quote(v) for v in columns[idx]]
         self.cif.add_loop_from_columns(existing_tags, columns)
 
     def _populate_table(self) -> None:
@@ -492,7 +498,7 @@ class SqueezeSolventDialog(QDialog):
         for row_idx in range(n_rows):
             item = self.table.item(row_idx, _COL_FORMULA)
             formula = item.text().strip() if item else '?'
-            new_formulae.append(formula if formula else '?')
+            new_formulae.append(quote(formula) if formula else '?')
 
         # Reconstruct column data with the updated content column
         content_tag = cfg['content_tag']
