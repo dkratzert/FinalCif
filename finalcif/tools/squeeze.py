@@ -67,11 +67,21 @@ def _normalize_squeeze_formula(formula_str: str) -> str:
         multiplier, fragment = m.group(1), m.group(2)
         formula_str = f'({fragment}){multiplier}'
 
+    # Handle leading multiplier directly before an element symbol: "2C6H5CH(CH3)2" → "(C6H5CH(CH3)2)2"
+    if not m:
+        m2 = re.match(r'^(\d+(?:\.\d+)?)([A-Z].*)$', formula_str)
+        if m2:
+            multiplier, fragment = m2.group(1), m2.group(2)
+            formula_str = f'({fragment}){multiplier}'
+
     # Handle leading multiplier directly before parentheses: "2(H2O)" → "(H2O)2"
     def _swap(match: re.Match) -> str:
         return f'{match.group(1)}({match.group(3)}){match.group(2)}'
 
-    return re.sub(r'(^|(?<=\s))(\d+(?:\.\d+)?)\(([^()]*)\)', _swap, formula_str)
+    formula_str = re.sub(r'(^|(?<=\s))(\d+(?:\.\d+)?)\(([^()]*)\)', _swap, formula_str)
+
+    # Remove remaining spaces — chemparse requires concatenated symbols (e.g. "Os S O F" → "OsSOF")
+    return formula_str.replace(' ', '')
 
 
 def electrons_from_formula(formula_str: str) -> int:

@@ -79,6 +79,16 @@ class TestElectronsFromFormula(unittest.TestCase):
         # Diethyl ether: C4H10O
         self.assertEqual(42, electrons_from_formula('(C2H5)2O'))
 
+    def test_space_separated_formula(self):
+        # "Os S O F" should be equivalent to "OsSOF": Os=76 + S=16 + O=8 + F=9 = 109
+        self.assertEqual(electrons_from_formula('OsSOF'), electrons_from_formula('Os S O F'))
+        self.assertEqual(109, electrons_from_formula('Os S O F'))
+
+    def test_leading_multiplier_no_space(self):
+        # "2C6H5CH(CH3)2" (cumene × 2) = C18H24 = 132 electrons
+        self.assertEqual(132, electrons_from_formula('2C6H5CH(CH3)2'))
+        self.assertEqual(electrons_from_formula('2 C6H5CH(CH3)2'), electrons_from_formula('2C6H5CH(CH3)2'))
+
 
 # ---------------------------------------------------------------------------
 # build_details_text
