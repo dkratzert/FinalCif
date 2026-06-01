@@ -1630,11 +1630,6 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_16 = QGridLayout()
         self.gridLayout_16.setObjectName(u"gridLayout_16")
-        self.revertLoopsPushButton = QPushButton(self.page_Loops)
-        self.revertLoopsPushButton.setObjectName(u"revertLoopsPushButton")
-
-        self.gridLayout_16.addWidget(self.revertLoopsPushButton, 0, 2, 1, 1)
-
         self.BackFromLoopsPushButton = QPushButton(self.page_Loops)
         self.BackFromLoopsPushButton.setObjectName(u"BackFromLoopsPushButton")
         sizePolicy6.setHeightForWidth(self.BackFromLoopsPushButton.sizePolicy().hasHeightForWidth())
@@ -1643,27 +1638,41 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_16.addWidget(self.BackFromLoopsPushButton, 0, 0, 1, 1)
 
+        self.add_squeeze_pushButton = QPushButton(self.page_Loops)
+        self.add_squeeze_pushButton.setObjectName(u"add_squeeze_pushButton")
+
+        self.gridLayout_16.addWidget(self.add_squeeze_pushButton, 0, 2, 1, 1)
+
         self.verticalSpacer_7 = QSpacerItem(20, 28, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
-        self.gridLayout_16.addItem(self.verticalSpacer_7, 3, 0, 1, 1)
-
-        self.horizontalSpacer_15 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_16.addItem(self.horizontalSpacer_15, 0, 1, 1, 1)
-
-        self.horizontalSpacer_16 = QSpacerItem(20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_16.addItem(self.horizontalSpacer_16, 0, 3, 1, 1)
-
-        self.newLoopPushButton = QPushButton(self.page_Loops)
-        self.newLoopPushButton.setObjectName(u"newLoopPushButton")
-
-        self.gridLayout_16.addWidget(self.newLoopPushButton, 0, 4, 1, 1)
+        self.gridLayout_16.addItem(self.verticalSpacer_7, 1, 3, 1, 1)
 
         self.deleteLoopButton = QPushButton(self.page_Loops)
         self.deleteLoopButton.setObjectName(u"deleteLoopButton")
 
-        self.gridLayout_16.addWidget(self.deleteLoopButton, 3, 4, 1, 1)
+        self.gridLayout_16.addWidget(self.deleteLoopButton, 1, 6, 1, 1)
+
+        self.horizontalSpacer_16 = QSpacerItem(20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_16.addItem(self.horizontalSpacer_16, 0, 5, 1, 1)
+
+        self.horizontalSpacer_15 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_16.addItem(self.horizontalSpacer_15, 0, 3, 1, 1)
+
+        self.newLoopPushButton = QPushButton(self.page_Loops)
+        self.newLoopPushButton.setObjectName(u"newLoopPushButton")
+
+        self.gridLayout_16.addWidget(self.newLoopPushButton, 0, 6, 1, 1)
+
+        self.revertLoopsPushButton = QPushButton(self.page_Loops)
+        self.revertLoopsPushButton.setObjectName(u"revertLoopsPushButton")
+
+        self.gridLayout_16.addWidget(self.revertLoopsPushButton, 0, 4, 1, 1)
+
+        self.horizontalSpacer_18 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_16.addItem(self.horizontalSpacer_18, 0, 1, 1, 1)
 
 
         self.verticalLayout_9.addLayout(self.gridLayout_16)
@@ -2701,7 +2710,7 @@ class Ui_FinalCifWindow(object):
 
         self.TemplatesStackedWidget.setCurrentIndex(0)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        self.MainStackedWidget.setCurrentIndex(4)
+        self.MainStackedWidget.setCurrentIndex(5)
         self.picturesTabWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
         self.CheckCIFResultsTabWidget.setCurrentIndex(1)
@@ -2866,10 +2875,11 @@ class Ui_FinalCifWindow(object):
         self.SavePropertiesButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save", None))
         self.CancelPropertiesButton.setText(QCoreApplication.translate("FinalCifWindow", u"Cancel", None))
         self.ExportPropertyButton.setText(QCoreApplication.translate("FinalCifWindow", u"Export", None))
-        self.revertLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Revert Changes", None))
         self.BackFromLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
-        self.newLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Loop", None))
+        self.add_squeeze_pushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add Squeeze Info", None))
         self.deleteLoopButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Loop", None))
+        self.newLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Loop", None))
+        self.revertLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Revert Changes", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.platon_page), QCoreApplication.translate("FinalCifWindow", u"PLATON CheckCIF result", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.html_page), QCoreApplication.translate("FinalCifWindow", u"html CheckCIF result", None))
         self.label_5.setText(QCoreApplication.translate("FinalCifWindow", u"The resulting PDF file will be displayed in an external program after CheckCIF has completed.", None))

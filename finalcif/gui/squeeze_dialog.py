@@ -13,7 +13,6 @@ structures refined with PLATON SQUEEZE or Olex2/SMTBX solvent masks.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 from qtpy import QtCore, compat
 from qtpy.QtGui import QColor
@@ -23,11 +22,9 @@ from qtpy.QtWidgets import (
     QVBoxLayout, QWidget, QApplication
 )
 
+from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import quote
 from finalcif.tools.squeeze import build_details_text, electrons_from_formula
-
-if TYPE_CHECKING:
-    from finalcif.cif.cif_file_io import CifContainer
 
 # Column indices in the void table
 _COL_NR = 0
@@ -72,10 +69,8 @@ _MODE_CONFIG: dict[str, dict] = {
         'content_tag'         : '_platon_squeeze_void_content',
         'details_key'         : '_platon_squeeze_details',
         'title'               : 'PLATON SQUEEZE \u2013 Assign Solvent Content',
-        'info'                : (
-            'PLATON/SQUEEZE was used. '
-            'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'
-        ),
+        'info'                : ('PLATON/SQUEEZE was used. '
+                                 'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'),
         'details_label'       : 'SQUEEZE details (<i>_platon_squeeze_details</i>):',
         'electrons_col_header': 'Electrons\n(PLATON)',
     },
@@ -87,10 +82,8 @@ _MODE_CONFIG: dict[str, dict] = {
         'content_tag'         : '_smtbx_masks_void_content',
         'details_key'         : '_smtbx_masks_special_details',
         'title'               : 'Olex2/SMTBX Masks \u2013 Assign Solvent Content',
-        'info'                : (
-            'Olex2/SMTBX solvent masks were used. '
-            'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'
-        ),
+        'info'                : ('Olex2/SMTBX solvent masks were used. '
+                                 'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'),
         'details_label'       : 'Masks details (<i>_smtbx_masks_special_details</i>):',
         'electrons_col_header': 'Electrons\n(Masks)',
     },
@@ -125,12 +118,7 @@ class SqueezeSolventDialog(QDialog):
     locate and import the corresponding ``.sqf`` file.
     """
 
-    def __init__(
-            self,
-            cif: 'CifContainer',
-            mode: str | None = None,
-            parent: QWidget | None = None,
-    ) -> None:
+    def __init__(self, cif: CifContainer, mode: str | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.cif = cif
         # Validate and resolve operating mode
@@ -144,6 +132,12 @@ class SqueezeSolventDialog(QDialog):
         self.setMinimumWidth(750)
         self._build_ui()
         if self._has_loop():
+            self._populate_table()
+        elif self._loop_mode == 'squeeze' and self._check_loop_present(_SMTBX_LOOP_KEY):
+            # No PLATON loop, but an SMTBX loop is present - switch mode
+            self._loop_mode = 'smtbx'
+            self._cfg = _MODE_CONFIG['smtbx']
+            self.setWindowTitle(self._cfg['title'])
             self._populate_table()
         elif self._loop_mode == 'squeeze':
             self._ask_for_sqf_file()
@@ -289,7 +283,6 @@ class SqueezeSolventDialog(QDialog):
         the traditional ``_platon_squeeze_*`` tags.  This method checks both tag
         sets and, when SMTBX tags are found, switches the dialog mode to 'smtbx'.
         """
-        from finalcif.cif.cif_file_io import CifContainer
         try:
             sqf_cif = CifContainer(sqf_path)
         except Exception as exc:
@@ -549,6 +542,15 @@ class SqueezeSolventDialog(QDialog):
 # Module-level helpers (usable without instantiating the dialog)
 # ---------------------------------------------------------------------------
 
+def has_squeeze_loop(cif: CifContainer) -> bool:
+    """Return True when a PLATON SQUEEZE void loop is present in *cif*."""
+    try:
+        loop = cif.get_loop(_SQUEEZE_LOOP_KEY)
+        return loop is not None and loop.width() > 0
+    except (AttributeError, RuntimeError, TypeError):
+        return False
+
+
 def has_smtbx_masks_loop(cif: CifContainer) -> bool:
     """Return True when an Olex2/SMTBX solvent masks loop is present in *cif*."""
     try:
@@ -560,6 +562,7 @@ def has_smtbx_masks_loop(cif: CifContainer) -> bool:
 
 if __name__ == '__main__':
     from finalcif.cif.cif_file_io import CifContainer
+
     app = QApplication([])
     cif = CifContainer(Path('test-data/SH2185_Cu.cif').resolve())
     dialog = SqueezeSolventDialog(cif, None)

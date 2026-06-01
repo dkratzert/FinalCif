@@ -59,8 +59,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     video_file_open_dialog
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
-from finalcif.gui.loop_creator import LoopCreator
-from finalcif.gui.squeeze_dialog import SqueezeSolventDialog, has_smtbx_masks_loop
+from finalcif.gui.squeeze_dialog import SqueezeSolventDialog, has_smtbx_masks_loop, has_squeeze_loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.cif.vrf_entry import VRFEntry
@@ -91,7 +90,7 @@ with suppress(ImportError):
 
 
 class _ZEstimatorThread(QtCore.QThread):
-    """Background thread that computes Z and Z′ without blocking the UI.
+    """Background thread that computes Z and Z' without blocking the UI.
 
     Emits ``result`` (a :class:`ZResult`) on success, or ``failed`` (with an
     empty :class:`ZResult`) on any exception so the caller can always clear
@@ -2228,10 +2227,10 @@ class AppWindow(QMainWindow):
         if self.sources:
             # Add the CCDC number in case we have a deposition mail lying around:
             self.add_ccdc_number()
-            if self.cif.shx and self.cif.shx.abin and not self.cif['_platon_squeeze_void_probe_radius']:
+            if self.cif.shx and self.cif.shx.abin and not has_squeeze_loop(self.cif) and not has_smtbx_masks_loop(self.cif):
                 self.open_squeeze_dialog(mode='squeeze')
                 squeeze_dialog_shown = True
-        # Olex2/SMTBX solvent masks – trigger dialog when loop is present but details absent
+        # Olex2/SMTBX solvent masks - trigger dialog when loop is present but details absent
         if (not squeeze_dialog_shown and has_smtbx_masks_loop(self.cif)
                 and not self.cif['_smtbx_masks_special_details']):
             self.open_squeeze_dialog(mode='smtbx')

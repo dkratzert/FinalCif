@@ -1066,7 +1066,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>4</number>
+           <number>5</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2839,13 +2839,6 @@ The data source will be ignored until next program restart.</string>
             </item>
             <item>
              <layout class="QGridLayout" name="gridLayout_16">
-              <item row="0" column="2">
-               <widget class="QPushButton" name="revertLoopsPushButton">
-                <property name="text">
-                 <string>Revert Changes</string>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="0">
                <widget class="QPushButton" name="BackFromLoopsPushButton">
                 <property name="sizePolicy">
@@ -2865,7 +2858,14 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="0">
+              <item row="0" column="2">
+               <widget class="QPushButton" name="add_squeeze_pushButton">
+                <property name="text">
+                 <string>Add Squeeze Info</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="3">
                <spacer name="verticalSpacer_7">
                 <property name="orientation">
                  <enum>Qt::Orientation::Vertical</enum>
@@ -2881,20 +2881,14 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </spacer>
               </item>
-              <item row="0" column="1">
-               <spacer name="horizontalSpacer_15">
-                <property name="orientation">
-                 <enum>Qt::Orientation::Horizontal</enum>
+              <item row="1" column="6">
+               <widget class="QPushButton" name="deleteLoopButton">
+                <property name="text">
+                 <string>Delete Loop</string>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>40</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
+               </widget>
               </item>
-              <item row="0" column="3">
+              <item row="0" column="5">
                <spacer name="horizontalSpacer_16">
                 <property name="orientation">
                  <enum>Qt::Orientation::Horizontal</enum>
@@ -2907,19 +2901,48 @@ The data source will be ignored until next program restart.</string>
                 </property>
                </spacer>
               </item>
-              <item row="0" column="4">
+              <item row="0" column="3">
+               <spacer name="horizontalSpacer_15">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="6">
                <widget class="QPushButton" name="newLoopPushButton">
                 <property name="text">
                  <string>Add New Loop</string>
                 </property>
                </widget>
               </item>
-              <item row="3" column="4">
-               <widget class="QPushButton" name="deleteLoopButton">
+              <item row="0" column="4">
+               <widget class="QPushButton" name="revertLoopsPushButton">
                 <property name="text">
-                 <string>Delete Loop</string>
+                 <string>Revert Changes</string>
                 </property>
                </widget>
+              </item>
+              <item row="0" column="1">
+               <spacer name="horizontalSpacer_18">
+                <property name="orientation">
+                 <enum>Qt::Orientation::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Policy::Minimum</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </item>
