@@ -227,7 +227,9 @@ class CifContainer:
         # support for platon squeeze files:
         if suffix == '.sqf':
             txt = path.read_text(encoding='ascii')
-            txt = 'data_justrandomlkdsadflkmcn\n' + txt
+            # Only prepend a data_ block header when the file lacks one
+            if not re.match(r'^\s*data_', txt):
+                txt = 'data_justrandomlkdsadflkmcn\n' + txt
             doc.parse_string(txt)
         else:
             doc.source = str(path.resolve())

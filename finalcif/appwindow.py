@@ -59,7 +59,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     video_file_open_dialog
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
-from finalcif.gui.loop_creator import LoopCreator
+from finalcif.gui.squeeze_dialog import SqueezeSolventDialog, SqueezeMode, has_smtbx_masks_loop, has_squeeze_loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.cif.vrf_entry import VRFEntry
@@ -90,7 +90,7 @@ with suppress(ImportError):
 
 
 class _ZEstimatorThread(QtCore.QThread):
-    """Background thread that computes Z and Z′ without blocking the UI.
+    """Background thread that computes Z and Z' without blocking the UI.
 
     Emits ``result`` (a :class:`ZResult`) on success, or ``failed`` (with an
     empty :class:`ZResult`) on any exception so the caller can always clear
@@ -450,6 +450,7 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
         self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
+        self.ui.add_squeeze_pushButton.clicked.connect(self.open_squeeze_dialog)
         self.ui.newLoopPushButton.clicked.connect(self.ui.loops_page.go_to_new_loop_page)
         self.ui.loops_page.new_loop_requested.connect(self._on_new_loop_requested)
         self.ui.deleteLoopButton.clicked.connect(self.ui.loops_page.on_delete_current_loop)
@@ -824,6 +825,32 @@ class AppWindow(QMainWindow):
         Opens the checkcif stackwidget page and therein the html report page
         """
         self.ui.MainStackedWidget.go_to_checkcif_page()
+
+    def open_squeeze_dialog(self, mode: SqueezeMode | None = None) -> bool:
+        """
+        Opens the solvent content dialog for PLATON SQUEEZE or Olex2/SMTBX masks.
+
+        The dialog lets the user assign a chemical formula to each void,
+        calculates the expected electron count for validation, auto-generates the
+        appropriate details text, and writes the results back to the CIF.
+
+        Args:
+            mode: ``SqueezeMode.SQUEEZE`` for PLATON SQUEEZE mode,
+                  ``SqueezeMode.SMTBX`` for Olex2/SMTBX solvent masks,
+                  or ``None`` (default) to auto-detect from the CIF content.
+
+        Returns:
+            True if the dialog was accepted, False if canceled or no CIF loaded.
+        """
+        if self.cif is None:
+            return False
+        # Guard against receiving non-SqueezeMode values (e.g. bool from signal)
+        if not isinstance(mode, SqueezeMode):
+            mode = None
+        dialog = SqueezeSolventDialog(cif=self.cif, mode=mode, parent=self)
+        if dialog._cancelled:
+            return False
+        return bool(dialog.exec())
 
     def _ccdc_deposit(self) -> None:
         """
@@ -2205,14 +2232,17 @@ class AppWindow(QMainWindow):
         """
         self.check_Z()
         self.sources = BrukerData(self, self.cif).sources
+        squeeze_dialog_shown = False
         if self.sources:
             # Add the CCDC number in case we have a deposition mail lying around:
             self.add_ccdc_number()
-            if self.cif.shx and self.cif.shx.abin and not self.cif['_platon_squeeze_void_probe_radius']:
-                show_general_warning(self, "A SQUEEZE refinement was detected.\n"
-                                           "Please import the corresponding .sqf file\n"
-                                           "from PLATON and complete the _platon_squeeze_void_content information "
-                                           "in the 'Platon SQUEEZE voids' loop.")
+            if self.cif.shx and self.cif.shx.abin and not has_squeeze_loop(self.cif) and not has_smtbx_masks_loop(self.cif):
+                self.open_squeeze_dialog(mode=SqueezeMode.SQUEEZE)
+                squeeze_dialog_shown = True
+        # Olex2/SMTBX solvent masks - trigger dialog when loop is present but details absent
+        if (not squeeze_dialog_shown and has_smtbx_masks_loop(self.cif)
+                and not self.cif['_smtbx_masks_special_details']):
+            self.open_squeeze_dialog(mode=SqueezeMode.SMTBX)
         vheadlist = self.ui.cif_main_table.model().vheaderitems
         for src in self.sources:
             if not self.sources[src]:
