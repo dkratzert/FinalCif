@@ -1,5 +1,9 @@
 FinalCif recent changes
 -----------------------
+* v165 Added a dialog for assigning solvent content to PLATON SQUEEZE and Olex2/SMTBX solvent mask voids.
+       The dialog calculates expected electron counts, auto-generates details text, and writes results back
+       to the CIF. Accessible via the "Add Squeeze Info" button. Fixed false warnings about missing SQUEEZE
+       data when a void loop was already present in the CIF.
 * v164 Optimized application size behavior, especially for small displays.
 * v163 Improve Z estimation and moiety formula calculation was added. Also, the CIF file import supports CIF2 and mmCIF files now.
 * v162 Added Z value estimation. Small improvement of the structure viewer in the "show details" page.
