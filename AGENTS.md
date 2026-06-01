@@ -16,15 +16,15 @@
 - **Entry Point:** The application starts from `finalcif/finalcif_start.py` (registered as `finalcif` in `pyproject.toml`).
 - **Main Window:** `AppWindow` (QMainWindow) in `finalcif/appwindow.py` is the orchestrator wiring all subsystems; UI defined in `finalcif/gui/finalcif_gui_ui.ui`.
 - **Subpackage Map:**
-  - `finalcif/cif/` — CIF I/O via `gemmi.cif` wrapped in `CifContainer` (`cif_file_io.py`); dict definitions (core/powder/modulation/twin/restraints); subpackages `checkcif/` (IUCr CheckCIF HTML/PDF parsing) and `cod/` (COD/CCDC deposition: `deposit.py`, `upload.py`, `doi.py`, `website_parser.py`).
+  - `finalcif/cif/` — CIF I/O via `gemmi.cif` wrapped in `CifContainer` (`cif_file_io.py`); dict definitions (core/powder/modulation/twin/restraints); subpackages `checkcif/` (IUCr CheckCIF HTML/PDF parsing) and `cod/` (COD/CCDC deposition: `deposit.py`, `deposit_check.py`, `deposition_list.py`, `upload.py`, `doi.py`, `website_parser.py`).
   - `finalcif/ciforder/` — CIF key ordering dialog.
   - `finalcif/datafiles/` — raw instrument data importers: Bruker (`bruker_data.py`, `bruker_frame.py`), SAINT, SADABS, SHELX `.lst` (`shelx_lst.py`), `.p4p`, CCDC deposition mail parser (`ccdc_mail.py`).
   - `finalcif/displaymol/` — 3D molecular display (`vtk_molecule.py`) is not used; 2D rendering is provided by the external `fastmolwidget` package (custom widget in `finalcif_gui_ui.ui`).
   - `finalcif/equip_property/` — Equipment/Properties/AuthorLoops template tables (`equipment.py`, `properties.py`, `author_loop_templates.py`).
   - `finalcif/gui/` — Qt widgets; `.ui` files compiled to sibling `*_ui.py` modules.
-  - `finalcif/report/` — DOCX report generation via `docxtpl` (`DocxTemplate`, `RichText`, `InlineImage`) in `templated_report.py`; also archive reports, tables, references, symmetry.
+  - `finalcif/report/` — DOCX report generation via `docxtpl` (`DocxTemplate`, `RichText`, `InlineImage`) in `templated_report.py`; also archive reports (`archive_report.py`), tables, references, symmetry. The `report/gui/` subpackage hosts the standalone report-options window (`mainwindow.py` + `mainwindow.ui`).
   - `finalcif/template/` — Report template infrastructure (`ReportTemplates`).
-  - `finalcif/tools/` — cross-cutting helpers: `platon.py` (`PlatonRunner`), `shred.py`, `space_groups.py`, `sumformula.py`, `settings.py` (`FinalCifSettings` QSettings wrapper), `download.py`, `pupdate.py` (auto-updater), `statusbar.py`, `chemparse.py`, `dsrmath.py`.
+  - `finalcif/tools/` — cross-cutting helpers: `platon.py` (`PlatonRunner`), `shred.py`, `space_groups.py` / `spgr_format.py`, `sumformula.py`, `settings.py` (`FinalCifSettings` QSettings wrapper), `options.py`, `download.py`, `pupdate.py` (auto-updater), `statusbar.py`, `chemparse.py`, `dsrmath.py`, `z_from_packing.py`, `misc.py`.
 - **External Tool Integration:**
   - Offline CheckCIF uses PLATON via `finalcif/tools/platon.py`; executable resolution checks bundled `platon/platon_special.exe`, then `C:\pwt\platon.exe` (Windows), then `platon` on `PATH`.
   - Online CheckCIF (IUCr) via HTTP in `finalcif/cif/checkcif/checkcif.py`.
@@ -32,7 +32,8 @@
   - DOI / CrossRef lookups via `crossrefapi` (see `finalcif/cif/cod/doi.py`).
   - SHELX parsing via the external `shelxfile` package (used in `report/templated_report.py`); in-tree `.lst` parser in `datafiles/shelx_lst.py`.
 - **CIF Parsing:** Standardized on `gemmi` (>=0.7.5); `gemmi.set_leak_warnings(False)` is set at startup.
-
+- **Key Third-Party Runtime Deps:** `qtpy` + `pyside6` / `pyside6-addons`, `gemmi`, `docxtpl[subdoc]`, `python-docx`, `shelxfile`, `fastmolwidget`, `crossrefapi`, `QtAwesome` (icon fonts), `pyenchant` (spell-check), `html2text`, `lxml`, `numpy<2.4`, `chardet` / `charset-normalizer`, `requests`/`urllib3`, `packaging`, `pefile` (see `pyproject.toml`).
+- Use gemmi for CIF parsinf if many files need to be processed, because it is much faster than CifContainer. CifContainer is a wrapper around gemmi.cif that provides a dict-like interface and additional features, but it is slower than using gemmi directly.
 ## Conventions
 - **UI Files:** Edit `.ui` files in Qt Designer (`scripts/designer.py`), then regenerate via `python scripts/compile_ui_files.py`. Never hand-edit generated `*_ui.py`.
 - **qtpy Imports:** `from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets, compat` — `QtWebEngine` is used and requires `PySide6-Addons`.
@@ -48,8 +49,9 @@
   - *Network-Gated Tests:* set `NO_NETWORK=1` to skip network-dependent checks (CheckCIF/DOI/deposit/PLATON; see `tests/test_checkcif.py`, `tests/test_doi.py`).
   - *Helpers:* shared base class `AppWindowTestCase` and `processevents()` in `tests/helpers.py`; `get_platon_exe()` resolves `C:\pwt\platon.exe` on Windows or `which('platon')`. Fixtures live in `tests/examples/`, `tests/statics/`, `tests/checkcif_results/`, and top-level `test-data/`.
 - **Linting:** 
-  - *Command (local):* `ruff check .` — configured via `.ruff.toml` (line-length 120, target py312).
-  - *CI Lint:* GitHub Actions runs `flake8` in `.github/workflows/python_tests.yml` (ruff is not invoked in CI).
+  - *Command (local):* `ruff check .` — configured via `.ruff.toml` (line-length 120, target py312, rule set `E,F,B,UP,ANN,A,C4,DTZ,NPY,PL,FURB,RUF`).
+  - *CI Lint:* GitHub Actions runs `flake8` in `.github/workflows/python_tests.yml` (installed on the fly via `uv add flake8 pytest`; ruff is not invoked in CI).
+- **Type Checking:** The dev dependency group includes `ty` and `pyside6-stubs`; `[tool.pyrefly]` in `pyproject.toml` configures Pyrefly project includes/excludes. There is no CI gate for type checks.
 - **UI Compilation:** 
   - *Command:* `python scripts/compile_ui_files.py` (discovers `.ui` files, compiles them, and hot-fixes imports to `qtpy`).
 - **Build/Releases:**

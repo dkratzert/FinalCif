@@ -1,3 +1,4 @@
+from qtpy.QtCore import QSize
 from qtpy.QtWidgets import QStackedWidget
 
 
@@ -5,6 +6,16 @@ class MyMainStackedWidget(QStackedWidget):
     def __init__(self, parent):
         super().__init__(parent)
         self.parent = parent
+
+    def minimumSizeHint(self) -> QSize:
+        """Return zero so the stacked widget never forces the window to resize
+        when switching pages. The window can still be freely resized by the user."""
+        return QSize(0, 0)
+
+    def sizeHint(self) -> QSize:
+        """Return zero so content changes on any page never cause the window to
+        spontaneously grow or shrink (e.g. on macOS when a page repopulates)."""
+        return QSize(0, 0)
 
     def got_to_main_page(self):
         self.setCurrentIndex(0)

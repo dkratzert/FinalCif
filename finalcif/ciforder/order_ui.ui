@@ -183,6 +183,9 @@
      <property name="text">
       <string>Order of CIF keys in the output file. Enabled means they will be forced to remain in the output CIF.</string>
      </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
   </layout>

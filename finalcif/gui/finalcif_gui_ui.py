@@ -21,9 +21,9 @@ from qtpy.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplication
     QLabel, QLayout, QLineEdit, QListWidget,
     QListWidgetItem, QMainWindow, QPlainTextEdit, QPushButton,
     QRadioButton, QSizePolicy, QSpacerItem, QSpinBox,
-    QSplitter, QStackedWidget, QStatusBar, QTabWidget,
-    QTableWidget, QTableWidgetItem, QTextBrowser, QTextEdit,
-    QToolButton, QVBoxLayout, QWidget)
+    QSplitter, QStatusBar, QTabWidget, QTableWidget,
+    QTableWidgetItem, QTextBrowser, QTextEdit, QToolButton,
+    QVBoxLayout, QWidget)
 
 from fastmolwidget.molecule2D import MoleculeWidget
 from finalcif.ciforder.order import CifOrder
@@ -34,12 +34,13 @@ from finalcif.gui.file_editor import QCodeEditor
 from finalcif.gui.loops import LoopsPage
 from finalcif.gui.mainstackwidget import MyMainStackedWidget
 from finalcif.gui.propertytable import MyPropTableWidget
+from finalcif.gui.single_line_textedit import SingleLineTextEdit
 
 class Ui_FinalCifWindow(object):
     def setupUi(self, FinalCifWindow):
         if not FinalCifWindow.objectName():
             FinalCifWindow.setObjectName(u"FinalCifWindow")
-        FinalCifWindow.resize(1778, 951)
+        FinalCifWindow.resize(1854, 951)
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -117,7 +118,7 @@ class Ui_FinalCifWindow(object):
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_8)
 
-        self.TemplatesStackedWidget = QStackedWidget(self.LeftFrame)
+        self.TemplatesStackedWidget = MyMainStackedWidget(self.LeftFrame)
         self.TemplatesStackedWidget.setObjectName(u"TemplatesStackedWidget")
         sizePolicy.setHeightForWidth(self.TemplatesStackedWidget.sizePolicy().hasHeightForWidth())
         self.TemplatesStackedWidget.setSizePolicy(sizePolicy)
@@ -139,7 +140,7 @@ class Ui_FinalCifWindow(object):
         self.verticalLayout_7.setSpacing(6)
         self.verticalLayout_7.setObjectName(u"verticalLayout_7")
         self.verticalLayout_7.setContentsMargins(6, 4, 6, 4)
-        self.EquipmentTemplatesStackedWidget = QStackedWidget(self.EquipmentGroupBox)
+        self.EquipmentTemplatesStackedWidget = MyMainStackedWidget(self.EquipmentGroupBox)
         self.EquipmentTemplatesStackedWidget.setObjectName(u"EquipmentTemplatesStackedWidget")
         sizePolicy.setHeightForWidth(self.EquipmentTemplatesStackedWidget.sizePolicy().hasHeightForWidth())
         self.EquipmentTemplatesStackedWidget.setSizePolicy(sizePolicy)
@@ -231,6 +232,11 @@ class Ui_FinalCifWindow(object):
 
         self.ExportEquipmentButton = QPushButton(self.EquipmentEditPage)
         self.ExportEquipmentButton.setObjectName(u"ExportEquipmentButton")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.ExportEquipmentButton.sizePolicy().hasHeightForWidth())
+        self.ExportEquipmentButton.setSizePolicy(sizePolicy3)
 
         self.horizontalLayout_5.addWidget(self.ExportEquipmentButton)
 
@@ -246,11 +252,11 @@ class Ui_FinalCifWindow(object):
 
         self.line = QFrame(self.page_equipment)
         self.line.setObjectName(u"line")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.line.sizePolicy().hasHeightForWidth())
-        self.line.setSizePolicy(sizePolicy3)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.line.sizePolicy().hasHeightForWidth())
+        self.line.setSizePolicy(sizePolicy4)
         self.line.setFrameShape(QFrame.Shape.HLine)
         self.line.setFrameShadow(QFrame.Shadow.Sunken)
 
@@ -269,8 +275,8 @@ class Ui_FinalCifWindow(object):
 
         self.line_5 = QFrame(self.page_equipment)
         self.line_5.setObjectName(u"line_5")
-        sizePolicy3.setHeightForWidth(self.line_5.sizePolicy().hasHeightForWidth())
-        self.line_5.setSizePolicy(sizePolicy3)
+        sizePolicy4.setHeightForWidth(self.line_5.sizePolicy().hasHeightForWidth())
+        self.line_5.setSizePolicy(sizePolicy4)
         self.line_5.setFrameShape(QFrame.Shape.HLine)
         self.line_5.setFrameShadow(QFrame.Shadow.Sunken)
 
@@ -278,11 +284,11 @@ class Ui_FinalCifWindow(object):
 
         self.groupBox_5 = QGroupBox(self.page_equipment)
         self.groupBox_5.setObjectName(u"groupBox_5")
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(50)
-        sizePolicy4.setHeightForWidth(self.groupBox_5.sizePolicy().hasHeightForWidth())
-        self.groupBox_5.setSizePolicy(sizePolicy4)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(50)
+        sizePolicy5.setHeightForWidth(self.groupBox_5.sizePolicy().hasHeightForWidth())
+        self.groupBox_5.setSizePolicy(sizePolicy5)
         self.verticalLayout_35 = QVBoxLayout(self.groupBox_5)
         self.verticalLayout_35.setObjectName(u"verticalLayout_35")
         self.verticalLayout_35.setContentsMargins(6, 9, 6, 9)
@@ -310,11 +316,11 @@ class Ui_FinalCifWindow(object):
 
         self.PictureWidthDoubleSpinBox = QDoubleSpinBox(self.groupBox_5)
         self.PictureWidthDoubleSpinBox.setObjectName(u"PictureWidthDoubleSpinBox")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.PictureWidthDoubleSpinBox.sizePolicy().hasHeightForWidth())
-        self.PictureWidthDoubleSpinBox.setSizePolicy(sizePolicy5)
+        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.PictureWidthDoubleSpinBox.sizePolicy().hasHeightForWidth())
+        self.PictureWidthDoubleSpinBox.setSizePolicy(sizePolicy6)
         self.PictureWidthDoubleSpinBox.setMinimumSize(QSize(80, 0))
         self.PictureWidthDoubleSpinBox.setValue(7.000000000000000)
 
@@ -420,6 +426,8 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_24.setContentsMargins(-1, 6, -1, 6)
         self.ExportAuthorPushButton = QPushButton(self.LoopsGroupBox)
         self.ExportAuthorPushButton.setObjectName(u"ExportAuthorPushButton")
+        sizePolicy3.setHeightForWidth(self.ExportAuthorPushButton.sizePolicy().hasHeightForWidth())
+        self.ExportAuthorPushButton.setSizePolicy(sizePolicy3)
 
         self.gridLayout_24.addWidget(self.ExportAuthorPushButton, 0, 1, 1, 1)
 
@@ -457,56 +465,43 @@ class Ui_FinalCifWindow(object):
         self.splitter.addWidget(self.LeftFrame)
         self.CifDataItemsFrame = QFrame(self.splitter)
         self.CifDataItemsFrame.setObjectName(u"CifDataItemsFrame")
-        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        sizePolicy6.setHorizontalStretch(7)
-        sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(self.CifDataItemsFrame.sizePolicy().hasHeightForWidth())
-        self.CifDataItemsFrame.setSizePolicy(sizePolicy6)
+        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy7.setHorizontalStretch(7)
+        sizePolicy7.setVerticalStretch(0)
+        sizePolicy7.setHeightForWidth(self.CifDataItemsFrame.sizePolicy().hasHeightForWidth())
+        self.CifDataItemsFrame.setSizePolicy(sizePolicy7)
         self.gridLayout_6 = QGridLayout(self.CifDataItemsFrame)
         self.gridLayout_6.setSpacing(6)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
         self.gridLayout_6.setContentsMargins(3, 9, 6, 0)
-        self.spacegroupLabel = QLabel(self.CifDataItemsFrame)
-        self.spacegroupLabel.setObjectName(u"spacegroupLabel")
-
-        self.gridLayout_6.addWidget(self.spacegroupLabel, 0, 4, 1, 1)
-
         self.horizontalSpacer_10 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_6.addItem(self.horizontalSpacer_10, 0, 9, 1, 1)
 
-        self.horizontalSpacer_12 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.horizontalSpacer_11 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_6.addItem(self.horizontalSpacer_12, 0, 6, 1, 1)
+        self.gridLayout_6.addItem(self.horizontalSpacer_11, 0, 3, 1, 1)
 
         self.datanameComboBox = ComboBoxWithContextMenu(self.CifDataItemsFrame)
         self.datanameComboBox.setObjectName(u"datanameComboBox")
         self.datanameComboBox.setEditable(True)
         self.datanameComboBox.setMaxVisibleItems(20)
         self.datanameComboBox.setInsertPolicy(QComboBox.InsertPolicy.InsertAtCurrent)
-        self.datanameComboBox.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
-        self.datanameComboBox.setMinimumContentsLength(20)
+        self.datanameComboBox.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.datanameComboBox.setMinimumContentsLength(10)
         self.datanameComboBox.setFrame(True)
 
         self.gridLayout_6.addWidget(self.datanameComboBox, 0, 1, 1, 1)
 
-        self.appendCifPushButton = QPushButton(self.CifDataItemsFrame)
-        self.appendCifPushButton.setObjectName(u"appendCifPushButton")
+        self.SumFormMainLabel = QLabel(self.CifDataItemsFrame)
+        self.SumFormMainLabel.setObjectName(u"SumFormMainLabel")
 
-        self.gridLayout_6.addWidget(self.appendCifPushButton, 0, 2, 1, 1)
+        self.gridLayout_6.addWidget(self.SumFormMainLabel, 0, 10, 1, 1)
 
-        self.CCDCNumLabel = QLabel(self.CifDataItemsFrame)
-        self.CCDCNumLabel.setObjectName(u"CCDCNumLabel")
-
-        self.gridLayout_6.addWidget(self.CCDCNumLabel, 0, 7, 1, 1)
-
-        self.CCDCNumLineEdit = QTextEdit(self.CifDataItemsFrame)
+        self.CCDCNumLineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
         self.CCDCNumLineEdit.setObjectName(u"CCDCNumLineEdit")
-        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy7.setHorizontalStretch(0)
-        sizePolicy7.setVerticalStretch(1)
-        sizePolicy7.setHeightForWidth(self.CCDCNumLineEdit.sizePolicy().hasHeightForWidth())
-        self.CCDCNumLineEdit.setSizePolicy(sizePolicy7)
+        sizePolicy4.setHeightForWidth(self.CCDCNumLineEdit.sizePolicy().hasHeightForWidth())
+        self.CCDCNumLineEdit.setSizePolicy(sizePolicy4)
         self.CCDCNumLineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
         self.CCDCNumLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.CCDCNumLineEdit.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -518,19 +513,30 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_6.addWidget(self.CCDCNumLineEdit, 0, 8, 1, 1)
 
-        self.horizontalSpacer_11 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_11, 0, 3, 1, 1)
-
+        self.verticalLayout_14 = QVBoxLayout()
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
         self.HelpPushButton = QPushButton(self.CifDataItemsFrame)
         self.HelpPushButton.setObjectName(u"HelpPushButton")
 
-        self.gridLayout_6.addWidget(self.HelpPushButton, 0, 12, 1, 1)
+        self.verticalLayout_14.addWidget(self.HelpPushButton)
 
-        self.SumFormMainLineEdit = QTextEdit(self.CifDataItemsFrame)
+        self.zEstimateLabel = QLabel(self.CifDataItemsFrame)
+        self.zEstimateLabel.setObjectName(u"zEstimateLabel")
+
+        self.verticalLayout_14.addWidget(self.zEstimateLabel)
+
+
+        self.gridLayout_6.addLayout(self.verticalLayout_14, 0, 12, 1, 1)
+
+        self.datanameLabel = QLabel(self.CifDataItemsFrame)
+        self.datanameLabel.setObjectName(u"datanameLabel")
+
+        self.gridLayout_6.addWidget(self.datanameLabel, 0, 0, 1, 1)
+
+        self.SumFormMainLineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
         self.SumFormMainLineEdit.setObjectName(u"SumFormMainLineEdit")
-        sizePolicy7.setHeightForWidth(self.SumFormMainLineEdit.sizePolicy().hasHeightForWidth())
-        self.SumFormMainLineEdit.setSizePolicy(sizePolicy7)
+        sizePolicy4.setHeightForWidth(self.SumFormMainLineEdit.sizePolicy().hasHeightForWidth())
+        self.SumFormMainLineEdit.setSizePolicy(sizePolicy4)
         self.SumFormMainLineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
         self.SumFormMainLineEdit.setInputMethodHints(Qt.InputMethodHint.ImhNone)
         self.SumFormMainLineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -543,20 +549,20 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_6.addWidget(self.SumFormMainLineEdit, 0, 11, 1, 1)
 
-        self.datanameLabel = QLabel(self.CifDataItemsFrame)
-        self.datanameLabel.setObjectName(u"datanameLabel")
+        self.CCDCNumLabel = QLabel(self.CifDataItemsFrame)
+        self.CCDCNumLabel.setObjectName(u"CCDCNumLabel")
 
-        self.gridLayout_6.addWidget(self.datanameLabel, 0, 0, 1, 1)
+        self.gridLayout_6.addWidget(self.CCDCNumLabel, 0, 7, 1, 1)
 
-        self.SumFormMainLabel = QLabel(self.CifDataItemsFrame)
-        self.SumFormMainLabel.setObjectName(u"SumFormMainLabel")
+        self.appendCifPushButton = QPushButton(self.CifDataItemsFrame)
+        self.appendCifPushButton.setObjectName(u"appendCifPushButton")
 
-        self.gridLayout_6.addWidget(self.SumFormMainLabel, 0, 10, 1, 1)
+        self.gridLayout_6.addWidget(self.appendCifPushButton, 0, 2, 1, 1)
 
-        self.Spacegroup_top_LineEdit = QTextEdit(self.CifDataItemsFrame)
+        self.Spacegroup_top_LineEdit = SingleLineTextEdit(self.CifDataItemsFrame)
         self.Spacegroup_top_LineEdit.setObjectName(u"Spacegroup_top_LineEdit")
-        sizePolicy7.setHeightForWidth(self.Spacegroup_top_LineEdit.sizePolicy().hasHeightForWidth())
-        self.Spacegroup_top_LineEdit.setSizePolicy(sizePolicy7)
+        sizePolicy4.setHeightForWidth(self.Spacegroup_top_LineEdit.sizePolicy().hasHeightForWidth())
+        self.Spacegroup_top_LineEdit.setSizePolicy(sizePolicy4)
         self.Spacegroup_top_LineEdit.viewport().setProperty(u"cursor", QCursor(Qt.CursorShape.IBeamCursor))
         self.Spacegroup_top_LineEdit.setInputMethodHints(Qt.InputMethodHint.ImhNone)
         self.Spacegroup_top_LineEdit.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -568,6 +574,15 @@ class Ui_FinalCifWindow(object):
         self.Spacegroup_top_LineEdit.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.gridLayout_6.addWidget(self.Spacegroup_top_LineEdit, 0, 5, 1, 1)
+
+        self.spacegroupLabel = QLabel(self.CifDataItemsFrame)
+        self.spacegroupLabel.setObjectName(u"spacegroupLabel")
+
+        self.gridLayout_6.addWidget(self.spacegroupLabel, 0, 4, 1, 1)
+
+        self.horizontalSpacer_12 = QSpacerItem(10, 0, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_12, 0, 6, 1, 1)
 
         self.MainStackedWidget = MyMainStackedWidget(self.CifDataItemsFrame)
         self.MainStackedWidget.setObjectName(u"MainStackedWidget")
@@ -734,15 +749,211 @@ class Ui_FinalCifWindow(object):
         self.page_molinfo.setObjectName(u"page_molinfo")
         self.gridLayout_3 = QGridLayout(self.page_molinfo)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
+        self.picturesTabWidget = QTabWidget(self.page_molinfo)
+        self.picturesTabWidget.setObjectName(u"picturesTabWidget")
+        sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy9.setHorizontalStretch(55)
+        sizePolicy9.setVerticalStretch(0)
+        sizePolicy9.setHeightForWidth(self.picturesTabWidget.sizePolicy().hasHeightForWidth())
+        self.picturesTabWidget.setSizePolicy(sizePolicy9)
+        self.tab_structure = QWidget()
+        self.tab_structure.setObjectName(u"tab_structure")
+        self.verticalLayout_42 = QVBoxLayout(self.tab_structure)
+        self.verticalLayout_42.setObjectName(u"verticalLayout_42")
+        self.verticalLayout_42.setContentsMargins(3, 3, 3, 3)
+        self.molGroupBox = QGroupBox(self.tab_structure)
+        self.molGroupBox.setObjectName(u"molGroupBox")
+        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy10.setHorizontalStretch(55)
+        sizePolicy10.setVerticalStretch(80)
+        sizePolicy10.setHeightForWidth(self.molGroupBox.sizePolicy().hasHeightForWidth())
+        self.molGroupBox.setSizePolicy(sizePolicy10)
+        self.verticalLayout_8 = QVBoxLayout(self.molGroupBox)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(6, 3, 0, 6)
+        self.render_widget = MoleculeWidget(self.molGroupBox)
+        self.render_widget.setObjectName(u"render_widget")
+        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy11.setHorizontalStretch(0)
+        sizePolicy11.setVerticalStretch(0)
+        sizePolicy11.setHeightForWidth(self.render_widget.sizePolicy().hasHeightForWidth())
+        self.render_widget.setSizePolicy(sizePolicy11)
+
+        self.verticalLayout_8.addWidget(self.render_widget)
+
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.horizontalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
+        self.growCheckBox = QCheckBox(self.molGroupBox)
+        self.growCheckBox.setObjectName(u"growCheckBox")
+        self.growCheckBox.setMinimumSize(QSize(0, 20))
+
+        self.horizontalLayout_7.addWidget(self.growCheckBox)
+
+        self.labelsCheckBox = QCheckBox(self.molGroupBox)
+        self.labelsCheckBox.setObjectName(u"labelsCheckBox")
+        self.labelsCheckBox.setMinimumSize(QSize(0, 20))
+
+        self.horizontalLayout_7.addWidget(self.labelsCheckBox)
+
+        self.adpCheckBox = QCheckBox(self.molGroupBox)
+        self.adpCheckBox.setObjectName(u"adpCheckBox")
+        self.adpCheckBox.setChecked(True)
+
+        self.horizontalLayout_7.addWidget(self.adpCheckBox)
+
+        self.horizontalSpacer_5 = QSpacerItem(10, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_7.addItem(self.horizontalSpacer_5)
+
+        self.drawImagePushButton = QPushButton(self.molGroupBox)
+        self.drawImagePushButton.setObjectName(u"drawImagePushButton")
+
+        self.horizontalLayout_7.addWidget(self.drawImagePushButton)
+
+        self.horizontalSpacer_23 = QSpacerItem(10, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_7.addItem(self.horizontalSpacer_23)
+
+
+        self.verticalLayout_8.addLayout(self.horizontalLayout_7)
+
+
+        self.verticalLayout_42.addWidget(self.molGroupBox)
+
+        self.picturesTabWidget.addTab(self.tab_structure, "")
+        self.tab_video = QWidget()
+        self.tab_video.setObjectName(u"tab_video")
+        self.verticalLayout_44 = QVBoxLayout(self.tab_video)
+        self.verticalLayout_44.setObjectName(u"verticalLayout_44")
+        self.verticalLayout_44.setContentsMargins(3, 3, 3, 3)
+        self.videoFrame = QFrame(self.tab_video)
+        self.videoFrame.setObjectName(u"videoFrame")
+        sizePolicy8.setHeightForWidth(self.videoFrame.sizePolicy().hasHeightForWidth())
+        self.videoFrame.setSizePolicy(sizePolicy8)
+        self.videoFrame.setFrameShape(QFrame.Shape.StyledPanel)
+        self.videoFrame.setFrameShadow(QFrame.Shadow.Raised)
+        self.video_vLayout = QVBoxLayout(self.videoFrame)
+        self.video_vLayout.setObjectName(u"video_vLayout")
+        self.video_vLayout.setContentsMargins(0, 0, 0, 0)
+
+        self.verticalLayout_44.addWidget(self.videoFrame)
+
+        self.horizontalLayout_17 = QHBoxLayout()
+        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.videoLineEdit = QLineEdit(self.tab_video)
+        self.videoLineEdit.setObjectName(u"videoLineEdit")
+        sizePolicy12 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy12.setHorizontalStretch(3)
+        sizePolicy12.setVerticalStretch(0)
+        sizePolicy12.setHeightForWidth(self.videoLineEdit.sizePolicy().hasHeightForWidth())
+        self.videoLineEdit.setSizePolicy(sizePolicy12)
+        self.videoLineEdit.setReadOnly(True)
+
+        self.horizontalLayout_17.addWidget(self.videoLineEdit)
+
+        self.SelectVideo_PushButton = QPushButton(self.tab_video)
+        self.SelectVideo_PushButton.setObjectName(u"SelectVideo_PushButton")
+
+        self.horizontalLayout_17.addWidget(self.SelectVideo_PushButton)
+
+        self.horizontalSpacer_14 = QSpacerItem(34, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_17.addItem(self.horizontalSpacer_14)
+
+        self.setVideoPicturePushButton = QPushButton(self.tab_video)
+        self.setVideoPicturePushButton.setObjectName(u"setVideoPicturePushButton")
+
+        self.horizontalLayout_17.addWidget(self.setVideoPicturePushButton)
+
+        self.videoLeftToolButton = QToolButton(self.tab_video)
+        self.videoLeftToolButton.setObjectName(u"videoLeftToolButton")
+
+        self.horizontalLayout_17.addWidget(self.videoLeftToolButton)
+
+        self.videoRightToolButton = QToolButton(self.tab_video)
+        self.videoRightToolButton.setObjectName(u"videoRightToolButton")
+
+        self.horizontalLayout_17.addWidget(self.videoRightToolButton)
+
+
+        self.verticalLayout_44.addLayout(self.horizontalLayout_17)
+
+        self.picturesTabWidget.addTab(self.tab_video, "")
+
+        self.gridLayout_3.addWidget(self.picturesTabWidget, 0, 0, 1, 2)
+
+        self.shelxfile_groupBox = QGroupBox(self.page_molinfo)
+        self.shelxfile_groupBox.setObjectName(u"shelxfile_groupBox")
+        sizePolicy13 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy13.setHorizontalStretch(45)
+        sizePolicy13.setVerticalStretch(80)
+        sizePolicy13.setHeightForWidth(self.shelxfile_groupBox.sizePolicy().hasHeightForWidth())
+        self.shelxfile_groupBox.setSizePolicy(sizePolicy13)
+        self.verticalLayout_41 = QVBoxLayout(self.shelxfile_groupBox)
+        self.verticalLayout_41.setObjectName(u"verticalLayout_41")
+        self.shelx_TextEdit = QPlainTextEdit(self.shelxfile_groupBox)
+        self.shelx_TextEdit.setObjectName(u"shelx_TextEdit")
+        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy14.setHorizontalStretch(0)
+        sizePolicy14.setVerticalStretch(90)
+        sizePolicy14.setHeightForWidth(self.shelx_TextEdit.sizePolicy().hasHeightForWidth())
+        self.shelx_TextEdit.setSizePolicy(sizePolicy14)
+        self.shelx_TextEdit.setFrameShape(QFrame.Shape.NoFrame)
+        self.shelx_TextEdit.setFrameShadow(QFrame.Shadow.Plain)
+        self.shelx_TextEdit.setUndoRedoEnabled(False)
+        self.shelx_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        self.shelx_TextEdit.setReadOnly(True)
+
+        self.verticalLayout_41.addWidget(self.shelx_TextEdit)
+
+        self.shelx_warn_TextEdit = QPlainTextEdit(self.shelxfile_groupBox)
+        self.shelx_warn_TextEdit.setObjectName(u"shelx_warn_TextEdit")
+        sizePolicy15 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy15.setHorizontalStretch(0)
+        sizePolicy15.setVerticalStretch(10)
+        sizePolicy15.setHeightForWidth(self.shelx_warn_TextEdit.sizePolicy().hasHeightForWidth())
+        self.shelx_warn_TextEdit.setSizePolicy(sizePolicy15)
+        font1 = QFont()
+        font1.setBold(True)
+        self.shelx_warn_TextEdit.setFont(font1)
+        self.shelx_warn_TextEdit.setUndoRedoEnabled(False)
+        self.shelx_warn_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        self.shelx_warn_TextEdit.setReadOnly(True)
+
+        self.verticalLayout_41.addWidget(self.shelx_warn_TextEdit)
+
+
+        self.gridLayout_3.addWidget(self.shelxfile_groupBox, 0, 2, 1, 2)
+
         self.groupBox_3 = QGroupBox(self.page_molinfo)
         self.groupBox_3.setObjectName(u"groupBox_3")
-        sizePolicy9 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy9.setHorizontalStretch(0)
-        sizePolicy9.setVerticalStretch(20)
-        sizePolicy9.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
-        self.groupBox_3.setSizePolicy(sizePolicy9)
+        sizePolicy16 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy16.setHorizontalStretch(0)
+        sizePolicy16.setVerticalStretch(20)
+        sizePolicy16.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
+        self.groupBox_3.setSizePolicy(sizePolicy16)
         self.gridLayout_4 = QGridLayout(self.groupBox_3)
         self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.horizontalSpacer_7 = QSpacerItem(20, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_4.addItem(self.horizontalSpacer_7, 0, 3, 1, 1)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 12, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
+
+        self.gridLayout_4.addItem(self.verticalSpacer_2, 1, 2, 1, 1)
+
+        self.horizontalSpacer_8 = QSpacerItem(20, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_4.addItem(self.horizontalSpacer_8, 0, 5, 1, 1)
+
+        self.BackpushButtonDetails = QPushButton(self.groupBox_3)
+        self.BackpushButtonDetails.setObjectName(u"BackpushButtonDetails")
+        sizePolicy6.setHeightForWidth(self.BackpushButtonDetails.sizePolicy().hasHeightForWidth())
+        self.BackpushButtonDetails.setSizePolicy(sizePolicy6)
+
+        self.gridLayout_4.addWidget(self.BackpushButtonDetails, 2, 0, 1, 1)
+
         self.formLayout_3 = QFormLayout()
         self.formLayout_3.setObjectName(u"formLayout_3")
         self.zLabel = QLabel(self.groupBox_3)
@@ -750,11 +961,21 @@ class Ui_FinalCifWindow(object):
 
         self.formLayout_3.setWidget(0, QFormLayout.ItemRole.LabelRole, self.zLabel)
 
+        self.z_horizontalLayout = QHBoxLayout()
+        self.z_horizontalLayout.setObjectName(u"z_horizontalLayout")
         self.zLineEdit = QLineEdit(self.groupBox_3)
         self.zLineEdit.setObjectName(u"zLineEdit")
         self.zLineEdit.setReadOnly(True)
 
-        self.formLayout_3.setWidget(0, QFormLayout.ItemRole.FieldRole, self.zLineEdit)
+        self.z_horizontalLayout.addWidget(self.zLineEdit)
+
+        self.zEstimateLabel2 = QLabel(self.groupBox_3)
+        self.zEstimateLabel2.setObjectName(u"zEstimateLabel2")
+
+        self.z_horizontalLayout.addWidget(self.zEstimateLabel2)
+
+
+        self.formLayout_3.setLayout(0, QFormLayout.ItemRole.FieldRole, self.z_horizontalLayout)
 
         self.temperatureLabel = QLabel(self.groupBox_3)
         self.temperatureLabel.setObjectName(u"temperatureLabel")
@@ -770,10 +991,10 @@ class Ui_FinalCifWindow(object):
 
         self.wR2Label = QLabel(self.groupBox_3)
         self.wR2Label.setObjectName(u"wR2Label")
-        font1 = QFont()
-        font1.setBold(False)
-        font1.setItalic(False)
-        self.wR2Label.setFont(font1)
+        font2 = QFont()
+        font2.setBold(False)
+        font2.setItalic(False)
+        self.wR2Label.setFont(font2)
         self.wR2Label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_3.setWidget(2, QFormLayout.ItemRole.LabelRole, self.wR2Label)
@@ -786,7 +1007,7 @@ class Ui_FinalCifWindow(object):
 
         self.r1Label = QLabel(self.groupBox_3)
         self.r1Label.setObjectName(u"r1Label")
-        self.r1Label.setFont(font1)
+        self.r1Label.setFont(font2)
         self.r1Label.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_3.setWidget(3, QFormLayout.ItemRole.LabelRole, self.r1Label)
@@ -823,9 +1044,9 @@ class Ui_FinalCifWindow(object):
 
         self.completeLabel = QLabel(self.groupBox_3)
         self.completeLabel.setObjectName(u"completeLabel")
-        font2 = QFont()
-        font2.setBold(False)
-        self.completeLabel.setFont(font2)
+        font3 = QFont()
+        font3.setBold(False)
+        self.completeLabel.setFont(font3)
         self.completeLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_3.setWidget(6, QFormLayout.ItemRole.LabelRole, self.completeLabel)
@@ -839,13 +1060,43 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_4.addLayout(self.formLayout_3, 0, 2, 1, 1)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 12, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.MinimumExpanding)
+        self.groupBox_4 = QGroupBox(self.groupBox_3)
+        self.groupBox_4.setObjectName(u"groupBox_4")
+        sizePolicy17 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy17.setHorizontalStretch(0)
+        sizePolicy17.setVerticalStretch(0)
+        sizePolicy17.setHeightForWidth(self.groupBox_4.sizePolicy().hasHeightForWidth())
+        self.groupBox_4.setSizePolicy(sizePolicy17)
+        self.gridLayout_9 = QGridLayout(self.groupBox_4)
+        self.gridLayout_9.setObjectName(u"gridLayout_9")
+        self.cellField = QLabel(self.groupBox_4)
+        self.cellField.setObjectName(u"cellField")
+        sizePolicy18 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
+        sizePolicy18.setHorizontalStretch(0)
+        sizePolicy18.setVerticalStretch(0)
+        sizePolicy18.setHeightForWidth(self.cellField.sizePolicy().hasHeightForWidth())
+        self.cellField.setSizePolicy(sizePolicy18)
+        self.cellField.setMinimumSize(QSize(0, 75))
+        self.cellField.setBaseSize(QSize(0, 75))
+        self.cellField.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
+        self.cellField.setAutoFillBackground(False)
+        self.cellField.setStyleSheet(u"border-color: rgb(53, 53, 53);")
+        self.cellField.setFrameShape(QFrame.Shape.NoFrame)
+        self.cellField.setFrameShadow(QFrame.Shadow.Plain)
+        self.cellField.setTextFormat(Qt.TextFormat.RichText)
+        self.cellField.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
 
-        self.gridLayout_4.addItem(self.verticalSpacer_2, 1, 2, 1, 1)
+        self.gridLayout_9.addWidget(self.cellField, 0, 2, 1, 1)
 
-        self.horizontalSpacer_24 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_4.addItem(self.horizontalSpacer_24, 0, 7, 1, 1)
+        self.gridLayout_4.addWidget(self.groupBox_4, 0, 0, 1, 1)
+
+        self.SourcesPushButton = QPushButton(self.groupBox_3)
+        self.SourcesPushButton.setObjectName(u"SourcesPushButton")
+        sizePolicy6.setHeightForWidth(self.SourcesPushButton.sizePolicy().hasHeightForWidth())
+        self.SourcesPushButton.setSizePolicy(sizePolicy6)
+
+        self.gridLayout_4.addWidget(self.SourcesPushButton, 2, 6, 1, 1)
 
         self.formLayout_2 = QFormLayout()
         self.formLayout_2.setObjectName(u"formLayout_2")
@@ -896,7 +1147,7 @@ class Ui_FinalCifWindow(object):
 
         self.dataReflnsLabel = QLabel(self.groupBox_3)
         self.dataReflnsLabel.setObjectName(u"dataReflnsLabel")
-        self.dataReflnsLabel.setFont(font2)
+        self.dataReflnsLabel.setFont(font3)
         self.dataReflnsLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout_2.setWidget(4, QFormLayout.ItemRole.LabelRole, self.dataReflnsLabel)
@@ -932,41 +1183,6 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_4.addLayout(self.formLayout_2, 0, 6, 1, 1)
 
-        self.groupBox_4 = QGroupBox(self.groupBox_3)
-        self.groupBox_4.setObjectName(u"groupBox_4")
-        sizePolicy10 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy10.setHorizontalStretch(0)
-        sizePolicy10.setVerticalStretch(0)
-        sizePolicy10.setHeightForWidth(self.groupBox_4.sizePolicy().hasHeightForWidth())
-        self.groupBox_4.setSizePolicy(sizePolicy10)
-        self.gridLayout_9 = QGridLayout(self.groupBox_4)
-        self.gridLayout_9.setObjectName(u"gridLayout_9")
-        self.cellField = QLabel(self.groupBox_4)
-        self.cellField.setObjectName(u"cellField")
-        sizePolicy11 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-        sizePolicy11.setHorizontalStretch(0)
-        sizePolicy11.setVerticalStretch(0)
-        sizePolicy11.setHeightForWidth(self.cellField.sizePolicy().hasHeightForWidth())
-        self.cellField.setSizePolicy(sizePolicy11)
-        self.cellField.setMinimumSize(QSize(0, 75))
-        self.cellField.setBaseSize(QSize(0, 75))
-        self.cellField.setContextMenuPolicy(Qt.ContextMenuPolicy.ActionsContextMenu)
-        self.cellField.setAutoFillBackground(False)
-        self.cellField.setStyleSheet(u"border-color: rgb(53, 53, 53);")
-        self.cellField.setFrameShape(QFrame.Shape.NoFrame)
-        self.cellField.setFrameShadow(QFrame.Shadow.Plain)
-        self.cellField.setTextFormat(Qt.TextFormat.RichText)
-        self.cellField.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
-
-        self.gridLayout_9.addWidget(self.cellField, 0, 2, 1, 1)
-
-
-        self.gridLayout_4.addWidget(self.groupBox_4, 0, 0, 1, 1)
-
-        self.horizontalSpacer_8 = QSpacerItem(20, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_4.addItem(self.horizontalSpacer_8, 0, 5, 1, 1)
-
         self.formLayout = QFormLayout()
         self.formLayout.setObjectName(u"formLayout")
         self.peakLabel = QLabel(self.groupBox_3)
@@ -983,7 +1199,7 @@ class Ui_FinalCifWindow(object):
 
         self.rintLabel = QLabel(self.groupBox_3)
         self.rintLabel.setObjectName(u"rintLabel")
-        self.rintLabel.setFont(font2)
+        self.rintLabel.setFont(font3)
         self.rintLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(1, QFormLayout.ItemRole.LabelRole, self.rintLabel)
@@ -996,7 +1212,7 @@ class Ui_FinalCifWindow(object):
 
         self.rsigmaLabel = QLabel(self.groupBox_3)
         self.rsigmaLabel.setObjectName(u"rsigmaLabel")
-        self.rsigmaLabel.setFont(font2)
+        self.rsigmaLabel.setFont(font3)
         self.rsigmaLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(2, QFormLayout.ItemRole.LabelRole, self.rsigmaLabel)
@@ -1045,7 +1261,7 @@ class Ui_FinalCifWindow(object):
 
         self.dLabel = QLabel(self.groupBox_3)
         self.dLabel.setObjectName(u"dLabel")
-        self.dLabel.setFont(font2)
+        self.dLabel.setFont(font3)
         self.dLabel.setAlignment(Qt.AlignmentFlag.AlignRight|Qt.AlignmentFlag.AlignTrailing|Qt.AlignmentFlag.AlignVCenter)
 
         self.formLayout.setWidget(6, QFormLayout.ItemRole.LabelRole, self.dLabel)
@@ -1059,207 +1275,16 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_4.addLayout(self.formLayout, 0, 4, 1, 1)
 
-        self.BackpushButtonDetails = QPushButton(self.groupBox_3)
-        self.BackpushButtonDetails.setObjectName(u"BackpushButtonDetails")
-        sizePolicy5.setHeightForWidth(self.BackpushButtonDetails.sizePolicy().hasHeightForWidth())
-        self.BackpushButtonDetails.setSizePolicy(sizePolicy5)
-
-        self.gridLayout_4.addWidget(self.BackpushButtonDetails, 2, 0, 1, 1)
-
-        self.horizontalSpacer_7 = QSpacerItem(20, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_4.addItem(self.horizontalSpacer_7, 0, 3, 1, 1)
-
         self.horizontalSpacer_22 = QSpacerItem(20, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_4.addItem(self.horizontalSpacer_22, 0, 1, 1, 1)
 
-        self.SourcesPushButton = QPushButton(self.groupBox_3)
-        self.SourcesPushButton.setObjectName(u"SourcesPushButton")
-        sizePolicy5.setHeightForWidth(self.SourcesPushButton.sizePolicy().hasHeightForWidth())
-        self.SourcesPushButton.setSizePolicy(sizePolicy5)
+        self.horizontalSpacer_24 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_4.addWidget(self.SourcesPushButton, 2, 7, 1, 1)
+        self.gridLayout_4.addItem(self.horizontalSpacer_24, 0, 7, 1, 1)
 
 
         self.gridLayout_3.addWidget(self.groupBox_3, 1, 0, 1, 4)
-
-        self.groupBox_9 = QGroupBox(self.page_molinfo)
-        self.groupBox_9.setObjectName(u"groupBox_9")
-        sizePolicy12 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy12.setHorizontalStretch(45)
-        sizePolicy12.setVerticalStretch(80)
-        sizePolicy12.setHeightForWidth(self.groupBox_9.sizePolicy().hasHeightForWidth())
-        self.groupBox_9.setSizePolicy(sizePolicy12)
-        self.verticalLayout_41 = QVBoxLayout(self.groupBox_9)
-        self.verticalLayout_41.setObjectName(u"verticalLayout_41")
-        self.shelx_TextEdit = QPlainTextEdit(self.groupBox_9)
-        self.shelx_TextEdit.setObjectName(u"shelx_TextEdit")
-        sizePolicy13 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy13.setHorizontalStretch(0)
-        sizePolicy13.setVerticalStretch(90)
-        sizePolicy13.setHeightForWidth(self.shelx_TextEdit.sizePolicy().hasHeightForWidth())
-        self.shelx_TextEdit.setSizePolicy(sizePolicy13)
-        self.shelx_TextEdit.setFrameShape(QFrame.Shape.NoFrame)
-        self.shelx_TextEdit.setFrameShadow(QFrame.Shadow.Plain)
-        self.shelx_TextEdit.setUndoRedoEnabled(False)
-        self.shelx_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
-        self.shelx_TextEdit.setReadOnly(True)
-
-        self.verticalLayout_41.addWidget(self.shelx_TextEdit)
-
-        self.shelx_warn_TextEdit = QPlainTextEdit(self.groupBox_9)
-        self.shelx_warn_TextEdit.setObjectName(u"shelx_warn_TextEdit")
-        sizePolicy14 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy14.setHorizontalStretch(0)
-        sizePolicy14.setVerticalStretch(10)
-        sizePolicy14.setHeightForWidth(self.shelx_warn_TextEdit.sizePolicy().hasHeightForWidth())
-        self.shelx_warn_TextEdit.setSizePolicy(sizePolicy14)
-        font3 = QFont()
-        font3.setBold(True)
-        self.shelx_warn_TextEdit.setFont(font3)
-        self.shelx_warn_TextEdit.setUndoRedoEnabled(False)
-        self.shelx_warn_TextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
-        self.shelx_warn_TextEdit.setReadOnly(True)
-
-        self.verticalLayout_41.addWidget(self.shelx_warn_TextEdit)
-
-
-        self.gridLayout_3.addWidget(self.groupBox_9, 0, 2, 1, 1)
-
-        self.picturesTabWidget = QTabWidget(self.page_molinfo)
-        self.picturesTabWidget.setObjectName(u"picturesTabWidget")
-        sizePolicy15 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy15.setHorizontalStretch(55)
-        sizePolicy15.setVerticalStretch(0)
-        sizePolicy15.setHeightForWidth(self.picturesTabWidget.sizePolicy().hasHeightForWidth())
-        self.picturesTabWidget.setSizePolicy(sizePolicy15)
-        self.tab_structure = QWidget()
-        self.tab_structure.setObjectName(u"tab_structure")
-        self.verticalLayout_42 = QVBoxLayout(self.tab_structure)
-        self.verticalLayout_42.setObjectName(u"verticalLayout_42")
-        self.verticalLayout_42.setContentsMargins(3, 3, 3, 3)
-        self.molGroupBox = QGroupBox(self.tab_structure)
-        self.molGroupBox.setObjectName(u"molGroupBox")
-        sizePolicy16 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy16.setHorizontalStretch(55)
-        sizePolicy16.setVerticalStretch(80)
-        sizePolicy16.setHeightForWidth(self.molGroupBox.sizePolicy().hasHeightForWidth())
-        self.molGroupBox.setSizePolicy(sizePolicy16)
-        self.verticalLayout_8 = QVBoxLayout(self.molGroupBox)
-        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
-        self.verticalLayout_8.setContentsMargins(6, 3, 0, 6)
-        self.render_widget = MoleculeWidget(self.molGroupBox)
-        self.render_widget.setObjectName(u"render_widget")
-        sizePolicy17 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy17.setHorizontalStretch(0)
-        sizePolicy17.setVerticalStretch(0)
-        sizePolicy17.setHeightForWidth(self.render_widget.sizePolicy().hasHeightForWidth())
-        self.render_widget.setSizePolicy(sizePolicy17)
-
-        self.verticalLayout_8.addWidget(self.render_widget)
-
-        self.horizontalLayout_7 = QHBoxLayout()
-        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
-        self.horizontalLayout_7.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
-        self.growCheckBox = QCheckBox(self.molGroupBox)
-        self.growCheckBox.setObjectName(u"growCheckBox")
-        self.growCheckBox.setMinimumSize(QSize(0, 20))
-
-        self.horizontalLayout_7.addWidget(self.growCheckBox)
-
-        self.labelsCheckBox = QCheckBox(self.molGroupBox)
-        self.labelsCheckBox.setObjectName(u"labelsCheckBox")
-        self.labelsCheckBox.setMinimumSize(QSize(0, 20))
-
-        self.horizontalLayout_7.addWidget(self.labelsCheckBox)
-
-        self.adpCheckBox = QCheckBox(self.molGroupBox)
-        self.adpCheckBox.setObjectName(u"adpCheckBox")
-        self.adpCheckBox.setChecked(True)
-
-        self.horizontalLayout_7.addWidget(self.adpCheckBox)
-
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_7.addItem(self.horizontalSpacer_5)
-
-        self.drawImagePushButton = QPushButton(self.molGroupBox)
-        self.drawImagePushButton.setObjectName(u"drawImagePushButton")
-
-        self.horizontalLayout_7.addWidget(self.drawImagePushButton)
-
-        self.horizontalSpacer_23 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_7.addItem(self.horizontalSpacer_23)
-
-
-        self.verticalLayout_8.addLayout(self.horizontalLayout_7)
-
-
-        self.verticalLayout_42.addWidget(self.molGroupBox)
-
-        self.picturesTabWidget.addTab(self.tab_structure, "")
-        self.tab_video = QWidget()
-        self.tab_video.setObjectName(u"tab_video")
-        self.verticalLayout_44 = QVBoxLayout(self.tab_video)
-        self.verticalLayout_44.setObjectName(u"verticalLayout_44")
-        self.verticalLayout_44.setContentsMargins(3, 3, 3, 3)
-        self.videoFrame = QFrame(self.tab_video)
-        self.videoFrame.setObjectName(u"videoFrame")
-        sizePolicy8.setHeightForWidth(self.videoFrame.sizePolicy().hasHeightForWidth())
-        self.videoFrame.setSizePolicy(sizePolicy8)
-        self.videoFrame.setFrameShape(QFrame.Shape.StyledPanel)
-        self.videoFrame.setFrameShadow(QFrame.Shadow.Raised)
-        self.video_vLayout = QVBoxLayout(self.videoFrame)
-        self.video_vLayout.setObjectName(u"video_vLayout")
-        self.video_vLayout.setContentsMargins(0, 0, 0, 0)
-
-        self.verticalLayout_44.addWidget(self.videoFrame)
-
-        self.horizontalLayout_17 = QHBoxLayout()
-        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
-        self.videoLineEdit = QLineEdit(self.tab_video)
-        self.videoLineEdit.setObjectName(u"videoLineEdit")
-        sizePolicy18 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy18.setHorizontalStretch(3)
-        sizePolicy18.setVerticalStretch(0)
-        sizePolicy18.setHeightForWidth(self.videoLineEdit.sizePolicy().hasHeightForWidth())
-        self.videoLineEdit.setSizePolicy(sizePolicy18)
-        self.videoLineEdit.setReadOnly(True)
-
-        self.horizontalLayout_17.addWidget(self.videoLineEdit)
-
-        self.SelectVideo_PushButton = QPushButton(self.tab_video)
-        self.SelectVideo_PushButton.setObjectName(u"SelectVideo_PushButton")
-
-        self.horizontalLayout_17.addWidget(self.SelectVideo_PushButton)
-
-        self.horizontalSpacer_14 = QSpacerItem(34, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_17.addItem(self.horizontalSpacer_14)
-
-        self.setVideoPicturePushButton = QPushButton(self.tab_video)
-        self.setVideoPicturePushButton.setObjectName(u"setVideoPicturePushButton")
-
-        self.horizontalLayout_17.addWidget(self.setVideoPicturePushButton)
-
-        self.videoLeftToolButton = QToolButton(self.tab_video)
-        self.videoLeftToolButton.setObjectName(u"videoLeftToolButton")
-
-        self.horizontalLayout_17.addWidget(self.videoLeftToolButton)
-
-        self.videoRightToolButton = QToolButton(self.tab_video)
-        self.videoRightToolButton.setObjectName(u"videoRightToolButton")
-
-        self.horizontalLayout_17.addWidget(self.videoRightToolButton)
-
-
-        self.verticalLayout_44.addLayout(self.horizontalLayout_17)
-
-        self.picturesTabWidget.addTab(self.tab_video, "")
-
-        self.gridLayout_3.addWidget(self.picturesTabWidget, 0, 0, 1, 2)
 
         self.MainStackedWidget.addWidget(self.page_molinfo)
         self.page_Sources = QWidget()
@@ -1300,8 +1325,8 @@ class Ui_FinalCifWindow(object):
 
         self.BackSourcesPushButton = QPushButton(self.page_Sources)
         self.BackSourcesPushButton.setObjectName(u"BackSourcesPushButton")
-        sizePolicy5.setHeightForWidth(self.BackSourcesPushButton.sizePolicy().hasHeightForWidth())
-        self.BackSourcesPushButton.setSizePolicy(sizePolicy5)
+        sizePolicy6.setHeightForWidth(self.BackSourcesPushButton.sizePolicy().hasHeightForWidth())
+        self.BackSourcesPushButton.setSizePolicy(sizePolicy6)
 
         self.gridLayout_11.addWidget(self.BackSourcesPushButton, 1, 2, 1, 2)
 
@@ -1312,8 +1337,8 @@ class Ui_FinalCifWindow(object):
         self.gridLayout_12.setObjectName(u"gridLayout_12")
         self.BackFromOptionspPushButton = QPushButton(self.page_options)
         self.BackFromOptionspPushButton.setObjectName(u"BackFromOptionspPushButton")
-        sizePolicy5.setHeightForWidth(self.BackFromOptionspPushButton.sizePolicy().hasHeightForWidth())
-        self.BackFromOptionspPushButton.setSizePolicy(sizePolicy5)
+        sizePolicy6.setHeightForWidth(self.BackFromOptionspPushButton.sizePolicy().hasHeightForWidth())
+        self.BackFromOptionspPushButton.setSizePolicy(sizePolicy6)
 
         self.gridLayout_12.addWidget(self.BackFromOptionspPushButton, 7, 0, 1, 1)
 
@@ -1334,9 +1359,8 @@ class Ui_FinalCifWindow(object):
 
         self.CODURLTextedit = QLineEdit(self.groupBox_COD)
         self.CODURLTextedit.setObjectName(u"CODURLTextedit")
-        sizePolicy3.setHeightForWidth(self.CODURLTextedit.sizePolicy().hasHeightForWidth())
-        self.CODURLTextedit.setSizePolicy(sizePolicy3)
-        self.CODURLTextedit.setMinimumSize(QSize(300, 0))
+        sizePolicy4.setHeightForWidth(self.CODURLTextedit.sizePolicy().hasHeightForWidth())
+        self.CODURLTextedit.setSizePolicy(sizePolicy4)
 
         self.formLayout_6.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.CODURLTextedit)
 
@@ -1354,14 +1378,14 @@ class Ui_FinalCifWindow(object):
         self.formLayout_4.setObjectName(u"formLayout_4")
         self.label_4 = QLabel(self.groupBox_71)
         self.label_4.setObjectName(u"label_4")
+        self.label_4.setWordWrap(True)
 
         self.formLayout_4.setWidget(0, QFormLayout.ItemRole.SpanningRole, self.label_4)
 
         self.CheckCIFServerURLTextedit = QLineEdit(self.groupBox_71)
         self.CheckCIFServerURLTextedit.setObjectName(u"CheckCIFServerURLTextedit")
-        sizePolicy3.setHeightForWidth(self.CheckCIFServerURLTextedit.sizePolicy().hasHeightForWidth())
-        self.CheckCIFServerURLTextedit.setSizePolicy(sizePolicy3)
-        self.CheckCIFServerURLTextedit.setMinimumSize(QSize(300, 0))
+        sizePolicy4.setHeightForWidth(self.CheckCIFServerURLTextedit.sizePolicy().hasHeightForWidth())
+        self.CheckCIFServerURLTextedit.setSizePolicy(sizePolicy4)
 
         self.formLayout_4.setWidget(1, QFormLayout.ItemRole.SpanningRole, self.CheckCIFServerURLTextedit)
 
@@ -1375,12 +1399,18 @@ class Ui_FinalCifWindow(object):
         sizePolicy21.setVerticalStretch(0)
         sizePolicy21.setHeightForWidth(self.groupBox_8.sizePolicy().hasHeightForWidth())
         self.groupBox_8.setSizePolicy(sizePolicy21)
+        self.groupBox_8.setMinimumSize(QSize(0, 140))
         self.verticalLayout_34 = QVBoxLayout(self.groupBox_8)
         self.verticalLayout_34.setObjectName(u"verticalLayout_34")
         self.ExportAllTemplatesPushButton = QPushButton(self.groupBox_8)
         self.ExportAllTemplatesPushButton.setObjectName(u"ExportAllTemplatesPushButton")
+        sizePolicy22 = QSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+        sizePolicy22.setHorizontalStretch(0)
+        sizePolicy22.setVerticalStretch(0)
+        sizePolicy22.setHeightForWidth(self.ExportAllTemplatesPushButton.sizePolicy().hasHeightForWidth())
+        self.ExportAllTemplatesPushButton.setSizePolicy(sizePolicy22)
 
-        self.verticalLayout_34.addWidget(self.ExportAllTemplatesPushButton, 0, Qt.AlignmentFlag.AlignLeft)
+        self.verticalLayout_34.addWidget(self.ExportAllTemplatesPushButton)
 
         self.label_18 = QLabel(self.groupBox_8)
         self.label_18.setObjectName(u"label_18")
@@ -1393,8 +1423,10 @@ class Ui_FinalCifWindow(object):
 
         self.ImportAllTemplatesPushButton = QPushButton(self.groupBox_8)
         self.ImportAllTemplatesPushButton.setObjectName(u"ImportAllTemplatesPushButton")
+        sizePolicy22.setHeightForWidth(self.ImportAllTemplatesPushButton.sizePolicy().hasHeightForWidth())
+        self.ImportAllTemplatesPushButton.setSizePolicy(sizePolicy22)
 
-        self.verticalLayout_34.addWidget(self.ImportAllTemplatesPushButton, 0, Qt.AlignmentFlag.AlignLeft)
+        self.verticalLayout_34.addWidget(self.ImportAllTemplatesPushButton)
 
         self.label_17 = QLabel(self.groupBox_8)
         self.label_17.setObjectName(u"label_17")
@@ -1443,24 +1475,24 @@ class Ui_FinalCifWindow(object):
 
         self.cifOrderWidget = CifOrder(self.page_options)
         self.cifOrderWidget.setObjectName(u"cifOrderWidget")
-        sizePolicy22 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy22.setHorizontalStretch(30)
-        sizePolicy22.setVerticalStretch(2)
-        sizePolicy22.setHeightForWidth(self.cifOrderWidget.sizePolicy().hasHeightForWidth())
-        self.cifOrderWidget.setSizePolicy(sizePolicy22)
+        sizePolicy23 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy23.setHorizontalStretch(30)
+        sizePolicy23.setVerticalStretch(2)
+        sizePolicy23.setHeightForWidth(self.cifOrderWidget.sizePolicy().hasHeightForWidth())
+        self.cifOrderWidget.setSizePolicy(sizePolicy23)
 
         self.gridLayout_12.addWidget(self.cifOrderWidget, 2, 0, 5, 2)
 
         self.PropertiesGroupBox = QGroupBox(self.page_options)
         self.PropertiesGroupBox.setObjectName(u"PropertiesGroupBox")
-        sizePolicy23 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy23.setHorizontalStretch(50)
-        sizePolicy23.setVerticalStretch(2)
-        sizePolicy23.setHeightForWidth(self.PropertiesGroupBox.sizePolicy().hasHeightForWidth())
-        self.PropertiesGroupBox.setSizePolicy(sizePolicy23)
+        sizePolicy24 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy24.setHorizontalStretch(50)
+        sizePolicy24.setVerticalStretch(2)
+        sizePolicy24.setHeightForWidth(self.PropertiesGroupBox.sizePolicy().hasHeightForWidth())
+        self.PropertiesGroupBox.setSizePolicy(sizePolicy24)
         self.verticalLayout_6 = QVBoxLayout(self.PropertiesGroupBox)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
-        self.PropertiesTemplatesStackedWidget = QStackedWidget(self.PropertiesGroupBox)
+        self.PropertiesTemplatesStackedWidget = MyMainStackedWidget(self.PropertiesGroupBox)
         self.PropertiesTemplatesStackedWidget.setObjectName(u"PropertiesTemplatesStackedWidget")
         self.PropertiesSelectPage = QWidget()
         self.PropertiesSelectPage.setObjectName(u"PropertiesSelectPage")
@@ -1543,33 +1575,35 @@ class Ui_FinalCifWindow(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.DeletePropertiesButton = QPushButton(self.PropertiesEditPage)
         self.DeletePropertiesButton.setObjectName(u"DeletePropertiesButton")
-        sizePolicy24 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy24.setHorizontalStretch(1)
-        sizePolicy24.setVerticalStretch(0)
-        sizePolicy24.setHeightForWidth(self.DeletePropertiesButton.sizePolicy().hasHeightForWidth())
-        self.DeletePropertiesButton.setSizePolicy(sizePolicy24)
+        sizePolicy25 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        sizePolicy25.setHorizontalStretch(1)
+        sizePolicy25.setVerticalStretch(0)
+        sizePolicy25.setHeightForWidth(self.DeletePropertiesButton.sizePolicy().hasHeightForWidth())
+        self.DeletePropertiesButton.setSizePolicy(sizePolicy25)
 
         self.horizontalLayout.addWidget(self.DeletePropertiesButton)
 
         self.SavePropertiesButton = QPushButton(self.PropertiesEditPage)
         self.SavePropertiesButton.setObjectName(u"SavePropertiesButton")
-        sizePolicy25 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy25.setHorizontalStretch(1)
-        sizePolicy25.setVerticalStretch(0)
-        sizePolicy25.setHeightForWidth(self.SavePropertiesButton.sizePolicy().hasHeightForWidth())
-        self.SavePropertiesButton.setSizePolicy(sizePolicy25)
+        sizePolicy26 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        sizePolicy26.setHorizontalStretch(1)
+        sizePolicy26.setVerticalStretch(0)
+        sizePolicy26.setHeightForWidth(self.SavePropertiesButton.sizePolicy().hasHeightForWidth())
+        self.SavePropertiesButton.setSizePolicy(sizePolicy26)
 
         self.horizontalLayout.addWidget(self.SavePropertiesButton)
 
         self.CancelPropertiesButton = QPushButton(self.PropertiesEditPage)
         self.CancelPropertiesButton.setObjectName(u"CancelPropertiesButton")
-        sizePolicy24.setHeightForWidth(self.CancelPropertiesButton.sizePolicy().hasHeightForWidth())
-        self.CancelPropertiesButton.setSizePolicy(sizePolicy24)
+        sizePolicy25.setHeightForWidth(self.CancelPropertiesButton.sizePolicy().hasHeightForWidth())
+        self.CancelPropertiesButton.setSizePolicy(sizePolicy25)
 
         self.horizontalLayout.addWidget(self.CancelPropertiesButton)
 
         self.ExportPropertyButton = QPushButton(self.PropertiesEditPage)
         self.ExportPropertyButton.setObjectName(u"ExportPropertyButton")
+        sizePolicy3.setHeightForWidth(self.ExportPropertyButton.sizePolicy().hasHeightForWidth())
+        self.ExportPropertyButton.setSizePolicy(sizePolicy3)
 
         self.horizontalLayout.addWidget(self.ExportPropertyButton)
 
@@ -1594,23 +1628,653 @@ class Ui_FinalCifWindow(object):
 
         self.verticalLayout_9.addWidget(self.loops_page)
 
-        self.author_editor_widget = QWidget(self.page_Loops)
+        self.gridLayout_16 = QGridLayout()
+        self.gridLayout_16.setObjectName(u"gridLayout_16")
+        self.revertLoopsPushButton = QPushButton(self.page_Loops)
+        self.revertLoopsPushButton.setObjectName(u"revertLoopsPushButton")
+
+        self.gridLayout_16.addWidget(self.revertLoopsPushButton, 0, 2, 1, 1)
+
+        self.BackFromLoopsPushButton = QPushButton(self.page_Loops)
+        self.BackFromLoopsPushButton.setObjectName(u"BackFromLoopsPushButton")
+        sizePolicy6.setHeightForWidth(self.BackFromLoopsPushButton.sizePolicy().hasHeightForWidth())
+        self.BackFromLoopsPushButton.setSizePolicy(sizePolicy6)
+        self.BackFromLoopsPushButton.setMinimumSize(QSize(120, 0))
+
+        self.gridLayout_16.addWidget(self.BackFromLoopsPushButton, 0, 0, 1, 1)
+
+        self.verticalSpacer_7 = QSpacerItem(20, 28, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+
+        self.gridLayout_16.addItem(self.verticalSpacer_7, 3, 0, 1, 1)
+
+        self.horizontalSpacer_15 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_16.addItem(self.horizontalSpacer_15, 0, 1, 1, 1)
+
+        self.horizontalSpacer_16 = QSpacerItem(20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_16.addItem(self.horizontalSpacer_16, 0, 3, 1, 1)
+
+        self.newLoopPushButton = QPushButton(self.page_Loops)
+        self.newLoopPushButton.setObjectName(u"newLoopPushButton")
+
+        self.gridLayout_16.addWidget(self.newLoopPushButton, 0, 4, 1, 1)
+
+        self.deleteLoopButton = QPushButton(self.page_Loops)
+        self.deleteLoopButton.setObjectName(u"deleteLoopButton")
+
+        self.gridLayout_16.addWidget(self.deleteLoopButton, 3, 4, 1, 1)
+
+
+        self.verticalLayout_9.addLayout(self.gridLayout_16)
+
+        self.MainStackedWidget.addWidget(self.page_Loops)
+        self.page_checkcif = QWidget()
+        self.page_checkcif.setObjectName(u"page_checkcif")
+        self.gridLayout_8 = QGridLayout(self.page_checkcif)
+        self.gridLayout_8.setObjectName(u"gridLayout_8")
+        self.CheckCIFResultsTabWidget = QTabWidget(self.page_checkcif)
+        self.CheckCIFResultsTabWidget.setObjectName(u"CheckCIFResultsTabWidget")
+        sizePolicy27 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy27.setHorizontalStretch(0)
+        sizePolicy27.setVerticalStretch(4)
+        sizePolicy27.setHeightForWidth(self.CheckCIFResultsTabWidget.sizePolicy().hasHeightForWidth())
+        self.CheckCIFResultsTabWidget.setSizePolicy(sizePolicy27)
+        self.CheckCIFResultsTabWidget.setDocumentMode(False)
+        self.CheckCIFResultsTabWidget.setTabBarAutoHide(False)
+        self.platon_page = QWidget()
+        self.platon_page.setObjectName(u"platon_page")
+        self.verticalLayout_11 = QVBoxLayout(self.platon_page)
+        self.verticalLayout_11.setSpacing(0)
+        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
+        self.verticalLayout_11.setContentsMargins(0, 0, 0, 0)
+        self.CheckcifPlaintextEdit = QPlainTextEdit(self.platon_page)
+        self.CheckcifPlaintextEdit.setObjectName(u"CheckcifPlaintextEdit")
+        self.CheckcifPlaintextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
+        self.CheckcifPlaintextEdit.setReadOnly(True)
+        self.CheckcifPlaintextEdit.setPlainText(u"")
+        self.CheckcifPlaintextEdit.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
+
+        self.verticalLayout_11.addWidget(self.CheckcifPlaintextEdit)
+
+        self.CheckCIFResultsTabWidget.addTab(self.platon_page, "")
+        self.html_page = QWidget()
+        self.html_page.setObjectName(u"html_page")
+        self.verticalLayout_12 = QVBoxLayout(self.html_page)
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.verticalLayout_12.setContentsMargins(0, 0, 0, 0)
+        self.htmlCHeckCifGridLayout = QGridLayout()
+        self.htmlCHeckCifGridLayout.setObjectName(u"htmlCHeckCifGridLayout")
+
+        self.verticalLayout_12.addLayout(self.htmlCHeckCifGridLayout)
+
+        self.CheckCIFResultsTabWidget.addTab(self.html_page, "")
+        self.pdf_page = QWidget()
+        self.pdf_page.setObjectName(u"pdf_page")
+        self.verticalLayout_13 = QVBoxLayout(self.pdf_page)
+        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
+        self.label_5 = QLabel(self.pdf_page)
+        self.label_5.setObjectName(u"label_5")
+        sizePolicy28 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        sizePolicy28.setHorizontalStretch(0)
+        sizePolicy28.setVerticalStretch(0)
+        sizePolicy28.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
+        self.label_5.setSizePolicy(sizePolicy28)
+        self.label_5.setMinimumSize(QSize(0, 20))
+
+        self.verticalLayout_13.addWidget(self.label_5)
+
+        self.verticalSpacer_4 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_13.addItem(self.verticalSpacer_4)
+
+        self.CheckCIFResultsTabWidget.addTab(self.pdf_page, "")
+        self.ckf_page = QWidget()
+        self.ckf_page.setObjectName(u"ckf_page")
+        self.verticalLayout_36 = QVBoxLayout(self.ckf_page)
+        self.verticalLayout_36.setObjectName(u"verticalLayout_36")
+        self.verticalLayout_36.setContentsMargins(3, 3, 3, 3)
+        self.ckf_textedit = QPlainTextEdit(self.ckf_page)
+        self.ckf_textedit.setObjectName(u"ckf_textedit")
+        self.ckf_textedit.setReadOnly(True)
+        self.ckf_textedit.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByKeyboard|Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextBrowserInteraction|Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
+
+        self.verticalLayout_36.addWidget(self.ckf_textedit)
+
+        self.CheckCIFResultsTabWidget.addTab(self.ckf_page, "")
+
+        self.gridLayout_8.addWidget(self.CheckCIFResultsTabWidget, 1, 0, 1, 8)
+
+        self.groupBox_7 = QGroupBox(self.page_checkcif)
+        self.groupBox_7.setObjectName(u"groupBox_7")
+        sizePolicy29 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy29.setHorizontalStretch(0)
+        sizePolicy29.setVerticalStretch(1)
+        sizePolicy29.setHeightForWidth(self.groupBox_7.sizePolicy().hasHeightForWidth())
+        self.groupBox_7.setSizePolicy(sizePolicy29)
+        self.verticalLayout_10 = QVBoxLayout(self.groupBox_7)
+        self.verticalLayout_10.setSpacing(6)
+        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
+        self.verticalLayout_10.setContentsMargins(0, 6, 0, 0)
+        self.CheckCifLogPlainTextEdit = QPlainTextEdit(self.groupBox_7)
+        self.CheckCifLogPlainTextEdit.setObjectName(u"CheckCifLogPlainTextEdit")
+        self.CheckCifLogPlainTextEdit.setTabChangesFocus(True)
+        self.CheckCifLogPlainTextEdit.setReadOnly(True)
+
+        self.verticalLayout_10.addWidget(self.CheckCifLogPlainTextEdit)
+
+
+        self.gridLayout_8.addWidget(self.groupBox_7, 0, 0, 1, 8)
+
+        self.groupBox_checkcif_2 = QGroupBox(self.page_checkcif)
+        self.groupBox_checkcif_2.setObjectName(u"groupBox_checkcif_2")
+        self.gridLayout_14 = QGridLayout(self.groupBox_checkcif_2)
+        self.gridLayout_14.setObjectName(u"gridLayout_14")
+        self.gridLayout_14.setContentsMargins(-1, 0, -1, 0)
+        self.CheckcifPDFOnlineButton = QPushButton(self.groupBox_checkcif_2)
+        self.CheckcifPDFOnlineButton.setObjectName(u"CheckcifPDFOnlineButton")
+
+        self.gridLayout_14.addWidget(self.CheckcifPDFOnlineButton, 1, 2, 1, 1)
+
+        self.horizontalLayout_9 = QHBoxLayout()
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.structfactCheckBox = QCheckBox(self.groupBox_checkcif_2)
+        self.structfactCheckBox.setObjectName(u"structfactCheckBox")
+
+        self.horizontalLayout_9.addWidget(self.structfactCheckBox)
+
+        self.fullIucrCheckBox = QCheckBox(self.groupBox_checkcif_2)
+        self.fullIucrCheckBox.setObjectName(u"fullIucrCheckBox")
+
+        self.horizontalLayout_9.addWidget(self.fullIucrCheckBox)
+
+        self.checkDuplicatesCheckBox = QCheckBox(self.groupBox_checkcif_2)
+        self.checkDuplicatesCheckBox.setObjectName(u"checkDuplicatesCheckBox")
+        self.checkDuplicatesCheckBox.setChecked(True)
+
+        self.horizontalLayout_9.addWidget(self.checkDuplicatesCheckBox)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_9, 2, 0, 1, 3)
+
+        self.CheckcifButton = QPushButton(self.groupBox_checkcif_2)
+        self.CheckcifButton.setObjectName(u"CheckcifButton")
+
+        self.gridLayout_14.addWidget(self.CheckcifButton, 1, 0, 1, 1)
+
+        self.CheckcifHTMLOnlineButton = QPushButton(self.groupBox_checkcif_2)
+        self.CheckcifHTMLOnlineButton.setObjectName(u"CheckcifHTMLOnlineButton")
+
+        self.gridLayout_14.addWidget(self.CheckcifHTMLOnlineButton, 1, 1, 1, 1)
+
+
+        self.gridLayout_8.addWidget(self.groupBox_checkcif_2, 4, 5, 4, 1)
+
+        self.ButtonFrame = QFrame(self.page_checkcif)
+        self.ButtonFrame.setObjectName(u"ButtonFrame")
+        self.ButtonFrame.setFrameShape(QFrame.Shape.NoFrame)
+        self.ButtonFrame.setFrameShadow(QFrame.Shadow.Raised)
+        self.ButtonFrame.setLineWidth(0)
+        self.horizontalLayout_3 = QHBoxLayout(self.ButtonFrame)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
+
+        self.gridLayout_8.addWidget(self.ButtonFrame, 2, 0, 1, 7)
+
+        self.horizontalSpacer = QSpacerItem(225, 47, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_8.addItem(self.horizontalSpacer, 4, 6, 3, 1)
+
+        self.BackFromPlatonPushButton = QPushButton(self.page_checkcif)
+        self.BackFromPlatonPushButton.setObjectName(u"BackFromPlatonPushButton")
+
+        self.gridLayout_8.addWidget(self.BackFromPlatonPushButton, 5, 3, 1, 1)
+
+        self.horizontalSpacer_2 = QSpacerItem(13, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_8.addItem(self.horizontalSpacer_2, 5, 1, 1, 2)
+
+        self.horizontalSpacer_17 = QSpacerItem(13, 47, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_8.addItem(self.horizontalSpacer_17, 4, 4, 3, 1)
+
+        self.MainStackedWidget.addWidget(self.page_checkcif)
+        self.page_cod = QWidget()
+        self.page_cod.setObjectName(u"page_cod")
+        self.gridLayout_17 = QGridLayout(self.page_cod)
+        self.gridLayout_17.setObjectName(u"gridLayout_17")
+        self.gridLayout_22 = QGridLayout()
+        self.gridLayout_22.setObjectName(u"gridLayout_22")
+        self.frame_for_radiobuttons = QFrame(self.page_cod)
+        self.frame_for_radiobuttons.setObjectName(u"frame_for_radiobuttons")
+        self.frame_for_radiobuttons.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_for_radiobuttons.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_28 = QVBoxLayout(self.frame_for_radiobuttons)
+        self.verticalLayout_28.setObjectName(u"verticalLayout_28")
+        self.verticalLayout_28.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_radiobuttons = QHBoxLayout()
+        self.horizontalLayout_radiobuttons.setObjectName(u"horizontalLayout_radiobuttons")
+        self.personalDepositRadioButton = QRadioButton(self.frame_for_radiobuttons)
+        self.personalDepositRadioButton.setObjectName(u"personalDepositRadioButton")
+
+        self.horizontalLayout_radiobuttons.addWidget(self.personalDepositRadioButton)
+
+        self.prepublicationDepositRadioButton = QRadioButton(self.frame_for_radiobuttons)
+        self.prepublicationDepositRadioButton.setObjectName(u"prepublicationDepositRadioButton")
+
+        self.horizontalLayout_radiobuttons.addWidget(self.prepublicationDepositRadioButton)
+
+        self.publishedDepositionRadioButton = QRadioButton(self.frame_for_radiobuttons)
+        self.publishedDepositionRadioButton.setObjectName(u"publishedDepositionRadioButton")
+
+        self.horizontalLayout_radiobuttons.addWidget(self.publishedDepositionRadioButton)
+
+        self.horizontalSpacer_31 = QSpacerItem(40, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_radiobuttons.addItem(self.horizontalSpacer_31)
+
+
+        self.verticalLayout_28.addLayout(self.horizontalLayout_radiobuttons)
+
+
+        self.gridLayout_22.addWidget(self.frame_for_radiobuttons, 0, 1, 1, 1)
+
+        self.gridLayout_19 = QGridLayout()
+        self.gridLayout_19.setObjectName(u"gridLayout_19")
+        self.gridLayout_19.setContentsMargins(0, -1, 9, -1)
+        self.depositorUsername = QLabel(self.page_cod)
+        self.depositorUsername.setObjectName(u"depositorUsername")
+
+        self.gridLayout_19.addWidget(self.depositorUsername, 0, 0, 1, 1)
+
+        self.label_9 = QLabel(self.page_cod)
+        self.label_9.setObjectName(u"label_9")
+
+        self.gridLayout_19.addWidget(self.label_9, 2, 0, 1, 1)
+
+        self.depositorPasswordLineEdit = QLineEdit(self.page_cod)
+        self.depositorPasswordLineEdit.setObjectName(u"depositorPasswordLineEdit")
+        self.depositorPasswordLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
+
+        self.gridLayout_19.addWidget(self.depositorPasswordLineEdit, 1, 1, 1, 1)
+
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.horizontalLayout_11.setContentsMargins(0, 0, -1, -1)
+        self.depositHKLcheckBox = QCheckBox(self.page_cod)
+        self.depositHKLcheckBox.setObjectName(u"depositHKLcheckBox")
+
+        self.horizontalLayout_11.addWidget(self.depositHKLcheckBox)
+
+        self.Upload_hkl_pushButton = QPushButton(self.page_cod)
+        self.Upload_hkl_pushButton.setObjectName(u"Upload_hkl_pushButton")
+        sizePolicy6.setHeightForWidth(self.Upload_hkl_pushButton.sizePolicy().hasHeightForWidth())
+        self.Upload_hkl_pushButton.setSizePolicy(sizePolicy6)
+
+        self.horizontalLayout_11.addWidget(self.Upload_hkl_pushButton)
+
+
+        self.gridLayout_19.addLayout(self.horizontalLayout_11, 3, 1, 1, 1)
+
+        self.userEmailLineEdit = QLineEdit(self.page_cod)
+        self.userEmailLineEdit.setObjectName(u"userEmailLineEdit")
+        self.userEmailLineEdit.setInputMethodHints(Qt.InputMethodHint.ImhEmailCharactersOnly|Qt.InputMethodHint.ImhLowercaseOnly|Qt.InputMethodHint.ImhNoAutoUppercase)
+
+        self.gridLayout_19.addWidget(self.userEmailLineEdit, 2, 1, 1, 1)
+
+        self.depositorUsernameLineEdit = QLineEdit(self.page_cod)
+        self.depositorUsernameLineEdit.setObjectName(u"depositorUsernameLineEdit")
+
+        self.gridLayout_19.addWidget(self.depositorUsernameLineEdit, 0, 1, 1, 1)
+
+        self.label_2 = QLabel(self.page_cod)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setTextFormat(Qt.TextFormat.RichText)
+        self.label_2.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
+        self.label_2.setWordWrap(True)
+        self.label_2.setOpenExternalLinks(True)
+        self.label_2.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByKeyboard|Qt.TextInteractionFlag.LinksAccessibleByMouse)
+
+        self.gridLayout_19.addWidget(self.label_2, 0, 2, 4, 1)
+
+        self.depositorPasswordLabel = QLabel(self.page_cod)
+        self.depositorPasswordLabel.setObjectName(u"depositorPasswordLabel")
+
+        self.gridLayout_19.addWidget(self.depositorPasswordLabel, 1, 0, 1, 1)
+
+
+        self.gridLayout_22.addLayout(self.gridLayout_19, 1, 1, 1, 1)
+
+        self.depositionOptionsStackedWidget = MyMainStackedWidget(self.page_cod)
+        self.depositionOptionsStackedWidget.setObjectName(u"depositionOptionsStackedWidget")
+        self.depositionOptionsStackedWidget.setFrameShape(QFrame.Shape.NoFrame)
+        self.depositionOptionsStackedWidget.setFrameShadow(QFrame.Shadow.Raised)
+        self.depositionOptionsStackedWidget.setLineWidth(1)
+        self.page_personal = QWidget()
+        self.page_personal.setObjectName(u"page_personal")
+        self.verticalLayout_30 = QVBoxLayout(self.page_personal)
+        self.verticalLayout_30.setObjectName(u"verticalLayout_30")
+        self.verticalLayout_30.setContentsMargins(0, 12, 0, -1)
+        self.label_10 = QLabel(self.page_personal)
+        self.label_10.setObjectName(u"label_10")
+        self.label_10.setTextFormat(Qt.TextFormat.RichText)
+        self.label_10.setWordWrap(True)
+
+        self.verticalLayout_30.addWidget(self.label_10)
+
+        self.gridLayout_20 = QGridLayout()
+        self.gridLayout_20.setObjectName(u"gridLayout_20")
+        self.horizontalSpacer_30 = QSpacerItem(80, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_20.addItem(self.horizontalSpacer_30, 0, 2, 1, 1)
+
+        self.ContactAuthorLabel = QLabel(self.page_personal)
+        self.ContactAuthorLabel.setObjectName(u"ContactAuthorLabel")
+
+        self.gridLayout_20.addWidget(self.ContactAuthorLabel, 1, 0, 1, 1)
+
+        self.authorsFullNamePersonalLabel = QLabel(self.page_personal)
+        self.authorsFullNamePersonalLabel.setObjectName(u"authorsFullNamePersonalLabel")
+
+        self.gridLayout_20.addWidget(self.authorsFullNamePersonalLabel, 0, 0, 1, 1)
+
+        self.authorEditorPushButton = QPushButton(self.page_personal)
+        self.authorEditorPushButton.setObjectName(u"authorEditorPushButton")
+        sizePolicy6.setHeightForWidth(self.authorEditorPushButton.sizePolicy().hasHeightForWidth())
+        self.authorEditorPushButton.setSizePolicy(sizePolicy6)
+
+        self.gridLayout_20.addWidget(self.authorEditorPushButton, 0, 1, 1, 1)
+
+        self.ContactAuthorLineEdit = QLineEdit(self.page_personal)
+        self.ContactAuthorLineEdit.setObjectName(u"ContactAuthorLineEdit")
+        self.ContactAuthorLineEdit.setReadOnly(True)
+
+        self.gridLayout_20.addWidget(self.ContactAuthorLineEdit, 1, 1, 1, 1)
+
+        self.ContactEmailLineEdit = QLineEdit(self.page_personal)
+        self.ContactEmailLineEdit.setObjectName(u"ContactEmailLineEdit")
+        self.ContactEmailLineEdit.setReadOnly(True)
+
+        self.gridLayout_20.addWidget(self.ContactEmailLineEdit, 2, 1, 1, 1)
+
+        self.label_12 = QLabel(self.page_personal)
+        self.label_12.setObjectName(u"label_12")
+
+        self.gridLayout_20.addWidget(self.label_12, 2, 0, 1, 1)
+
+
+        self.verticalLayout_30.addLayout(self.gridLayout_20)
+
+        self.verticalSpacer_12 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_30.addItem(self.verticalSpacer_12)
+
+        self.depositionOptionsStackedWidget.addWidget(self.page_personal)
+        self.page_prepublication = QWidget()
+        self.page_prepublication.setObjectName(u"page_prepublication")
+        self.verticalLayout_25 = QVBoxLayout(self.page_prepublication)
+        self.verticalLayout_25.setObjectName(u"verticalLayout_25")
+        self.gridLayout_21 = QGridLayout()
+        self.gridLayout_21.setObjectName(u"gridLayout_21")
+        self.horizontalSpacer_29 = QSpacerItem(80, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_21.addItem(self.horizontalSpacer_29, 0, 2, 1, 1)
+
+        self.embargoTimeInMonthsSpinBox = QSpinBox(self.page_prepublication)
+        self.embargoTimeInMonthsSpinBox.setObjectName(u"embargoTimeInMonthsSpinBox")
+        self.embargoTimeInMonthsSpinBox.setMinimum(6)
+        self.embargoTimeInMonthsSpinBox.setMaximum(12)
+
+        self.gridLayout_21.addWidget(self.embargoTimeInMonthsSpinBox, 1, 1, 1, 1)
+
+        self.label_8 = QLabel(self.page_prepublication)
+        self.label_8.setObjectName(u"label_8")
+
+        self.gridLayout_21.addWidget(self.label_8, 1, 2, 1, 1)
+
+        self.journalNameLineEdit = QLineEdit(self.page_prepublication)
+        self.journalNameLineEdit.setObjectName(u"journalNameLineEdit")
+
+        self.gridLayout_21.addWidget(self.journalNameLineEdit, 0, 1, 1, 1)
+
+        self.embargoTimeInMonthsLabel = QLabel(self.page_prepublication)
+        self.embargoTimeInMonthsLabel.setObjectName(u"embargoTimeInMonthsLabel")
+
+        self.gridLayout_21.addWidget(self.embargoTimeInMonthsLabel, 1, 0, 1, 1)
+
+        self.journalMameLabel = QLabel(self.page_prepublication)
+        self.journalMameLabel.setObjectName(u"journalMameLabel")
+
+        self.gridLayout_21.addWidget(self.journalMameLabel, 0, 0, 1, 1)
+
+
+        self.verticalLayout_25.addLayout(self.gridLayout_21)
+
+        self.gridLayout_author_prepubl = QGridLayout()
+        self.gridLayout_author_prepubl.setObjectName(u"gridLayout_author_prepubl")
+        self.horizontalSpacer_35 = QSpacerItem(80, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_author_prepubl.addItem(self.horizontalSpacer_35, 0, 3, 1, 1)
+
+        self.authorsFullNamePersonalLabel_2 = QLabel(self.page_prepublication)
+        self.authorsFullNamePersonalLabel_2.setObjectName(u"authorsFullNamePersonalLabel_2")
+
+        self.gridLayout_author_prepubl.addWidget(self.authorsFullNamePersonalLabel_2, 0, 1, 1, 1)
+
+        self.ContactAuthorLineEdit_2 = QLineEdit(self.page_prepublication)
+        self.ContactAuthorLineEdit_2.setObjectName(u"ContactAuthorLineEdit_2")
+        self.ContactAuthorLineEdit_2.setReadOnly(True)
+
+        self.gridLayout_author_prepubl.addWidget(self.ContactAuthorLineEdit_2, 1, 2, 1, 1)
+
+        self.authorEditorPushButton_2 = QPushButton(self.page_prepublication)
+        self.authorEditorPushButton_2.setObjectName(u"authorEditorPushButton_2")
+        sizePolicy6.setHeightForWidth(self.authorEditorPushButton_2.sizePolicy().hasHeightForWidth())
+        self.authorEditorPushButton_2.setSizePolicy(sizePolicy6)
+
+        self.gridLayout_author_prepubl.addWidget(self.authorEditorPushButton_2, 0, 2, 1, 1)
+
+        self.ContactAuthorLabel_2 = QLabel(self.page_prepublication)
+        self.ContactAuthorLabel_2.setObjectName(u"ContactAuthorLabel_2")
+
+        self.gridLayout_author_prepubl.addWidget(self.ContactAuthorLabel_2, 1, 1, 1, 1)
+
+        self.label_15 = QLabel(self.page_prepublication)
+        self.label_15.setObjectName(u"label_15")
+
+        self.gridLayout_author_prepubl.addWidget(self.label_15, 2, 1, 1, 1)
+
+        self.ContactEmailLineEdit_2 = QLineEdit(self.page_prepublication)
+        self.ContactEmailLineEdit_2.setObjectName(u"ContactEmailLineEdit_2")
+        self.ContactEmailLineEdit_2.setReadOnly(True)
+
+        self.gridLayout_author_prepubl.addWidget(self.ContactEmailLineEdit_2, 2, 2, 1, 1)
+
+
+        self.verticalLayout_25.addLayout(self.gridLayout_author_prepubl)
+
+        self.verticalSpacer_13 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_25.addItem(self.verticalSpacer_13)
+
+        self.depositionOptionsStackedWidget.addWidget(self.page_prepublication)
+        self.page_published = QWidget()
+        self.page_published.setObjectName(u"page_published")
+        self.verticalLayout_27 = QVBoxLayout(self.page_published)
+        self.verticalLayout_27.setObjectName(u"verticalLayout_27")
+        self.verticalLayout_27.setContentsMargins(0, -1, 0, -1)
+        self.gridLayout_23 = QGridLayout()
+        self.gridLayout_23.setObjectName(u"gridLayout_23")
+        self.publication_doi_lineedit = QLineEdit(self.page_published)
+        self.publication_doi_lineedit.setObjectName(u"publication_doi_lineedit")
+
+        self.gridLayout_23.addWidget(self.publication_doi_lineedit, 1, 1, 1, 1)
+
+        self.cod_database_code_Label = QLabel(self.page_published)
+        self.cod_database_code_Label.setObjectName(u"cod_database_code_Label")
+
+        self.gridLayout_23.addWidget(self.cod_database_code_Label, 1, 0, 1, 1)
+
+        self.horizontalSpacer_32 = QSpacerItem(80, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_23.addItem(self.horizontalSpacer_32, 1, 3, 1, 1)
+
+        self.label_11 = QLabel(self.page_published)
+        self.label_11.setObjectName(u"label_11")
+
+        self.gridLayout_23.addWidget(self.label_11, 0, 0, 1, 2)
+
+        self.GetDOIPushButton = QPushButton(self.page_published)
+        self.GetDOIPushButton.setObjectName(u"GetDOIPushButton")
+
+        self.gridLayout_23.addWidget(self.GetDOIPushButton, 1, 2, 1, 1)
+
+
+        self.verticalLayout_27.addLayout(self.gridLayout_23)
+
+        self.DOIResolveTextLabel = QLabel(self.page_published)
+        self.DOIResolveTextLabel.setObjectName(u"DOIResolveTextLabel")
+        self.DOIResolveTextLabel.setTextFormat(Qt.TextFormat.PlainText)
+        self.DOIResolveTextLabel.setWordWrap(True)
+
+        self.verticalLayout_27.addWidget(self.DOIResolveTextLabel)
+
+        self.verticalLayout_26 = QVBoxLayout()
+        self.verticalLayout_26.setObjectName(u"verticalLayout_26")
+        self.label_14 = QLabel(self.page_published)
+        self.label_14.setObjectName(u"label_14")
+        self.label_14.setTextFormat(Qt.TextFormat.RichText)
+
+        self.verticalLayout_26.addWidget(self.label_14)
+
+
+        self.verticalLayout_27.addLayout(self.verticalLayout_26)
+
+        self.verticalSpacer_11 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.verticalLayout_27.addItem(self.verticalSpacer_11)
+
+        self.depositionOptionsStackedWidget.addWidget(self.page_published)
+        self.page_deposition_output = QWidget()
+        self.page_deposition_output.setObjectName(u"page_deposition_output")
+        self.verticalLayout_31 = QVBoxLayout(self.page_deposition_output)
+        self.verticalLayout_31.setObjectName(u"verticalLayout_31")
+        self.verticalLayout_31.setContentsMargins(0, -1, 0, 0)
+        self.label_deposition_output = QLabel(self.page_deposition_output)
+        self.label_deposition_output.setObjectName(u"label_deposition_output")
+
+        self.verticalLayout_31.addWidget(self.label_deposition_output)
+
+        self.depositOutputTextBrowser = QTextBrowser(self.page_deposition_output)
+        self.depositOutputTextBrowser.setObjectName(u"depositOutputTextBrowser")
+        self.depositOutputTextBrowser.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.depositOutputTextBrowser.setAutoFormatting(QTextEdit.AutoFormattingFlag.AutoAll)
+        self.depositOutputTextBrowser.setOpenExternalLinks(True)
+
+        self.verticalLayout_31.addWidget(self.depositOutputTextBrowser)
+
+        self.depositionOptionsStackedWidget.addWidget(self.page_deposition_output)
+
+        self.gridLayout_22.addWidget(self.depositionOptionsStackedWidget, 4, 1, 1, 1)
+
+
+        self.gridLayout_17.addLayout(self.gridLayout_22, 0, 1, 1, 1)
+
+        self.StructuresListGroupBox = QGroupBox(self.page_cod)
+        self.StructuresListGroupBox.setObjectName(u"StructuresListGroupBox")
+        sizePolicy30 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy30.setHorizontalStretch(0)
+        sizePolicy30.setVerticalStretch(0)
+        sizePolicy30.setHeightForWidth(self.StructuresListGroupBox.sizePolicy().hasHeightForWidth())
+        self.StructuresListGroupBox.setSizePolicy(sizePolicy30)
+        self.StructuresListGroupBox.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
+        self.gridLayout_18 = QGridLayout(self.StructuresListGroupBox)
+        self.gridLayout_18.setObjectName(u"gridLayout_18")
+        self.refreshDepositListPushButton = QPushButton(self.StructuresListGroupBox)
+        self.refreshDepositListPushButton.setObjectName(u"refreshDepositListPushButton")
+        self.refreshDepositListPushButton.setEnabled(False)
+        self.refreshDepositListPushButton.setCheckable(False)
+        self.refreshDepositListPushButton.setAutoDefault(False)
+
+        self.gridLayout_18.addWidget(self.refreshDepositListPushButton, 1, 1, 1, 1)
+
+        self.horizontalSpacer_33 = QSpacerItem(1, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_18.addItem(self.horizontalSpacer_33, 1, 0, 1, 1)
+
+        self.horizontalSpacer_34 = QSpacerItem(1, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_18.addItem(self.horizontalSpacer_34, 1, 2, 1, 1)
+
+        self.CODtableWidget = QTableWidget(self.StructuresListGroupBox)
+        if (self.CODtableWidget.columnCount() < 3):
+            self.CODtableWidget.setColumnCount(3)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        self.CODtableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        self.CODtableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        self.CODtableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem8)
+        self.CODtableWidget.setObjectName(u"CODtableWidget")
+        self.CODtableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.CODtableWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.CODtableWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.CODtableWidget.setSortingEnabled(True)
+        self.CODtableWidget.horizontalHeader().setCascadingSectionResizes(False)
+        self.CODtableWidget.horizontalHeader().setDefaultSectionSize(100)
+        self.CODtableWidget.horizontalHeader().setStretchLastSection(False)
+        self.CODtableWidget.verticalHeader().setCascadingSectionResizes(False)
+
+        self.gridLayout_18.addWidget(self.CODtableWidget, 0, 0, 1, 3)
+
+
+        self.gridLayout_17.addWidget(self.StructuresListGroupBox, 0, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter)
+
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.horizontalLayout_10.setContentsMargins(-1, 0, -1, -1)
+        self.BackFromDepositPushButton = QPushButton(self.page_cod)
+        self.BackFromDepositPushButton.setObjectName(u"BackFromDepositPushButton")
+
+        self.horizontalLayout_10.addWidget(self.BackFromDepositPushButton)
+
+        self.horizontalSpacer_27 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_10.addItem(self.horizontalSpacer_27)
+
+        self.depositCIFpushButton = QPushButton(self.page_cod)
+        self.depositCIFpushButton.setObjectName(u"depositCIFpushButton")
+
+        self.horizontalLayout_10.addWidget(self.depositCIFpushButton)
+
+        self.horizontalSpacer_28 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_10.addItem(self.horizontalSpacer_28)
+
+
+        self.gridLayout_17.addLayout(self.horizontalLayout_10, 1, 0, 1, 2)
+
+        self.MainStackedWidget.addWidget(self.page_cod)
+        self.page_textTemplate = QWidget()
+        self.page_textTemplate.setObjectName(u"page_textTemplate")
+        self.verticalLayout_33 = QVBoxLayout(self.page_textTemplate)
+        self.verticalLayout_33.setObjectName(u"verticalLayout_33")
+        self.MainStackedWidget.addWidget(self.page_textTemplate)
+        self.author_editor_widget = QWidget()
         self.author_editor_widget.setObjectName(u"author_editor_widget")
-        self.author_editor_widget.setVisible(False)
         self.gridLayout_2 = QGridLayout(self.author_editor_widget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalSpacer_16 = QSpacerItem(0, 0, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_2.addItem(self.verticalSpacer_16, 0, 1, 1, 1)
 
         self.authorEditTabWidget = QTabWidget(self.author_editor_widget)
         self.authorEditTabWidget.setObjectName(u"authorEditTabWidget")
-        sizePolicy26 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        sizePolicy26.setHorizontalStretch(45)
-        sizePolicy26.setVerticalStretch(0)
-        sizePolicy26.setHeightForWidth(self.authorEditTabWidget.sizePolicy().hasHeightForWidth())
-        self.authorEditTabWidget.setSizePolicy(sizePolicy26)
+        sizePolicy31 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        sizePolicy31.setHorizontalStretch(45)
+        sizePolicy31.setVerticalStretch(0)
+        sizePolicy31.setHeightForWidth(self.authorEditTabWidget.sizePolicy().hasHeightForWidth())
+        self.authorEditTabWidget.setSizePolicy(sizePolicy31)
         self.page_publication = QWidget()
         self.page_publication.setObjectName(u"page_publication")
         self.verticalLayout_23 = QVBoxLayout(self.page_publication)
@@ -1828,11 +2492,11 @@ class Ui_FinalCifWindow(object):
 
         self.label_13 = QLabel(self.page_audit)
         self.label_13.setObjectName(u"label_13")
-        sizePolicy27 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
-        sizePolicy27.setHorizontalStretch(0)
-        sizePolicy27.setVerticalStretch(0)
-        sizePolicy27.setHeightForWidth(self.label_13.sizePolicy().hasHeightForWidth())
-        self.label_13.setSizePolicy(sizePolicy27)
+        sizePolicy32 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
+        sizePolicy32.setHorizontalStretch(0)
+        sizePolicy32.setVerticalStretch(0)
+        sizePolicy32.setHeightForWidth(self.label_13.sizePolicy().hasHeightForWidth())
+        self.label_13.setSizePolicy(sizePolicy32)
         self.label_13.setWordWrap(True)
 
         self.gridLayout_25.addWidget(self.label_13, 5, 1, 1, 2)
@@ -1852,11 +2516,8 @@ class Ui_FinalCifWindow(object):
 
         self.AddThisAuthorToLoopPushButton_cif = QPushButton(self.page_audit)
         self.AddThisAuthorToLoopPushButton_cif.setObjectName(u"AddThisAuthorToLoopPushButton_cif")
-        sizePolicy28 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-        sizePolicy28.setHorizontalStretch(0)
-        sizePolicy28.setVerticalStretch(0)
-        sizePolicy28.setHeightForWidth(self.AddThisAuthorToLoopPushButton_cif.sizePolicy().hasHeightForWidth())
-        self.AddThisAuthorToLoopPushButton_cif.setSizePolicy(sizePolicy28)
+        sizePolicy3.setHeightForWidth(self.AddThisAuthorToLoopPushButton_cif.sizePolicy().hasHeightForWidth())
+        self.AddThisAuthorToLoopPushButton_cif.setSizePolicy(sizePolicy3)
 
         self.verticalLayout_39.addWidget(self.AddThisAuthorToLoopPushButton_cif)
 
@@ -1877,11 +2538,11 @@ class Ui_FinalCifWindow(object):
 
         self.frame_2 = QFrame(self.author_editor_widget)
         self.frame_2.setObjectName(u"frame_2")
-        sizePolicy29 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        sizePolicy29.setHorizontalStretch(55)
-        sizePolicy29.setVerticalStretch(0)
-        sizePolicy29.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
-        self.frame_2.setSizePolicy(sizePolicy29)
+        sizePolicy33 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy33.setHorizontalStretch(55)
+        sizePolicy33.setVerticalStretch(0)
+        sizePolicy33.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
+        self.frame_2.setSizePolicy(sizePolicy33)
         self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
 
@@ -1891,643 +2552,9 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_2.addItem(self.verticalSpacer_15, 1, 1, 1, 1)
 
+        self.MainStackedWidget.addWidget(self.author_editor_widget)
 
-        self.verticalLayout_9.addWidget(self.author_editor_widget)
-
-        self.gridLayout_16 = QGridLayout()
-        self.gridLayout_16.setObjectName(u"gridLayout_16")
-        self.revertLoopsPushButton = QPushButton(self.page_Loops)
-        self.revertLoopsPushButton.setObjectName(u"revertLoopsPushButton")
-
-        self.gridLayout_16.addWidget(self.revertLoopsPushButton, 0, 2, 1, 1)
-
-        self.BackFromLoopsPushButton = QPushButton(self.page_Loops)
-        self.BackFromLoopsPushButton.setObjectName(u"BackFromLoopsPushButton")
-        sizePolicy5.setHeightForWidth(self.BackFromLoopsPushButton.sizePolicy().hasHeightForWidth())
-        self.BackFromLoopsPushButton.setSizePolicy(sizePolicy5)
-        self.BackFromLoopsPushButton.setMinimumSize(QSize(120, 0))
-
-        self.gridLayout_16.addWidget(self.BackFromLoopsPushButton, 0, 0, 1, 1)
-
-        self.verticalSpacer_7 = QSpacerItem(20, 28, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
-
-        self.gridLayout_16.addItem(self.verticalSpacer_7, 3, 0, 1, 1)
-
-        self.horizontalSpacer_15 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_16.addItem(self.horizontalSpacer_15, 0, 1, 1, 1)
-
-        self.horizontalSpacer_16 = QSpacerItem(20, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_16.addItem(self.horizontalSpacer_16, 0, 3, 1, 1)
-
-        self.newLoopPushButton = QPushButton(self.page_Loops)
-        self.newLoopPushButton.setObjectName(u"newLoopPushButton")
-
-        self.gridLayout_16.addWidget(self.newLoopPushButton, 0, 4, 1, 1)
-
-        self.deleteLoopButton = QPushButton(self.page_Loops)
-        self.deleteLoopButton.setObjectName(u"deleteLoopButton")
-
-        self.gridLayout_16.addWidget(self.deleteLoopButton, 3, 4, 1, 1)
-
-
-        self.verticalLayout_9.addLayout(self.gridLayout_16)
-
-        self.MainStackedWidget.addWidget(self.page_Loops)
-        self.page_checkcif = QWidget()
-        self.page_checkcif.setObjectName(u"page_checkcif")
-        self.gridLayout_8 = QGridLayout(self.page_checkcif)
-        self.gridLayout_8.setObjectName(u"gridLayout_8")
-        self.CheckCIFResultsTabWidget = QTabWidget(self.page_checkcif)
-        self.CheckCIFResultsTabWidget.setObjectName(u"CheckCIFResultsTabWidget")
-        sizePolicy30 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy30.setHorizontalStretch(0)
-        sizePolicy30.setVerticalStretch(4)
-        sizePolicy30.setHeightForWidth(self.CheckCIFResultsTabWidget.sizePolicy().hasHeightForWidth())
-        self.CheckCIFResultsTabWidget.setSizePolicy(sizePolicy30)
-        self.CheckCIFResultsTabWidget.setDocumentMode(False)
-        self.CheckCIFResultsTabWidget.setTabBarAutoHide(False)
-        self.platon_page = QWidget()
-        self.platon_page.setObjectName(u"platon_page")
-        self.verticalLayout_11 = QVBoxLayout(self.platon_page)
-        self.verticalLayout_11.setSpacing(0)
-        self.verticalLayout_11.setObjectName(u"verticalLayout_11")
-        self.verticalLayout_11.setContentsMargins(0, 0, 0, 0)
-        self.CheckcifPlaintextEdit = QPlainTextEdit(self.platon_page)
-        self.CheckcifPlaintextEdit.setObjectName(u"CheckcifPlaintextEdit")
-        self.CheckcifPlaintextEdit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
-        self.CheckcifPlaintextEdit.setReadOnly(True)
-        self.CheckcifPlaintextEdit.setPlainText(u"")
-        self.CheckcifPlaintextEdit.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
-
-        self.verticalLayout_11.addWidget(self.CheckcifPlaintextEdit)
-
-        self.CheckCIFResultsTabWidget.addTab(self.platon_page, "")
-        self.html_page = QWidget()
-        self.html_page.setObjectName(u"html_page")
-        self.verticalLayout_12 = QVBoxLayout(self.html_page)
-        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
-        self.verticalLayout_12.setContentsMargins(0, 0, 0, 0)
-        self.htmlCHeckCifGridLayout = QGridLayout()
-        self.htmlCHeckCifGridLayout.setObjectName(u"htmlCHeckCifGridLayout")
-
-        self.verticalLayout_12.addLayout(self.htmlCHeckCifGridLayout)
-
-        self.CheckCIFResultsTabWidget.addTab(self.html_page, "")
-        self.pdf_page = QWidget()
-        self.pdf_page.setObjectName(u"pdf_page")
-        self.verticalLayout_13 = QVBoxLayout(self.pdf_page)
-        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
-        self.label_5 = QLabel(self.pdf_page)
-        self.label_5.setObjectName(u"label_5")
-        sizePolicy31 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
-        sizePolicy31.setHorizontalStretch(0)
-        sizePolicy31.setVerticalStretch(0)
-        sizePolicy31.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
-        self.label_5.setSizePolicy(sizePolicy31)
-        self.label_5.setMinimumSize(QSize(0, 20))
-
-        self.verticalLayout_13.addWidget(self.label_5)
-
-        self.verticalSpacer_4 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_13.addItem(self.verticalSpacer_4)
-
-        self.CheckCIFResultsTabWidget.addTab(self.pdf_page, "")
-        self.ckf_page = QWidget()
-        self.ckf_page.setObjectName(u"ckf_page")
-        self.verticalLayout_36 = QVBoxLayout(self.ckf_page)
-        self.verticalLayout_36.setObjectName(u"verticalLayout_36")
-        self.verticalLayout_36.setContentsMargins(3, 3, 3, 3)
-        self.ckf_textedit = QPlainTextEdit(self.ckf_page)
-        self.ckf_textedit.setObjectName(u"ckf_textedit")
-        self.ckf_textedit.setReadOnly(True)
-        self.ckf_textedit.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByKeyboard|Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextBrowserInteraction|Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
-
-        self.verticalLayout_36.addWidget(self.ckf_textedit)
-
-        self.CheckCIFResultsTabWidget.addTab(self.ckf_page, "")
-
-        self.gridLayout_8.addWidget(self.CheckCIFResultsTabWidget, 1, 0, 1, 8)
-
-        self.groupBox_7 = QGroupBox(self.page_checkcif)
-        self.groupBox_7.setObjectName(u"groupBox_7")
-        sizePolicy32 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
-        sizePolicy32.setHorizontalStretch(0)
-        sizePolicy32.setVerticalStretch(1)
-        sizePolicy32.setHeightForWidth(self.groupBox_7.sizePolicy().hasHeightForWidth())
-        self.groupBox_7.setSizePolicy(sizePolicy32)
-        self.verticalLayout_10 = QVBoxLayout(self.groupBox_7)
-        self.verticalLayout_10.setSpacing(6)
-        self.verticalLayout_10.setObjectName(u"verticalLayout_10")
-        self.verticalLayout_10.setContentsMargins(0, 6, 0, 0)
-        self.CheckCifLogPlainTextEdit = QPlainTextEdit(self.groupBox_7)
-        self.CheckCifLogPlainTextEdit.setObjectName(u"CheckCifLogPlainTextEdit")
-        self.CheckCifLogPlainTextEdit.setTabChangesFocus(True)
-        self.CheckCifLogPlainTextEdit.setReadOnly(True)
-
-        self.verticalLayout_10.addWidget(self.CheckCifLogPlainTextEdit)
-
-
-        self.gridLayout_8.addWidget(self.groupBox_7, 0, 0, 1, 8)
-
-        self.groupBox_checkcif_2 = QGroupBox(self.page_checkcif)
-        self.groupBox_checkcif_2.setObjectName(u"groupBox_checkcif_2")
-        self.gridLayout_14 = QGridLayout(self.groupBox_checkcif_2)
-        self.gridLayout_14.setObjectName(u"gridLayout_14")
-        self.gridLayout_14.setContentsMargins(-1, 0, -1, 0)
-        self.CheckcifPDFOnlineButton = QPushButton(self.groupBox_checkcif_2)
-        self.CheckcifPDFOnlineButton.setObjectName(u"CheckcifPDFOnlineButton")
-
-        self.gridLayout_14.addWidget(self.CheckcifPDFOnlineButton, 1, 2, 1, 1)
-
-        self.horizontalLayout_9 = QHBoxLayout()
-        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
-        self.structfactCheckBox = QCheckBox(self.groupBox_checkcif_2)
-        self.structfactCheckBox.setObjectName(u"structfactCheckBox")
-
-        self.horizontalLayout_9.addWidget(self.structfactCheckBox)
-
-        self.fullIucrCheckBox = QCheckBox(self.groupBox_checkcif_2)
-        self.fullIucrCheckBox.setObjectName(u"fullIucrCheckBox")
-
-        self.horizontalLayout_9.addWidget(self.fullIucrCheckBox)
-
-        self.checkDuplicatesCheckBox = QCheckBox(self.groupBox_checkcif_2)
-        self.checkDuplicatesCheckBox.setObjectName(u"checkDuplicatesCheckBox")
-        self.checkDuplicatesCheckBox.setChecked(True)
-
-        self.horizontalLayout_9.addWidget(self.checkDuplicatesCheckBox)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_9, 2, 0, 1, 3)
-
-        self.CheckcifButton = QPushButton(self.groupBox_checkcif_2)
-        self.CheckcifButton.setObjectName(u"CheckcifButton")
-
-        self.gridLayout_14.addWidget(self.CheckcifButton, 1, 0, 1, 1)
-
-        self.CheckcifHTMLOnlineButton = QPushButton(self.groupBox_checkcif_2)
-        self.CheckcifHTMLOnlineButton.setObjectName(u"CheckcifHTMLOnlineButton")
-
-        self.gridLayout_14.addWidget(self.CheckcifHTMLOnlineButton, 1, 1, 1, 1)
-
-
-        self.gridLayout_8.addWidget(self.groupBox_checkcif_2, 4, 5, 4, 1)
-
-        self.ButtonFrame = QFrame(self.page_checkcif)
-        self.ButtonFrame.setObjectName(u"ButtonFrame")
-        self.ButtonFrame.setFrameShape(QFrame.Shape.NoFrame)
-        self.ButtonFrame.setFrameShadow(QFrame.Shadow.Raised)
-        self.ButtonFrame.setLineWidth(0)
-        self.horizontalLayout_3 = QHBoxLayout(self.ButtonFrame)
-        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
-        self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
-
-        self.gridLayout_8.addWidget(self.ButtonFrame, 2, 0, 1, 7)
-
-        self.horizontalSpacer = QSpacerItem(225, 47, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_8.addItem(self.horizontalSpacer, 4, 6, 3, 1)
-
-        self.BackFromPlatonPushButton = QPushButton(self.page_checkcif)
-        self.BackFromPlatonPushButton.setObjectName(u"BackFromPlatonPushButton")
-        self.BackFromPlatonPushButton.setMinimumSize(QSize(160, 0))
-
-        self.gridLayout_8.addWidget(self.BackFromPlatonPushButton, 5, 3, 1, 1)
-
-        self.horizontalSpacer_2 = QSpacerItem(13, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_8.addItem(self.horizontalSpacer_2, 5, 1, 1, 2)
-
-        self.horizontalSpacer_17 = QSpacerItem(13, 47, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_8.addItem(self.horizontalSpacer_17, 4, 4, 3, 1)
-
-        self.MainStackedWidget.addWidget(self.page_checkcif)
-        self.page_cod = QWidget()
-        self.page_cod.setObjectName(u"page_cod")
-        self.gridLayout_17 = QGridLayout(self.page_cod)
-        self.gridLayout_17.setObjectName(u"gridLayout_17")
-        self.gridLayout_22 = QGridLayout()
-        self.gridLayout_22.setObjectName(u"gridLayout_22")
-        self.frame_for_radiobuttons = QFrame(self.page_cod)
-        self.frame_for_radiobuttons.setObjectName(u"frame_for_radiobuttons")
-        self.frame_for_radiobuttons.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_for_radiobuttons.setFrameShadow(QFrame.Shadow.Raised)
-        self.verticalLayout_28 = QVBoxLayout(self.frame_for_radiobuttons)
-        self.verticalLayout_28.setObjectName(u"verticalLayout_28")
-        self.verticalLayout_28.setContentsMargins(0, 0, 0, 0)
-        self.horizontalLayout_radiobuttons = QHBoxLayout()
-        self.horizontalLayout_radiobuttons.setObjectName(u"horizontalLayout_radiobuttons")
-        self.personalDepositRadioButton = QRadioButton(self.frame_for_radiobuttons)
-        self.personalDepositRadioButton.setObjectName(u"personalDepositRadioButton")
-
-        self.horizontalLayout_radiobuttons.addWidget(self.personalDepositRadioButton)
-
-        self.prepublicationDepositRadioButton = QRadioButton(self.frame_for_radiobuttons)
-        self.prepublicationDepositRadioButton.setObjectName(u"prepublicationDepositRadioButton")
-
-        self.horizontalLayout_radiobuttons.addWidget(self.prepublicationDepositRadioButton)
-
-        self.publishedDepositionRadioButton = QRadioButton(self.frame_for_radiobuttons)
-        self.publishedDepositionRadioButton.setObjectName(u"publishedDepositionRadioButton")
-
-        self.horizontalLayout_radiobuttons.addWidget(self.publishedDepositionRadioButton)
-
-        self.horizontalSpacer_31 = QSpacerItem(40, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_radiobuttons.addItem(self.horizontalSpacer_31)
-
-
-        self.verticalLayout_28.addLayout(self.horizontalLayout_radiobuttons)
-
-
-        self.gridLayout_22.addWidget(self.frame_for_radiobuttons, 0, 1, 1, 1)
-
-        self.gridLayout_19 = QGridLayout()
-        self.gridLayout_19.setObjectName(u"gridLayout_19")
-        self.gridLayout_19.setContentsMargins(0, -1, 9, -1)
-        self.depositorUsername = QLabel(self.page_cod)
-        self.depositorUsername.setObjectName(u"depositorUsername")
-
-        self.gridLayout_19.addWidget(self.depositorUsername, 0, 0, 1, 1)
-
-        self.label_9 = QLabel(self.page_cod)
-        self.label_9.setObjectName(u"label_9")
-
-        self.gridLayout_19.addWidget(self.label_9, 2, 0, 1, 1)
-
-        self.depositorPasswordLineEdit = QLineEdit(self.page_cod)
-        self.depositorPasswordLineEdit.setObjectName(u"depositorPasswordLineEdit")
-        self.depositorPasswordLineEdit.setEchoMode(QLineEdit.EchoMode.Password)
-
-        self.gridLayout_19.addWidget(self.depositorPasswordLineEdit, 1, 1, 1, 1)
-
-        self.horizontalLayout_11 = QHBoxLayout()
-        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
-        self.horizontalLayout_11.setContentsMargins(0, 0, -1, -1)
-        self.depositHKLcheckBox = QCheckBox(self.page_cod)
-        self.depositHKLcheckBox.setObjectName(u"depositHKLcheckBox")
-
-        self.horizontalLayout_11.addWidget(self.depositHKLcheckBox)
-
-        self.Upload_hkl_pushButton = QPushButton(self.page_cod)
-        self.Upload_hkl_pushButton.setObjectName(u"Upload_hkl_pushButton")
-        sizePolicy5.setHeightForWidth(self.Upload_hkl_pushButton.sizePolicy().hasHeightForWidth())
-        self.Upload_hkl_pushButton.setSizePolicy(sizePolicy5)
-
-        self.horizontalLayout_11.addWidget(self.Upload_hkl_pushButton)
-
-
-        self.gridLayout_19.addLayout(self.horizontalLayout_11, 3, 1, 1, 1)
-
-        self.userEmailLineEdit = QLineEdit(self.page_cod)
-        self.userEmailLineEdit.setObjectName(u"userEmailLineEdit")
-        self.userEmailLineEdit.setInputMethodHints(Qt.InputMethodHint.ImhEmailCharactersOnly|Qt.InputMethodHint.ImhLowercaseOnly|Qt.InputMethodHint.ImhNoAutoUppercase)
-
-        self.gridLayout_19.addWidget(self.userEmailLineEdit, 2, 1, 1, 1)
-
-        self.depositorUsernameLineEdit = QLineEdit(self.page_cod)
-        self.depositorUsernameLineEdit.setObjectName(u"depositorUsernameLineEdit")
-
-        self.gridLayout_19.addWidget(self.depositorUsernameLineEdit, 0, 1, 1, 1)
-
-        self.label_2 = QLabel(self.page_cod)
-        self.label_2.setObjectName(u"label_2")
-        self.label_2.setTextFormat(Qt.TextFormat.RichText)
-        self.label_2.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignTop)
-        self.label_2.setOpenExternalLinks(True)
-        self.label_2.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByKeyboard|Qt.TextInteractionFlag.LinksAccessibleByMouse)
-
-        self.gridLayout_19.addWidget(self.label_2, 0, 2, 4, 1)
-
-        self.depositorPasswordLabel = QLabel(self.page_cod)
-        self.depositorPasswordLabel.setObjectName(u"depositorPasswordLabel")
-
-        self.gridLayout_19.addWidget(self.depositorPasswordLabel, 1, 0, 1, 1)
-
-
-        self.gridLayout_22.addLayout(self.gridLayout_19, 1, 1, 1, 1)
-
-        self.depositionOptionsStackedWidget = QStackedWidget(self.page_cod)
-        self.depositionOptionsStackedWidget.setObjectName(u"depositionOptionsStackedWidget")
-        self.depositionOptionsStackedWidget.setFrameShape(QFrame.Shape.NoFrame)
-        self.depositionOptionsStackedWidget.setFrameShadow(QFrame.Shadow.Raised)
-        self.depositionOptionsStackedWidget.setLineWidth(1)
-        self.page_personal = QWidget()
-        self.page_personal.setObjectName(u"page_personal")
-        self.verticalLayout_30 = QVBoxLayout(self.page_personal)
-        self.verticalLayout_30.setObjectName(u"verticalLayout_30")
-        self.verticalLayout_30.setContentsMargins(0, 12, 0, -1)
-        self.label_10 = QLabel(self.page_personal)
-        self.label_10.setObjectName(u"label_10")
-        self.label_10.setTextFormat(Qt.TextFormat.RichText)
-
-        self.verticalLayout_30.addWidget(self.label_10)
-
-        self.gridLayout_20 = QGridLayout()
-        self.gridLayout_20.setObjectName(u"gridLayout_20")
-        self.horizontalSpacer_30 = QSpacerItem(80, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_20.addItem(self.horizontalSpacer_30, 0, 2, 1, 1)
-
-        self.ContactAuthorLabel = QLabel(self.page_personal)
-        self.ContactAuthorLabel.setObjectName(u"ContactAuthorLabel")
-
-        self.gridLayout_20.addWidget(self.ContactAuthorLabel, 1, 0, 1, 1)
-
-        self.authorsFullNamePersonalLabel = QLabel(self.page_personal)
-        self.authorsFullNamePersonalLabel.setObjectName(u"authorsFullNamePersonalLabel")
-
-        self.gridLayout_20.addWidget(self.authorsFullNamePersonalLabel, 0, 0, 1, 1)
-
-        self.authorEditorPushButton = QPushButton(self.page_personal)
-        self.authorEditorPushButton.setObjectName(u"authorEditorPushButton")
-        sizePolicy5.setHeightForWidth(self.authorEditorPushButton.sizePolicy().hasHeightForWidth())
-        self.authorEditorPushButton.setSizePolicy(sizePolicy5)
-
-        self.gridLayout_20.addWidget(self.authorEditorPushButton, 0, 1, 1, 1)
-
-        self.ContactAuthorLineEdit = QLineEdit(self.page_personal)
-        self.ContactAuthorLineEdit.setObjectName(u"ContactAuthorLineEdit")
-        self.ContactAuthorLineEdit.setReadOnly(True)
-
-        self.gridLayout_20.addWidget(self.ContactAuthorLineEdit, 1, 1, 1, 1)
-
-        self.ContactEmailLineEdit = QLineEdit(self.page_personal)
-        self.ContactEmailLineEdit.setObjectName(u"ContactEmailLineEdit")
-        self.ContactEmailLineEdit.setReadOnly(True)
-
-        self.gridLayout_20.addWidget(self.ContactEmailLineEdit, 2, 1, 1, 1)
-
-        self.label_12 = QLabel(self.page_personal)
-        self.label_12.setObjectName(u"label_12")
-
-        self.gridLayout_20.addWidget(self.label_12, 2, 0, 1, 1)
-
-
-        self.verticalLayout_30.addLayout(self.gridLayout_20)
-
-        self.verticalSpacer_12 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_30.addItem(self.verticalSpacer_12)
-
-        self.depositionOptionsStackedWidget.addWidget(self.page_personal)
-        self.page_prepublication = QWidget()
-        self.page_prepublication.setObjectName(u"page_prepublication")
-        self.verticalLayout_25 = QVBoxLayout(self.page_prepublication)
-        self.verticalLayout_25.setObjectName(u"verticalLayout_25")
-        self.gridLayout_21 = QGridLayout()
-        self.gridLayout_21.setObjectName(u"gridLayout_21")
-        self.horizontalSpacer_29 = QSpacerItem(80, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_21.addItem(self.horizontalSpacer_29, 0, 2, 1, 1)
-
-        self.embargoTimeInMonthsSpinBox = QSpinBox(self.page_prepublication)
-        self.embargoTimeInMonthsSpinBox.setObjectName(u"embargoTimeInMonthsSpinBox")
-        self.embargoTimeInMonthsSpinBox.setMinimum(6)
-        self.embargoTimeInMonthsSpinBox.setMaximum(12)
-
-        self.gridLayout_21.addWidget(self.embargoTimeInMonthsSpinBox, 1, 1, 1, 1)
-
-        self.label_8 = QLabel(self.page_prepublication)
-        self.label_8.setObjectName(u"label_8")
-
-        self.gridLayout_21.addWidget(self.label_8, 1, 2, 1, 1)
-
-        self.journalNameLineEdit = QLineEdit(self.page_prepublication)
-        self.journalNameLineEdit.setObjectName(u"journalNameLineEdit")
-
-        self.gridLayout_21.addWidget(self.journalNameLineEdit, 0, 1, 1, 1)
-
-        self.embargoTimeInMonthsLabel = QLabel(self.page_prepublication)
-        self.embargoTimeInMonthsLabel.setObjectName(u"embargoTimeInMonthsLabel")
-
-        self.gridLayout_21.addWidget(self.embargoTimeInMonthsLabel, 1, 0, 1, 1)
-
-        self.journalMameLabel = QLabel(self.page_prepublication)
-        self.journalMameLabel.setObjectName(u"journalMameLabel")
-
-        self.gridLayout_21.addWidget(self.journalMameLabel, 0, 0, 1, 1)
-
-
-        self.verticalLayout_25.addLayout(self.gridLayout_21)
-
-        self.gridLayout_author_prepubl = QGridLayout()
-        self.gridLayout_author_prepubl.setObjectName(u"gridLayout_author_prepubl")
-        self.horizontalSpacer_35 = QSpacerItem(80, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_author_prepubl.addItem(self.horizontalSpacer_35, 0, 3, 1, 1)
-
-        self.authorsFullNamePersonalLabel_2 = QLabel(self.page_prepublication)
-        self.authorsFullNamePersonalLabel_2.setObjectName(u"authorsFullNamePersonalLabel_2")
-
-        self.gridLayout_author_prepubl.addWidget(self.authorsFullNamePersonalLabel_2, 0, 1, 1, 1)
-
-        self.ContactAuthorLineEdit_2 = QLineEdit(self.page_prepublication)
-        self.ContactAuthorLineEdit_2.setObjectName(u"ContactAuthorLineEdit_2")
-        self.ContactAuthorLineEdit_2.setReadOnly(True)
-
-        self.gridLayout_author_prepubl.addWidget(self.ContactAuthorLineEdit_2, 1, 2, 1, 1)
-
-        self.authorEditorPushButton_2 = QPushButton(self.page_prepublication)
-        self.authorEditorPushButton_2.setObjectName(u"authorEditorPushButton_2")
-        sizePolicy5.setHeightForWidth(self.authorEditorPushButton_2.sizePolicy().hasHeightForWidth())
-        self.authorEditorPushButton_2.setSizePolicy(sizePolicy5)
-
-        self.gridLayout_author_prepubl.addWidget(self.authorEditorPushButton_2, 0, 2, 1, 1)
-
-        self.ContactAuthorLabel_2 = QLabel(self.page_prepublication)
-        self.ContactAuthorLabel_2.setObjectName(u"ContactAuthorLabel_2")
-
-        self.gridLayout_author_prepubl.addWidget(self.ContactAuthorLabel_2, 1, 1, 1, 1)
-
-        self.label_15 = QLabel(self.page_prepublication)
-        self.label_15.setObjectName(u"label_15")
-
-        self.gridLayout_author_prepubl.addWidget(self.label_15, 2, 1, 1, 1)
-
-        self.ContactEmailLineEdit_2 = QLineEdit(self.page_prepublication)
-        self.ContactEmailLineEdit_2.setObjectName(u"ContactEmailLineEdit_2")
-        self.ContactEmailLineEdit_2.setReadOnly(True)
-
-        self.gridLayout_author_prepubl.addWidget(self.ContactEmailLineEdit_2, 2, 2, 1, 1)
-
-
-        self.verticalLayout_25.addLayout(self.gridLayout_author_prepubl)
-
-        self.verticalSpacer_13 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_25.addItem(self.verticalSpacer_13)
-
-        self.depositionOptionsStackedWidget.addWidget(self.page_prepublication)
-        self.page_published = QWidget()
-        self.page_published.setObjectName(u"page_published")
-        self.verticalLayout_27 = QVBoxLayout(self.page_published)
-        self.verticalLayout_27.setObjectName(u"verticalLayout_27")
-        self.verticalLayout_27.setContentsMargins(0, -1, 0, -1)
-        self.gridLayout_23 = QGridLayout()
-        self.gridLayout_23.setObjectName(u"gridLayout_23")
-        self.publication_doi_lineedit = QLineEdit(self.page_published)
-        self.publication_doi_lineedit.setObjectName(u"publication_doi_lineedit")
-
-        self.gridLayout_23.addWidget(self.publication_doi_lineedit, 1, 1, 1, 1)
-
-        self.cod_database_code_Label = QLabel(self.page_published)
-        self.cod_database_code_Label.setObjectName(u"cod_database_code_Label")
-
-        self.gridLayout_23.addWidget(self.cod_database_code_Label, 1, 0, 1, 1)
-
-        self.horizontalSpacer_32 = QSpacerItem(80, 20, QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_23.addItem(self.horizontalSpacer_32, 1, 3, 1, 1)
-
-        self.label_11 = QLabel(self.page_published)
-        self.label_11.setObjectName(u"label_11")
-
-        self.gridLayout_23.addWidget(self.label_11, 0, 0, 1, 2)
-
-        self.GetDOIPushButton = QPushButton(self.page_published)
-        self.GetDOIPushButton.setObjectName(u"GetDOIPushButton")
-
-        self.gridLayout_23.addWidget(self.GetDOIPushButton, 1, 2, 1, 1)
-
-
-        self.verticalLayout_27.addLayout(self.gridLayout_23)
-
-        self.DOIResolveTextLabel = QLabel(self.page_published)
-        self.DOIResolveTextLabel.setObjectName(u"DOIResolveTextLabel")
-        self.DOIResolveTextLabel.setTextFormat(Qt.TextFormat.PlainText)
-        self.DOIResolveTextLabel.setWordWrap(True)
-
-        self.verticalLayout_27.addWidget(self.DOIResolveTextLabel)
-
-        self.verticalLayout_26 = QVBoxLayout()
-        self.verticalLayout_26.setObjectName(u"verticalLayout_26")
-        self.label_14 = QLabel(self.page_published)
-        self.label_14.setObjectName(u"label_14")
-        self.label_14.setTextFormat(Qt.TextFormat.RichText)
-
-        self.verticalLayout_26.addWidget(self.label_14)
-
-
-        self.verticalLayout_27.addLayout(self.verticalLayout_26)
-
-        self.verticalSpacer_11 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.verticalLayout_27.addItem(self.verticalSpacer_11)
-
-        self.depositionOptionsStackedWidget.addWidget(self.page_published)
-        self.page_deposition_output = QWidget()
-        self.page_deposition_output.setObjectName(u"page_deposition_output")
-        self.verticalLayout_31 = QVBoxLayout(self.page_deposition_output)
-        self.verticalLayout_31.setObjectName(u"verticalLayout_31")
-        self.verticalLayout_31.setContentsMargins(0, -1, 0, 0)
-        self.label_deposition_output = QLabel(self.page_deposition_output)
-        self.label_deposition_output.setObjectName(u"label_deposition_output")
-
-        self.verticalLayout_31.addWidget(self.label_deposition_output)
-
-        self.depositOutputTextBrowser = QTextBrowser(self.page_deposition_output)
-        self.depositOutputTextBrowser.setObjectName(u"depositOutputTextBrowser")
-        self.depositOutputTextBrowser.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self.depositOutputTextBrowser.setAutoFormatting(QTextEdit.AutoFormattingFlag.AutoAll)
-        self.depositOutputTextBrowser.setOpenExternalLinks(True)
-
-        self.verticalLayout_31.addWidget(self.depositOutputTextBrowser)
-
-        self.depositionOptionsStackedWidget.addWidget(self.page_deposition_output)
-
-        self.gridLayout_22.addWidget(self.depositionOptionsStackedWidget, 4, 1, 1, 1)
-
-
-        self.gridLayout_17.addLayout(self.gridLayout_22, 0, 1, 1, 1)
-
-        self.StructuresListGroupBox = QGroupBox(self.page_cod)
-        self.StructuresListGroupBox.setObjectName(u"StructuresListGroupBox")
-        sizePolicy33 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
-        sizePolicy33.setHorizontalStretch(0)
-        sizePolicy33.setVerticalStretch(0)
-        sizePolicy33.setHeightForWidth(self.StructuresListGroupBox.sizePolicy().hasHeightForWidth())
-        self.StructuresListGroupBox.setSizePolicy(sizePolicy33)
-        self.StructuresListGroupBox.setAlignment(Qt.AlignmentFlag.AlignLeading|Qt.AlignmentFlag.AlignLeft|Qt.AlignmentFlag.AlignVCenter)
-        self.gridLayout_18 = QGridLayout(self.StructuresListGroupBox)
-        self.gridLayout_18.setObjectName(u"gridLayout_18")
-        self.refreshDepositListPushButton = QPushButton(self.StructuresListGroupBox)
-        self.refreshDepositListPushButton.setObjectName(u"refreshDepositListPushButton")
-        self.refreshDepositListPushButton.setEnabled(False)
-        self.refreshDepositListPushButton.setCheckable(False)
-        self.refreshDepositListPushButton.setAutoDefault(False)
-
-        self.gridLayout_18.addWidget(self.refreshDepositListPushButton, 1, 1, 1, 1)
-
-        self.horizontalSpacer_33 = QSpacerItem(1, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_18.addItem(self.horizontalSpacer_33, 1, 0, 1, 1)
-
-        self.horizontalSpacer_34 = QSpacerItem(1, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_18.addItem(self.horizontalSpacer_34, 1, 2, 1, 1)
-
-        self.CODtableWidget = QTableWidget(self.StructuresListGroupBox)
-        if (self.CODtableWidget.columnCount() < 3):
-            self.CODtableWidget.setColumnCount(3)
-        __qtablewidgetitem6 = QTableWidgetItem()
-        self.CODtableWidget.setHorizontalHeaderItem(0, __qtablewidgetitem6)
-        __qtablewidgetitem7 = QTableWidgetItem()
-        self.CODtableWidget.setHorizontalHeaderItem(1, __qtablewidgetitem7)
-        __qtablewidgetitem8 = QTableWidgetItem()
-        self.CODtableWidget.setHorizontalHeaderItem(2, __qtablewidgetitem8)
-        self.CODtableWidget.setObjectName(u"CODtableWidget")
-        self.CODtableWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self.CODtableWidget.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
-        self.CODtableWidget.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
-        self.CODtableWidget.setSortingEnabled(True)
-        self.CODtableWidget.horizontalHeader().setCascadingSectionResizes(False)
-        self.CODtableWidget.horizontalHeader().setDefaultSectionSize(100)
-        self.CODtableWidget.horizontalHeader().setStretchLastSection(False)
-        self.CODtableWidget.verticalHeader().setCascadingSectionResizes(False)
-
-        self.gridLayout_18.addWidget(self.CODtableWidget, 0, 0, 1, 3)
-
-
-        self.gridLayout_17.addWidget(self.StructuresListGroupBox, 0, 0, 1, 1, Qt.AlignmentFlag.AlignHCenter)
-
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-        self.horizontalLayout_10.setContentsMargins(-1, 0, -1, -1)
-        self.BackFromDepositPushButton = QPushButton(self.page_cod)
-        self.BackFromDepositPushButton.setObjectName(u"BackFromDepositPushButton")
-        self.BackFromDepositPushButton.setMinimumSize(QSize(160, 0))
-
-        self.horizontalLayout_10.addWidget(self.BackFromDepositPushButton)
-
-        self.horizontalSpacer_27 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_10.addItem(self.horizontalSpacer_27)
-
-        self.depositCIFpushButton = QPushButton(self.page_cod)
-        self.depositCIFpushButton.setObjectName(u"depositCIFpushButton")
-
-        self.horizontalLayout_10.addWidget(self.depositCIFpushButton)
-
-        self.horizontalSpacer_28 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.horizontalLayout_10.addItem(self.horizontalSpacer_28)
-
-
-        self.gridLayout_17.addLayout(self.horizontalLayout_10, 1, 0, 1, 2)
-
-        self.MainStackedWidget.addWidget(self.page_cod)
-        self.page_textTemplate = QWidget()
-        self.page_textTemplate.setObjectName(u"page_textTemplate")
-        self.verticalLayout_33 = QVBoxLayout(self.page_textTemplate)
-        self.verticalLayout_33.setObjectName(u"verticalLayout_33")
-        self.MainStackedWidget.addWidget(self.page_textTemplate)
-
-        self.gridLayout_6.addWidget(self.MainStackedWidget, 2, 0, 1, 13)
+        self.gridLayout_6.addWidget(self.MainStackedWidget, 2, 0, 1, 14)
 
         self.splitter.addWidget(self.CifDataItemsFrame)
 
@@ -2554,8 +2581,7 @@ class Ui_FinalCifWindow(object):
         QWidget.setTabOrder(self.SavePropertiesButton, self.CancelPropertiesButton)
         QWidget.setTabOrder(self.CancelPropertiesButton, self.ExportPropertyButton)
         QWidget.setTabOrder(self.ExportPropertyButton, self.LoopTemplatesListWidget)
-        QWidget.setTabOrder(self.LoopTemplatesListWidget, self.HelpPushButton)
-        QWidget.setTabOrder(self.HelpPushButton, self.cif_main_table)
+        QWidget.setTabOrder(self.LoopTemplatesListWidget, self.cif_main_table)
         QWidget.setTabOrder(self.cif_main_table, self.SaveCifButton)
         QWidget.setTabOrder(self.SaveCifButton, self.ExploreDirButton)
         QWidget.setTabOrder(self.ExploreDirButton, self.DetailsPushButton)
@@ -2576,8 +2602,7 @@ class Ui_FinalCifWindow(object):
         QWidget.setTabOrder(self.numParametersLineEdit, self.dataReflnsLineEdit)
         QWidget.setTabOrder(self.dataReflnsLineEdit, self.wavelengthLineEdit)
         QWidget.setTabOrder(self.wavelengthLineEdit, self.flackXLineEdit)
-        QWidget.setTabOrder(self.flackXLineEdit, self.zLineEdit)
-        QWidget.setTabOrder(self.zLineEdit, self.temperatureLineEdit)
+        QWidget.setTabOrder(self.flackXLineEdit, self.temperatureLineEdit)
         QWidget.setTabOrder(self.temperatureLineEdit, self.wR2LineEdit)
         QWidget.setTabOrder(self.wR2LineEdit, self.r1LineEdit)
         QWidget.setTabOrder(self.r1LineEdit, self.goofLineEdit)
@@ -2676,12 +2701,12 @@ class Ui_FinalCifWindow(object):
 
         self.TemplatesStackedWidget.setCurrentIndex(0)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        self.MainStackedWidget.setCurrentIndex(6)
+        self.MainStackedWidget.setCurrentIndex(4)
         self.picturesTabWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
-        self.authorEditTabWidget.setCurrentIndex(1)
         self.CheckCIFResultsTabWidget.setCurrentIndex(1)
         self.depositionOptionsStackedWidget.setCurrentIndex(3)
+        self.authorEditTabWidget.setCurrentIndex(1)
 
     # setupUi
 
@@ -2732,12 +2757,13 @@ class Ui_FinalCifWindow(object):
         self.ExportAuthorPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Export Author as File", None))
         self.ImportAuthorPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Import Author", None))
         self.DeleteLoopAuthorTemplateButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Author", None))
-        self.spacegroupLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Space-Group Type", None))
-        self.appendCifPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Append CIF", None))
-        self.CCDCNumLabel.setText(QCoreApplication.translate("FinalCifWindow", u"CCDC Number", None))
-        self.HelpPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Help", None))
-        self.datanameLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data Name", None))
         self.SumFormMainLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Sum Formula", None))
+        self.HelpPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Help", None))
+        self.zEstimateLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Z = ?", None))
+        self.datanameLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data Name", None))
+        self.CCDCNumLabel.setText(QCoreApplication.translate("FinalCifWindow", u"CCDC Number", None))
+        self.appendCifPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Append CIF", None))
+        self.spacegroupLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Space-Group Type", None))
         self.groupBox.setTitle("")
 #if QT_CONFIG(tooltip)
         self.SaveCifButton.setToolTip(QCoreApplication.translate("FinalCifWindow", u"Saves the CIF file to name-finalcif.cif", None))
@@ -2760,34 +2786,6 @@ class Ui_FinalCifWindow(object):
         self.CCDCpushButton.setText(QCoreApplication.translate("FinalCifWindow", u"CCDC Deposit", None))
         self.OptionsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Options", None))
         self.BackPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
-        self.groupBox_3.setTitle(QCoreApplication.translate("FinalCifWindow", u"Properties", None))
-        self.zLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Z</p></body></html>", None))
-        self.temperatureLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Temperature [K]", None))
-        self.wR2Label.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">wR</span><span style=\" vertical-align:sub;\">2 </span>[all ref.]</p></body></html>", None))
-        self.r1Label.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">1 </span>[<span style=\" font-style:italic;\">I </span>&gt; 2\u03c3(<span style=\" font-style:italic;\">I</span>)]</p></body></html>", None))
-        self.goofLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Goof", None))
-        self.maxShiftLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Max Shift/esd", None))
-        self.completeLabel.setText(QCoreApplication.translate("FinalCifWindow", u"complete [%]", None))
-        self.reflTotalLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Measured Refl.", None))
-        self.refl2sigmaLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Data with [<span style=\" font-style:italic;\">I </span>&gt; 2\u03c3(<span style=\" font-style:italic;\">I</span>)]</p></body></html>", None))
-        self.uniqReflLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Independent Refl.", None))
-        self.numParametersLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Parameters", None))
-        self.dataReflnsLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data/Parameters", None))
-        self.wavelengthLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Wavelength [\u00c5]", None))
-        self.flackXLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Flack x", None))
-        self.groupBox_4.setTitle(QCoreApplication.translate("FinalCifWindow", u"Unit Cell", None))
-        self.cellField.setText("")
-        self.peakLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Peak/Hole [e\u00c5<span style=\" vertical-align:super;\">-3</span>]</p></body></html>", None))
-        self.rintLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">int</span></p></body></html>", None))
-        self.rsigmaLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">\u03c3</span></p></body></html>", None))
-        self.numRestraintsLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Restraints", None))
-        self.thetaMaxLabel.setText(QCoreApplication.translate("FinalCifWindow", u"\u03b8(max) [\u00b0]", None))
-        self.thetaFullLabel.setText(QCoreApplication.translate("FinalCifWindow", u"\u03b8(full) [\u00b0]", None))
-        self.dLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Resolution [\u00c5]</p></body></html>", None))
-        self.BackpushButtonDetails.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
-        self.SourcesPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Data Sources", None))
-        self.groupBox_9.setTitle(QCoreApplication.translate("FinalCifWindow", u"Shelx File", None))
-        self.shelx_TextEdit.setPlainText(QCoreApplication.translate("FinalCifWindow", u"No Shelx file available", None))
         self.molGroupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"Molecule", None))
         self.growCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Grow Structure", None))
         self.labelsCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Show Labels", None))
@@ -2800,6 +2798,35 @@ class Ui_FinalCifWindow(object):
         self.videoLeftToolButton.setText(QCoreApplication.translate("FinalCifWindow", u"<-", None))
         self.videoRightToolButton.setText(QCoreApplication.translate("FinalCifWindow", u"->", None))
         self.picturesTabWidget.setTabText(self.picturesTabWidget.indexOf(self.tab_video), QCoreApplication.translate("FinalCifWindow", u"Video", None))
+        self.shelxfile_groupBox.setTitle(QCoreApplication.translate("FinalCifWindow", u"Shelx File", None))
+        self.shelx_TextEdit.setPlainText(QCoreApplication.translate("FinalCifWindow", u"No Shelx file available", None))
+        self.groupBox_3.setTitle(QCoreApplication.translate("FinalCifWindow", u"Properties", None))
+        self.BackpushButtonDetails.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
+        self.zLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Z</p></body></html>", None))
+        self.zEstimateLabel2.setText(QCoreApplication.translate("FinalCifWindow", u"Z(calc) = ?", None))
+        self.temperatureLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Temperature [K]", None))
+        self.wR2Label.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">wR</span><span style=\" vertical-align:sub;\">2 </span>[all ref.]</p></body></html>", None))
+        self.r1Label.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">1 </span>[<span style=\" font-style:italic;\">I </span>&gt; 2\u03c3(<span style=\" font-style:italic;\">I</span>)]</p></body></html>", None))
+        self.goofLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Goof", None))
+        self.maxShiftLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Max Shift/esd", None))
+        self.completeLabel.setText(QCoreApplication.translate("FinalCifWindow", u"complete [%]", None))
+        self.groupBox_4.setTitle(QCoreApplication.translate("FinalCifWindow", u"Unit Cell", None))
+        self.cellField.setText("")
+        self.SourcesPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Data Sources", None))
+        self.reflTotalLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Measured Refl.", None))
+        self.refl2sigmaLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Data with [<span style=\" font-style:italic;\">I </span>&gt; 2\u03c3(<span style=\" font-style:italic;\">I</span>)]</p></body></html>", None))
+        self.uniqReflLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Independent Refl.", None))
+        self.numParametersLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Parameters", None))
+        self.dataReflnsLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Data/Parameters", None))
+        self.wavelengthLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Wavelength [\u00c5]", None))
+        self.flackXLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Flack x", None))
+        self.peakLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Peak/Hole [e\u00c5<span style=\" vertical-align:super;\">-3</span>]</p></body></html>", None))
+        self.rintLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">int</span></p></body></html>", None))
+        self.rsigmaLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" font-style:italic;\">R</span><span style=\" vertical-align:sub;\">\u03c3</span></p></body></html>", None))
+        self.numRestraintsLabel.setText(QCoreApplication.translate("FinalCifWindow", u"Restraints", None))
+        self.thetaMaxLabel.setText(QCoreApplication.translate("FinalCifWindow", u"\u03b8(max) [\u00b0]", None))
+        self.thetaFullLabel.setText(QCoreApplication.translate("FinalCifWindow", u"\u03b8(full) [\u00b0]", None))
+        self.dLabel.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p>Resolution [\u00c5]</p></body></html>", None))
         self.groupBox_2.setTitle("")
         self.label_3.setText(QCoreApplication.translate("FinalCifWindow", u"The list of data sources shows the origin of CIF items automatically collected by FinalCif. \n"
 "\n"
@@ -2839,36 +2866,6 @@ class Ui_FinalCifWindow(object):
         self.SavePropertiesButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save", None))
         self.CancelPropertiesButton.setText(QCoreApplication.translate("FinalCifWindow", u"Cancel", None))
         self.ExportPropertyButton.setText(QCoreApplication.translate("FinalCifWindow", u"Export", None))
-        self.label_20.setText(QCoreApplication.translate("FinalCifWindow", u"Details about the author(s) of a manuscript submitted for publication.\n"
-"Contact authors should always also appear as regular authors.", None))
-        self.label_34.setText(QCoreApplication.translate("FinalCifWindow", u"ORCID", None))
-        self.footnote_label.setText(QCoreApplication.translate("FinalCifWindow", u"footnote", None))
-        self.label_21.setText(QCoreApplication.translate("FinalCifWindow", u"Adresss", None))
-        self.label_28.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">The adress of an author</span></p><p><span style=\" color:#666666;\">Department<br/>Institute<br/>Street<br/>City and postcode<br/>COUNTRY</span></p></body></html>", None))
-        self.ContactAuthorCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"This is a contact author", None))
-        self.label_22.setText(QCoreApplication.translate("FinalCifWindow", u"Full Name", None))
-        self.EmailLabel.setText(QCoreApplication.translate("FinalCifWindow", u"e-mail", None))
-        self.label_27.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Family name, first name</span></p></body></html>", None))
-        self.PhoneLabel.setText(QCoreApplication.translate("FinalCifWindow", u"phone number", None))
-        self.label_36.setText(QCoreApplication.translate("FinalCifWindow", u"IUCr Id", None))
-        self.SaveAuthorLoopToTemplateButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
-        self.AddThisAuthorToLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add Publication Author to CIF Loop", None))
-        self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_publication), QCoreApplication.translate("FinalCifWindow", u"Publication Authors", None))
-        self.label_23.setText(QCoreApplication.translate("FinalCifWindow", u"Details about the author(s) of this CIF data block (most often the crystallographer).\n"
-"Contact authors should always also appear as regular authors.", None))
-        self.label_29.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Family name, first name</span></p></body></html>", None))
-        self.label_24.setText(QCoreApplication.translate("FinalCifWindow", u"Full Name", None))
-        self.label_30.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">The adress of an author</span></p><p><span style=\" color:#666666;\">Department<br/>Institute<br/>Street<br/>City and postcode<br/>COUNTRY</span></p></body></html>", None))
-        self.EmailLabel_cif.setText(QCoreApplication.translate("FinalCifWindow", u"e-mail", None))
-        self.ContactAuthorCheckBox_cif.setText(QCoreApplication.translate("FinalCifWindow", u"This is a contact author", None))
-        self.label_25.setText(QCoreApplication.translate("FinalCifWindow", u"Adresss", None))
-        self.PhoneLabel_cif.setText(QCoreApplication.translate("FinalCifWindow", u"phone number", None))
-        self.label_16.setText("")
-        self.label_19.setText("")
-        self.label_13.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Audit authors have less possibilities than publication authors.</span></p></body></html>", None))
-        self.SaveAuthorLoopToTemplateButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
-        self.AddThisAuthorToLoopPushButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Add Audit Author to CIF Loop", None))
-        self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_audit), QCoreApplication.translate("FinalCifWindow", u"Audit (CIF) Authors", None))
         self.revertLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Revert Changes", None))
         self.BackFromLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.newLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Loop", None))
@@ -2881,7 +2878,7 @@ class Ui_FinalCifWindow(object):
         self.groupBox_7.setTitle(QCoreApplication.translate("FinalCifWindow", u"CheckCIF log messages", None))
         self.groupBox_checkcif_2.setTitle("")
         self.CheckcifPDFOnlineButton.setText(QCoreApplication.translate("FinalCifWindow", u"Checkcif Online PDF", None))
-        self.structfactCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"without structure factors (faster but not complete)", None))
+        self.structfactCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"without structure factors (fast but not complete)", None))
         self.fullIucrCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Full IUCr publication validation", None))
         self.checkDuplicatesCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Check for duplicates in CSD", None))
         self.CheckcifButton.setText(QCoreApplication.translate("FinalCifWindow", u"CheckCif Offline", None))
@@ -2926,5 +2923,35 @@ class Ui_FinalCifWindow(object):
         ___qtablewidgetitem6.setText(QCoreApplication.translate("FinalCifWindow", u"Time", None))
         self.BackFromDepositPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.depositCIFpushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Deposit CIF", None))
+        self.label_20.setText(QCoreApplication.translate("FinalCifWindow", u"Details about the author(s) of a manuscript submitted for publication.\n"
+"Contact authors should always also appear as regular authors.", None))
+        self.label_34.setText(QCoreApplication.translate("FinalCifWindow", u"ORCID", None))
+        self.footnote_label.setText(QCoreApplication.translate("FinalCifWindow", u"footnote", None))
+        self.label_21.setText(QCoreApplication.translate("FinalCifWindow", u"Adresss", None))
+        self.label_28.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">The adress of an author</span></p><p><span style=\" color:#666666;\">Department<br/>Institute<br/>Street<br/>City and postcode<br/>COUNTRY</span></p></body></html>", None))
+        self.ContactAuthorCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"This is a contact author", None))
+        self.label_22.setText(QCoreApplication.translate("FinalCifWindow", u"Full Name", None))
+        self.EmailLabel.setText(QCoreApplication.translate("FinalCifWindow", u"e-mail", None))
+        self.label_27.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Family name, first name</span></p></body></html>", None))
+        self.PhoneLabel.setText(QCoreApplication.translate("FinalCifWindow", u"phone number", None))
+        self.label_36.setText(QCoreApplication.translate("FinalCifWindow", u"IUCr Id", None))
+        self.SaveAuthorLoopToTemplateButton.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
+        self.AddThisAuthorToLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add Publication Author to CIF Loop", None))
+        self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_publication), QCoreApplication.translate("FinalCifWindow", u"Publication Authors", None))
+        self.label_23.setText(QCoreApplication.translate("FinalCifWindow", u"Details about the author(s) of this CIF data block (most often the crystallographer).\n"
+"Contact authors should always also appear as regular authors.", None))
+        self.label_29.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Family name, first name</span></p></body></html>", None))
+        self.label_24.setText(QCoreApplication.translate("FinalCifWindow", u"Full Name", None))
+        self.label_30.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">The adress of an author</span></p><p><span style=\" color:#666666;\">Department<br/>Institute<br/>Street<br/>City and postcode<br/>COUNTRY</span></p></body></html>", None))
+        self.EmailLabel_cif.setText(QCoreApplication.translate("FinalCifWindow", u"e-mail", None))
+        self.ContactAuthorCheckBox_cif.setText(QCoreApplication.translate("FinalCifWindow", u"This is a contact author", None))
+        self.label_25.setText(QCoreApplication.translate("FinalCifWindow", u"Adresss", None))
+        self.PhoneLabel_cif.setText(QCoreApplication.translate("FinalCifWindow", u"phone number", None))
+        self.label_16.setText("")
+        self.label_19.setText("")
+        self.label_13.setText(QCoreApplication.translate("FinalCifWindow", u"<html><head/><body><p><span style=\" color:#666666;\">Audit authors have less possibilities than publication authors.</span></p></body></html>", None))
+        self.SaveAuthorLoopToTemplateButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Save Author as Template", None))
+        self.AddThisAuthorToLoopPushButton_cif.setText(QCoreApplication.translate("FinalCifWindow", u"Add Audit Author to CIF Loop", None))
+        self.authorEditTabWidget.setTabText(self.authorEditTabWidget.indexOf(self.page_audit), QCoreApplication.translate("FinalCifWindow", u"Audit (CIF) Authors", None))
     # retranslateUi
 

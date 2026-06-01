@@ -8,6 +8,7 @@ SAINT, SADABS, and SHELX list files.
 FinalCif's main table displays the .cif file data in three columns: the left shows the original CIF data, the middle
 displays data from other sources (like the .p4p file), and the right allows user input, which overrides all other values.
 Templates make it easy to add author info, machine models, or create dropdowns for specific CIF keywords.
+During startup, FinalCif adds the moiety formula if it is missing and suggests the Z value.
 
 Fields marked with a question mark require attention and appear at the top of the table.
 Each input field supports Unicode characters like umlauts, which are automatically converted to CIF-compliant ASCII format.

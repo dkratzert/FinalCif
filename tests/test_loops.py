@@ -540,7 +540,10 @@ class TestLoops(unittest.TestCase):
     def test_loop_no_edit(self):
         self.cif.save()
         c = CifContainer(self.cif.finalcif_file)
-        val = c.loops[3][0, 2]
+        # Access scattering-type loop by key, not by positional index (ordering may vary)
+        scattering_loop = c.get_loop('_atom_type_symbol')
+        col = scattering_loop.tags.index('_atom_type_scat_dispersion_real')
+        val = scattering_loop[0, col]
         self.assertEqual('0.0181', val)
 
     def test_loop_edit_one_single_field(self):
@@ -548,7 +551,9 @@ class TestLoops(unittest.TestCase):
         model.setData(model.index(0, 2), 'foo bar', role=Qt.ItemDataRole.EditRole)
         self.cif.save()
         c = CifContainer(self.cif.finalcif_file)
-        result = as_string(c.loops[3][0, 2])
+        scattering_loop = c.get_loop('_atom_type_symbol')
+        col = scattering_loop.tags.index('_atom_type_scat_dispersion_real')
+        result = as_string(scattering_loop[0, col])
         self.assertEqual('foo bar', result)
 
     def test_set_author_editor_tab_inserts_at_index_zero(self):
@@ -693,21 +698,23 @@ class TestLoopsMove(unittest.TestCase):
         view._row_down(None)
         self.cif.save()
         c = CifContainer(self.cif.finalcif_file)
+        loop = c.get_loop('_atom_type_symbol')
         try:
-            self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
-            self.assertEqual('O', as_string(c.loops[3].val(1, 0)))
-            self.assertEqual('H', as_string(c.loops[3].val(2, 0)))
+            self.assertEqual('C', as_string(loop.val(0, 0)))
+            self.assertEqual('O', as_string(loop.val(1, 0)))
+            self.assertEqual('H', as_string(loop.val(2, 0)))
         except AttributeError:
-            self.assertEqual('C', as_string(c.loops[3][0, 0]))
-            self.assertEqual('O', as_string(c.loops[3][1, 0]))
-            self.assertEqual('H', as_string(c.loops[3][2, 0]))
+            self.assertEqual('C', as_string(loop[0, 0]))
+            self.assertEqual('O', as_string(loop[1, 0]))
+            self.assertEqual('H', as_string(loop[2, 0]))
 
     def test_move_row_down_from_middle_save_and_load_again_for_angles(self):
         view = self.set_current_index_to_row_col(1, 0, tab='Angles')
         view._row_down(None)
         self.cif.save()
         c = CifContainer(self.cif.finalcif_file)
-        self.assertEqual("['O1', 'C1', 'C14', '105.9(2)', '.', '.', '?']", str(c.loops[7].values[:7]))
+        angle_loop = c.get_loop('_geom_angle_atom_site_label_1')
+        self.assertEqual("['O1', 'C1', 'C14', '105.9(2)', '.', '.', '?']", str(angle_loop.values[:7]))
 
     def test_move_row_down_from_end(self):
         view = self.set_current_index_to_row_col(2, 0)
@@ -721,14 +728,15 @@ class TestLoopsMove(unittest.TestCase):
         view._row_down(None)
         self.cif.save()
         c = CifContainer(self.cif.finalcif_file)
+        loop = c.get_loop('_atom_type_symbol')
         try:
-            self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
-            self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
-            self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+            self.assertEqual('C', as_string(loop.val(0, 0)))
+            self.assertEqual('H', as_string(loop.val(1, 0)))
+            self.assertEqual('O', as_string(loop.val(2, 0)))
         except AttributeError:
-            self.assertEqual('C', as_string(c.loops[3][0, 0]))
-            self.assertEqual('H', as_string(c.loops[3][1, 0]))
-            self.assertEqual('O', as_string(c.loops[3][2, 0]))
+            self.assertEqual('C', as_string(loop[0, 0]))
+            self.assertEqual('H', as_string(loop[1, 0]))
+            self.assertEqual('O', as_string(loop[2, 0]))
 
     def test_move_row_up_from_middle(self):
         view = self.set_current_index_to_row_col(1, 0)
@@ -742,14 +750,15 @@ class TestLoopsMove(unittest.TestCase):
         view._row_up(None)
         self.cif.save()
         c = CifContainer(self.cif.finalcif_file)
+        loop = c.get_loop('_atom_type_symbol')
         try:
-            self.assertEqual('H', as_string(c.loops[3].val(0, 0)))
-            self.assertEqual('C', as_string(c.loops[3].val(1, 0)))
-            self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+            self.assertEqual('H', as_string(loop.val(0, 0)))
+            self.assertEqual('C', as_string(loop.val(1, 0)))
+            self.assertEqual('O', as_string(loop.val(2, 0)))
         except AttributeError:
-            self.assertEqual('H', as_string(c.loops[3][0, 0]))
-            self.assertEqual('C', as_string(c.loops[3][1, 0]))
-            self.assertEqual('O', as_string(c.loops[3][2, 0]))
+            self.assertEqual('H', as_string(loop[0, 0]))
+            self.assertEqual('C', as_string(loop[1, 0]))
+            self.assertEqual('O', as_string(loop[2, 0]))
 
     def test_move_row_up_from_start(self):
         view = self.set_current_index_to_row_col(0, 0)
@@ -763,11 +772,12 @@ class TestLoopsMove(unittest.TestCase):
         view._row_up(None)
         self.cif.save()
         c = CifContainer(self.cif.finalcif_file)
+        loop = c.get_loop('_atom_type_symbol')
         try:
-            self.assertEqual('C', as_string(c.loops[3].val(0, 0)))
-            self.assertEqual('H', as_string(c.loops[3].val(1, 0)))
-            self.assertEqual('O', as_string(c.loops[3].val(2, 0)))
+            self.assertEqual('C', as_string(loop.val(0, 0)))
+            self.assertEqual('H', as_string(loop.val(1, 0)))
+            self.assertEqual('O', as_string(loop.val(2, 0)))
         except AttributeError:
-            self.assertEqual('C', as_string(c.loops[3][0, 0]))
-            self.assertEqual('H', as_string(c.loops[3][1, 0]))
-            self.assertEqual('O', as_string(c.loops[3][2, 0]))
+            self.assertEqual('C', as_string(loop[0, 0]))
+            self.assertEqual('H', as_string(loop[1, 0]))
+            self.assertEqual('O', as_string(loop[2, 0]))

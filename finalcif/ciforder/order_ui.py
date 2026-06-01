@@ -108,6 +108,7 @@ class Ui_CifOrderForm(object):
 
         self.helpTextLabel = QLabel(CifOrderForm)
         self.helpTextLabel.setObjectName(u"helpTextLabel")
+        self.helpTextLabel.setWordWrap(True)
 
         self.gridLayout.addWidget(self.helpTextLabel, 1, 0, 1, 2)
 
