@@ -38,6 +38,7 @@ information of a sample.
    templates
    options
    loops
+   squeeze
    checkcif
    report
    deposition
