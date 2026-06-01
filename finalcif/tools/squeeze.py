@@ -116,13 +116,13 @@ def build_details_text(void_rows: list[dict], method: Literal['squeeze', 'smtbx'
         calc_e = electrons_from_formula(formula)
         if method == 'smtbx':
             sentences.append(
-                f'The {formula} solvent molecule ({calc_e} electrons) disordered '
+                f'The {formula} molecule ({calc_e} electrons) '
                 f'in a void of {volume} \u212b\u00b3 was treated by the Olex2/SMTBX '
                 f'solvent mask procedure.'
             )
         else:
             sentences.append(
-                f'The {formula} solvent molecule ({calc_e} electrons) disordered '
+                f'The {formula} molecule ({calc_e} electrons) '
                 f'in a void of {volume} \u212b\u00b3 was treated by SQUEEZE.'
             )
     return '\n'.join(sentences)

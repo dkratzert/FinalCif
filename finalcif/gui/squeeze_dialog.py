@@ -282,7 +282,11 @@ class SqueezeSolventDialog(QDialog):
 
     def _import_sqf(self, sqf_path: Path) -> None:
         """
-        Import the SQUEEZE loop from the .sqf file into the current CIF block.
+        Import the SQUEEZE or SMTBX loop from the .sqf file into the current CIF block.
+
+        Olex2 produces ``.sqf`` files with ``_smtbx_masks_*`` tags rather than
+        the traditional ``_platon_squeeze_*`` tags.  This method checks both tag
+        sets and, when SMTBX tags are found, switches the dialog mode to 'smtbx'.
         """
         from finalcif.cif.cif_file_io import CifContainer
         try:
@@ -291,8 +295,16 @@ class SqueezeSolventDialog(QDialog):
             QMessageBox.warning(self, 'Import failed', f'Could not read {sqf_path.name}:\n{exc}')
             return
 
-        # The .sqf loop uses any subset of _SQUEEZE_LOOP_TAGS
+        # Try PLATON SQUEEZE tags first, then fall back to SMTBX tags
         existing_tags = [t for t in _SQUEEZE_LOOP_TAGS if sqf_cif.get_loop_column(t)]
+        if not existing_tags:
+            existing_tags = [t for t in _SMTBX_LOOP_TAGS if sqf_cif.get_loop_column(t)]
+            if existing_tags:
+                # Switch dialog mode to smtbx
+                self._loop_mode = 'smtbx'
+                self._cfg = _MODE_CONFIG['smtbx']
+                self.setWindowTitle(self._cfg['title'])
+
         if not existing_tags:
             QMessageBox.warning(
                 self, 'Import failed',
