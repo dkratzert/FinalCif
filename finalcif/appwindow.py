@@ -59,7 +59,7 @@ from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, sh
     video_file_open_dialog
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
-from finalcif.gui.squeeze_dialog import SqueezeSolventDialog, has_smtbx_masks_loop, has_squeeze_loop
+from finalcif.gui.squeeze_dialog import SqueezeSolventDialog, SqueezeMode, has_smtbx_masks_loop, has_squeeze_loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.cif.vrf_entry import VRFEntry
@@ -450,6 +450,7 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.row_deleted.connect(self._deleted_row)
         self.ui.CODpushButton.clicked.connect(self.open_cod_page)
         self.ui.CCDCpushButton.clicked.connect(self._ccdc_deposit)
+        self.ui.add_squeeze_pushButton.clicked.connect(self.open_squeeze_dialog)
         self.ui.newLoopPushButton.clicked.connect(self.ui.loops_page.go_to_new_loop_page)
         self.ui.loops_page.new_loop_requested.connect(self._on_new_loop_requested)
         self.ui.deleteLoopButton.clicked.connect(self.ui.loops_page.on_delete_current_loop)
@@ -825,7 +826,7 @@ class AppWindow(QMainWindow):
         """
         self.ui.MainStackedWidget.go_to_checkcif_page()
 
-    def open_squeeze_dialog(self, mode: str | None = None) -> None:
+    def open_squeeze_dialog(self, mode: SqueezeMode | None = None) -> None:
         """
         Opens the solvent content dialog for PLATON SQUEEZE or Olex2/SMTBX masks.
 
@@ -834,12 +835,15 @@ class AppWindow(QMainWindow):
         appropriate details text, and writes the results back to the CIF.
 
         Args:
-            mode: ``'squeeze'`` to open in PLATON SQUEEZE mode, ``'smtbx'`` for
-                  Olex2/SMTBX solvent masks, or ``None`` (default) to let the
-                  dialog auto-detect from the CIF content.
+            mode: ``SqueezeMode.SQUEEZE`` for PLATON SQUEEZE mode,
+                  ``SqueezeMode.SMTBX`` for Olex2/SMTBX solvent masks,
+                  or ``None`` (default) to auto-detect from the CIF content.
         """
         if self.cif is None:
             return
+        # Guard against receiving non-SqueezeMode values (e.g. bool from signal)
+        if not isinstance(mode, SqueezeMode):
+            mode = None
         dialog = SqueezeSolventDialog(cif=self.cif, mode=mode, parent=self)
         dialog.exec()
 
@@ -2228,12 +2232,12 @@ class AppWindow(QMainWindow):
             # Add the CCDC number in case we have a deposition mail lying around:
             self.add_ccdc_number()
             if self.cif.shx and self.cif.shx.abin and not has_squeeze_loop(self.cif) and not has_smtbx_masks_loop(self.cif):
-                self.open_squeeze_dialog(mode='squeeze')
+                self.open_squeeze_dialog(mode=SqueezeMode.SQUEEZE)
                 squeeze_dialog_shown = True
         # Olex2/SMTBX solvent masks - trigger dialog when loop is present but details absent
         if (not squeeze_dialog_shown and has_smtbx_masks_loop(self.cif)
                 and not self.cif['_smtbx_masks_special_details']):
-            self.open_squeeze_dialog(mode='smtbx')
+            self.open_squeeze_dialog(mode=SqueezeMode.SMTBX)
         vheadlist = self.ui.cif_main_table.model().vheaderitems
         for src in self.sources:
             if not self.sources[src]:

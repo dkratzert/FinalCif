@@ -333,8 +333,9 @@ class TestSmtbxMasksDialog(unittest.TestCase):
         return dlg
 
     def test_auto_detects_smtbx_mode(self):
+        from finalcif.gui.squeeze_dialog import SqueezeMode
         dlg = self._make_dialog()
-        self.assertEqual('smtbx', dlg._loop_mode)
+        self.assertEqual(SqueezeMode.SMTBX, dlg._loop_mode)
 
     def test_title_reflects_smtbx(self):
         dlg = self._make_dialog()
@@ -393,17 +394,17 @@ class TestSmtbxMasksDialog(unittest.TestCase):
         self.assertIn('SMTBX', details)
 
     def test_explicit_mode_parameter(self):
-        """Passing mode='smtbx' explicitly should work even if auto-detection would differ."""
-        dlg = self.SqueezeSolventDialog(cif=self.cif, mode='smtbx')
+        """Passing SqueezeMode.SMTBX explicitly should work even if auto-detection would differ."""
+        from finalcif.gui.squeeze_dialog import SqueezeMode
+        dlg = self.SqueezeSolventDialog(cif=self.cif, mode=SqueezeMode.SMTBX)
         self.dialog = dlg
-        self.assertEqual('smtbx', dlg._loop_mode)
+        self.assertEqual(SqueezeMode.SMTBX, dlg._loop_mode)
         dlg.close()
 
-    def test_invalid_mode_raises_value_error(self):
-        """Passing an invalid mode should raise ValueError with a descriptive message."""
-        with self.assertRaises(ValueError) as ctx:
+    def test_invalid_mode_raises_type_error(self):
+        """Passing an invalid mode should raise TypeError."""
+        with self.assertRaises(TypeError):
             self.SqueezeSolventDialog(cif=self.cif, mode='invalid')
-        self.assertIn('invalid', str(ctx.exception))
 
 
 # ---------------------------------------------------------------------------

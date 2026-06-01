@@ -12,6 +12,7 @@ structures refined with PLATON SQUEEZE or Olex2/SMTBX solvent masks.
 """
 from __future__ import annotations
 
+from enum import Enum
 from pathlib import Path
 
 from qtpy import QtCore, compat
@@ -25,6 +26,12 @@ from qtpy.QtWidgets import (
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import quote
 from finalcif.tools.squeeze import build_details_text, electrons_from_formula
+
+
+class SqueezeMode(Enum):
+    """Operating modes for the SqueezeSolventDialog."""
+    SQUEEZE = 'squeeze'
+    SMTBX = 'smtbx'
 
 # Column indices in the void table
 _COL_NR = 0
@@ -60,8 +67,8 @@ _SMTBX_LOOP_TAGS = [
 ]
 
 # ── Per-mode dialog configuration ────────────────────────────────────────────
-_MODE_CONFIG: dict[str, dict] = {
-    'squeeze': {
+_MODE_CONFIG: dict[SqueezeMode, dict] = {
+    SqueezeMode.SQUEEZE: {
         'loop_key'            : _SQUEEZE_LOOP_KEY,
         'loop_tags'           : _SQUEEZE_LOOP_TAGS,
         'vol_tag'             : '_platon_squeeze_void_volume',
@@ -74,7 +81,7 @@ _MODE_CONFIG: dict[str, dict] = {
         'details_label'       : 'SQUEEZE details (<i>_platon_squeeze_details</i>):',
         'electrons_col_header': 'Electrons\n(PLATON)',
     },
-    'smtbx'  : {
+    SqueezeMode.SMTBX: {
         'loop_key'            : _SMTBX_LOOP_KEY,
         'loop_tags'           : _SMTBX_LOOP_TAGS,
         'vol_tag'             : '_smtbx_masks_void_volume',
@@ -118,28 +125,28 @@ class SqueezeSolventDialog(QDialog):
     locate and import the corresponding ``.sqf`` file.
     """
 
-    def __init__(self, cif: CifContainer, mode: str | None = None, parent: QWidget | None = None) -> None:
+    def __init__(self, cif: CifContainer, mode: SqueezeMode | None = None, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.cif = cif
         # Validate and resolve operating mode
-        if mode is not None and mode not in _MODE_CONFIG:
-            raise ValueError(
-                f"Invalid mode {mode!r}. Valid modes are: {list(_MODE_CONFIG)}"
+        if mode is not None and not isinstance(mode, SqueezeMode):
+            raise TypeError(
+                f"mode must be a SqueezeMode or None, got {type(mode).__name__!r}"
             )
-        self._loop_mode: str = mode if mode is not None else self._auto_detect_mode()
+        self._loop_mode: SqueezeMode = mode if mode is not None else self._auto_detect_mode()
         self._cfg = _MODE_CONFIG[self._loop_mode]
         self.setWindowTitle(self._cfg['title'])
         self.setMinimumWidth(750)
         self._build_ui()
         if self._has_loop():
             self._populate_table()
-        elif self._loop_mode == 'squeeze' and self._check_loop_present(_SMTBX_LOOP_KEY):
+        elif self._loop_mode is SqueezeMode.SQUEEZE and self._check_loop_present(_SMTBX_LOOP_KEY):
             # No PLATON loop, but an SMTBX loop is present - switch mode
-            self._loop_mode = 'smtbx'
-            self._cfg = _MODE_CONFIG['smtbx']
+            self._loop_mode = SqueezeMode.SMTBX
+            self._cfg = _MODE_CONFIG[SqueezeMode.SMTBX]
             self.setWindowTitle(self._cfg['title'])
             self._populate_table()
-        elif self._loop_mode == 'squeeze':
+        elif self._loop_mode is SqueezeMode.SQUEEZE:
             self._ask_for_sqf_file()
         else:
             # smtbx loop absent - nothing to import; populate (empty) table
@@ -149,11 +156,11 @@ class SqueezeSolventDialog(QDialog):
     # Mode detection
     # ------------------------------------------------------------------
 
-    def _auto_detect_mode(self) -> str:
-        """Return 'smtbx' when an smtbx void loop is present, else 'squeeze'."""
+    def _auto_detect_mode(self) -> SqueezeMode:
+        """Return SMTBX when an smtbx void loop is present, else SQUEEZE."""
         if self._check_loop_present(_SMTBX_LOOP_KEY):
-            return 'smtbx'
-        return 'squeeze'
+            return SqueezeMode.SMTBX
+        return SqueezeMode.SQUEEZE
 
     def _check_loop_present(self, key: str) -> bool:
         """Return True when a CIF loop containing *key* exists and is non-empty."""
@@ -252,10 +259,10 @@ class SqueezeSolventDialog(QDialog):
             sqf_path = str(candidate)
         else:
             msg = QMessageBox(self)
-            msg.setWindowTitle('PLATON SQUEEZE \u2013 .sqf file required')
+            msg.setWindowTitle('SQUEEZE \u2013 .sqf file required')
             msg.setText(
                 'No SQUEEZE data found in the current CIF.\n\n'
-                'Please locate the corresponding .sqf file produced by PLATON.'
+                'Please locate the corresponding .sqf file produced by PLATON or Olex2.'
             )
             msg.setIcon(QMessageBox.Icon.Information)
             open_btn = msg.addButton('Choose .sqf file\u2026', QMessageBox.ButtonRole.AcceptRole)
@@ -295,8 +302,8 @@ class SqueezeSolventDialog(QDialog):
             existing_tags = [t for t in _SMTBX_LOOP_TAGS if sqf_cif.get_loop_column(t)]
             if existing_tags:
                 # Switch dialog mode to smtbx
-                self._loop_mode = 'smtbx'
-                self._cfg = _MODE_CONFIG['smtbx']
+                self._loop_mode = SqueezeMode.SMTBX
+                self._cfg = _MODE_CONFIG[SqueezeMode.SMTBX]
                 self.setWindowTitle(self._cfg['title'])
 
         if not existing_tags:
@@ -454,7 +461,7 @@ class SqueezeSolventDialog(QDialog):
                 'electrons_platon': elec_item.text() if elec_item else '?',
                 'formula'         : formula_item.text() if formula_item else '',
             })
-        text = build_details_text(void_rows, method=self._loop_mode)
+        text = build_details_text(void_rows, method=self._loop_mode.value)
         # Block textChanged so our programmatic update doesn't set _details_user_modified
         self.details_edit.blockSignals(True)
         self.details_edit.setPlainText(text)
