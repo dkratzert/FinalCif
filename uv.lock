@@ -315,7 +315,7 @@ requires-dist = [
     { name = "qtawesome" },
     { name = "qtpy" },
     { name = "requests" },
-    { name = "shelxfile", specifier = ">=23" },
+    { name = "shelxfile" },
     { name = "urllib3", specifier = "==2.7.0" },
     { name = "wheel", specifier = "==0.47.0" },
 ]

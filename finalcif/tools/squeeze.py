@@ -41,18 +41,35 @@ def _normalize_squeeze_formula(formula_str: str) -> str:
     ``chemparse`` expects the multiplier to follow the closing parenthesis,
     i.e. ``(H2O)2``.
 
-    This function transforms ``N(fragment)`` → ``(fragment)N`` while leaving
-    formulas that already use trailing notation or have no parentheses
-    unchanged.
+    Olex2/SMTBX void content strings may also use a space-separated format
+    where the multiplier precedes the formula without parentheses, e.g.
+    ``1 PF6-`` or ``2 H2O``.
+
+    This function handles both notations:
+
+    * ``N(fragment)`` → ``(fragment)N``
+    * ``N fragment``  → ``(fragment)N``  (space-separated, no parentheses)
+
+    Charge indicators (trailing ``+`` or ``-``) are harmless because they are
+    treated as unknown elements contributing 0 electrons.
 
     Args:
-        formula_str: Raw formula such as ``'2(H2O)'`` or ``'C4H8O'``.
+        formula_str: Raw formula such as ``'2(H2O)'``, ``'C4H8O'``, or ``'1 PF6-'``.
 
     Returns:
         Normalised formula string accepted by ``chemparse.parse_formula``.
     """
-    def _swap(m: re.Match) -> str:
-        return f'{m.group(1)}({m.group(3)}){m.group(2)}'
+    formula_str = formula_str.strip()
+
+    # Handle space-separated leading multiplier without parentheses: "2 H2O" → "(H2O)2"
+    m = re.match(r'^(\d+(?:\.\d+)?)\s+(.+)$', formula_str)
+    if m:
+        multiplier, fragment = m.group(1), m.group(2)
+        formula_str = f'({fragment}){multiplier}'
+
+    # Handle leading multiplier directly before parentheses: "2(H2O)" → "(H2O)2"
+    def _swap(match: re.Match) -> str:
+        return f'{match.group(1)}({match.group(3)}){match.group(2)}'
 
     return re.sub(r'(^|(?<=\s))(\d+(?:\.\d+)?)\(([^()]*)\)', _swap, formula_str)
 
