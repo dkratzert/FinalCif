@@ -8,6 +8,7 @@
 - **Refuse over Guessing:** Say "don't know" if unsure completing code.
 - **Require Specifications:** Ask for detailed spec before writing code.
 - **Quality Standards:** Follow the rules of the books 'Refactoring' and 'Clean Code'.
+- **Docstrings:** Use Google-style docstrings if necessary, but keep them as short as possible if ever needed at all.
 
 ## Core Setup Conventions
 - **Language/Runtime:** Use Python >=3.12 (`pyproject.toml`), with CI tested on 3.12/3.13/3.14 (`.github/workflows/python_tests.yml`).

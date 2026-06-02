@@ -22,6 +22,7 @@ from fastmolwidget import Atomtuple
 from fastmolwidget.part_combo import PartFilterWidget
 from fastmolwidget.sdm import SDM
 
+from finalcif.gui.shelx_navigation import find_shelx_line_for_atom, scroll_and_highlight_shelx_atom
 from finalcif.gui.vzs_viewer import VZSImageViewer
 
 warnings.filterwarnings("ignore", category=RuntimeWarning, module="shibokensupport.signature.parser")
@@ -51,7 +52,7 @@ from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.custom_classes import Column, light_green, yellow, light_blue, \
-    white, MyTableWidgetItem
+    white, MyTableWidgetItem, blue
 from finalcif.gui.cif_table_model import CifRowData
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
@@ -504,6 +505,7 @@ class AppWindow(QMainWindow):
         self.ui.videoRightToolButton.clicked.connect(self.video.next)
         self.ui.videoLeftToolButton.clicked.connect(self.video.previous)
         self.ui.setVideoPicturePushButton.clicked.connect(self.set_video_image_for_report)
+        self.ui.render_widget.atomClicked.connect(self._scroll_shelx_to_atom)
 
     def set_video_image_for_report(self):
         image_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='_video-finalcif.png')
@@ -2062,6 +2064,25 @@ class AppWindow(QMainWindow):
             # threading.Thread(target=self.view_molecule).start()
         except Exception:
             print('Molecule view crashed!')
+
+    def _find_shelx_line_for_atom(self, atom_name: str) -> int:
+        """Delegate to :func:`~finalcif.gui.shelx_navigation.find_shelx_line_for_atom`."""
+        return find_shelx_line_for_atom(self.cif.shx, atom_name)
+
+    def _scroll_shelx_to_atom(self, atom_name: str) -> None:
+        """Scroll the SHELX file viewer to the atom line for *atom_name*.
+
+        Handles case-insensitive matching, symmetry copies (``>>N`` suffix)
+        and disordered atoms in different PARTs.
+        """
+        if not self.cif or not hasattr(self.cif, 'shx') or not self.cif.shx:
+            return
+        scroll_and_highlight_shelx_atom(
+            self.ui.shelx_TextEdit,
+            self.cif.shx,
+            atom_name,
+            highlight_color=QtGui.QColor(blue),
+        )
 
     def _show_shelx_file(self) -> None:
         if self.cif.res_file_data:
