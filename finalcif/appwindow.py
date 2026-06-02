@@ -479,6 +479,7 @@ class AppWindow(QMainWindow):
         self.ui.ReportPicPushButton.clicked.connect(self.select_report_picture)
         ##
         self.ui.SelectCif_LineEdit.returnPressed.connect(self.check_if_file_field_contains_database_number)
+        self.ui.SelectCif_LineEdit.textEdited.connect(self._open_cif_path_from_text)
         self.ui.fullIucrCheckBox.clicked.connect(self.toggle_hkl_option)
         self.ui.structfactCheckBox.clicked.connect(self.toggle_iucr_option)
         # text templates
@@ -738,9 +739,12 @@ class AppWindow(QMainWindow):
 
     def check_if_file_field_contains_database_number(self):
         """
-        Downloads a CIF file from the COD with the corresponding deposition number entered into the file field.
+        Opens an existing CIF path from the file field or downloads a CIF file from the COD when a deposition
+        number is entered.
         """
         input_txt = self.ui.SelectCif_LineEdit.text().strip()
+        if self._open_cif_path_from_text(input_txt):
+            return
         if is_database_number(input_txt):
             self.status_bar.show_message('Request sent to COD...')
             r = requests.get(f'{self.deposit.main_url}{input_txt}.cif', timeout=8)
@@ -754,7 +758,32 @@ class AppWindow(QMainWindow):
                 # self.ui.SelectCif_LineEdit.setText('')
                 self.status_bar.show_message(f'No COD entry for {input_txt} found.')
         else:
-            self.status_bar.show_message('Not a valid COD number. It must be seven digits.')
+            self.status_bar.show_message('Paste an existing .cif path or enter a valid COD number. It must be seven digits.')
+
+    def _cif_path_from_text(self, input_txt: str) -> Path | None:
+        cleaned_text = input_txt.strip().strip('"').strip("'")
+        if not cleaned_text:
+            return None
+        first_line = cleaned_text.splitlines()[0].strip()
+        candidate_url = QtCore.QUrl.fromUserInput(first_line)
+        if candidate_url.isLocalFile():
+            path_text = candidate_url.toLocalFile()
+        else:
+            path_text = first_line
+        path = Path(path_text).expanduser()
+        if not path.is_file() or path.suffix.lower() != '.cif':
+            return None
+        try:
+            return path.resolve()
+        except OSError:
+            return path
+
+    def _open_cif_path_from_text(self, input_txt: str) -> bool:
+        filepath = self._cif_path_from_text(input_txt)
+        if filepath is None:
+            return False
+        self.load_cif_file(filepath)
+        return True
 
     @property
     def current_block(self) -> int:

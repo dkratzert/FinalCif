@@ -14,6 +14,7 @@ from pathlib import Path
 
 from qtpy.QtCore import Qt, QEvent, QModelIndex
 from qtpy.QtGui import QColor, QBrush, QKeyEvent
+from qtpy.QtTest import QTest
 from qtpy.QtWidgets import QApplication
 
 from finalcif.appwindow import AppWindow
@@ -96,6 +97,28 @@ class TestMainTableFieldBehavior(AppWindowTestCase):
         self.app.append_cif(data.parent / 'test-data/1000006.cif')
         self.assertEqual(True, self.app.cif.is_multi_cif)
         self.assertEqual(2, len(self.app.cif.doc))
+
+    def test_pasted_existing_cif_path_opens_file(self):
+        target_cif = (data.parent / 'test-data/1000006.cif').resolve()
+        line_edit = self.app.ui.SelectCif_LineEdit
+        line_edit.clear()
+        line_edit.setFocus()
+        QApplication.clipboard().setText(f'"{target_cif}"')
+
+        with patch.object(self.app, 'load_cif_file') as mock_load:
+            QTest.keyClick(line_edit, Qt.Key.Key_V, Qt.KeyboardModifier.ControlModifier)
+
+        mock_load.assert_called_once_with(target_cif)
+
+    def test_return_pressed_existing_cif_path_opens_file_without_cod_lookup(self):
+        target_cif = (data.parent / 'test-data/1000006.cif').resolve()
+        self.app.ui.SelectCif_LineEdit.setText(str(target_cif))
+
+        with patch.object(self.app, 'load_cif_file') as mock_load, patch('finalcif.appwindow.requests.get') as mock_get:
+            self.app.check_if_file_field_contains_database_number()
+
+        mock_load.assert_called_once_with(target_cif)
+        mock_get.assert_not_called()
 
 
 class TestMainTableRowHeights(AppWindowTestCase):
