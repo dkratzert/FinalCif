@@ -4,28 +4,6 @@ from __future__ import annotations
 from qtpy import QtGui, QtWidgets
 
 
-def _resolve_atom_line_index(shx, atom) -> int:
-    """Return the QTextDocument-compatible (0-based) line index for *atom*."""
-    index = int(getattr(atom, 'index', -1))
-    if index < 0:
-        return -1
-
-    # Keep atom.index as the canonical source and only normalize for
-    # shelxfile variants where index can be one line before the atom card.
-    reslist = getattr(shx, '_reslist', None)
-    if isinstance(reslist, list):
-        atom_fullname = getattr(atom, 'fullname', None)
-        if 0 <= index < len(reslist):
-            entry = reslist[index]
-            if entry is atom or (atom_fullname and getattr(entry, 'fullname', None) == atom_fullname):
-                return index
-        if 0 <= index + 1 < len(reslist):
-            entry = reslist[index + 1]
-            if entry is atom or (atom_fullname and getattr(entry, 'fullname', None) == atom_fullname):
-                return index + 1
-
-    return index
-
 
 def find_shelx_line_for_atom(shx, atom_name: str) -> int:
     """Return the 0-based line number in the SHELXL text for *atom_name*.
@@ -50,7 +28,7 @@ def find_shelx_line_for_atom(shx, atom_name: str) -> int:
     atom = shx.atoms.get_atom_by_name(base_name)
     if atom is None:
         return -1
-    return _resolve_atom_line_index(shx, atom)
+    return atom.index
 
 
 def scroll_and_highlight_shelx_atom(

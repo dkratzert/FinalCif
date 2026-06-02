@@ -96,7 +96,7 @@ class CifContainer:
         self.block: gemmi.cif.Block = self.doc[0]
         try:
             self.shx = Shelxfile(verbose=True)
-            self.shx.read_string(self.res_file_data[1:-1])
+            self.shx.read_string('\n' + self.res_file_data.strip('\r\n'))
         except Exception:
             print('Shelx file parsing failed.')
             self.shx = None
