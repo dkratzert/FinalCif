@@ -18,6 +18,7 @@ from math import sin, radians
 from pathlib import Path, WindowsPath
 from typing import cast
 
+from docx.image.exceptions import UnrecognizedImageError
 from fastmolwidget import Atomtuple
 from fastmolwidget.part_combo import PartFilterWidget
 from fastmolwidget.sdm import SDM
@@ -1352,7 +1353,7 @@ class AppWindow(QMainWindow):
         else:
             filename, _ = compat.getopenfilename(parent=self,
                                                  filters="Image Files (*.png *.jpg *.jpeg *.bmp "
-                                                         "*.gif *.tif *.tiff *.eps *.emf *.wmf)",
+                                                         "*.gif *.tif *.tiff)",
                                                  caption='Open a Report Picture')
             self.set_report_picture_path(filename)
 
@@ -1433,7 +1434,7 @@ class AppWindow(QMainWindow):
             print('Unable to make report from cif file.')
             not_ok = e
             show_general_warning(self, "The report templates could not be found:\n" + str(not_ok))
-            return
+            return None
         except PermissionError:
             if DEBUG:
                 print('dbg> Unable to open report or CIF file')
@@ -1441,11 +1442,19 @@ class AppWindow(QMainWindow):
             show_general_warning(self,
                                  f'The document {report_filename.name} could not be opened to '
                                  f'write the report.\nIs the file already opened?')
-            return
+            return None
+        except UnrecognizedImageError:
+            if DEBUG:
+                print('dbg> Unrecognized image error')
+                raise
+            show_general_warning(self,'The report contains an unrecognized image format.')
+            return None
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
             # Save report and other files to a zip file:
             self.zip_report(report_filename)
+            return None
+        return None
 
     def zip_report(self, report_filename: Path) -> None:
         from finalcif.report.archive_report import ArchiveReport
