@@ -36,7 +36,7 @@
   - DOI / CrossRef lookups via `crossrefapi` (see `finalcif/cif/cod/doi.py`).
   - SHELX parsing via the external `shelxfile` package (used in `report/templated_report.py`); in-tree `.lst` parser in `datafiles/shelx_lst.py`.
 - **CIF Parsing:** Standardized on `gemmi` (>=0.7.5); `gemmi.set_leak_warnings(False)` is set at startup.
-- **Key Third-Party Runtime Deps:** `qtpy` + `pyside6` / `pyside6-addons`, `gemmi`, `docxtpl[subdoc]`, `python-docx`, `shelxfile`, `fastmolwidget`, `crossrefapi`, `QtAwesome` (icon fonts), `pyenchant` (spell-check), `html2text`, `lxml`, `numpy<2.4`, `chardet` / `charset-normalizer`, `requests`/`urllib3`, `packaging`, `pefile`, `pybind11>=3` (see `pyproject.toml`).
+- **Key Third-Party Runtime Deps:** `qtpy` + `pyside6-essentials`, `gemmi`, `docxtpl[subdoc]`, `python-docx`, `shelxfile`, `fastmolwidget`, `crossrefapi`, `QtAwesome` (icon fonts), `pyenchant` (spell-check), `html2text`, `lxml`, `numpy<2.4`, `chardet` / `charset-normalizer`, `requests`/`urllib3`, `packaging`, `pefile`, `pybind11>=3` (see `pyproject.toml`).
 - Use `gemmi` directly for bulk CIF parsing (faster than `CifContainer`). `CifContainer` wraps `gemmi.cif`, offering dict interface + extras, but slower for direct use.
 
 ## Conventions

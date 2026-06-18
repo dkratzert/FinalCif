@@ -53,7 +53,7 @@ dependencies = [
     "pyenchant",
     "hatchling",
     "charset-normalizer",
-    "pyside6",
+    "pyside6-essentials",
 ]
 
 [dependency-groups]
