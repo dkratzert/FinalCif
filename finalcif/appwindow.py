@@ -1082,7 +1082,6 @@ class AppWindow(QMainWindow):
         self.checkcif_browser = QtWidgets.QTextBrowser(parent=self)
         self.checkcif_browser.setOpenExternalLinks(True)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
-        url = QtCore.QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
         try:
