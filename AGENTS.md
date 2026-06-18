@@ -41,7 +41,7 @@
 
 ## Conventions
 - **UI Files:** Edit `.ui` files in Qt Designer (`scripts/designer.py`), regenerate via `python scripts/compile_ui_files.py`. Never hand-edit generated `*_ui.py`.
-- **qtpy Imports:** `from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets, compat` — `QtWebEngine` requires `PySide6-Addons`.
+- **qtpy Imports:** `from qtpy import QtCore, QtGui, QtWidgets, compat`
 - **App Bootstrap:** `appwindow.py` uses `QApplication.instance() or QApplication([])` with `app.setStyle("windowsvista")`. A `DEBUG` flag in `finalcif_start.py` toggles the crash hook; crash reports are written to `~/finalcif-crash.txt` by `my_exception_hook`.
 - **Settings:** Persisted via `FinalCifSettings` (QSettings wrapper) in `finalcif/tools/settings.py`.
 

@@ -34,7 +34,7 @@ if hasattr(gemmi, 'set_leak_warnings'):
     gemmi.set_leak_warnings(False)
 
 import requests
-from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets, compat
+from qtpy import QtCore, QtGui, QtWidgets, compat
 from qtpy.QtCore import Qt, QEvent
 from qtpy.QtWidgets import (QMainWindow, QCheckBox, QApplication,
                             QPlainTextEdit, QMessageBox, QScrollBar)
@@ -1079,7 +1079,8 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
                                                         'Please try it at https://checkcif.iucr.org/ instead.</b>')
             return
-        self.checkcif_browser = QtWebEngineWidgets.QWebEngineView(parent=self)
+        self.checkcif_browser = QtWidgets.QTextBrowser(parent=self)
+        self.checkcif_browser.setOpenExternalLinks(True)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
         url = QtCore.QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()

@@ -54,7 +54,6 @@ dependencies = [
     "hatchling",
     "charset-normalizer",
     "pyside6",
-    "pyside6-addons",
 ]
 
 [dependency-groups]
