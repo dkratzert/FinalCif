@@ -52,6 +52,17 @@ FinalCif can add a picture of your structure to the report document.
    The crystal video selection.
 
 
+SHELX File Viewer
+-----------------
+The 'Show Details' page also contains a read-only "Shelx File" panel that displays the content of the
+SHELX ``.res``/``.ins`` file embedded in the CIF. If the SHELX file contains errors, a warning area
+above the viewer lists them.
+
+Clicking an atom in the structure viewer scrolls the SHELX file viewer to the line defining that atom
+and highlights it. Case-insensitive matching, symmetry-generated copies of an atom and disordered atoms
+in different PARTs are all resolved to the correct definition line.
+
+
 
 Bonds and Angles Tables
 -----------------------

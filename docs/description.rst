@@ -18,6 +18,10 @@ You can run CheckCif online (HTML/PDF) or offline from within FinalCif to check 
 under ‘name’-finalcif.cif, leaving the original file unchanged.
 The FinalCif executable also accepts file names as arguments to open .cif files from other programs like ShelXle.
 
+Besides the "Open" button and drag&drop, a CIF can also be opened by typing or pasting its full path into the file
+selection field at the top of the window. Pasting a file URL works as well. Alternatively, entering a seven-digit COD
+deposition number downloads the corresponding CIF directly from the Crystallography Open Database.
+
 
 .. figure:: pics/finalcif_main.png
    :width: 700
