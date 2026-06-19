@@ -32,7 +32,7 @@ classifiers = [
 
 dependencies = [
     "wheel==0.47.0",
-    "certifi",
+    "certifi==2026.6.17",
     "chardet",
     "gemmi>=0.7.5",
     "html2text",
@@ -43,21 +43,22 @@ dependencies = [
     "packaging==26.2",
     "QtAwesome",
     "QtPy",
-    "numpy>=2.3.5,<2.4",
+    "numpy==2.4.6",
     "requests",
     "urllib3==2.7.0",
     "docxtpl[subdoc]>=0.20.2",
-    "shelxfile",
+    "shelxfile==24",
     "crossrefapi",
     "fastmolwidget>=0.9.7",
     "pyenchant",
-    "hatchling",
     "charset-normalizer",
     "pyside6-essentials",
+    "docxcompose==2.2.0",
 ]
 
 [dependency-groups]
 dev = [
+    "hatchling",
     "pytest",
     "ruff",
     "ty",
