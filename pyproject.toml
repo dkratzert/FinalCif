@@ -62,7 +62,7 @@ dev = [
     "pytest",
     "ruff",
     "ty",
-    "pyside6-stubs",
+    #"pyside6-stubs",
 ]
 
 doc = [
