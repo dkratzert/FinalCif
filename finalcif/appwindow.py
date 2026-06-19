@@ -34,7 +34,7 @@ if hasattr(gemmi, 'set_leak_warnings'):
     gemmi.set_leak_warnings(False)
 
 import requests
-from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets, compat
+from qtpy import QtCore, QtGui, QtWidgets, compat
 from qtpy.QtCore import Qt, QEvent
 from qtpy.QtWidgets import (QMainWindow, QCheckBox, QApplication,
                             QPlainTextEdit, QMessageBox, QScrollBar)
@@ -63,6 +63,7 @@ from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
 from finalcif.gui.squeeze_dialog import SqueezeSolventDialog, SqueezeMode, has_smtbx_masks_loop, has_squeeze_loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
+from finalcif.gui.checkcif_browser import CheckCifBrowser
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.cif.vrf_entry import VRFEntry
 from finalcif.gui.vrf_classes import MyVRFContainer
@@ -1079,19 +1080,21 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
                                                         'Please try it at https://checkcif.iucr.org/ instead.</b>')
             return
-        self.checkcif_browser = QtWebEngineWidgets.QWebEngineView(parent=self)
+        self.checkcif_browser = CheckCifBrowser(parent=self)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
-        url = QtCore.QUrl.fromLocalFile(str(self.htmlfile.resolve()))
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
+        # Save the structure image locally and point the HTML to it. The remote image URL
+        # is session-specific and expires, so the locally saved copy is used for display.
+        gif_file = self.cif.finalcif_file.with_suffix('.gif')
+        parser.save_image(gif_file)
         try:
-            self.checkcif_browser.setHtml(self.htmlfile.resolve().read_text('utf-8', 'ignore'))
+            html = self.htmlfile.resolve().read_text('utf-8', 'ignore')
+            local_images = {parser.imageurl: gif_file} if parser.imageurl else {}
+            self.checkcif_browser.set_checkcif_html(html, local_images)
         except FileNotFoundError:
             print(f'{self.htmlfile} not found')
         threading.Thread(target=self._display_structure_factor_report, args=(parser,), daemon=True).start()
-        # The picture file linked in the html file:
-        threading.Thread(target=parser.save_image, args=(self.cif.finalcif_file.with_suffix('.gif'),),
-                         daemon=True).start()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
         html_entries = parser.response_forms
         # Merge HTML-parsed entries into the main table:

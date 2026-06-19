@@ -36,12 +36,12 @@
   - DOI / CrossRef lookups via `crossrefapi` (see `finalcif/cif/cod/doi.py`).
   - SHELX parsing via the external `shelxfile` package (used in `report/templated_report.py`); in-tree `.lst` parser in `datafiles/shelx_lst.py`.
 - **CIF Parsing:** Standardized on `gemmi` (>=0.7.5); `gemmi.set_leak_warnings(False)` is set at startup.
-- **Key Third-Party Runtime Deps:** `qtpy` + `pyside6` / `pyside6-addons`, `gemmi`, `docxtpl[subdoc]`, `python-docx`, `shelxfile`, `fastmolwidget`, `crossrefapi`, `QtAwesome` (icon fonts), `pyenchant` (spell-check), `html2text`, `lxml`, `numpy<2.4`, `chardet` / `charset-normalizer`, `requests`/`urllib3`, `packaging`, `pefile`, `pybind11>=3` (see `pyproject.toml`).
+- **Key Third-Party Runtime Deps:** `qtpy` + `pyside6-essentials`, `gemmi`, `docxtpl[subdoc]`, `python-docx`, `shelxfile`, `fastmolwidget`, `crossrefapi`, `QtAwesome` (icon fonts), `pyenchant` (spell-check), `html2text`, `lxml`, `numpy<2.4`, `chardet` / `charset-normalizer`, `requests`/`urllib3`, `packaging`, `pefile`, `pybind11>=3` (see `pyproject.toml`).
 - Use `gemmi` directly for bulk CIF parsing (faster than `CifContainer`). `CifContainer` wraps `gemmi.cif`, offering dict interface + extras, but slower for direct use.
 
 ## Conventions
 - **UI Files:** Edit `.ui` files in Qt Designer (`scripts/designer.py`), regenerate via `python scripts/compile_ui_files.py`. Never hand-edit generated `*_ui.py`.
-- **qtpy Imports:** `from qtpy import QtCore, QtGui, QtWebEngineWidgets, QtWidgets, compat` — `QtWebEngine` requires `PySide6-Addons`.
+- **qtpy Imports:** `from qtpy import QtCore, QtGui, QtWidgets, compat`
 - **App Bootstrap:** `appwindow.py` uses `QApplication.instance() or QApplication([])` with `app.setStyle("windowsvista")`. A `DEBUG` flag in `finalcif_start.py` toggles the crash hook; crash reports are written to `~/finalcif-crash.txt` by `my_exception_hook`.
 - **Settings:** Persisted via `FinalCifSettings` (QSettings wrapper) in `finalcif/tools/settings.py`.
 
