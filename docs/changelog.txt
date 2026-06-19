@@ -1,5 +1,8 @@
 FinalCif recent changes
 -----------------------
+* v166 Added SHELXL navigation helpers to scroll to and highlight atom lines in the SHELX text view. CIF paths can now
+       be opened by typing or pasting them into the file selection field. Replaced the structure/report web view with a
+       QTextBrowser and dropped the pyside6-addons dependency. Removed .eps from the allowed report image formats to prevent crashes.
 * v165 Added a dialog for assigning solvent content to PLATON SQUEEZE and Olex2/SMTBX solvent mask voids.
        The dialog calculates expected electron counts, auto-generates details text, and writes results back
        to the CIF. Accessible via the "Add Squeeze Info" button. Fixed false warnings about missing SQUEEZE
