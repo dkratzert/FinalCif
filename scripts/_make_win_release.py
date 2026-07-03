@@ -78,16 +78,26 @@ def make_installer(iss_file: str):
 
 def compile_python_files():
     import compileall
-    compileall.compile_dir(dir='dist', workers=2, force=True, quiet=True)
-    compileall.compile_dir(dir='finalcif', workers=2, force=True, quiet=True)
+    import py_compile
+    # legacy=True writes a name.pyc right next to each source (not into __pycache__), so the installer
+    # can strip the .py (see finalcif-install_win64.iss) and the interpreter still imports the sibling
+    # .pyc. UNCHECKED_HASH keeps those .pyc valid after the installer copies them to fresh mtimes; a
+    # timestamp-based .pyc would be considered stale and trigger a slow full recompile on first start.
+    mode = py_compile.PycInvalidationMode.UNCHECKED_HASH
+    for directory in ('dist', 'finalcif'):
+        compileall.compile_dir(dir=directory, workers=2, force=True, quiet=True,
+                               legacy=True, invalidation_mode=mode)
 
 
 if __name__ == '__main__':
     iss_file = 'scripts/finalcif-install_win64.iss'
 
     compile_ui(uic_path=application_path / 'dist/python_dist/Scripts')
-    compile_python_files()
+    # disable_debug must edit the source BEFORE compile_python_files: the shipped installer is
+    # sourceless (only the legacy .pyc are kept), so a .pyc compiled before this edit would ship the
+    # old DEBUG/PROFILE values baked in.
     disable_debug('finalcif/appwindow.py')
+    compile_python_files()
 
     os.chdir(application_path)
 

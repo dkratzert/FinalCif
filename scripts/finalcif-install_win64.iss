@@ -52,10 +52,15 @@ SignTool=sign_sha256
 ArchitecturesInstallIn64BitMode=x64
 
 [Files]
-;Excludes: "*.pyc"
-Source: "..\finalcif\*";            DestDir: "{app}\finalcif";  Flags: ignoreversion createallsubdirs recursesubdirs
+; The environment is pre-compiled to legacy .pyc (see scripts/_make_win_release.py); *.py and the now
+; redundant __pycache__ (never used for a sourceless import) are excluded below so the installer ships
+; sourceless and slim. Only finalcif\finalcif_start.py is kept, because the C launcher (finalcif.exe)
+; executes it as a source file.
+Source: "..\finalcif\*";            DestDir: "{app}\finalcif";  Flags: ignoreversion createallsubdirs recursesubdirs; \
+    Excludes: "*.py,__pycache__"
+Source: "..\finalcif\finalcif_start.py"; DestDir: "{app}\finalcif"; Flags: ignoreversion
 Source: "..\dist\python_dist\*";    DestDir: "{app}";           Flags: ignoreversion createallsubdirs recursesubdirs; \
-    Excludes: "*.debug.pak,*_metatypes.json,**\*.pdb,**\test\*,**\tests\*,**\*.dist-info\RECORD,**\*.dist-info\REQUESTED,qml\*,doc\*,tkinter\*"
+    Excludes: "*.debug.pak,*_metatypes.json,**\*.pdb,**\test\*,**\tests\*,**\*.dist-info\RECORD,**\*.dist-info\REQUESTED,qml\*,doc\*,tkinter\*,*.py,__pycache__"
 Source: "..\finalcif.exe";          DestDir: "{app}";           Flags: ignoreversion
 Source: "..\update.exe";            DestDir: "{app}";           Flags: ignoreversion
 Source: "..\vc_redist.x64.exe";     DestDir: "{app}";           Flags: ignoreversion
