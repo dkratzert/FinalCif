@@ -60,7 +60,7 @@ Source: "..\finalcif\*";            DestDir: "{app}\finalcif";  Flags: ignorever
     Excludes: "*.py,__pycache__"
 Source: "..\finalcif\finalcif_start.py"; DestDir: "{app}\finalcif"; Flags: ignoreversion
 Source: "..\dist\python_dist\*";    DestDir: "{app}";           Flags: ignoreversion createallsubdirs recursesubdirs; \
-    Excludes: "*.debug.pak,*_metatypes.json,**\*.pdb,**\test\*,**\tests\*,**\*.dist-info\RECORD,**\*.dist-info\REQUESTED,qml\*,doc\*,tkinter\*,*.py,__pycache__"
+    Excludes: "*.debug.pak,*_metatypes.json,**\*.pdb,**\test\*,**\tests\*,**\*.dist-info\RECORD,**\*.dist-info\REQUESTED,qml\*,doc\*,tkinter\*,*.py,__pycache__,*.pyi"
 Source: "..\finalcif.exe";          DestDir: "{app}";           Flags: ignoreversion
 Source: "..\update.exe";            DestDir: "{app}";           Flags: ignoreversion
 Source: "..\vc_redist.x64.exe";     DestDir: "{app}";           Flags: ignoreversion
