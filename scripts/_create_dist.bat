@@ -67,6 +67,9 @@ REM     exit /b %errorlevel%
 REM )
 REM Install all dependencies from pyproject.toml into the embedded Python
 REM (uv pip install <dir> installs the project defined by pyproject.toml in that directory)
+REM NOTE: "uv pip install" only installs [project.dependencies]. It never installs the
+REM "dev" or "doc" dependency-groups unless requested explicitly via --group, so those
+REM are intentionally kept out of the release environment.
 uv pip install --python "%PACKAGE_DIR%\python.exe" "%SCRIPT_DIR%\.." --link-mode=copy
 if %errorlevel% neq 0 (
     echo uv pip install failed. Stopping now.
