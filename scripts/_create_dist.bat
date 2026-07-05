@@ -74,7 +74,7 @@ if %errorlevel% neq 0 (
 )
 
 REM Remove the FinalCif package itself (it's provided in-tree, not as an installed package)
-uv pip uninstall --python "%PACKAGE_DIR%\python.exe" finalcif ipython ruff ty
+uv pip uninstall --python "%PACKAGE_DIR%\python.exe" finalcif ruff ty
 
 echo - finished environment install!
 

@@ -48,7 +48,6 @@ dependencies = [
     "urllib3==2.7.0",
     "docxtpl[subdoc]>=0.20.2",
     "shelxfile==24",
-    "crossrefapi",
     "fastmolwidget>=0.9.7",
     "pyenchant",
     "charset-normalizer",

@@ -33,10 +33,10 @@
   - Offline CheckCIF uses PLATON; resolves executables: bundled `platon/platon_special.exe`, then `C:\pwt\platon.exe` (Windows), then `platon` on `PATH`.
   - Online CheckCIF (IUCr) via HTTP in `finalcif/cif/checkcif/checkcif.py`.
   - CCDC/COD deposition in `finalcif/cif/cod/` (`deposit.py`, `upload.py`, `deposit_check.py`); deposition email parsing in `finalcif/datafiles/ccdc_mail.py`.
-  - DOI / CrossRef lookups via `crossrefapi` (see `finalcif/cif/cod/doi.py`).
+  - DOI / CrossRef lookups via the Crossref REST API using `requests` (see `finalcif/cif/cod/doi.py`).
   - SHELX parsing via the external `shelxfile` package (used in `report/templated_report.py`); in-tree `.lst` parser in `datafiles/shelx_lst.py`.
 - **CIF Parsing:** Standardized on `gemmi` (>=0.7.5); `gemmi.set_leak_warnings(False)` is set at startup.
-- **Key Third-Party Runtime Deps:** `qtpy` + `pyside6-essentials`, `gemmi`, `docxtpl[subdoc]`, `python-docx`, `shelxfile`, `fastmolwidget`, `crossrefapi`, `QtAwesome` (icon fonts), `pyenchant` (spell-check), `html2text`, `lxml`, `numpy<2.4`, `chardet` / `charset-normalizer`, `requests`/`urllib3`, `packaging`, `pefile`, `pybind11>=3` (see `pyproject.toml`).
+- **Key Third-Party Runtime Deps:** `qtpy` + `pyside6-essentials`, `gemmi`, `docxtpl[subdoc]`, `python-docx`, `shelxfile`, `fastmolwidget`, `QtAwesome` (icon fonts), `pyenchant` (spell-check), `html2text`, `lxml`, `numpy<2.4`, `chardet` / `charset-normalizer`, `requests`/`urllib3`, `packaging`, `pefile`, `pybind11>=3` (see `pyproject.toml`).
 - Use `gemmi` directly for bulk CIF parsing (faster than `CifContainer`). `CifContainer` wraps `gemmi.cif`, offering dict interface + extras, but slower for direct use.
 
 ## Conventions

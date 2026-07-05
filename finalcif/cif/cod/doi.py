@@ -17,12 +17,36 @@ Strings in the result are not delimited!
 """
 from pprint import pprint
 
-from crossref.restful import Works
+import requests
+
+CROSSREF_URL = 'https://api.crossref.org/works/'
+
+
+def _fetch_doi_data(doi: str) -> dict:
+    doi = _normalize_doi(doi)
+    if not doi:
+        return {}
+    # Crossref "polite pool": include a contact mailto in the User-Agent
+    headers = {'User-Agent': 'FinalCif (https://dkratzert.de/finalcif; mailto:dkratzert@gmx.de)'}
+    try:
+        r = requests.get(f'{CROSSREF_URL}{doi}', headers=headers, timeout=10)
+    except requests.RequestException:
+        return {}
+    if r.status_code != 200:
+        return {}
+    return r.json().get('message', {})
+
+
+def _normalize_doi(doi: str) -> str:
+    # Accept bare DOIs as well as doi.org URLs and 'doi:' prefixes; a DOI starts with '10.'.
+    index = doi.find('10.')
+    if index < 0:
+        return ''
+    return doi[index:].strip()
 
 
 def resolve_doi(doi: str) -> dict:
-    works = Works()
-    data = works.doi(doi)
+    data = _fetch_doi_data(doi)
     names: list = get_names_from_doi(data)
     journal = get_journal_name(data)
     paper_title = get_paper_title(data)
