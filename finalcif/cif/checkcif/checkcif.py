@@ -20,6 +20,7 @@ from requests.exceptions import MissingSchema
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.vrf_entry import VRFEntry
+from finalcif.gui.dialogs import show_general_warning
 
 
 class CheckCif(QThread):
@@ -133,8 +134,8 @@ class CheckCif(QThread):
             try:
                 pdfobj.write_bytes(pdf)
             except PermissionError:
-                # Most probably because of an already opened report.
-                return
+                show_general_warning(self, f'The document {pdfobj.name} could not be opened to '
+                                           f'write the report.\nIs the file already opened?')
             if sys.platform == 'win' or sys.platform == 'win32':
                 subprocess.Popen([str(pdfobj.absolute())], shell=True)
             if sys.platform == 'darwin':
