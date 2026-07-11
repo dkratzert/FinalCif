@@ -4,6 +4,8 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
+from __future__ import annotations
+
 import json
 import logging
 import os
@@ -16,9 +18,11 @@ from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
 from pathlib import Path, WindowsPath
-from typing import cast
+from typing import cast, TYPE_CHECKING
 
-from docx.image.exceptions import UnrecognizedImageError
+if TYPE_CHECKING:
+    from finalcif.cif.checkcif.checkcif import MyHTMLParser
+
 from fastmolwidget import Atomtuple
 from fastmolwidget.part_combo import PartFilterWidget
 from fastmolwidget.sdm import SDM
@@ -42,7 +46,6 @@ from gemmi import cif
 
 from finalcif import VERSION
 from finalcif.app_path import application_path
-from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp, CheckCif
 from finalcif.cif.cif_file_io import CifContainer, GemmiError, has_cif2_header
 from finalcif.cif.cod.deposit import CODdeposit
 from finalcif.cif.text import utf8_to_str, quote
@@ -67,7 +70,6 @@ from finalcif.gui.checkcif_browser import CheckCifBrowser
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.cif.vrf_entry import VRFEntry
 from finalcif.gui.vrf_classes import MyVRFContainer
-from finalcif.report.templated_report import ReportFormat
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
@@ -1071,6 +1073,7 @@ class AppWindow(QMainWindow):
         """
         Loads the html checkcif results and displays them in a checkcif_browser window.
         """
+        from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         try:
@@ -1158,6 +1161,7 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif via checkcif.iucr.org.
         """
+        from finalcif.cif.checkcif.checkcif import CheckCif
         current_block = self.ui.datanameComboBox.currentIndex()
         self._get_check_def()
         self.ui.CheckCifLogPlainTextEdit.clear()
@@ -1262,6 +1266,7 @@ class AppWindow(QMainWindow):
         """
         Performs an online checkcif and shows the result as pdf.
         """
+        from finalcif.cif.checkcif.checkcif import CheckCif
         current_block = self.ui.datanameComboBox.currentIndex()
         self.ui.CheckCifLogPlainTextEdit.clear()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(2)
@@ -1390,7 +1395,8 @@ class AppWindow(QMainWindow):
         Generates a report document.
         """
         from finalcif.report.tables import make_multi_tables
-        from finalcif.report.templated_report import TemplatedReport
+        from finalcif.report.templated_report import ReportFormat, TemplatedReport
+        from docx.image.exceptions import UnrecognizedImageError
         current_block = self.ui.datanameComboBox.currentIndex()
         if self.cif.doc[current_block].name == 'global':
             return
@@ -2388,6 +2394,7 @@ class AppWindow(QMainWindow):
         Phase 3: create persistent cell widgets with view updates suspended.
         Phase 4: data-source enrichment, combo boxes, etc.
         """
+        from finalcif.cif.checkcif.checkcif import AlertHelp
         table = self.ui.cif_main_table
 
         # ------------------------------------------------------------------
