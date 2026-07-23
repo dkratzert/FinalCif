@@ -13,6 +13,7 @@ from contextlib import suppress
 from pathlib import Path
 
 import gemmi
+import numpy as np
 
 from finalcif.cif import atoms
 
@@ -770,15 +771,15 @@ class CifContainer:
         Calculates the shelx checksum of a cif file.
         The original algorithm was posted by Berthold Stöger on the Bruker Users Mailing list.
         """
-        crc_sum = 0
         try:
-            bytes_str = input_str.encode('cp1250', 'ignore')
+            # Pure-ASCII input (the common case for CIF files) encodes identically
+            # under cp1250 but via a much faster codec path.
+            bytes_str = input_str.encode('ascii') if input_str.isascii() \
+                else input_str.encode('cp1250', 'ignore')
         except Exception:
             bytes_str = input_str.encode('ascii', 'ignore')
-        for char in bytes_str:
-            # print(char)
-            if char > 32:  # ascii 32 is space character
-                crc_sum += char
+        chars = np.frombuffer(bytes_str, dtype=np.uint8)
+        crc_sum = int(chars[chars > 32].sum())  # ascii 32 is space character
         crc_sum %= 714025
         crc_sum = crc_sum * 1366 + 150889
         crc_sum %= 714025
