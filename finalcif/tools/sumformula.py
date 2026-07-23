@@ -1,7 +1,7 @@
 from finalcif.tools import chemparse
 
 
-def formula_str_to_dict(sumform: str | bytes) -> dict[str, float]:
+def formula_str_to_dict(sumform: str) -> dict[str, float]:
     chemical_formula = chemparse.parse_formula(sumform.replace(" ", ""))
     return chemical_formula
 

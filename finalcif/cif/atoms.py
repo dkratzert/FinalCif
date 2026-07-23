@@ -763,11 +763,11 @@ element2cov = {
 }
 
 
-def get_element_color(element: str) -> str:
+def get_element_color(element: str) -> str | None:
     """
     Retruns RGB color code in Hex for the element.
     """
-    return element2color.get(element.capitalize())
+    return element2color.get(element.capitalize(), None)
 
 
 def get_radius(atomic_number: int) -> float:
@@ -819,13 +819,3 @@ def get_atomlabel(input_atom: str) -> str:
     except IndexError:
         # print('*** {} is not a valid atom! ***'.format(atom))
         raise KeyError
-
-
-if __name__ == '__main__':
-    import doctest
-
-    failed, attempted = doctest.testmod()  # verbose=True)
-    if failed == 0:
-        print(f'passed all {attempted} tests!')
-    else:
-        print(f'{failed} of {attempted} tests failed')

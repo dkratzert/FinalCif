@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE."""
 
 import re
-from typing import Generator
+from collections.abc import Generator
 from typing import Any
 
 
@@ -66,8 +66,8 @@ def find_all(sub: str, a_str: str) -> Generator[int, Any, None]:
 def get_first_elem(formula: str) -> tuple[str, bool]:
     needed_split: bool = False
     for char in formula:
-        if formula.find(char) != 0 and (char.isupper() or char == "+" or char == "-"):
-            formula = formula.split(char)[0]
+        if formula.find(char) != 0 and (char.isupper() or char in {"+", "-"}):
+            formula = formula.split(char, maxsplit=1)[0]
             needed_split = True
             return formula, needed_split
 
@@ -96,7 +96,7 @@ def inner_parse_formula(text: str) -> dict[str, float]:
             else:
                 try:
                     number = float(re.findall(RE_SIGNED_NUMBER, text)[0][0])
-                except:
+                except Exception:
                     number = 1.0
                 text = re.sub(RE_SIGNED_NUMBER, "", text)
             if element not in list(formula_dict.keys()):
@@ -156,7 +156,7 @@ def parse_formula(text: str) -> dict[str, float]:
         text = str(text)
         if len(text) <= 0:
             break
-        if not '(' in text and not ')' in text:
+        if '(' not in text and ')' not in text:
             break
 
         # get indices of starting parentheses "(" and ending ")"
@@ -170,7 +170,7 @@ def parse_formula(text: str) -> dict[str, float]:
 
         try:
             number = float(re.findall(RE_SIGNED_NUMBER, text[closed_parenth_idx_list[first_parenth_match] + 1:])[0][0])
-        except:
+        except Exception:
             number = 1
 
         seg_no_parenth = seg[1:-1]

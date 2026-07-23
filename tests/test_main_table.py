@@ -398,6 +398,12 @@ class TestCifTableViewIsolated(unittest.TestCase):
     def test_copy_vhead_item_puts_key_in_clipboard(self):
         self.view.setCurrentCell(0, 0)
         self.view.copy_vhead_item()
+        # The OS clipboard is asynchronous on Windows; pump the event loop
+        # until the value propagates instead of reading it immediately.
+        for _ in range(50):
+            if QApplication.clipboard().text() == '_key_a':
+                break
+            QApplication.processEvents()
         self.assertEqual('_key_a', QApplication.clipboard().text())
 
     # --- _vheader_section_click ---

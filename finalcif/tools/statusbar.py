@@ -24,7 +24,7 @@ class StatusBar:
         else:
             return self._message
 
-    def _set_message(self, message: str | list, timeout: int = 0):
+    def _set_message(self, message: str | list, timeout: int = 0) -> None:
         self._message = self.message_to_string(message)
         if self.graphics:
             self.ui.statusBar.showMessage(self._message, timeout)

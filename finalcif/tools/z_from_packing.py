@@ -31,12 +31,12 @@ import re
 from collections import Counter, deque
 from functools import reduce
 from math import gcd
+from typing import SupportsIndex
 
 import gemmi
 
-from fastmolwidget.molecule2D import calc_volume  # re-exported for callers
 from finalcif.cif.atoms import element2cov as _ELEMENT2COV
-from finalcif.tools.chemparse import parse_formula as _parse_formula
+from finalcif.tools.chemparse import parse_formula
 
 # Regex matching the bare element letters at the start of a type_symbol string.
 # CIF _atom_site_type_symbol values often include oxidation-state suffixes such
@@ -557,7 +557,7 @@ def _asu_components(
     return _get_components(adj, expanded)
 
 
-def _z_from_components(components: list[list[tuple[str, float]]]) -> int:
+def _z_from_components(components: list[list[tuple[str, float]]]) -> int | SupportsIndex:
     """Derive Z as the GCD of per-composition component multiplicities.
 
     Each distinct molecular species (identified by its elemental composition)
@@ -598,7 +598,7 @@ def _z_from_components(components: list[list[tuple[str, float]]]) -> int:
     ]
     # Fallback: if every component is partial-occupancy (e.g. the whole molecule
     # sits on an inversion centre), do not exclude anything.
-    active = major if major else components
+    active = major or components
 
     comp_counts: dict[tuple, int] = {}
     for comp in active:
@@ -889,7 +889,7 @@ def _parse_formula_sum(formula_sum: str | None) -> dict[str, float] | None:
     if not text or text in {'?', '.'}:
         return None
     try:
-        return _parse_formula(text.replace(' ', ''))
+        return parse_formula(text.replace(' ', ''))
     except Exception:
         return None
 
@@ -911,7 +911,7 @@ def _expanded_element_counts(
     for el, _pos, occ in expanded:
         key = _normalize_element(el)
         weighted[key] = weighted.get(key, 0.0) + float(occ)
-    return {el: int(round(n)) for el, n in weighted.items()}
+    return {el: round(n) for el, n in weighted.items()}
 
 
 def _gcd_matches_formula(
@@ -929,7 +929,7 @@ def _gcd_matches_formula(
     for el, n_per_fu in formula.items():
         if el == 'H' or n_per_fu <= 0:
             continue
-        expected = int(round(n_per_fu * z_gcd))
+        expected = round(n_per_fu * z_gcd)
         if cell_counts.get(el.capitalize(), 0) != expected:
             return False
     return True
@@ -1135,7 +1135,6 @@ def _count_z_with_source(
         formula_sum_dict=parsed_formula,
     )
     return z, formula_derived, moiety
-
 
 
 def count_z_and_zprime(
