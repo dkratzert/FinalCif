@@ -66,6 +66,7 @@ class CifTableView(QTableView):
     row_deleted = QtCore.Signal(str)
     textTemplate = QtCore.Signal(int)
     new_key = QtCore.Signal(str)
+    openInEditor = QtCore.Signal()
 
     def __init__(self, parent: QWidget = None, *args, **kwargs):
         super().__init__(parent=parent)
@@ -220,6 +221,7 @@ class CifTableView(QTableView):
             textedit.cif_key = key
             textedit.templateRequested.connect(self.goto_template_page)
             textedit.new_key.connect(lambda x: self.new_key.emit(x))
+            textedit.openInEditor.connect(self.openInEditor.emit)
             self.setCellWidget(row, column, textedit)
             textedit.setText(txt, color=color, column=column)
             if column in (Column.CIF, Column.DATA):

@@ -76,7 +76,7 @@ from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
 from finalcif.tools.misc import (next_path, celltxt, to_float, is_database_number,
-                                 open_file, strip_finalcif_of_name, file_age_in_days)
+                                 open_file, strip_finalcif_of_name, file_age_in_days, open_in_text_editor)
 from finalcif.tools.options import Options
 from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
@@ -523,6 +523,7 @@ class AppWindow(QMainWindow):
         self.ui.cif_main_table.textTemplate.connect(self.ui.MainStackedWidget.go_to_text_template_page)
         # value has to be '?', because otherwise it adds a key without a value:
         self.ui.cif_main_table.new_key.connect(lambda x: self.add_row(key=x, value='?', at_start=True))
+        self.ui.cif_main_table.openInEditor.connect(self.open_current_cif_in_editor)
         self.ui.appendCifPushButton.clicked.connect(self.append_cif)
         self.ui.drawImagePushButton.clicked.connect(self.draw_image)
         self.ui.ExportAllTemplatesPushButton.clicked.connect(self.export_all_templates)
@@ -1024,6 +1025,17 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             self.checkdef_file.write_bytes(reply)
         self.checkdef = reply.decode('ascii', errors='ignore').splitlines(keepends=False)
+
+    def open_current_cif_in_editor(self) -> None:
+        """
+        Saves the current cif file and opens it in the operating system's
+        default text editor (the application associated with .txt files).
+        """
+        if not self.cif:
+            return
+        if not self.save_current_cif_file():
+            return
+        open_in_text_editor(self.cif.finalcif_file)
 
     def explore_current_dir(self) -> None:
         """

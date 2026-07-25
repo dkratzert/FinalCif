@@ -28,6 +28,7 @@ class MyQPlainTextEdit(QPlainTextEdit):
     """
     templateRequested = Signal(int)
     new_key = Signal(str)
+    openInEditor = Signal()
     to_be_shortened = {'_shelx_hkl_file', '_shelx_res_file', '_shelx_fab_file', '_shelx_fcf_file',
                        '_iucr_refine_instructions_details', '_iucr_refine_fcf_details'}
 
@@ -76,10 +77,13 @@ class MyQPlainTextEdit(QPlainTextEdit):
         menu.addSeparator()
         action_template = menu.addAction("Text Template")
         new_key = menu.addAction('Add new CIF keys')
+        menu.addSeparator()
+        open_in_editor = menu.addAction("Open in Editor")
         action_copy_vhead.triggered.connect(self.copy_vhead_item)
         action_template.triggered.connect(self._on_create_template)
         deleterow.triggered.connect(self._delete_row)
         new_key.triggered.connect(self._add_cif_keys)
+        open_in_editor.triggered.connect(self.openInEditor.emit)
         menu.exec(event.globalPos())
 
     def _add_cif_keys(self) -> None:

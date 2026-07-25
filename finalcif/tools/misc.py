@@ -10,8 +10,10 @@ import hashlib
 import itertools as it
 import os
 import re
+import shlex
 import subprocess
 import sys
+from contextlib import suppress
 from datetime import datetime
 from math import sqrt
 from os import path
@@ -784,6 +786,77 @@ def open_file(report_filename: Path):
             os.startfile(report_filename)
         if sys.platform == 'darwin':
             subprocess.call(['open', report_filename])
+
+
+def _windows_default_text_editor() -> str | None:
+    """Return the executable path registered as the default handler for .txt files on Windows."""
+    import winreg  # noqa: PLC0415 - only importable on Windows
+    progid = None
+    with suppress(OSError):
+        with winreg.OpenKey(
+                winreg.HKEY_CURRENT_USER,
+                r'Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.txt\UserChoice') as key:
+            progid = winreg.QueryValueEx(key, 'ProgId')[0]
+    if not progid:
+        with suppress(OSError):
+            progid = winreg.QueryValue(winreg.HKEY_CLASSES_ROOT, '.txt')
+    if not progid:
+        return None
+    with suppress(OSError):
+        command = winreg.QueryValue(winreg.HKEY_CLASSES_ROOT, f'{progid}\\shell\\open\\command')
+        parts = shlex.split(command, posix=False)
+        if parts:
+            return parts[0].strip('"')
+    return None
+
+
+def _linux_default_text_editor() -> list[str] | None:
+    """Return the command (as argv list) registered as the default handler for text/plain on Linux."""
+    try:
+        desktop_file = subprocess.check_output(
+            ['xdg-mime', 'query', 'default', 'text/plain'], text=True).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError):
+        return None
+    if not desktop_file:
+        return None
+    search_dirs = [Path.home() / '.local/share/applications',
+                   Path('/usr/share/applications'),
+                   Path('/usr/local/share/applications')]
+    for directory in search_dirs:
+        desktop_path = directory / desktop_file
+        if not desktop_path.exists():
+            continue
+        for line in desktop_path.read_text(errors='ignore').splitlines():
+            if line.startswith('Exec='):
+                exec_line = line[len('Exec='):]
+                parts = [p for p in shlex.split(exec_line) if not p.startswith('%')]
+                if parts:
+                    return parts
+    return None
+
+
+def open_in_text_editor(file_path: Path) -> None:
+    """
+    Opens file_path in the operating system's default text editor, i.e. the
+    application associated with .txt files, regardless of the file's actual extension.
+    """
+    if not file_path.exists():
+        return
+    if sys.platform == 'darwin':
+        # '-t' forces opening with the default text editor, ignoring the actual file type:
+        subprocess.call(['open', '-t', str(file_path)])
+    elif os.name == 'nt':
+        editor = _windows_default_text_editor()
+        if editor:
+            subprocess.Popen([editor, str(file_path)])
+        else:
+            os.startfile(file_path)
+    else:
+        editor_cmd = _linux_default_text_editor()
+        if editor_cmd:
+            subprocess.Popen([*editor_cmd, str(file_path)])
+        else:
+            subprocess.call(['xdg-open', str(file_path)])
 
 
 if __name__ == '__main__':
