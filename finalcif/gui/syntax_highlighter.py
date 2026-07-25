@@ -198,6 +198,7 @@ class ShelxSyntaxHighlighter(QSyntaxHighlighter):
         self.comment_format = _make_format("#808080")
         self.comment_format.setFontItalic(True)
         self.continuation_format = _make_format("#800080", bold=True)
+        self.value_format = _make_format("#763127")
 
     def highlightBlock(self, text: str) -> None:
         stripped = text.strip()
@@ -222,6 +223,12 @@ class ShelxSyntaxHighlighter(QSyntaxHighlighter):
         base_keyword = upper_word.split('_', 1)[0]
         if base_keyword in SHELX_KEYWORDS:
             self.setFormat(leading_ws, len(base_keyword), self.keyword_format)
+
+            # ---------- Rest of the line following the keyword ----------
+
+            rest_start = leading_ws + len(upper_word)
+            if rest_start < len(text):
+                self.setFormat(rest_start, len(text) - rest_start, self.value_format)
 
         # ---------- Line continuation ----------
 
