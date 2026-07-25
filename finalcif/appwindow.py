@@ -28,6 +28,7 @@ from fastmolwidget.part_combo import PartFilterWidget
 from fastmolwidget.sdm import SDM
 
 from finalcif.gui.shelx_navigation import find_shelx_line_for_atom, scroll_and_highlight_shelx_atom
+from finalcif.gui.syntax_highlighter import ShelxSyntaxHighlighter
 from finalcif.gui.vzs_viewer import VZSImageViewer
 
 warnings.filterwarnings("ignore", category=RuntimeWarning, module="shibokensupport.signature.parser")
@@ -190,6 +191,7 @@ class AppWindow(QMainWindow):
         shelx_font = QtGui.QFont(self.fixfont)
         shelx_font.setPointSize(self.fixfont.pointSize() + 1)
         self.ui.shelx_TextEdit.setFont(shelx_font)
+        self.shelx_highlighter = ShelxSyntaxHighlighter(self.ui.shelx_TextEdit.document())
         self.ui.shelx_warn_TextEdit.setFont(self.fixfont)
         self.ui.ckf_textedit.setFont(self.fixfont)
         self.settings = FinalCifSettings()

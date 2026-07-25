@@ -39,6 +39,16 @@ import re
 from qtpy.QtGui import QTextCharFormat, QSyntaxHighlighter, QColor, QFont
 
 
+def _make_format(color: str | None = None, bold: bool = False) -> QTextCharFormat:
+    """Build a QTextCharFormat, shared by the CIF and SHELX highlighters."""
+    fmt = QTextCharFormat()
+    if color is not None:
+        fmt.setForeground(QColor(color))
+    if bold:
+        fmt.setFontWeight(QFont.Weight.Bold)
+    return fmt
+
+
 class CIFSyntaxHighlighter(QSyntaxHighlighter):
 
     MULTILINE = 1
@@ -153,5 +163,70 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
         if "'" in text:
             for m in self.quoted_re.finditer(text):
                 self.setFormat(m.start(), m.end() - m.start(), self.value_format)
+
+        self.setCurrentBlockState(0)
+
+
+# SHELXL instruction keywords (from shelxfile.shelx.shelx.SHX_CARDS, deduplicated
+# and stripped of padding spaces used there for fixed-width comparisons).
+SHELX_KEYWORDS = frozenset((
+    'TITL', 'CELL', 'ZERR', 'LATT', 'SYMM', 'SFAC', 'UNIT', 'LIST', 'L.S.', 'CGLS',
+    'BOND', 'FMAP', 'PLAN', 'TEMP', 'ACTA', 'CONF', 'SIMU', 'RIGU', 'WGHT', 'FVAR',
+    'DELU', 'SAME', 'DISP', 'LAUE', 'REM', 'MORE', 'TIME', 'END', 'HKLF', 'OMIT',
+    'SHEL', 'BASF', 'TWIN', 'EXTI', 'SWAT', 'HOPE', 'MERG', 'SPEC', 'RESI', 'MOVE',
+    'ANIS', 'AFIX', 'HFIX', 'FRAG', 'FEND', 'EXYZ', 'EADP', 'EQIV', 'CONN', 'BIND',
+    'FREE', 'DFIX', 'BUMP', 'SADI', 'CHIV', 'FLAT', 'DEFS', 'ISOR', 'NCSY', 'SUMP',
+    'BLOC', 'DAMP', 'STIR', 'MPLA', 'RTAB', 'HTAB', 'SIZE', 'WPDB', 'GRID', 'MOLE',
+    'XNPD', 'REST', 'CHAN', 'FLAP', 'RNUM', 'SOCC', 'PRIG', 'WIGL', 'RANG', 'TANG',
+    'ADDA', 'STAG', 'NEUT', 'ABIN', 'ANSC', 'ANSR', 'NOTR', 'TWST', 'PART', 'DANG',
+    'BEDE', 'LONE',
+))
+
+
+class ShelxSyntaxHighlighter(QSyntaxHighlighter):
+    """Syntax highlighter for SHELXL .ins/.res files.
+
+    Highlights instruction/restraint keywords (e.g. TITL, CELL, SADI), REM
+    comment lines and the '=' line-continuation marker. Shares the
+    ``_make_format`` helper with :class:`CIFSyntaxHighlighter`.
+    """
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.keyword_format = _make_format("#0057B7", bold=True)
+        self.comment_format = _make_format("#808080")
+        self.comment_format.setFontItalic(True)
+        self.continuation_format = _make_format("#800080", bold=True)
+
+    def highlightBlock(self, text: str) -> None:
+        stripped = text.strip()
+        if not stripped:
+            self.setCurrentBlockState(0)
+            return
+
+        leading_ws = len(text) - len(text.lstrip())
+        first_word = stripped.split(None, 1)[0]
+        upper_word = first_word.upper()
+
+        # ---------- Comments ----------
+
+        if upper_word == 'REM':
+            self.setFormat(0, len(text), self.comment_format)
+            self.setCurrentBlockState(0)
+            return
+
+        # ---------- Keywords (restraint names may carry a residue-class
+        # suffix, e.g. SADI_CCF3, so only the part before '_' is matched). ----------
+
+        base_keyword = upper_word.split('_', 1)[0]
+        if base_keyword in SHELX_KEYWORDS:
+            self.setFormat(leading_ws, len(base_keyword), self.keyword_format)
+
+        # ---------- Line continuation ----------
+
+        rstripped = text.rstrip()
+        if rstripped.endswith('='):
+            self.setFormat(len(rstripped) - 1, 1, self.continuation_format)
 
         self.setCurrentBlockState(0)
