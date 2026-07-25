@@ -1083,7 +1083,7 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
                                                         'Please try it at https://checkcif.iucr.org/ instead.</b>')
             return
-        self.checkcif_browser = CheckCifBrowser(parent=self)
+        self.checkcif_browser = CheckCifBrowser(parent=self, checkdef=self.checkdef)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
