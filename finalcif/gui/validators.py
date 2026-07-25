@@ -103,7 +103,8 @@ class CalculatedZLimits(Integerlimits):
         self.calculated_z = z
         if z is not None:
             self.help_text = (f'The Z calculated from the packed unit cell is {z}, '
-                              f'but a different value is given here.')
+                              f'but a different value is given here.\n'
+                              f'The calulated value can be wromng in edge cases.')
         else:
             self.help_text = self._range_help_text
 
