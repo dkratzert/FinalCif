@@ -130,6 +130,28 @@ class _ZEstimatorThread(QtCore.QThread):
         self.result.emit(res)
 
 
+class _StructureFactorReportThread(QtCore.QThread):
+    """Background thread that downloads the CheckCIF structure factor report.
+
+    Fetching is done via HTTP in a worker thread; the resulting text is emitted
+    via ``result`` so the GUI update happens safely on the main thread instead
+    of touching Qt widgets directly from a non-GUI thread.
+    """
+
+    result = QtCore.Signal(str)
+
+    def __init__(self, parser: MyHTMLParser, parent: QtCore.QObject | None = None) -> None:
+        super().__init__(parent)
+        self._parser = parser
+
+    def run(self) -> None:
+        try:
+            text = self._parser.get_ckf()
+        except Exception:
+            text = ''
+        self.result.emit(text)
+
+
 class AppWindow(QMainWindow):
 
     def __init__(self, file: Path | None = None):
@@ -1097,7 +1119,7 @@ class AppWindow(QMainWindow):
             self.checkcif_browser.set_checkcif_html(html, local_images)
         except FileNotFoundError:
             print(f'{self.htmlfile} not found')
-        threading.Thread(target=self._display_structure_factor_report, args=(parser,), daemon=True).start()
+        self._display_structure_factor_report(parser)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
         html_entries = parser.response_forms
         # Merge HTML-parsed entries into the main table:
@@ -1155,7 +1177,9 @@ class AppWindow(QMainWindow):
         return pos
 
     def _display_structure_factor_report(self, parser: MyHTMLParser) -> None:
-        self.ui.ckf_textedit.setPlainText(parser.get_ckf())
+        self.structure_factor_thread = _StructureFactorReportThread(parser, parent=self)
+        self.structure_factor_thread.result.connect(self.ui.ckf_textedit.setPlainText)
+        self.structure_factor_thread.start()
 
     def do_html_checkcif(self) -> None:
         """
