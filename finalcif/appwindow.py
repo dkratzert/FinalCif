@@ -57,7 +57,7 @@ from finalcif.equip_property.equipment import Equipment
 from finalcif.equip_property.properties import Properties
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.custom_classes import Column, light_green, yellow, light_blue, \
-    white, MyTableWidgetItem, blue
+    white, light_red, MyTableWidgetItem, blue
 from finalcif.gui.cif_table_model import CifRowData
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
     cif_file_open_dialog, \
@@ -67,6 +67,7 @@ from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.import_selector import ImportSelector
 from finalcif.gui.squeeze_dialog import SqueezeSolventDialog, SqueezeMode, has_smtbx_masks_loop, has_squeeze_loop
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
+from finalcif.gui.validators import calculated_z_validator
 from finalcif.gui.checkcif_browser import CheckCifBrowser
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
 from finalcif.cif.vrf_entry import VRFEntry
@@ -2058,6 +2059,7 @@ class AppWindow(QMainWindow):
         self.ui.MainStackedWidget.go_to_info_page()
         self.ui.cellField.setText(celltxt.format(*self.cif.cell, self.cif['_space_group_centring_type']))
         self.ui.zLineEdit.setText(self.cif['_cell_formula_units_Z'])
+        self._revalidate_z_lineedit()
         self.ui.temperatureLineEdit.setText(self.cif['_diffrn_ambient_temperature'])
         self.ui.wR2LineEdit.setText(self.cif['_refine_ls_wR_factor_ref'])
         self.ui.r1LineEdit.setText(self.cif['_refine_ls_R_factor_gt'])
@@ -2215,6 +2217,8 @@ class AppWindow(QMainWindow):
         if result is None:
             self.ui.zEstimateLabel.setText('?')
             self.ui.zEstimateLabel2.setText('?')
+            calculated_z_validator.set_calculated_z(None)
+            self._revalidate_cell_formula_units_z()
             return
         # Propagate moiety formula to the CIF table if not already filled.
         if result.moiety_formula:
@@ -2245,6 +2249,33 @@ class AppWindow(QMainWindow):
             tip_lines.append("(common for polymers, frameworks, or salts).")
         self.ui.zEstimateLabel.setToolTip('\n'.join(tip_lines))
         self.ui.zEstimateLabel2.setToolTip('\n'.join(tip_lines))
+        # Only flag a mismatch when the packing estimate itself is trustworthy:
+        calculated_z_validator.set_calculated_z(result.z if result.reliable else None)
+        self._revalidate_cell_formula_units_z()
+
+    def _revalidate_cell_formula_units_z(self) -> None:
+        """Re-check ``_cell_formula_units_Z`` against :data:`calculated_z_validator`.
+
+        Colors the CIF and EDIT columns of the main table row (and the read-only
+        ``zLineEdit`` on the residuals page) red when the value stored in the CIF
+        does not match the Z computed from unit-cell packing.
+        """
+        table = self.ui.cif_main_table
+        if table.has_key('_cell_formula_units_Z'):
+            for column in (Column.CIF, Column.EDIT):
+                widget = table.widget_from_key('_cell_formula_units_Z', column)
+                if isinstance(widget, MyQPlainTextEdit):
+                    widget.validate_text(widget.toPlainText())
+        self._revalidate_z_lineedit()
+
+    def _revalidate_z_lineedit(self) -> None:
+        """Color the read-only ``zLineEdit`` (residuals page) according to the Z validator."""
+        text = self.ui.zLineEdit.text()
+        valid = calculated_z_validator.valid(text)
+        palette = self.ui.zLineEdit.palette()
+        palette.setColor(QtGui.QPalette.ColorRole.Base, white if valid else light_red)
+        self.ui.zLineEdit.setPalette(palette)
+        self.ui.zLineEdit.setToolTip('' if valid else calculated_z_validator.help_text)
 
     def _calc_grown_atoms(self):
         """Helper to generate the symmetry expanded atoms without drawing them."""

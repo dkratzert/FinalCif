@@ -84,6 +84,50 @@ class Stringlimits:
         return False
 
 
+class CalculatedZLimits(Integerlimits):
+    """Validates ``_cell_formula_units_Z`` against the Z estimated from unit-cell packing.
+
+    The expected value is populated at runtime via :meth:`set_calculated_z` once the
+    background bond-graph packing analysis (see :mod:`finalcif.tools.z_from_packing`)
+    finishes. Before that, or when the estimate is unreliable, only the inherited
+    positive-integer range check applies.
+    """
+
+    def __init__(self):
+        super().__init__(lower=1, upper=inf)
+        self.calculated_z: int | None = None
+        self._range_help_text = self.help_text
+
+    def set_calculated_z(self, z: int | None) -> None:
+        """Set (or clear, with ``None``) the Z value calculated from unit-cell packing."""
+        self.calculated_z = z
+        if z is not None:
+            self.help_text = (f'The Z calculated from the packed unit cell is {z}, '
+                              f'but a different value is given here.')
+        else:
+            self.help_text = self._range_help_text
+
+    def validate_cif_key(self, value: str) -> bool:
+        if not super().validate_cif_key(value):
+            return False
+        if self.calculated_z is None:
+            return True
+        stripped = value.split('(', 1)[0].strip()
+        if stripped in ('', '?', '.'):
+            return True
+        try:
+            given_z = int(float(stripped))
+        except ValueError:
+            return True
+        return given_z == self.calculated_z
+
+
+# Singleton used by the GUI so the computed Z can be shared between the
+# validators dict (below) and the code that triggers re-validation once the
+# background packing analysis delivers a result.
+calculated_z_validator = CalculatedZLimits()
+
+
 class Textlimits:
     def __init__(self, options: list[str], help_text: str | None= None):
         self.valid = self.validate_cif_key
@@ -117,7 +161,7 @@ validators: dict[str, BaseLimits] = {
     '_cell_angle_alpha'                    : Floatlimits(lower=0.0, upper=180.0),
     '_cell_angle_beta'                     : Floatlimits(lower=0.0, upper=180.0),
     '_cell_angle_gamma'                    : Floatlimits(lower=0.0, upper=180.0),
-    '_cell_formula_units_Z'                : Integerlimits(lower=1, upper=inf),
+    '_cell_formula_units_Z'                : calculated_z_validator,
     '_cell_length_a'                       : Floatlimits(lower=0.0, upper=inf),
     '_cell_length_b'                       : Floatlimits(lower=0.0, upper=inf),
     '_cell_length_c'                       : Floatlimits(lower=0.0, upper=inf),
