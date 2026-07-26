@@ -524,6 +524,7 @@ class AppWindow(QMainWindow):
         # value has to be '?', because otherwise it adds a key without a value:
         self.ui.cif_main_table.new_key.connect(lambda x: self.add_row(key=x, value='?', at_start=True))
         self.ui.cif_main_table.openInEditor.connect(self.open_current_cif_in_editor)
+        self.ui.FinalCifFilePlainTextEdit.openInEditor.connect(self.open_current_cif_in_editor)
         self.ui.appendCifPushButton.clicked.connect(self.append_cif)
         self.ui.drawImagePushButton.clicked.connect(self.draw_image)
         self.ui.ExportAllTemplatesPushButton.clicked.connect(self.export_all_templates)

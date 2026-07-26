@@ -2,8 +2,8 @@ from __future__ import annotations
 # QcodeEditor.py by acbetter.
 # Taken from: https://stackoverflow.com/questions/40386194/create-text-area-textedit-with-line-number-in-pyqt
 from qtpy import QtCore, QtGui
-from qtpy.QtCore import QRect, QSize
-from qtpy.QtGui import QColor, QPainter, QTextFormat
+from qtpy.QtCore import QRect, QSize, Signal
+from qtpy.QtGui import QColor, QContextMenuEvent, QPainter, QTextFormat
 from qtpy.QtWidgets import QWidget, QPlainTextEdit, QTextEdit
 
 from finalcif.gui import syntax_highlighter
@@ -22,6 +22,8 @@ class QLineNumberArea(QWidget):
 
 
 class QCodeEditor(QPlainTextEdit):
+    openInEditor = Signal()
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.highlighter = syntax_highlighter.CIFSyntaxHighlighter(self)
@@ -30,6 +32,13 @@ class QCodeEditor(QPlainTextEdit):
         self.updateRequest.connect(self.update_line_number_area)
         self.cursorPositionChanged.connect(self.highlight_current_line)
         self.update_line_number_area_width(0)
+
+    def contextMenuEvent(self, event: QContextMenuEvent):
+        menu = self.createStandardContextMenu(event.pos())
+        menu.addSeparator()
+        open_in_editor = menu.addAction("Open in Editor")
+        open_in_editor.triggered.connect(self.openInEditor.emit)
+        menu.exec(event.globalPos())
 
     def line_number_area_width(self):
         digits = 1
