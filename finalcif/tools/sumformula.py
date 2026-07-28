@@ -59,8 +59,13 @@ FormulaPart(text='O', style='normal')]
             if sign_index is not None:
                 parts.append(FormulaPart(text + matches[sign_index].group(), SUPERSCRIPT))
                 index = sign_index + 1
+            elif previous_is_element:
+                parts.append(FormulaPart(text, SUBSCRIPT))
             else:
-                parts.append(FormulaPart(text, SUBSCRIPT if previous_is_element else NORMAL))
+                # A pre-multiplier written without parentheses ('2 B F4') needs the
+                # space kept, otherwise it reads as part of the element count.
+                separator = ' ' if _next_is_element(matches, index) else ''
+                parts.append(FormulaPart(text + separator, NORMAL))
             previous_is_element = False
             continue
         if kind == 'sign':
@@ -70,6 +75,13 @@ FormulaPart(text='O', style='normal')]
         parts.append(FormulaPart(f'{text} ' if text == ',' else text, NORMAL))
         previous_is_element = False
     return parts
+
+
+def _next_is_element(matches: list, index: int) -> bool:
+    """Return ``True`` when the next non-space token is an element symbol."""
+    while index < len(matches) and matches[index].lastgroup == 'space':
+        index += 1
+    return index < len(matches) and matches[index].lastgroup == 'element'
 
 
 def _next_sign(matches: list, index: int) -> int | None:
@@ -86,6 +98,28 @@ def _next_sign(matches: list, index: int) -> int | None:
     if following is None or following.lastgroup in ('space', 'other'):
         return index
     return None
+
+
+def formula_to_html(formula: str) -> str:
+    """Render a CIF chemical formula string as HTML with sub- and superscripts.
+
+    Unlike :func:`sum_formula_to_html` this keeps the structure of the string,
+    so a moiety formula such as ``'C9 H9 Br Cl N2 1+, B F4 1-'`` survives with
+    its moiety separators, multipliers and charges intact.  Returns an empty
+    string for missing values (``''``, ``'?'``, ``'.'``).
+    """
+    text = formula.strip(" '\"")
+    if not text or text in {'?', '.'}:
+        return ''
+    pieces: list[str] = []
+    for part, style in formula_parts(text):
+        if style == SUBSCRIPT:
+            pieces.append(f'<sub>{part}</sub>')
+        elif style == SUPERSCRIPT:
+            pieces.append(f'<sup>{part}</sup>')
+        else:
+            pieces.append(part)
+    return f'<html><body>{"".join(pieces)}</body></html>'
 
 
 def formula_str_to_dict(sumform: str) -> dict[str, float]:

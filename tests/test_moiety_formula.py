@@ -20,7 +20,8 @@ from finalcif.tools.formal_charge import (
     parse_oxidation_state,
     perceive_fragment_charge,
 )
-from finalcif.tools.sumformula import NORMAL, SUBSCRIPT, SUPERSCRIPT, formula_parts, formula_str_to_dict
+from finalcif.tools.sumformula import (NORMAL, SUBSCRIPT, SUPERSCRIPT, formula_parts,
+                                       formula_str_to_dict, formula_to_html)
 from finalcif.tools.z_from_packing import count_z_and_zprime, moiety_formula_from_components
 
 
@@ -487,3 +488,26 @@ class TestFormulaParts:
 
     def test_empty_formula(self):
         assert formula_parts('') == []
+
+
+class TestFormulaToHtml:
+    def test_charges_and_counts(self):
+        assert formula_to_html('C9 H9 Br Cl N2 1+, B F4 1-') == (
+            '<html><body>'
+            'C<sub>9</sub>H<sub>9</sub>BrClN<sub>2</sub><sup>1+</sup>, '
+            'BF<sub>4</sub><sup>1-</sup>'
+            '</body></html>')
+
+    def test_fractional_multiplier_survives(self):
+        assert formula_to_html('C38 H38 O12, 0.5(C H4 O)') == (
+            '<html><body>C<sub>38</sub>H<sub>38</sub>O<sub>12</sub>, '
+            '0.5(CH<sub>4</sub>O)</body></html>')
+
+    @pytest.mark.parametrize('value', ['', '?', '.', "  '?'  ", '   '])
+    def test_missing_values_give_an_empty_string(self, value):
+        assert formula_to_html(value) == ''
+
+    def test_multiplier_without_parentheses_keeps_its_space(self):
+        """``'2 B F4 1-'`` must not render as ``2BF4``, which reads as a count."""
+        assert formula_to_html('2 B F4 1-') == (
+            '<html><body>2 BF<sub>4</sub><sup>1-</sup></body></html>')

@@ -85,7 +85,7 @@ from finalcif.tools.space_groups import SpaceGroups
 from finalcif.tools.z_from_packing import count_z_and_zprime, ZResult
 from finalcif.tools.spgr_format import spgrps
 from finalcif.tools.statusbar import StatusBar
-from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
+from finalcif.tools.sumformula import formula_str_to_dict, formula_to_html, sum_formula_to_html
 
 DEBUG = False
 app = QApplication.instance()
@@ -1372,6 +1372,7 @@ class AppWindow(QMainWindow):
         moiety = self.ui.cif_main_table.getTextFromKey(key='_chemical_formula_moiety', col=Column.CIF)
         if formula_moiety and moiety in ['', '?'] and not self.cif.is_multi_cif:
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=formula_moiety, column=Column.EDIT)
+        self.show_moiety_formula_tooltip(moiety if moiety not in ['', '?'] else formula_moiety)
 
     def append_to_ciflog_without_newline(self, text: str = '') -> None:
         self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.MoveOperation.End)
@@ -1960,6 +1961,14 @@ class AppWindow(QMainWindow):
                 self.cif['_chemical_formula_sum'].strip(" '"))))
         except Exception:
             self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'].strip(" '"))
+        self.show_moiety_formula_tooltip()
+
+    def show_moiety_formula_tooltip(self, formula_moiety: str = '') -> None:
+        """Show the moiety formula as a formatted tooltip of the sum formula field."""
+        moiety = formula_moiety or self.cif['_chemical_formula_moiety']
+        html = formula_to_html(moiety)
+        self.ui.SumFormMainLineEdit.setToolTip(
+            f'Moiety formula: {html}' if html else 'No moiety formula available')
 
     def fill_space_group_lineedit(self) -> None:
         try:
