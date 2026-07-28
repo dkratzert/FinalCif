@@ -836,31 +836,6 @@ def _formula_dict_to_moiety_str(formula: dict[str, float]) -> str:
     return _composition_to_hill_str(int_counts)
 
 
-# Factors tried when scaling fractional moiety multipliers to integers.  Only
-# crystallographic site multiplicities are allowed, so that a genuine partial
-# occupancy such as 0.9 is never turned into a nonsensical ``10(...)``.
-_MOIETY_SCALE_FACTORS: tuple[int, ...] = (1, 2, 3, 4, 6, 8, 12)
-
-
-def _integer_multiplier_scale(ratios: list[float]) -> int:
-    """Return the smallest factor that turns every moiety multiplier into an integer.
-
-    A per-formula-unit view can yield fractional multipliers such as
-    ``'C26 H31 N O6, 0.5(C H4 O)'``.  PLATON — and therefore checkCIF — reports
-    the same crystal as ``'2(C26 H31 N O6), C H4 O'``.  Both describe identical
-    ratios, but integer multipliers are what checkCIF expects, so the whole
-    moiety formula is scaled by the smallest common factor.
-
-    Only the factors in :data:`_MOIETY_SCALE_FACTORS` are considered.  Genuine
-    fractional occupancies (``0.9``, ``0.904``, ``3.13``) admit no such factor
-    and are left untouched.
-    """
-    for factor in _MOIETY_SCALE_FACTORS:
-        if all(abs(ratio * factor - round(ratio * factor)) < 1e-4 for ratio in ratios):
-            return factor
-    return 1
-
-
 def _charge_atoms(component: list[AtomRecord]) -> tuple[ChargeAtom, ...]:
     """Convert a bond-graph component into :class:`ChargeAtom` records."""
     return tuple(
@@ -966,11 +941,6 @@ def _moiety_formula_impl(
 
     if not entries:
         return ''
-
-    scale = _integer_multiplier_scale([ratio for _formula, ratio, _charge, _atoms in entries])
-    if scale > 1:
-        entries = [(formula, ratio * scale, charge, atoms)
-                   for formula, ratio, charge, atoms in entries]
 
     balanced = balance_charges([
         SpeciesCharge(charge=charge.charge, confident=charge.confident,

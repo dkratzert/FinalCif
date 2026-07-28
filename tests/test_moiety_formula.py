@@ -6,6 +6,7 @@ and the charge appended after a space (``'B F4 1-'``).  A multiplier other
 than one wraps the whole moiety in parentheses (``'2(N O3 1-)'``).
 """
 from pathlib import Path
+import re
 
 import pytest
 
@@ -19,7 +20,7 @@ from finalcif.tools.formal_charge import (
     parse_oxidation_state,
     perceive_fragment_charge,
 )
-from finalcif.tools.sumformula import NORMAL, SUBSCRIPT, SUPERSCRIPT, formula_parts
+from finalcif.tools.sumformula import NORMAL, SUBSCRIPT, SUPERSCRIPT, formula_parts, formula_str_to_dict
 from finalcif.tools.z_from_packing import count_z_and_zprime, moiety_formula_from_components
 
 
@@ -40,6 +41,22 @@ def _flat(elements: str) -> tuple[ChargeAtom, ...]:
 
 def _composition(**counts: float) -> dict[str, float]:
     return {element: float(count) for element, count in counts.items()}
+
+
+_MOIETY_RE = re.compile(r'^\s*(?:(?P<multiplier>[\d.]+)\s*\()?(?P<formula>[^()]+?)\)?\s*$')
+
+
+def _sum_moiety(moiety: str) -> dict[str, float]:
+    """Add up all moieties of a formula string into one ``{element: count}`` dict."""
+    total: dict[str, float] = {}
+    for part in moiety.split(','):
+        match = _MOIETY_RE.match(part)
+        assert match is not None, part
+        multiplier = float(match['multiplier'] or 1)
+        formula = re.sub(r'\s*\d*[+-]\s*$', '', match['formula'])
+        for element, count in formula_str_to_dict(formula).items():
+            total[element] = total.get(element, 0.0) + multiplier * count
+    return total
 
 
 # ---------------------------------------------------------------------------
@@ -326,29 +343,28 @@ class TestMoietyFormulaWithCharges:
         assert moiety_formula_from_components([organic], z=1) == 'C10 H8 N2'
 
 
-class TestIntegerMultipliers:
-    """Fractional multipliers are scaled away so checkCIF sees whole moieties."""
+class TestMultipliersArePerFormulaUnit:
+    """Multipliers describe one formula unit, so the moiety sums to the sum formula."""
 
-    def test_half_a_solvent_scales_the_whole_formula(self):
+    def test_half_a_solvent_keeps_a_fractional_multiplier(self):
         organic = [('C', 1.0, ())] * 26 + [('O', 1.0, ())] * 6
         methanol = [('C', 0.5, ()), ('O', 0.5, ())]
         components = [organic, organic, methanol, methanol]
-        assert moiety_formula_from_components(components, z=2) == '2(C26 O6), C O'
+        assert moiety_formula_from_components(components, z=2) == 'C26 O6, 0.5(C O)'
 
-    def test_three_quarters_solvent_scales_by_four(self):
+    def test_three_quarters_solvent(self):
         organic = [('C', 1.0, ())] * 10
         water = [('H', 0.75, ()), ('H', 0.75, ()), ('O', 0.75, ())]
         components = [organic] * 4 + [water] * 4
-        assert moiety_formula_from_components(components, z=4) == '4(C10), 3(H2 O)'
+        assert moiety_formula_from_components(components, z=4) == 'C10, 0.75(H2 O)'
 
-    def test_integer_multipliers_are_left_alone(self):
+    def test_integer_multipliers(self):
         organic = [('C', 1.0, ())] * 10
         water = [('H', 1.0, ()), ('H', 1.0, ()), ('O', 1.0, ())]
         components = [organic, water, water]
         assert moiety_formula_from_components(components, z=1) == 'C10, 2(H2 O)'
 
-    def test_genuine_partial_occupancy_is_not_scaled(self):
-        """An occupancy of 0.9 has no small common factor and stays fractional."""
+    def test_partial_occupancy_solvent(self):
         organic = [('C', 1.0, ())] * 10
         solvent = [('C', 0.9, ()), ('O', 0.9, ())]
         assert moiety_formula_from_components([organic, solvent], z=1) == 'C10, 0.9(C O)'
@@ -377,9 +393,9 @@ class TestMoietyFormulaOfRealStructures:
     def test_neutral_molecule_gets_no_charge(self):
         assert self._moiety('test-data/DK_ML7-66-final.cif') == 'C23 H21 N O'
 
-    def test_solvate_multipliers_are_integers(self):
-        """Half a methanol per molecule is reported as PLATON does: '2(main), solvent'."""
-        assert self._moiety('tests/examples/1979688.cif') == '2(C38 H38 O12), C H4 O'
+    def test_solvate_keeps_the_per_formula_unit_multiplier(self):
+        """Half a methanol per molecule, so the moiety still sums to the sum formula."""
+        assert self._moiety('tests/examples/1979688.cif') == 'C38 H38 O12, 0.5(C H4 O)'
 
     def test_sucrose_is_neutral(self):
         assert self._moiety('test-data/DK_Zucker2_0m.cif') == 'C12 H22 O11'
@@ -426,6 +442,15 @@ class TestCodMoietyFormulas:
 
     def test_z_matches_the_cif(self, path, expected_moiety, expected_z, description):
         assert int(_load(path)['_cell_formula_units_Z']) == expected_z
+
+    def test_moiety_sums_to_the_sum_formula(self, path, expected_moiety, expected_z, description):
+        """The moiety of one formula unit must add up to ``_chemical_formula_sum``."""
+        cif = _load(path)
+        expected = formula_str_to_dict(cif['_chemical_formula_sum'])
+        summed = _sum_moiety(self._result(path).moiety_formula)
+        assert set(summed) == set(expected)
+        for element, count in expected.items():
+            assert summed[element] == pytest.approx(count, abs=0.02)
 
 
 # ---------------------------------------------------------------------------
