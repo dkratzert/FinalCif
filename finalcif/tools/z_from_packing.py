@@ -37,6 +37,14 @@ import gemmi
 
 from finalcif.cif.atoms import element2cov as _ELEMENT2COV
 from finalcif.tools.chemparse import parse_formula
+from finalcif.tools.formal_charge import (METALS, ChargeAtom, FragmentCharge, SpeciesCharge,
+                                          balance_charges, format_charge, parse_oxidation_state,
+                                          perceive_fragment_charge)
+
+# One atom of a bond-graph component.  The third field carries the atom's
+# non-metal neighbours as ``(element, degree)`` pairs and is optional so that
+# callers may still pass plain ``(element, occupancy)`` pairs.
+AtomRecord = tuple[str, float] | tuple[str, float, tuple[tuple[str, int], ...]]
 
 # Regex matching the bare element letters at the start of a type_symbol string.
 # CIF _atom_site_type_symbol values often include oxidation-state suffixes such
@@ -77,6 +85,21 @@ def _normalize_element(symbol: str) -> str:
 
 BOND_TOLERANCE: float = 0.40
 
+
+def _atom_element(atom: AtomRecord) -> str:
+    """Return the raw type symbol of a component atom (oxidation suffix included)."""
+    return atom[0]
+
+
+def _atom_occupancy(atom: AtomRecord) -> float:
+    """Return the site occupancy of a component atom."""
+    return float(atom[1])
+
+
+def _atom_neighbours(atom: AtomRecord) -> tuple[tuple[str, int], ...]:
+    """Return the ``(element, degree)`` pairs of a component atom's non-metal neighbours."""
+    return atom[2] if len(atom) > 2 else ()
+
 # Decimal precision for occupancy-weighted element counts.  Two decimal places
 # is generous enough to absorb rounding errors in SHELXL .res / CIF output
 # (e.g. occupancies written as 0.55 + 0.44 summing to 0.99) and small
@@ -97,7 +120,7 @@ _UNIFORM_OCC_TOL: float = 0.05
 
 
 def _weighted_element_counts(
-        component: list[tuple[str, float]],
+        component: list[AtomRecord],
 ) -> dict[str, float]:
     """Return occupancy-weighted element counts for one bond-graph component.
 
@@ -113,9 +136,9 @@ def _weighted_element_counts(
     are preserved.
     """
     weighted: dict[str, float] = {}
-    for el, occ in component:
-        key = _normalize_element(el)
-        weighted[key] = weighted.get(key, 0.0) + float(occ)
+    for atom in component:
+        key = _normalize_element(_atom_element(atom))
+        weighted[key] = weighted.get(key, 0.0) + _atom_occupancy(atom)
     return {el: round(n, _OCC_DECIMALS) for el, n in weighted.items()}
 
 
@@ -494,22 +517,46 @@ def _count_components(adj: dict[int, set[int]]) -> int:
     return count
 
 
+def _neighbour_table(
+        adj: dict[int, set[int]],
+        expanded: list[tuple[str, tuple[float, float, float], float]],
+) -> dict[int, tuple[tuple[str, int], ...]]:
+    """Return, per atom index, the ``(element, degree)`` pairs of its non-metal neighbours.
+
+    *degree* is the neighbour's own number of non-metal neighbours.  Bonds to
+    metals are excluded because they are coordinate bonds: a pyridine nitrogen
+    coordinating a metal centre is neutral, not a quaternary ammonium ion.
+    Knowing each neighbour's degree lets the charge rules recognise terminal
+    oxygen atoms (amine *N*-oxides, ylides).
+    """
+    elements = [_normalize_element(el) for el, _pos, _occ in expanded]
+    non_metal_neighbours = {
+        i: [j for j in adj[i] if elements[j] not in METALS] for i in adj
+    }
+    degrees = {i: len(nbrs) for i, nbrs in non_metal_neighbours.items()}
+    return {
+        i: tuple((elements[j], degrees[j]) for j in sorted(nbrs))
+        for i, nbrs in non_metal_neighbours.items()
+    }
+
+
 def _get_components(
         adj: dict[int, set[int]],
         expanded: list[tuple[str, tuple[float, float, float], float]],
-) -> list[list[tuple[str, float]]]:
-    """Return each connected component as a list of ``(element, occupancy)`` pairs."""
+) -> list[list[AtomRecord]]:
+    """Return each connected component as a list of ``(element, occupancy, neighbours)`` records."""
+    neighbours = _neighbour_table(adj, expanded)
     visited: set[int] = set()
-    components: list[list[tuple[str, float]]] = []
+    components: list[list[AtomRecord]] = []
     for start in adj:
         if start not in visited:
             queue: deque[int] = deque([start])
             visited.add(start)
-            comp: list[tuple[str, float]] = []
+            comp: list[AtomRecord] = []
             while queue:
                 node = queue.popleft()
                 el, _pos, occ = expanded[node]
-                comp.append((el, occ))
+                comp.append((el, occ, neighbours[node]))
                 for nbr in adj[node]:
                     if nbr not in visited:
                         visited.add(nbr)
@@ -521,7 +568,7 @@ def _get_components(
 def _asu_components(
         special_atoms: list,
         cell: tuple[float, ...],
-) -> list[list[tuple[str, float]]]:
+) -> list[list[AtomRecord]]:
     """Return connected components for negative-PART ASU atoms without symmetry expansion.
 
     Reuses :func:`_build_bond_graph` and :func:`_get_components` on the raw
@@ -557,7 +604,7 @@ def _asu_components(
     return _get_components(adj, expanded)
 
 
-def _z_from_components(components: list[list[tuple[str, float]]]) -> int | SupportsIndex:
+def _z_from_components(components: list[list[AtomRecord]]) -> int | SupportsIndex:
     """Derive Z as the GCD of per-composition component multiplicities.
 
     Each distinct molecular species (identified by its elemental composition)
@@ -594,7 +641,7 @@ def _z_from_components(components: list[list[tuple[str, float]]]) -> int | Suppo
     # and "minor" (all atoms are partially occupied — likely disordered solvent).
     major = [
         comp for comp in components
-        if max(occ for _el, occ in comp) >= PARTIAL_OCC_THRESHOLD
+        if max(_atom_occupancy(atom) for atom in comp) >= PARTIAL_OCC_THRESHOLD
     ]
     # Fallback: if every component is partial-occupancy (e.g. the whole molecule
     # sits on an inversion centre), do not exclude anything.
@@ -679,7 +726,7 @@ def _composition_to_hill_str(comp_dict: dict[str, float]) -> str:
 
 
 def moiety_formula_from_components(
-        components: list[list[tuple[str, float]]],
+        components: list[list[AtomRecord]],
         z: int,
         formula_derived: bool = False,
         formula_sum_dict: dict[str, float] | None = None,
@@ -719,7 +766,9 @@ def moiety_formula_from_components(
     Args:
         components:       Output of :func:`_get_components` — a list of
                           components where each component is a list of
-                          ``(element, occupancy)`` pairs.
+                          ``(element, occupancy, neighbours)`` records.  Plain
+                          ``(element, occupancy)`` pairs are accepted too; the
+                          charge rules that need connectivity are then skipped.
         z:                Number of formula units per unit cell (from
                           :func:`_z_from_components` after formula correction).
         formula_derived:  Set to ``True`` for polymeric/extended structures
@@ -730,7 +779,8 @@ def moiety_formula_from_components(
 
     Returns:
         IUCr-formatted moiety formula string, e.g.
-        ``'C10 H8 N2, 0.75(H2 O)'``, or ``''`` on failure.
+        ``'C10 H8 N2, 0.75(H2 O)'`` or ``'C9 H9 Br Cl N2 1+, B F4 1-'``,
+        or ``''`` on failure.
     """
     if formula_derived:
         # When formula_derived is True, the bond-graph GCD didn't match the
@@ -786,8 +836,61 @@ def _formula_dict_to_moiety_str(formula: dict[str, float]) -> str:
     return _composition_to_hill_str(int_counts)
 
 
+# Factors tried when scaling fractional moiety multipliers to integers.  Only
+# crystallographic site multiplicities are allowed, so that a genuine partial
+# occupancy such as 0.9 is never turned into a nonsensical ``10(...)``.
+_MOIETY_SCALE_FACTORS: tuple[int, ...] = (1, 2, 3, 4, 6, 8, 12)
+
+
+def _integer_multiplier_scale(ratios: list[float]) -> int:
+    """Return the smallest factor that turns every moiety multiplier into an integer.
+
+    A per-formula-unit view can yield fractional multipliers such as
+    ``'C26 H31 N O6, 0.5(C H4 O)'``.  PLATON — and therefore checkCIF — reports
+    the same crystal as ``'2(C26 H31 N O6), C H4 O'``.  Both describe identical
+    ratios, but integer multipliers are what checkCIF expects, so the whole
+    moiety formula is scaled by the smallest common factor.
+
+    Only the factors in :data:`_MOIETY_SCALE_FACTORS` are considered.  Genuine
+    fractional occupancies (``0.9``, ``0.904``, ``3.13``) admit no such factor
+    and are left untouched.
+    """
+    for factor in _MOIETY_SCALE_FACTORS:
+        if all(abs(ratio * factor - round(ratio * factor)) < 1e-4 for ratio in ratios):
+            return factor
+    return 1
+
+
+def _charge_atoms(component: list[AtomRecord]) -> tuple[ChargeAtom, ...]:
+    """Convert a bond-graph component into :class:`ChargeAtom` records."""
+    return tuple(
+        ChargeAtom(
+            element=_normalize_element(_atom_element(atom)),
+            occupancy=_atom_occupancy(atom),
+            neighbours=_atom_neighbours(atom),
+            oxidation=parse_oxidation_state(_atom_element(atom)),
+        )
+        for atom in component
+    )
+
+
+def _format_moiety_token(formula_str: str, ratio: float, charge: int) -> str:
+    """Format one moiety following the IUCr ``_chemical_formula_moiety`` rules.
+
+    The charge token is appended after a space (``'B F4 1-'``) and a multiplier
+    other than one wraps the whole moiety in parentheses (``'2(N O3 1-)'``).
+    """
+    charge_token = format_charge(charge)
+    token = f'{formula_str} {charge_token}' if charge_token else formula_str
+
+    nearest_int = round(ratio)
+    if abs(ratio - nearest_int) < 1e-4:
+        return token if nearest_int == 1 else f'{nearest_int}({token})'
+    return f'{ratio:.4g}({token})'
+
+
 def _moiety_formula_impl(
-        components: list[list[tuple[str, float]]],
+        components: list[list[AtomRecord]],
         z: int,
 ) -> str:
     """Inner implementation — called only by :func:`moiety_formula_from_components`.
@@ -804,72 +907,85 @@ def _moiety_formula_impl(
       element counts (so PART 1 occ=0.6 + PART 2 occ=0.4 of the same atom
       yield count 1); ``effective`` = 1.0 because the parts together represent
       one whole physical molecule.
+
+    Every species is finally given the formal charge perceived by
+    :mod:`finalcif.tools.formal_charge` and balanced across the formula unit.
     """
-    # Classify components and build per-component (comp_dict, effective) pairs.
-    classified: list[tuple[dict[str, float], float]] = []
+    # Classify components and build per-component (comp_dict, effective, charge) triples.
+    classified: list[tuple[dict[str, float], float, FragmentCharge]] = []
     for comp in components:
-        occs = [occ for _el, occ in comp]
+        occs = [_atom_occupancy(atom) for atom in comp]
         if not occs:
             continue
         is_uniform = (max(occs) - min(occs)) <= _UNIFORM_OCC_TOL
         if is_uniform:
             comp_dict = {el: float(c) for el, c in
-                         Counter(_normalize_element(el) for el, _occ in comp).items()}
+                         Counter(_normalize_element(_atom_element(atom))
+                                 for atom in comp).items()}
             effective = max(occs)
         else:
             weighted = _weighted_element_counts(comp)
             comp_dict = {el: _snap_to_int_if_close(n) for el, n in weighted.items()}
             effective = 1.0
-        classified.append((comp_dict, effective))
+        charge = perceive_fragment_charge(_charge_atoms(comp), comp_dict,
+                                          weighted=not is_uniform)
+        classified.append((comp_dict, effective, charge))
 
     if not classified:
         return ''
 
-    # Group by composition (rounded for float-stable equality).
-    comp_groups: dict[tuple, list[tuple[dict[str, float], float]]] = {}
-    for comp_dict, effective in classified:
-        key = tuple(sorted((el, round(n, _OCC_DECIMALS)) for el, n in comp_dict.items()))
-        comp_groups.setdefault(key, []).append((comp_dict, effective))
+    # Group by composition and charge (rounded for float-stable equality).
+    comp_groups: dict[tuple, list[tuple[dict[str, float], float, FragmentCharge]]] = {}
+    for comp_dict, effective, charge in classified:
+        key = (tuple(sorted((el, round(n, _OCC_DECIMALS)) for el, n in comp_dict.items())),
+               charge.charge, charge.confident)
+        comp_groups.setdefault(key, []).append((comp_dict, effective, charge))
 
     # For each species compute total effective count and an "is_major" flag.
-    species: list[tuple[dict[str, float], float, bool, float]] = []
+    species: list[tuple[dict[str, float], float, bool, float, FragmentCharge]] = []
     for _key, group in comp_groups.items():
-        total_effective = sum(eff for _cd, eff in group)
-        is_major = max(eff for _cd, eff in group) >= PARTIAL_OCC_THRESHOLD
+        total_effective = sum(eff for _cd, eff, _q in group)
+        is_major = max(eff for _cd, eff, _q in group) >= PARTIAL_OCC_THRESHOLD
         comp_dict = group[0][0]
         atoms_per_mol = sum(comp_dict.values())
-        species.append((comp_dict, total_effective, is_major, atoms_per_mol))
+        species.append((comp_dict, total_effective, is_major, atoms_per_mol, group[0][2]))
 
     # Sort: major species first (most abundant main molecule),
     # then by descending atom count (heavier molecule first), then by effective count.
     species.sort(key=lambda x: (-x[2], -x[3], -x[1]))
 
-    parts: list[str] = []
-    for comp_dict, effective, _is_major, _atoms in species:
+    entries: list[tuple[str, float, FragmentCharge, float]] = []
+    for comp_dict, effective, _is_major, atoms_per_mol, charge in species:
         formula_str = _composition_to_hill_str(comp_dict)
         if not formula_str:
             continue
         ratio = round(effective / z, 6)
-
         if ratio <= 0:
             continue
+        entries.append((formula_str, ratio, charge, atoms_per_mol))
 
-        # Decide how to format the multiplier.
-        nearest_int = round(ratio)
-        if abs(ratio - nearest_int) < 1e-4:
-            # Integer multiplier
-            n = nearest_int
-            if n == 1:
-                parts.append(formula_str)
-            else:
-                parts.append(f'{n}({formula_str})')
-        else:
-            # Fractional multiplier — express as a compact decimal.
-            # Use up to 4 significant figures; strip trailing zeros.
-            ratio_str = f'{ratio:.4g}'
-            parts.append(f'{ratio_str}({formula_str})')
+    if not entries:
+        return ''
 
-    return ', '.join(parts)
+    scale = _integer_multiplier_scale([ratio for _formula, ratio, _charge, _atoms in entries])
+    if scale > 1:
+        entries = [(formula, ratio * scale, charge, atoms)
+                   for formula, ratio, charge, atoms in entries]
+
+    balanced = balance_charges([
+        SpeciesCharge(charge=charge.charge, confident=charge.confident,
+                      ratio=ratio, atom_count=atoms)
+        for _formula, ratio, charge, atoms in entries
+    ])
+    # An unresolvable imbalance means the perception is untrustworthy — reporting
+    # no charge at all is preferable to reporting a wrong one.
+    if balanced is None:
+        balanced = [0] * len(entries)
+
+    return ', '.join(
+        _format_moiety_token(formula_str, ratio, charge)
+        for (formula_str, ratio, _perceived, _atoms), charge in zip(entries, balanced, strict=True)
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -1033,11 +1149,11 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
 
 
 def _combine_components(
-        regular_components: list[list[tuple[str, float]]],
+        regular_components: list[list[AtomRecord]],
         special_atoms: list,
         z: int,
         cell: tuple[float, ...],
-) -> list[list[tuple[str, float]]]:
+) -> list[list[AtomRecord]]:
     """Combine regular bond-graph components with negative-PART special-position fragments.
 
     For each connected component found in the negative-PART ASU atoms

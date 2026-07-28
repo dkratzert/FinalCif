@@ -4,7 +4,6 @@ import abc
 import base64
 import dataclasses
 import enum
-import itertools
 import pathlib
 import re
 import sys
@@ -41,11 +40,12 @@ from finalcif.report import references as ref, report_text
 from finalcif.report.references import Reference
 from finalcif.report.report_text import (math_to_word, gstr, format_radiation, _get_cooling_device)
 from finalcif.report.symm import SymmetryElement
-from finalcif.tools.misc import (isnumeric, this_or_quest, timessym, angstrom, protected_space,
+from finalcif.tools.misc import (this_or_quest, timessym, angstrom, protected_space,
                                  less_or_equal, halbgeviert, minus_sign, ellipsis_mid, angstrom_to_pm,
                                  angstrom_to_nanometers, do_nothing)
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
+from finalcif.tools.sumformula import SUBSCRIPT, SUPERSCRIPT, formula_parts
 
 AdpWithMinus = namedtuple('AdpWithMinus', ('label', 'U11', 'U22', 'U33', 'U23', 'U13', 'U12'))
 
@@ -926,23 +926,20 @@ class HtmlFormatter(Formatter):
         return ''
 
     def format_sum_formula(self, sum_formula: str) -> str:
-        sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
-        html_text = ''
-        if sum_formula_group:
-            for _, word in enumerate(sum_formula_group):
-                if isnumeric(word):
-                    html_text += f'<sub>{word}</sub>'
-                elif ')' in word:
-                    html_text += f"<sub>{word.split(')')[0]}</sub>)"
-                elif ']' in word:
-                    html_text += f"<sub>{word.split(']')[0]}</sub>)"
-                else:
-                    html_text += word
-                    if word == ',':
-                        html_text += ';&nbsp;'
-            return html_text
-        else:
+        parts = formula_parts(sum_formula)
+        if not parts:
             return 'no formula'
+        html_text = ''
+        for text, style in parts:
+            if style == SUBSCRIPT:
+                html_text += f'<sub>{text}</sub>'
+            elif style == SUPERSCRIPT:
+                html_text += f'<sup>{text}</sup>'
+            elif text == ', ':
+                html_text += ';&nbsp;'
+            else:
+                html_text += text
+        return html_text
 
     def hydrogen_atoms_refinement(self, cif: CifContainer) -> str:
         return Hydrogens(cif).html()
@@ -1038,25 +1035,13 @@ class RichTextFormatter(Formatter):
         return '[3D representation not implemented for .docx files]'
 
     def format_sum_formula(self, sum_formula: str) -> RichText:
-        sum_formula_group = [''.join(x[1]) for x in itertools.groupby(sum_formula, lambda x: x.isalpha())]
-        richtext = RichText('')
-        if sum_formula_group:
-            for _, word in enumerate(sum_formula_group):
-                if isnumeric(word):
-                    richtext.add(word, subscript=True)
-                elif ')' in word:
-                    richtext.add(word.split(')')[0], subscript=True)
-                    richtext.add(')')
-                elif ']' in word:
-                    richtext.add(word.split(']')[0], subscript=True)
-                    richtext.add(']')
-                else:
-                    richtext.add(word)
-                    if word == ',':
-                        richtext.add(' ')
-            return richtext
-        else:
+        parts = formula_parts(sum_formula)
+        if not parts:
             return RichText('no formula')
+        richtext = RichText('')
+        for text, style in parts:
+            richtext.add(text, subscript=style == SUBSCRIPT, superscript=style == SUPERSCRIPT)
+        return richtext
 
     def hydrogen_atoms_refinement(self, cif: CifContainer) -> RichText:
         return Hydrogens(cif).richtext()
@@ -1316,9 +1301,9 @@ class TemplatedReport:
                    '3d_structure'           : self.text_formatter.make_3d(cif, options) if options else '',
                    'crystallization_method' : self.text_formatter.get_crystallization_method(cif),
                    'sum_formula'            : self.text_formatter.format_sum_formula(
-                       cif['_chemical_formula_sum'].replace(" ", "")),
+                       cif['_chemical_formula_sum']),
                    'moiety_formula'         : self.text_formatter.format_sum_formula(
-                       cif['_chemical_formula_moiety'].replace(" ", "")),
+                       cif['_chemical_formula_moiety']),
                    'itnum'                  : cif['_space_group_IT_number'],
                    'crystal_size'           : this_or_quest(cif['_exptl_crystal_size_min']) + timessym +
                                               this_or_quest(cif['_exptl_crystal_size_mid']) + timessym +

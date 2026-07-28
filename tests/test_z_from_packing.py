@@ -571,11 +571,16 @@ class TestMoietyFormulaFromComponents:
         assert result == 'C10 H8 N2'
 
     def test_salt_organic_plus_chloride(self):
-        """4 organics + 4 Cl, Z=4 → 'formula, Cl' (both ratio=1)."""
-        components = [self._org()] * 4 + [[('Cl', 1.0)]] * 4
+        """4 organics + 4 Cl, Z=4 → 'formula 1+, Cl 1-' (both ratio=1).
+
+        The chloride is a confident 1- ion, so charge balancing gives the
+        organic cation the compensating 1+ charge.
+        """
+        organic = [('C', 1.0)] * 10 + [('H', 1.0)] * 9 + [('N', 1.0)] * 2
+        components = [organic] * 4 + [[('Cl', 1.0)]] * 4
         result = moiety_formula_from_components(components, z=4)
         # Main molecule first (heavier), then Cl
-        assert result == 'C10 H8 N2, Cl'
+        assert result == 'C10 H9 N2 1+, Cl 1-'
 
     def test_cocrystal_2_of_each(self):
         """2 copies of A, 2 of B (different sizes) → 'A, B' (both ratio=1)."""
@@ -585,34 +590,35 @@ class TestMoietyFormulaFromComponents:
         assert result == 'C12 H10 O3, C6 H6'
 
     def test_fractional_solvent(self):
-        """4 organics (occ=1) + 3 waters (occ=0.75 each) → '0.75(H2 O)' solvate."""
+        """4 organics (occ=1) + 3 waters (occ=0.75 each) → scaled to integer multipliers.
+
+        The per-formula-unit ratios are 1 : 0.75; scaling by four turns both into
+        integers, as PLATON and checkCIF expect.
+        """
         org = [('C', 1.0)] * 10 + [('H', 1.0)] * 8 + [('N', 1.0)] * 2
         # 4 water components at partial occupancy 0.75
         water = [('H', 0.75), ('H', 0.75), ('O', 0.75)]
         components = [org] * 4 + [water] * 4
         result = moiety_formula_from_components(components, z=4)
         # org ratio=1 (no prefix), water effective=4*0.75=3.0, ratio=3/4=0.75
-        assert 'C10 H8 N2' in result
-        assert '0.75(H2 O)' in result
+        assert result == '4(C10 H8 N2), 3(H2 O)'
 
     def test_half_occupied_solvent(self):
-        """2 organics (occ=1) + 2 waters (occ=0.5) → 'org, 0.5(H2 O)'."""
+        """2 organics (occ=1) + 2 waters (occ=0.5) → '2(org), H2 O'."""
         org = [('C', 1.0)] * 5 + [('O', 1.0)] * 2
         water = [('H', 0.5), ('H', 0.5), ('O', 0.5)]
         components = [org, org, water, water]
         result = moiety_formula_from_components(components, z=2)
-        assert 'C5 O2' in result
-        # water effective=2*0.5=1.0, ratio=0.5
-        assert '0.5(H2 O)' in result
+        # water effective=2*0.5=1.0, ratio=0.5 → scaled by two
+        assert result == '2(C5 O2), H2 O'
 
     def test_solvent_with_higher_multiplier(self):
-        """2 organics + 3 full-occ waters → Z=2, water ratio=1.5 → '1.5(H2 O)'."""
+        """2 organics + 3 full-occ waters → Z=2, ratios 1 : 1.5 → '2(org), 3(H2 O)'."""
         org = [('C', 1.0)] * 10 + [('H', 1.0)] * 8
         water = [('H', 1.0), ('H', 1.0), ('O', 1.0)]
         components = [org, org, water, water, water]
         result = moiety_formula_from_components(components, z=2)
-        assert 'C10 H8' in result
-        assert '1.5(H2 O)' in result
+        assert result == '2(C10 H8), 3(H2 O)'
 
     def test_main_molecule_with_prefix_when_ratio_gt_1(self):
         """4 A + 2 B, Z=2 → A ratio=2 → '2(formula_A), formula_B'."""
@@ -676,16 +682,16 @@ class TestMoietyFormulaFromComponents:
         which previously caused incorrect fusion of distinct methanol copies
         into scrambled components.
 
-        The correct moiety formula is 'C38 H38 O12, 0.5(C H4 O)':
-        one main molecule per formula unit plus half a methanol (occ=0.5 per ASU,
-        four copies × 0.5 = 2 effective in Z=4 cell → ratio=0.5).
+        The ratios are one main molecule per half methanol; scaling to integer
+        multipliers gives ``'2(C38 H38 O12), C H4 O'``, exactly what PLATON
+        reports for this structure.
         """
         cif = _load('tests/examples/1979688.cif')
         result = count_z_and_zprime(
             cif.atoms_fract, cif.symmops, cif.cell[:6],
             formula_sum=cif['_chemical_formula_sum'],
         )
-        assert result.moiety_formula == 'C38 H38 O12, 0.5(C H4 O)'
+        assert result.moiety_formula == '2(C38 H38 O12), C H4 O'
 
     def test_multi_part_bf4_disorder_esser_jw367(self):
         """Esser_JW367_0m: BF4 anion disordered over PART 1 (occ=0.904) and PART 2 (occ=0.096).
@@ -696,7 +702,7 @@ class TestMoietyFormulaFromComponents:
         sum to 1, so the BF4 anion is correctly reported as a whole unit.
 
         Expected: organic cation + tetrafluoroborate anion, one of each per
-        formula unit (P 2₁/n, Z=4).
+        formula unit (P 2₁/n, Z=4), each carrying its formal charge.
         """
         cif = _load('tests/examples/Esser_JW367_0m.cif')
         result = count_z_and_zprime(
@@ -704,7 +710,7 @@ class TestMoietyFormulaFromComponents:
             formula_sum=cif['_chemical_formula_sum'],
         )
         assert result.z == 4
-        assert result.moiety_formula == 'C9 H9 Br Cl N2, B F4'
+        assert result.moiety_formula == 'C9 H9 Br Cl N2 1+, B F4 1-'
 
 
 # ---------------------------------------------------------------------------
