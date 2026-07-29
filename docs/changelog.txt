@@ -1,8 +1,17 @@
 FinalCif recent changes
 -----------------------
+* v169 Several bugs that tore molecules apart in the calculated moiety formula were fixed: fractional coordinates
+       outside the unit cell are now wrapped, so molecules whose symmetry copies span several cells stay in one
+       piece; two hydrogen atoms are never bonded to each other; and a fragment that is an exact multiple of
+       another is folded back into it. Atoms of different SHELXL PARTs are no longer bonded, so two solvent
+       molecules sharing one pocket are reported as separate moieties instead of being averaged into a
+       meaningless 'C6 H5.78 F0.22'. A fully occupied atom still bridges all PARTs, which keeps the fluorines of
+       a rotationally disordered CF3 group attached to their carbon. The moiety formula is shown as a tooltip of the sum
+       formula field.
 * v168 The calculated moiety formula now recognizes charged molecules and reports them following the IUCr rules,
        for example 'C9 H9 Br Cl N2 1+, B F4 1-'. Charges are taken from the atom type symbols where available and
-       are otherwise derived from common ions, connectivity and the electroneutrality of the unit cell.
+       are otherwise derived from common ions, connectivity and the electroneutrality of the unit cell. No charge
+       is reported at all when the unit cell cannot be balanced, because a wrong charge is worse than none.
 * v167 Using source-less distribution for faster startup speed now.
        Removed the dependency on the crossrefapi package for DOI lookups in COD deposit.
 * v166 Added SHELXL navigation helpers to scroll to and highlight atom lines in the SHELX text view. CIF paths can now
