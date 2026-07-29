@@ -548,6 +548,19 @@ class TestDisorderedSolventPocket:
         # The bridging carbon fuses both parts into a single seven-carbon unit.
         assert self._moiety(atoms) == 'C8, C7'
 
+    def test_a_fully_occupied_pivot_inside_a_part_still_bridges(self):
+        """The pivot of a rotationally disordered group may sit in a PART itself.
+
+        Deposited CF3 groups regularly carry their carbon in PART 1 while the
+        fluorines are spread over PARTs 1, 2 and 3.  The fully occupied carbon
+        belongs to all of them, so nothing may be torn off it.
+        """
+        bridge = [['B1', 'C', 14.0 / 20.0, (14.0 + 1.39) / 20.0, 0.43, 1, 1.0, 0.02]]
+        atoms = (self._main_molecule() + bridge
+                 + self._ring(0.6, disorder_group=1)
+                 + self._ring(0.4, disorder_group=2, twist=7.0))
+        assert self._moiety(atoms) == 'C8, C7'
+
 
 class TestAggregateMerging:
     """A molecule bonded to a symmetry copy of itself must not be counted twice.
@@ -663,6 +676,20 @@ class TestPartsMayBond:
         assert _parts_may_bond(1, 2) is False
         assert _parts_may_bond(2, 1) is False
         assert _parts_may_bond(3, 5) is False
+
+    def test_a_fully_occupied_atom_is_shared_between_parts(self):
+        """A pivot atom left inside a PART still bonds to the other PARTs.
+
+        A rotationally disordered CF3 group is often deposited with its carbon
+        in PART 1 and the fluorines spread over PARTs 1, 2 and 3.  The carbon is
+        fully occupied, so it belongs to every alternative.
+        """
+        assert _parts_may_bond(1, 2, 1.0, 0.33) is True
+        assert _parts_may_bond(2, 1, 0.33, 1.0) is True
+
+    def test_two_partial_atoms_in_different_parts_still_never_bond(self):
+        assert _parts_may_bond(1, 2, 0.6, 0.4) is False
+        assert _parts_may_bond(1, 2, 0.904, 0.096) is False
 
 
 class TestFormulaParts:

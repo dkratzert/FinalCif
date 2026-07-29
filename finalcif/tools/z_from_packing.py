@@ -90,6 +90,10 @@ def _normalize_element(symbol: str) -> str:
 
 BOND_TOLERANCE: float = 0.40
 
+# Occupancy at which an atom counts as fully occupied, and therefore as shared
+# between all disorder alternatives rather than being one of them.
+FULL_OCCUPANCY: float = 0.99
+
 # Two hydrogens are never bonded to each other.  Their covalent-radii cutoff of
 # 1.4 A would otherwise turn a short H...H contact into a bond, which happens
 # between the alternative positions of a disordered molecule and fuses them into
@@ -129,7 +133,8 @@ def _expanded_disorder_group(atom: ExpandedAtom) -> int:
     return int(atom[3]) if len(atom) > 3 else 0
 
 
-def _parts_may_bond(first: int, second: int) -> bool:
+def _parts_may_bond(first: int, second: int,
+                    first_occupancy: float = 0.0, second_occupancy: float = 0.0) -> bool:
     """Return ``True`` when two atoms of the given disorder groups may be bonded.
 
     Following the SHELXL ``PART`` convention, atoms belonging to *different*
@@ -142,8 +147,18 @@ def _parts_may_bond(first: int, second: int) -> bool:
     benzene in PART 1 and fluorobenzene in PART 2) are fused into a single
     bond-graph component whose composition is a meaningless average of both,
     such as ``'C6 H5.78 F0.22'``.
+
+    A **fully occupied** atom is treated as shared whatever PART it is labelled
+    with.  Alternative positions are by definition only partly occupied, so an
+    occupancy of one identifies an atom that is present in every alternative.
+    Depositors regularly leave such a pivot atom inside one of the PARTs instead
+    of PART 0 — a rotationally disordered CF3 group whose carbon sits in PART 1
+    while the fluorines are spread over PARTs 1, 2 and 3, for instance.  Without
+    this exception the fluorines of PARTs 2 and 3 would be torn off the carbon.
     """
-    return first == second or first == 0 or second == 0
+    if first == second or first == 0 or second == 0:
+        return True
+    return first_occupancy >= FULL_OCCUPANCY or second_occupancy >= FULL_OCCUPANCY
 
 # Decimal precision for occupancy-weighted element counts.  Two decimal places
 # is generous enough to absorb rounding errors in SHELXL .res / CIF output
@@ -497,6 +512,7 @@ def _build_bond_graph(
     orth = [uc.orthogonalize(gemmi.Fractional(*atom[1])) for atom in expanded]
     radii = [_get_radius(atom[0]) for atom in expanded]
     groups = [_expanded_disorder_group(atom) for atom in expanded]
+    occupancies = [float(atom[2]) for atom in expanded]
     is_hydrogen = [_normalize_element(atom[0]) in _HYDROGEN for atom in expanded]
 
     # Maximum possible bond cutoff (largest atom pair + tolerance).
@@ -550,7 +566,8 @@ def _build_bond_graph(
                     for j, xj, yj, zj in grid_ext.get((gx + dgx, gy + dgy, gz + dgz), []):
                         if j <= i or j in seen_j:
                             continue
-                        if not _parts_may_bond(groups[i], groups[j]):
+                        if not _parts_may_bond(groups[i], groups[j],
+                                               occupancies[i], occupancies[j]):
                             continue
                         # Two hydrogens are never bonded to each other.
                         if is_hydrogen[i] and is_hydrogen[j]:
