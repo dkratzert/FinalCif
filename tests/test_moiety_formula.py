@@ -23,7 +23,8 @@ from finalcif.tools.formal_charge import (
 )
 from finalcif.tools.sumformula import (NORMAL, SUBSCRIPT, SUPERSCRIPT, formula_parts,
                                        formula_str_to_dict, formula_to_html)
-from finalcif.tools.z_from_packing import (_parts_may_bond, count_z_and_zprime,
+from finalcif.tools.z_from_packing import (_build_bond_graph, _expand_to_unit_cell,
+                                           _parts_may_bond, count_z_and_zprime,
                                            moiety_formula_from_components)
 
 
@@ -546,6 +547,105 @@ class TestDisorderedSolventPocket:
                  + self._ring(0.4, disorder_group=2, twist=7.0))
         # The bridging carbon fuses both parts into a single seven-carbon unit.
         assert self._moiety(atoms) == 'C8, C7'
+
+
+class TestAggregateMerging:
+    """A molecule bonded to a symmetry copy of itself must not be counted twice.
+
+    Such a molecule appears both whole and as the fused aggregate, each with a
+    fractional multiplier.  Chemically there is only the monomer.
+    """
+
+    def _species(self, atoms_per_unit: int, copies: int, occupancy: float) -> list:
+        """A component of ``copies × atoms_per_unit`` carbon atoms at *occupancy*."""
+        return [('C', occupancy, ())] * (atoms_per_unit * copies)
+
+    def test_dimer_and_monomer_are_folded_together(self):
+        """0.25(C20) + 0.5(C10) = 1.0 monomer, as PLATON reports it."""
+        monomer = self._species(10, 1, 0.5)
+        dimer = self._species(10, 2, 0.25)
+        assert moiety_formula_from_components([monomer, dimer], z=1) == 'C10'
+
+    def test_trimer_and_monomer(self):
+        """0.5(C30) + 0.5(C10) = 2 monomers."""
+        monomer = self._species(10, 1, 0.5)
+        trimer = self._species(10, 3, 0.5)
+        assert moiety_formula_from_components([monomer, trimer], z=1) == '2(C10)'
+
+    def test_genuine_dimer_plus_monomer_is_kept(self):
+        """Two whole-numbered species are a real mixture and stay separate."""
+        monomer = self._species(10, 1, 1.0)
+        dimer = self._species(10, 2, 1.0)
+        result = moiety_formula_from_components([monomer, dimer], z=1)
+        assert result == 'C20, C10'
+
+    def test_non_integral_total_is_kept(self):
+        """``2(H2 O), 0.03833(H12 O6)`` must survive: 2 + 6*0.03833 is not whole."""
+        water = [('H', 1.0, ()), ('H', 1.0, ()), ('O', 1.0, ())]
+        hexamer = [('H', 0.03833, ())] * 12 + [('O', 0.03833, ())] * 6
+        result = moiety_formula_from_components([water, water, hexamer], z=1)
+        assert result == '2(H2 O), 0.03833(H12 O6)'
+
+    def test_different_elements_are_never_folded(self):
+        """A composition that is not an exact multiple is left alone."""
+        first = [('C', 0.5, ())] * 10
+        second = [('C', 0.5, ())] * 20 + [('N', 0.5, ())]
+        result = moiety_formula_from_components([first, second], z=1)
+        assert result == '0.5(C20 N), 0.5(C10)'
+
+
+class TestUnitCellExpansion:
+    """The expansion must place every site inside one unit cell.
+
+    Deposited fractional coordinates are often slightly outside ``[0, 1)``.
+    gemmi passes them through unchanged, so the symmetry copies of a molecule
+    can end up spread over three cells — which the ±1 periodic image search of
+    the bond graph cannot bridge, tearing molecules apart.
+    """
+
+    def test_coordinates_are_wrapped_into_the_unit_cell(self):
+        atoms = [['C1', 'C', 1.0632, -0.25, 2.5, 0, 1.0, 0.02]]
+        expanded = _expand_to_unit_cell(atoms, ['x,y,z'], (10.0, 10.0, 10.0, 90.0, 90.0, 90.0))
+        assert expanded
+        for _element, position, _occupancy, _group in expanded:
+            for coordinate in position:
+                assert 0.0 <= coordinate < 1.0
+
+    def test_wrapping_keeps_the_atom_count(self):
+        atoms = [['C1', 'C', 0.1, 0.2, 0.3, 0, 1.0, 0.02],
+                 ['C2', 'C', 1.1, -0.8, 0.3, 0, 1.0, 0.02]]
+        expanded = _expand_to_unit_cell(atoms, ['x,y,z'], (10.0, 10.0, 10.0, 90.0, 90.0, 90.0))
+        assert len(expanded) == 2
+
+
+class TestHydrogenBonding:
+    """Two hydrogens must never be bonded to each other.
+
+    Their covalent-radii cutoff is 1.4 Angstrom, so without this rule a short
+    H...H contact — which only arises between the alternative positions of a
+    disordered molecule — is taken for a bond and fuses the alternatives.
+    """
+
+    CELL = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+
+    def _site(self, element: str, x: float) -> tuple:
+        return (element, (x / 20.0, 0.5, 0.5), 1.0, 0)
+
+    def test_two_close_hydrogens_are_not_bonded(self):
+        expanded = [self._site('H', 5.0), self._site('H', 6.0)]
+        adjacency = _build_bond_graph(expanded, self.CELL)
+        assert adjacency[0] == set()
+
+    def test_hydrogen_still_bonds_to_carbon(self):
+        expanded = [self._site('C', 5.0), self._site('H', 6.0)]
+        adjacency = _build_bond_graph(expanded, self.CELL)
+        assert adjacency[0] == {1}
+
+    def test_short_carbon_hydrogen_bond_is_kept(self):
+        """Old structures place H as close as 0.7 Angstrom; that bond must survive."""
+        expanded = [self._site('O', 5.0), self._site('H', 5.7)]
+        adjacency = _build_bond_graph(expanded, self.CELL)
+        assert adjacency[0] == {1}
 
 
 class TestPartsMayBond:

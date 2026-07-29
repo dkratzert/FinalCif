@@ -90,6 +90,13 @@ def _normalize_element(symbol: str) -> str:
 
 BOND_TOLERANCE: float = 0.40
 
+# Two hydrogens are never bonded to each other.  Their covalent-radii cutoff of
+# 1.4 A would otherwise turn a short H...H contact into a bond, which happens
+# between the alternative positions of a disordered molecule and fuses them into
+# one oversized fragment.  Real H...H contacts never fall below the van der
+# Waals range, so no genuine bond is lost.
+_HYDROGEN: frozenset[str] = frozenset({'H', 'D'})
+
 
 def _atom_element(atom: AtomRecord) -> str:
     """Return the raw type symbol of a component atom (oxidation suffix included)."""
@@ -406,6 +413,13 @@ def _expand_to_unit_cell(
     The disorder group of every site is carried along so that
     :func:`_build_bond_graph` can keep alternative disorder components apart.
 
+    Fractional coordinates are wrapped into ``[0, 1)`` afterwards.  Deposited
+    coordinates frequently lie outside that range (values such as 1.063 are
+    common), and gemmi passes them through unchanged, so the symmetry copies of
+    one molecule can end up spread over three cells.  The ±1 image search in
+    :func:`_build_bond_graph` cannot bridge that, which tears molecules apart.
+    Wrapping puts every site into one cell, where ±1 images are sufficient.
+
     Returns:
         List of ``(element_symbol, (fx, fy, fz), occupancy, disorder_group)``
         tuples covering all symmetry-equivalent sites in the conventional
@@ -436,7 +450,11 @@ def _expand_to_unit_cell(
     all_sites = ss.get_all_unit_cell_sites()
 
     return [
-        (s.type_symbol, (s.fract.x, s.fract.y, s.fract.z), s.occ, s.disorder_group)
+        (s.type_symbol,
+         (s.fract.x - math.floor(s.fract.x),
+          s.fract.y - math.floor(s.fract.y),
+          s.fract.z - math.floor(s.fract.z)),
+         s.occ, s.disorder_group)
         for s in all_sites
     ]
 
@@ -479,6 +497,7 @@ def _build_bond_graph(
     orth = [uc.orthogonalize(gemmi.Fractional(*atom[1])) for atom in expanded]
     radii = [_get_radius(atom[0]) for atom in expanded]
     groups = [_expanded_disorder_group(atom) for atom in expanded]
+    is_hydrogen = [_normalize_element(atom[0]) in _HYDROGEN for atom in expanded]
 
     # Maximum possible bond cutoff (largest atom pair + tolerance).
     max_radius = max(radii)
@@ -532,6 +551,9 @@ def _build_bond_graph(
                         if j <= i or j in seen_j:
                             continue
                         if not _parts_may_bond(groups[i], groups[j]):
+                            continue
+                        # Two hydrogens are never bonded to each other.
+                        if is_hydrogen[i] and is_hydrogen[j]:
                             continue
                         rj = radii[j]
                         cutoff_sq = (ri + rj + BOND_TOLERANCE) ** 2
@@ -915,6 +937,84 @@ def _format_moiety_token(formula_str: str, ratio: float, charge: int) -> str:
     return f'{ratio:.4g}({token})'
 
 
+def _composition_multiple(bigger: dict[str, float], smaller: dict[str, float]) -> int | None:
+    """Return *k* when *bigger* is exactly ``k × smaller`` (k ≥ 2), else ``None``.
+
+    Both compositions must contain the same elements and every element ratio has
+    to yield the same integer factor.
+    """
+    if set(bigger) != set(smaller) or not smaller:
+        return None
+    factors: set[int] = set()
+    for element, count in smaller.items():
+        if count <= 0:
+            return None
+        ratio = bigger[element] / count
+        nearest = round(ratio)
+        if nearest < 2 or abs(ratio - nearest) > 1e-6:
+            return None
+        factors.add(nearest)
+    return factors.pop() if len(factors) == 1 else None
+
+
+def _is_integral(value: float) -> bool:
+    """Return ``True`` when *value* is within rounding noise of a whole number."""
+    return abs(value - round(value)) < 1e-4
+
+
+def _merge_multiple_species(
+        species: list[tuple[dict[str, float], float, bool, float, FragmentCharge]],
+        z: int,
+) -> list[tuple[dict[str, float], float, bool, float, FragmentCharge]]:
+    """Fold aggregate species back into the monomer they are a multiple of.
+
+    A molecule that is bonded to a symmetry copy of itself shows up twice: once
+    whole and once as the fused aggregate, both with fractional multipliers, as
+    in ``'0.25(C50 H72 K2 N8 Ni2 O4), 0.5(C25 H36 K N4 Ni O2)'`` where the
+    aggregate is exactly twice the monomer.  Chemically there is only the
+    monomer, and PLATON reports it as such.
+
+    An aggregate is folded into its monomer only when
+
+    * its composition is an exact integer multiple of the monomer's,
+    * at least one of the two multipliers is fractional, and
+    * the combined multiplier lands on a whole number.
+
+    The last condition is what makes the rule safe: a genuine mixture of a
+    dimer and a monomer keeps two independent multipliers that do not add up,
+    and stays untouched.  So does ``'2(H2 O), 0.03833(H12 O6)'``, where the
+    hexamer is a real, separate species.
+
+    The monomer's own charge is kept, because it was perceived from that
+    fragment's connectivity.
+    """
+    if z <= 0:
+        return species
+    merged = list(species)
+    while True:
+        for i, aggregate in enumerate(merged):
+            for j, monomer in enumerate(merged):
+                if i == j or aggregate[3] <= monomer[3]:
+                    continue
+                factor = _composition_multiple(aggregate[0], monomer[0])
+                if factor is None:
+                    continue
+                if _is_integral(aggregate[1] / z) and _is_integral(monomer[1] / z):
+                    continue
+                total = monomer[1] + factor * aggregate[1]
+                if not _is_integral(total / z):
+                    continue
+                merged[j] = (monomer[0], total, monomer[2] or aggregate[2],
+                             monomer[3], monomer[4])
+                del merged[i]
+                break
+            else:
+                continue
+            break
+        else:
+            return merged
+
+
 def _moiety_formula_impl(
         components: list[list[AtomRecord]],
         z: int,
@@ -975,6 +1075,8 @@ def _moiety_formula_impl(
         comp_dict = group[0][0]
         atoms_per_mol = sum(comp_dict.values())
         species.append((comp_dict, total_effective, is_major, atoms_per_mol, group[0][2]))
+
+    species = _merge_multiple_species(species, z)
 
     # Sort: major species first (most abundant main molecule),
     # then by descending atom count (heavier molecule first), then by effective count.
