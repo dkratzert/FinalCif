@@ -2,8 +2,7 @@ FinalCif recent changes
 -----------------------
 * v168 The calculated moiety formula now recognizes charged molecules and reports them following the IUCr rules,
        for example 'C9 H9 Br Cl N2 1+, B F4 1-'. Charges are taken from the atom type symbols where available and
-       are otherwise derived from common ions, connectivity and the electroneutrality of the unit cell. Element
-       counts and charges are now displayed as subscripts and superscripts in reports.
+       are otherwise derived from common ions, connectivity and the electroneutrality of the unit cell.
 * v167 Using source-less distribution for faster startup speed now.
        Removed the dependency on the crossrefapi package for DOI lookups in COD deposit.
 * v166 Added SHELXL navigation helpers to scroll to and highlight atom lines in the SHELX text view. CIF paths can now
