@@ -780,7 +780,7 @@ class AppWindow(QMainWindow):
             return
         if is_database_number(input_txt):
             self.status_bar.show_message('Request sent to COD...')
-            r = requests.get(f'{self.deposit.main_url}{input_txt}.cif', timeout=8)
+            r = requests.get(f'{self.deposit.main_url}{input_txt}.cif', timeout=18)
             self.status_bar.show_message('Got a result.')
             if r.status_code == 200:
                 filename = cif_file_save_dialog(f'{input_txt}.cif')
