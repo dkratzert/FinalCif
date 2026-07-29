@@ -6,6 +6,7 @@ and the charge appended after a space (``'B F4 1-'``).  A multiplier other
 than one wraps the whole moiety in parentheses (``'2(N O3 1-)'``).
 """
 from pathlib import Path
+import math
 import re
 
 import pytest
@@ -22,7 +23,8 @@ from finalcif.tools.formal_charge import (
 )
 from finalcif.tools.sumformula import (NORMAL, SUBSCRIPT, SUPERSCRIPT, formula_parts,
                                        formula_str_to_dict, formula_to_html)
-from finalcif.tools.z_from_packing import count_z_and_zprime, moiety_formula_from_components
+from finalcif.tools.z_from_packing import (_parts_may_bond, count_z_and_zprime,
+                                           moiety_formula_from_components)
 
 
 def _load(relative_path: str) -> CifContainer:
@@ -384,18 +386,30 @@ class TestMoietyFormulaOfRealStructures:
         ).moiety_formula
 
     def test_tetrafluoroborate_salt(self):
-        """Esser_JW367_0m: organic cation + BF4- anion (P 2₁/n, Z=4)."""
+        """Esser_JW367_0m: organic cation + BF4- anion (P 2₁/n, Z=4).
+
+        PLATON finds the same two fragments (``'C9 H9 Br Cl N2, B F4'``) but
+        reports no charges.
+        """
         assert self._moiety('tests/examples/Esser_JW367_0m.cif') == 'C9 H9 Br Cl N2 1+, B F4 1-'
 
     def test_tetracycline_hydrochloride(self):
-        """1000006: protonated dimethylamino group + chloride."""
+        """1000006: protonated dimethylamino group + chloride.
+
+        PLATON: ``'C22 H25 N2 O8, Cl'`` — same fragments, no charges.
+        """
         assert self._moiety('test-data/1000006.cif') == 'C22 H25 N2 O8 1+, Cl 1-'
 
     def test_neutral_molecule_gets_no_charge(self):
         assert self._moiety('test-data/DK_ML7-66-final.cif') == 'C23 H21 N O'
 
     def test_solvate_keeps_the_per_formula_unit_multiplier(self):
-        """Half a methanol per molecule, so the moiety still sums to the sum formula."""
+        """Half a methanol per molecule, so the moiety still sums to the sum formula.
+
+        PLATON reports the same ratio as ``'2(C38 H38 O12), C H4 O'`` because it
+        halves Z for this structure (``Z = 2[Calc], 4[Rep]``).  We keep the Z of
+        the CIF, which makes the moiety add up to ``_chemical_formula_sum``.
+        """
         assert self._moiety('tests/examples/1979688.cif') == 'C38 H38 O12, 0.5(C H4 O)'
 
     def test_sucrose_is_neutral(self):
@@ -407,7 +421,15 @@ class TestMoietyFormulaOfRealStructures:
 # ---------------------------------------------------------------------------
 
 # Each entry reproduces both the deposited _chemical_formula_moiety and
-# _cell_formula_units_Z of the COD structure exactly.
+# _cell_formula_units_Z of the COD structure exactly.  PLATON (`platon -U`)
+# arrives at the same fragmentation and the same Z for all of them; it only
+# omits the charges, which it never reports:
+#
+#   1517679  PLATON: 'C18 H18 N4, 2(B F4)'                            Z=4
+#   1513675  PLATON: 'C20 H38 N6 P2 Si2, 2(Cl4 Ga), C H2 Cl2'         Z=4
+#   1517303  PLATON: 'C24 H24 Br2 N O P Pd, C H2 Cl2'                 Z=2
+#   1508702  PLATON: 'C16 H22 N2 O3 S'                                Z=4
+#   1506408  PLATON: 'C10 H14 N2 O2 S'                                Z=16
 _COD_MOIETY_CASES = [
     ('test-data/1517679.cif', 'C18 H18 N4 2+, 2(B F4 1-)', 4,
      'organic dication with two tetrafluoroborates, P 21/n'),
@@ -457,6 +479,91 @@ class TestCodMoietyFormulas:
 # ---------------------------------------------------------------------------
 # Rendering of a charged moiety formula in reports
 # ---------------------------------------------------------------------------
+
+class TestDisorderedSolventPocket:
+    """Two different solvents sharing one pocket must stay separate moieties.
+
+    Following the SHELXL ``PART`` convention, atoms of different non-zero
+    disorder groups are alternative positions and are never bonded to each
+    other.  Without that rule the bond graph fuses e.g. a benzene and a
+    fluorobenzene occupying the same void into one component whose composition
+    is a meaningless average such as ``'C6 F0.4'``.
+    """
+
+    CELL = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+
+    def _ring(self, occupancy: float, disorder_group: int, *,
+              twist: float = 0.0, with_fluorine: bool = False) -> list:
+        """A flat six-membered carbon ring centred at (14, 14, 10) Angstrom."""
+        atoms = []
+        for i in range(6):
+            angle = math.radians(60 * i + twist)
+            atoms.append([f'C{disorder_group}{i}', 'C',
+                          (14.0 + 1.39 * math.cos(angle)) / 20.0,
+                          (14.0 + 1.39 * math.sin(angle)) / 20.0,
+                          0.5, disorder_group, occupancy, 0.02])
+        if with_fluorine:
+            angle = math.radians(twist)
+            atoms.append([f'F{disorder_group}', 'F',
+                          (14.0 + 2.74 * math.cos(angle)) / 20.0,
+                          (14.0 + 2.74 * math.sin(angle)) / 20.0,
+                          0.5, disorder_group, occupancy, 0.02])
+        return atoms
+
+    def _main_molecule(self) -> list:
+        """A chain of eight carbons, far away from the solvent pocket."""
+        return [[f'M{i}', 'C', (2.0 + 1.5 * i) / 20.0, 0.05, 0.05, 0, 1.0, 0.02]
+                for i in range(8)]
+
+    def _moiety(self, atoms: list) -> str:
+        return count_z_and_zprime(atoms, ['x,y,z'], self.CELL).moiety_formula
+
+    def test_two_different_solvents_stay_separate(self):
+        atoms = (self._main_molecule()
+                 + self._ring(0.6, disorder_group=1)
+                 + self._ring(0.4, disorder_group=2, twist=7.0, with_fluorine=True))
+        assert self._moiety(atoms) == 'C8, 0.4(C6 F), 0.6(C6)'
+
+    def test_composition_is_never_averaged(self):
+        """The fused token 'C6 F0.4' of the old behaviour must not reappear."""
+        atoms = (self._main_molecule()
+                 + self._ring(0.6, disorder_group=1)
+                 + self._ring(0.4, disorder_group=2, twist=7.0, with_fluorine=True))
+        assert 'F0.4' not in self._moiety(atoms)
+
+    def test_same_solvent_over_two_parts_is_one_species(self):
+        """Two PARTs of the *same* molecule add up to one whole solvent."""
+        atoms = (self._main_molecule()
+                 + self._ring(0.7, disorder_group=1)
+                 + self._ring(0.3, disorder_group=2, twist=7.0))
+        assert self._moiety(atoms) == 'C8, C6'
+
+    def test_ordered_atoms_still_bridge_disorder_parts(self):
+        """An ordered atom bonded to both PARTs keeps the molecule in one piece."""
+        bridge = [['B0', 'C', 14.0 / 20.0, (14.0 + 1.39) / 20.0, 0.43, 0, 1.0, 0.02]]
+        atoms = (self._main_molecule() + bridge
+                 + self._ring(0.6, disorder_group=1)
+                 + self._ring(0.4, disorder_group=2, twist=7.0))
+        # The bridging carbon fuses both parts into a single seven-carbon unit.
+        assert self._moiety(atoms) == 'C8, C7'
+
+
+class TestPartsMayBond:
+    """Unit tests for the SHELXL PART bonding rule."""
+
+    def test_same_group_may_bond(self):
+        assert _parts_may_bond(1, 1) is True
+
+    def test_ordered_atoms_bond_to_everything(self):
+        assert _parts_may_bond(0, 0) is True
+        assert _parts_may_bond(0, 3) is True
+        assert _parts_may_bond(3, 0) is True
+
+    def test_different_non_zero_groups_never_bond(self):
+        assert _parts_may_bond(1, 2) is False
+        assert _parts_may_bond(2, 1) is False
+        assert _parts_may_bond(3, 5) is False
+
 
 class TestFormulaParts:
     def test_counts_become_subscripts(self):

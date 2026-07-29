@@ -46,6 +46,11 @@ from finalcif.tools.formal_charge import (METALS, ChargeAtom, FragmentCharge, Sp
 # callers may still pass plain ``(element, occupancy)`` pairs.
 AtomRecord = tuple[str, float] | tuple[str, float, tuple[tuple[str, int], ...]]
 
+# One symmetry-expanded unit-cell site.  The disorder group is optional so that
+# tests and callers may pass plain ``(element, position, occupancy)`` triples.
+ExpandedAtom = (tuple[str, tuple[float, float, float], float]
+                | tuple[str, tuple[float, float, float], float, int])
+
 # Regex matching the bare element letters at the start of a type_symbol string.
 # CIF _atom_site_type_symbol values often include oxidation-state suffixes such
 # as 'Fe3+', 'O1-', 'Ni0+'; this pattern strips everything after the letters.
@@ -99,6 +104,39 @@ def _atom_occupancy(atom: AtomRecord) -> float:
 def _atom_neighbours(atom: AtomRecord) -> tuple[tuple[str, int], ...]:
     """Return the ``(element, degree)`` pairs of a component atom's non-metal neighbours."""
     return atom[2] if len(atom) > 2 else ()
+
+
+def _disorder_group(atom) -> int:
+    """Return the ``_atom_site_disorder_group`` of an ASU atom record as an int.
+
+    Unparseable or absent values are reported as 0 (an ordered atom).
+    """
+    try:
+        return int(atom[5])
+    except (TypeError, ValueError, IndexError):
+        return 0
+
+
+def _expanded_disorder_group(atom: ExpandedAtom) -> int:
+    """Return the disorder group of an expanded site, or 0 when it carries none."""
+    return int(atom[3]) if len(atom) > 3 else 0
+
+
+def _parts_may_bond(first: int, second: int) -> bool:
+    """Return ``True`` when two atoms of the given disorder groups may be bonded.
+
+    Following the SHELXL ``PART`` convention, atoms belonging to *different*
+    non-zero disorder groups are alternative positions of the same region of the
+    structure and are never bonded to each other.  Atoms of group 0 are ordered
+    and bond to everything, which keeps a molecule whose disordered side chain is
+    split over several PARTs in one piece.
+
+    Without this rule two different solvent molecules sharing one pocket (e.g.
+    benzene in PART 1 and fluorobenzene in PART 2) are fused into a single
+    bond-graph component whose composition is a meaningless average of both,
+    such as ``'C6 H5.78 F0.22'``.
+    """
+    return first == second or first == 0 or second == 0
 
 # Decimal precision for occupancy-weighted element counts.  Two decimal places
 # is generous enough to absorb rounding errors in SHELXL .res / CIF output
@@ -356,7 +394,7 @@ def _expand_to_unit_cell(
         filtered: list,
         symmops: list[str],
         cell: tuple[float, ...],
-) -> list[tuple[str, tuple[float, float, float], float]]:
+) -> list[ExpandedAtom]:
     """Expand the filtered ASU atoms to the full unit cell using gemmi.
 
     A minimal :class:`gemmi.SmallStructure` is constructed from *filtered*,
@@ -365,9 +403,13 @@ def _expand_to_unit_cell(
     land on the same fractional position (special positions) using gemmi's
     own robust engine — no arbitrary deduplication threshold is needed.
 
+    The disorder group of every site is carried along so that
+    :func:`_build_bond_graph` can keep alternative disorder components apart.
+
     Returns:
-        List of ``(element_symbol, (fx, fy, fz))`` tuples covering all
-        symmetry-equivalent sites in the conventional unit cell.
+        List of ``(element_symbol, (fx, fy, fz), occupancy, disorder_group)``
+        tuples covering all symmetry-equivalent sites in the conventional
+        unit cell.
     """
     a, b, c, alpha, beta, gamma = cell[:6]
 
@@ -387,13 +429,14 @@ def _expand_to_unit_cell(
         site.type_symbol = str(atom[1])
         site.fract = gemmi.Fractional(float(atom[2]), float(atom[3]), float(atom[4]))
         site.occ = float(atom[6])
+        site.disorder_group = _disorder_group(atom)
         ss.sites.append(site)
 
     ss.setup_cell_images()
     all_sites = ss.get_all_unit_cell_sites()
 
     return [
-        (s.type_symbol, (s.fract.x, s.fract.y, s.fract.z), s.occ)
+        (s.type_symbol, (s.fract.x, s.fract.y, s.fract.z), s.occ, s.disorder_group)
         for s in all_sites
     ]
 
@@ -403,7 +446,7 @@ def _expand_to_unit_cell(
 # ---------------------------------------------------------------------------
 
 def _build_bond_graph(
-        expanded: list[tuple[str, tuple[float, float, float], float]],
+        expanded: list[ExpandedAtom],
         cell: tuple[float, ...],
 ) -> dict[int, set[int]]:
     """Build an adjacency dict for all unit-cell atoms.
@@ -411,6 +454,10 @@ def _build_bond_graph(
     Bond detection uses the sum of covalent radii + BOND_TOLERANCE.
     The 27 periodic images of each atom (shifts of +-1 along a, b, c) are
     checked to correctly bond atoms across cell boundaries.
+
+    Atoms belonging to different non-zero disorder groups are never bonded to
+    each other (see :func:`_parts_may_bond`), so that alternative positions of
+    the same region of the structure end up in separate components.
 
     Fractional→Cartesian conversion is delegated to
     ``gemmi.UnitCell.orthogonalize()``, which handles all crystal systems
@@ -429,8 +476,9 @@ def _build_bond_graph(
     uc = gemmi.UnitCell(a, b, c, alpha, beta, gamma)
 
     # Cartesian coordinates for all expanded atoms via gemmi.
-    orth = [uc.orthogonalize(gemmi.Fractional(*pos)) for _, pos, _occ in expanded]
-    radii = [_get_radius(el) for el, _pos, _occ in expanded]
+    orth = [uc.orthogonalize(gemmi.Fractional(*atom[1])) for atom in expanded]
+    radii = [_get_radius(atom[0]) for atom in expanded]
+    groups = [_expanded_disorder_group(atom) for atom in expanded]
 
     # Maximum possible bond cutoff (largest atom pair + tolerance).
     max_radius = max(radii)
@@ -483,6 +531,8 @@ def _build_bond_graph(
                     for j, xj, yj, zj in grid_ext.get((gx + dgx, gy + dgy, gz + dgz), []):
                         if j <= i or j in seen_j:
                             continue
+                        if not _parts_may_bond(groups[i], groups[j]):
+                            continue
                         rj = radii[j]
                         cutoff_sq = (ri + rj + BOND_TOLERANCE) ** 2
                         dx = xj - xi
@@ -519,7 +569,7 @@ def _count_components(adj: dict[int, set[int]]) -> int:
 
 def _neighbour_table(
         adj: dict[int, set[int]],
-        expanded: list[tuple[str, tuple[float, float, float], float]],
+        expanded: list[ExpandedAtom],
 ) -> dict[int, tuple[tuple[str, int], ...]]:
     """Return, per atom index, the ``(element, degree)`` pairs of its non-metal neighbours.
 
@@ -529,7 +579,7 @@ def _neighbour_table(
     Knowing each neighbour's degree lets the charge rules recognise terminal
     oxygen atoms (amine *N*-oxides, ylides).
     """
-    elements = [_normalize_element(el) for el, _pos, _occ in expanded]
+    elements = [_normalize_element(atom[0]) for atom in expanded]
     non_metal_neighbours = {
         i: [j for j in adj[i] if elements[j] not in METALS] for i in adj
     }
@@ -542,7 +592,7 @@ def _neighbour_table(
 
 def _get_components(
         adj: dict[int, set[int]],
-        expanded: list[tuple[str, tuple[float, float, float], float]],
+        expanded: list[ExpandedAtom],
 ) -> list[list[AtomRecord]]:
     """Return each connected component as a list of ``(element, occupancy, neighbours)`` records."""
     neighbours = _neighbour_table(adj, expanded)
@@ -555,8 +605,8 @@ def _get_components(
             comp: list[AtomRecord] = []
             while queue:
                 node = queue.popleft()
-                el, _pos, occ = expanded[node]
-                comp.append((el, occ, neighbours[node]))
+                atom = expanded[node]
+                comp.append((atom[0], atom[2], neighbours[node]))
                 for nbr in adj[node]:
                     if nbr not in visited:
                         visited.add(nbr)
@@ -597,7 +647,8 @@ def _asu_components(
     if not special_atoms:
         return []
     expanded = [
-        (str(atom[1]), (float(atom[2]), float(atom[3]), float(atom[4])), float(atom[6]))
+        (str(atom[1]), (float(atom[2]), float(atom[3]), float(atom[4])), float(atom[6]),
+         _disorder_group(atom))
         for atom in special_atoms
     ]
     adj = _build_bond_graph(expanded, cell)
@@ -981,7 +1032,7 @@ def _parse_formula_sum(formula_sum: str | None) -> dict[str, float] | None:
 
 
 def _expanded_element_counts(
-        expanded: list[tuple[str, tuple[float, float, float], float]],
+        expanded: list[ExpandedAtom],
 ) -> dict[str, int]:
     """Return occupancy-weighted total atom count per element across all expanded unit-cell sites.
 
@@ -994,9 +1045,9 @@ def _expanded_element_counts(
     sum to 1 by convention, with at most rounding-error noise).
     """
     weighted: dict[str, float] = {}
-    for el, _pos, occ in expanded:
-        key = _normalize_element(el)
-        weighted[key] = weighted.get(key, 0.0) + float(occ)
+    for atom in expanded:
+        key = _normalize_element(atom[0])
+        weighted[key] = weighted.get(key, 0.0) + float(atom[2])
     return {el: round(n) for el, n in weighted.items()}
 
 
