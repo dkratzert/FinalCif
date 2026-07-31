@@ -148,6 +148,59 @@ class TestSettingsSaveLoad(TestCase):
         self.assertTrue(opts['atoms_table'])
 
 
+class TestConcurrentSettingsInstances(TestCase):
+    """Several FinalCifSettings instances exist at runtime (AppWindow, AuthorLoops, ...).
+
+    Each keeps its own in-memory copy of the JSON file and rewrites the whole file
+    on flush.  A stale instance must not silently discard data written by another one.
+    """
+
+    def setUp(self) -> None:
+        self.tmpdir = tempfile.mkdtemp()
+        self.settings_path = Path(self.tmpdir) / 'test_settings.json'
+        self.settings_path.write_text(
+            json.dumps({'authors_list': {'Old Author': {'name': 'Old Author'}}}), encoding='utf-8')
+
+    def tearDown(self) -> None:
+        shutil.rmtree(self.tmpdir, ignore_errors=True)
+
+    def _authors_on_disk(self) -> dict:
+        return json.loads(self.settings_path.read_text(encoding='utf-8')).get('authors_list', {})
+
+    def test_author_template_survives_flush_of_other_instance(self):
+        # AppWindow creates its settings instance on startup ...
+        app_settings = FinalCifSettings(settings_path=self.settings_path)
+        # ... and AuthorLoops creates a second, independent one.
+        author_settings = FinalCifSettings(settings_path=self.settings_path)
+
+        author_settings.save_settings_dict('authors_list', 'New Author', {'name': 'New Author'})
+        author_settings.flush()
+        self.assertIn('New Author', self._authors_on_disk())
+
+        # On closing, AppWindow saves window position/workdir and flushes its own
+        # (stale) data, which must not delete the newly saved author.
+        app_settings.save_current_dir(self.tmpdir)
+        app_settings.flush()
+
+        self.assertIn('Old Author', self._authors_on_disk())
+        self.assertIn('New Author', self._authors_on_disk())
+
+        reloaded = FinalCifSettings(settings_path=self.settings_path)
+        self.assertIn('New Author', reloaded.list_saved_items('authors_list'))
+
+    def test_deletion_by_one_instance_is_not_resurrected(self):
+        author_settings = FinalCifSettings(settings_path=self.settings_path)
+        app_settings = FinalCifSettings(settings_path=self.settings_path)
+
+        author_settings.delete_template('authors_list', 'Old Author')
+        author_settings.flush()
+
+        app_settings.save_current_dir(self.tmpdir)
+        app_settings.flush()
+
+        self.assertNotIn('Old Author', self._authors_on_disk())
+
+
 # ---------------------------------------------------------------------------
 # Helpers shared by migration tests
 # ---------------------------------------------------------------------------

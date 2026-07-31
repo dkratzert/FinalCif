@@ -195,6 +195,10 @@ def _convert_qsettings_value(value: Any) -> Any:  # noqa: PLR0911
 class FinalCifSettings:
     """Application settings stored as a JSON file.
 
+    All instances created for the same settings file share one object.  Every
+    flush rewrites the complete JSON file, so independent instances holding
+    stale copies of the data would silently discard each other's changes.
+
     Parameters
     ----------
     settings_path : Path | None
@@ -202,14 +206,42 @@ class FinalCifSettings:
         used.  Pass an explicit path in tests for isolation.
     """
 
+    _instances: dict[Path, FinalCifSettings] = {}
+    _instances_lock = threading.Lock()
+    _initialized: bool = False
+
+    @staticmethod
+    def _resolve_path(settings_path: Path | str | None) -> Path:
+        path = Path(settings_path) if settings_path is not None else _default_config_dir() / _SETTINGS_FILENAME
+        try:
+            return path.expanduser().resolve()
+        except OSError:
+            return path.expanduser().absolute()
+
+    def __new__(cls, settings_path: Path | None = None) -> FinalCifSettings:
+        path = cls._resolve_path(settings_path)
+        with cls._instances_lock:
+            instance = cls._instances.get(path)
+            if instance is None:
+                instance = super().__new__(cls)
+                instance._initialized = False
+                cls._instances[path] = instance
+            return instance
+
+    @classmethod
+    def reset_instances(cls) -> None:
+        """Drop all cached instances.  Only intended for tests."""
+        with cls._instances_lock:
+            cls._instances.clear()
+
     def __init__(self, settings_path: Path | None = None):
+        if self._initialized:
+            return
+        self._initialized = True
         self.software_name = 'FinalCif'
         self.organization = 'DK'
 
-        if settings_path is not None:
-            self._path = settings_path
-        else:
-            self._path = _default_config_dir() / _SETTINGS_FILENAME
+        self._path = self._resolve_path(settings_path)
 
         self._data: dict[str, Any] = self._load_json()
         self._pending_timer: threading.Timer | None = None

@@ -1,6 +1,7 @@
 import os
 
 os.environ["RUNNING_TEST"] = 'True'
+import json
 import unittest
 from tests.helpers import AppWindowTestCase
 from pathlib import Path
@@ -125,6 +126,20 @@ class MyTestCase(AppWindowTestCase):
     def test_set_foo(self):
         self.app.ui.IUCRIDLineEdit.setText('123-45a')
         self.assertEqual('123-45a', self.app.authors.get_author_info().iucr_id)
+
+    def test_app_and_authors_share_one_settings_instance(self):
+        """Both must write to the same in-memory data, or one flush discards the other's changes."""
+        self.assertIs(self.app.settings, self.app.authors.settings)
+
+    def test_saved_author_survives_app_settings_flush(self):
+        settings_file = self.app.settings._path
+        self.app.ui.FullNameLineEdit.setText('AATest Author')
+        self.app.ui.SaveAuthorLoopToTemplateButton.click()
+        # AppWindow writes its own settings and flushes on close:
+        self.app.settings.save_current_dir(str(data))
+        self.app.settings.flush()
+        on_disk = json.loads(settings_file.read_text(encoding='utf-8'))
+        self.assertIn('AATest Author', on_disk.get('authors_list', {}))
 
     def test_set_author_info(self):
         self.app.authors.set_author_info(self.author)

@@ -1,5 +1,9 @@
 FinalCif recent changes
 -----------------------
+* v170 Newly saved author, equipment, property and text templates are no longer lost when FinalCif is closed.
+       Several parts of the program used separate settings objects, each rewriting the complete settings file
+       from its own outdated copy, so the last writer discarded changes made elsewhere. All parts now share
+       one settings object.
 * v169 Several bugs that tore molecules apart in the calculated moiety formula were fixed: fractional coordinates
        outside the unit cell are now wrapped, so molecules whose symmetry copies span several cells stay in one
        piece; two hydrogen atoms are never bonded to each other; and a fragment that is an exact multiple of
