@@ -1360,7 +1360,8 @@ class AppWindow(QMainWindow):
         runner = PlatonRunner(parent=self,
                               log_widget=self.ui.CheckCifLogPlainTextEdit,
                               output_widget=self.ui.CheckcifPlaintextEdit,
-                              cif_file=self.cif.fileobj)
+                              cif_file=self.cif.fileobj,
+                              fcf_data=self.cif.fcf_file)
         if not Path(runner.platon_exe).exists():
             self.ui.CheckCifLogPlainTextEdit.setPlainText('\nPlaton executable not found!')
             self.ui.CheckCifLogPlainTextEdit.appendPlainText(

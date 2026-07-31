@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import sys
 import threading
@@ -11,12 +12,15 @@ from qtpy import QtCore
 from qtpy.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLabel, \
     QPlainTextEdit
 
+from finalcif.tools.misc import strip_finalcif_of_name
+
 
 class PlatonRunner(QtCore.QObject):
     finished = QtCore.Signal(bool)
     tick = QtCore.Signal(str)
 
-    def __init__(self, parent, output_widget: QPlainTextEdit, log_widget: QPlainTextEdit, cif_file: Path):
+    def __init__(self, parent, output_widget: QPlainTextEdit, log_widget: QPlainTextEdit, cif_file: Path,
+                 fcf_data: str = ''):
         super().__init__(parent)
         self.cif_file = cif_file.resolve().absolute()
         self.process = None
@@ -27,6 +31,9 @@ class PlatonRunner(QtCore.QObject):
         self.formula_moiety = ''
         self.Z = ''
         self.chk_file_text = ''
+        self.fcf_data = fcf_data
+        # .fcf file that this runner created and therefore has to remove again:
+        self._temporary_fcf: Path | None = None
 
     def run_process(self):
         self._origdir = os.curdir
@@ -35,12 +42,106 @@ class PlatonRunner(QtCore.QObject):
         self.Z = ''
         self.process = QtCore.QProcess()
         self.output_widget.clear()
+        self._provide_fcf_file()
+        self._set_process_environment()
         threading.Thread(target=self._monitor_output_log, daemon=True).start()
         # self.process.readyReadStandardOutput.connect(self.on_ready_read)
         self.process.finished.connect(self._onfinished)
         self.process.setWorkingDirectory(str(self.cif_file.parent))
         self.cif_file.with_suffix('.chk').unlink(missing_ok=True)
         self.process.start(self.platon_exe, ["-U", str(self.cif_file.name)])
+
+    def _set_process_environment(self) -> None:
+        """Point PLATON at a SHELXL executable via the SHLEXE variable.
+
+        PLATON needs SHELXL to regenerate the structure factors from the CIF
+        embedded .res/.hkl.  It searches PATH for 'shelxl' and then for 'xl'
+        (the SHELXTL/Bruker name), and it prefers the SHLEXE variable over
+        both.  Setting SHLEXE explicitly makes the lookup independent of the
+        user's PATH.
+
+        SHLEXE is only set when it is not already defined and an executable was
+        actually found: PLATON aborts outright if SHLEXE points at a file that
+        does not exist.
+        """
+        env = QtCore.QProcessEnvironment.systemEnvironment()
+        if not env.contains('SHLEXE'):
+            shelxl = self.shelxl_exe
+            if shelxl:
+                env.insert('SHLEXE', shelxl)
+        self.process.setProcessEnvironment(env)
+
+    @property
+    def shelxl_exe(self) -> str:
+        """Path to a SHELXL executable, or '' when none can be found.
+
+        'xl' is the name SHELXL is installed under in SHELXTL/Bruker setups.
+        """
+        for name in ('shelxl', 'xl'):
+            found = which(name)
+            if found and Path(found).is_file():
+                return str(Path(found).resolve())
+        return ''
+
+    @property
+    def fcf_target(self) -> Path:
+        """The .fcf path PLATON looks for: same basename as the checked CIF."""
+        return self.cif_file.with_suffix('.fcf')
+
+    def _provide_fcf_file(self) -> None:
+        """Make a .fcf with the CIF's basename available to PLATON.
+
+        PLATON finds the structure factors by basename.  FinalCif runs the
+        check on '<name>-finalcif.cif', but the structure factors are either
+        embedded in the CIF or sit beside it as '<name>.fcf'.  If PLATON finds
+        no '<name>-finalcif.fcf' it tries to recreate one by calling SHELXL;
+        where SHELXL is not reachable that fails and PLATON reports
+
+            995_ALERT_1_B Can not Recreate .fcf from Embedded .res & .hkl
+
+        and additionally skips *every* structure-factor based test (912, 969,
+        978 ...) without saying so.  Providing the file removes the spurious
+        alert and restores those checks.
+
+        A .fcf that is already present is never touched or overwritten.
+        """
+        self._temporary_fcf = None
+        target = self.fcf_target
+        if target.is_file():
+            return
+        if self.fcf_data and self._write_fcf(target, self.fcf_data):
+            self._temporary_fcf = target
+            return
+        source = self._find_sibling_fcf()
+        if source:
+            with suppress(OSError):
+                shutil.copyfile(source, target)
+                self._temporary_fcf = target
+
+    @staticmethod
+    def _write_fcf(target: Path, data: str) -> bool:
+        try:
+            target.write_text(data, encoding='latin1', errors='ignore', newline='\n')
+        except OSError as e:
+            print('Unable to write fcf file:', e)
+            return False
+        return True
+
+    def _find_sibling_fcf(self) -> Path | None:
+        """Locate the .fcf belonging to the CIF before '-finalcif' was appended."""
+        stem = strip_finalcif_of_name(self.cif_file.stem, till_name_ends=True)
+        if not stem:
+            return None
+        candidate = self.cif_file.with_name(f'{stem}.fcf')
+        if candidate.is_file() and candidate != self.fcf_target:
+            return candidate
+        return None
+
+    def _remove_temporary_fcf(self) -> None:
+        if self._temporary_fcf is not None:
+            with suppress(OSError):
+                self._temporary_fcf.unlink(missing_ok=True)
+            self._temporary_fcf = None
 
     def _onfinished(self) -> None:
         self._on_ready_read()
@@ -49,6 +150,7 @@ class PlatonRunner(QtCore.QObject):
         self.output_widget.setPlainText(self.chk_file_text)
         self.finished.emit(True)
         self.delete_orphaned_files()
+        self._remove_temporary_fcf()
 
     def _on_ready_read(self) -> None:
         output = self.process.readAllStandardOutput().data().decode()
@@ -141,6 +243,10 @@ class PlatonRunner(QtCore.QObject):
                     '.sum', '.hkp', '.pjn', '.bin', '.spf']:
             try:
                 file = self.cif_file.resolve().with_suffix(ext)
+                if ext == '.fcf' and self._temporary_fcf is None:
+                    # A .fcf we did not create belongs to the user; PLATON needs
+                    # it to do the structure factor checks, so never remove it.
+                    continue
                 if file.stat().st_size < 100:
                     file.unlink(missing_ok=True)
                 if file.suffix in ['.sar', '.spf', '.ckf']:

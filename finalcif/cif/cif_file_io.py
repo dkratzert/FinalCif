@@ -504,6 +504,13 @@ class CifContainer:
         return ''
 
     @property
+    def fcf_file(self) -> str:
+        """The structure factor (.fcf) data embedded in the CIF, if any."""
+        if self['_shelx_fcf_file']:
+            return self['_shelx_fcf_file']
+        return ''
+
+    @property
     def hkl_as_cif(self) -> str:
         return HKL(self.hkl_file, self.block.name, hklf_type=self.hklf_number).hkl_as_cif
 
