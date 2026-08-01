@@ -15,7 +15,17 @@ AppId={{3B40F796-CFCE-4C05-9587-2EACA3C1AACC}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={commonpf}\{#MyAppName}
+; FinalCif creates this mutex while it runs (see finalcif/tools/selfupdate.py). Without it,
+; Setup would try to replace loaded .pyd/.dll files of a running instance.
+AppMutex=FinalCifSetupMutex
+; Machine-wide install (Program Files) by default. Pass /CURRENTUSER on the command line for a
+; per-user install into {localappdata}\Programs\FinalCif that needs no administrator rights, e.g.:
+;   FinalCif-setup-x64-vXXX.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+; /ALLUSERS forces the machine-wide install. {autopf} and {group} follow the selected mode.
+PrivilegesRequired=admin
+PrivilegesRequiredOverridesAllowed=commandline
+UsePreviousPrivileges=yes
+DefaultDirName={autopf}\{#MyAppName}
 OutputBaseFilename={#MyAppName}-setup-x64-v{#MyAppVersion}
 Compression=lzma2/fast
 WizardStyle=modern
@@ -73,7 +83,11 @@ Source: "..\platon\platon_special.exe";    DestDir: "{app}\platon";    Flags: ig
 ;Name: "{app}\gui"; Permissions: everyone-full
 
 [Run]
-Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive /norestart"
+; The VC++ redistributable is a machine-wide package and needs administrator rights, so it is only
+; run for an /ALLUSERS install and only when it is not already present. For a /CURRENTUSER install
+; the redistributable has to be deployed separately (it is part of every up to date Windows 10/11).
+Filename: "{app}\vc_redist.x64.exe"; WorkingDir: "{app}"; Parameters: "/passive /norestart"; \
+    Check: ShouldInstallVCRedist
 
 
 [InstallDelete]
@@ -107,6 +121,19 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"; 
 
 
 [Code]
+function IsVCRedistInstalled(): Boolean;
+var
+  installed: Cardinal;
+begin
+  Result := RegQueryDWordValue(HKEY_LOCAL_MACHINE,
+    'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64', 'Installed', installed) and (installed = 1);
+end;
+
+function ShouldInstallVCRedist(): Boolean;
+begin
+  Result := IsAdminInstallMode and not IsVCRedistInstalled;
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 // This procedure deletes the installer executable when it 
 // is named 'update-finalcif.exe'

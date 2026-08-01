@@ -1,19 +1,111 @@
-import ctypes
 import os
 import sys
+import threading
 from pathlib import Path
 
 from finalcif import VERSION
+from finalcif.tools.selfupdate import UpdateCancelled, UpdateError, download_installer, is_user_installation, \
+    start_elevated_updater, start_exit_watchdog, start_installer
 from qtpy import QtCore, compat
-from qtpy.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QTextEdit, QPushButton, QFrame
+from qtpy.QtCore import QProcess
+from qtpy.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QTextEdit, QPushButton, QFrame, QProgressDialog, \
+    QApplication
 
 
-def do_update_program(version) -> None:
-    updater_exe = str(Path(__file__).parent.parent.parent.joinpath('update.exe'))
-    args = ['-v', version,
-            '-p', 'finalcif']
-    # Using this, because otherwise I can not write to the program dir:
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", updater_exe, " ".join(args), None, 1)
+class InstallerDownload(QtCore.QObject):
+    """Downloads the FinalCif installer in a background thread."""
+    progress = QtCore.Signal(int, int)
+    failed = QtCore.Signal(str)
+    downloaded = QtCore.Signal(str)
+
+    def __init__(self, version: str) -> None:
+        super().__init__(None)
+        self.version = version
+        self._cancelled = False
+
+    def cancel(self) -> None:
+        self._cancelled = True
+
+    def run(self) -> None:
+        try:
+            setup_file = download_installer(self.version,
+                                            progress=self.progress.emit,
+                                            should_cancel=lambda: self._cancelled)
+        except UpdateCancelled:
+            return
+        except UpdateError as err:
+            self.failed.emit(str(err))
+            return
+        self.downloaded.emit(str(setup_file))
+
+
+def do_update_program(version: str, parent=None) -> None:
+    if is_user_installation():
+        update_user_installation(version, parent)
+    else:
+        start_elevated_updater(version)
+
+
+def update_user_installation(version: str, parent=None) -> None:
+    """Download the installer and hand the installation directory over to it."""
+    progress_dialog = QProgressDialog('Downloading the FinalCif installer...', 'Cancel', 0, 100, parent)
+    progress_dialog.setWindowTitle('FinalCif update')
+    progress_dialog.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
+    progress_dialog.setAutoClose(False)
+    progress_dialog.setAutoReset(False)
+    progress_dialog.setMinimumDuration(0)
+    progress_dialog.setValue(0)
+    # A plain local variable would be garbage collected while the thread is downloading:
+    downloader = InstallerDownload(version)
+    progress_dialog.setProperty('downloader', downloader)
+
+    def on_progress(received: int, total: int) -> None:
+        if total:
+            progress_dialog.setValue(int(100 * received / total))
+        progress_dialog.setLabelText(f'Downloading the FinalCif installer... '
+                                     f'({received / 1024 ** 2:.1f} MB)')
+
+    def on_failed(message: str) -> None:
+        progress_dialog.close()
+        show_general_warning(parent, warn_text='The update failed.', info_text=message,
+                             window_title='FinalCif update')
+
+    def on_downloaded(setup_file: str) -> None:
+        progress_dialog.setLabelText('Starting the installer...')
+        progress_dialog.setValue(100)
+        release_installation_directory()
+        start_installer(Path(setup_file))
+        progress_dialog.close()
+        quit_application()
+
+    downloader.progress.connect(on_progress)
+    downloader.failed.connect(on_failed)
+    downloader.downloaded.connect(on_downloaded)
+    progress_dialog.canceled.connect(downloader.cancel)
+    threading.Thread(target=downloader.run, daemon=True).start()
+    progress_dialog.show()
+
+
+def release_installation_directory() -> None:
+    """Kill child processes like PLATON, they lock their executable in the installation dir."""
+    app = QApplication.instance()
+    if app is None:
+        return
+    for widget in app.topLevelWidgets():
+        for process in widget.findChildren(QProcess):
+            if process.state() != QProcess.ProcessState.NotRunning:
+                process.kill()
+                process.waitForFinished(3000)
+
+
+def quit_application() -> None:
+    """Leave FinalCif so that the installer can replace all files."""
+    start_exit_watchdog()
+    app = QApplication.instance()
+    if app is None:
+        os._exit(0)
+    app.closeAllWindows()
+    app.quit()
 
 
 def unable_to_open_message(parent, filepath: Path, not_ok: Exception) -> None:
@@ -158,7 +250,7 @@ def show_update_warning(parent, remote_version: int = 0) -> None:
     if sys.platform.startswith("win"):
         warn_text += r"<br><br>Updating now will end all running FinalCIF programs!"
         update_button = box.addButton('Update Now', QMessageBox.ButtonRole.AcceptRole)
-        update_button.clicked.connect(lambda: do_update_program(str(remote_version)))
+        update_button.clicked.connect(lambda: do_update_program(str(remote_version), parent))
     box.setText(warn_text.format(remote_version))
     box.setModal(True)
     box.show()

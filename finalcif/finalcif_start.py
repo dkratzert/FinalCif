@@ -17,6 +17,7 @@ from finalcif import VERSION
 from finalcif.app_path import application_path
 from finalcif.appwindow import AppWindow, DEBUG, app
 from finalcif.gui.dialogs import show_bug_found_warning, show_general_warning
+from finalcif.tools.selfupdate import create_running_mutex
 
 
 def my_exception_hook(exctype: type[BaseException], value: BaseException, error_traceback: traceback,
@@ -73,6 +74,8 @@ def my_exception_hook(exctype: type[BaseException], value: BaseException, error_
 def main():
     if not DEBUG:
         sys.excepthook = my_exception_hook
+    # The installer (AppMutex) must not overwrite the files of a running FinalCif:
+    create_running_mutex()
     # windows_style = QStyleFactory.create('Fusion')
     # app.setStyle(windows_style)
     file = None
