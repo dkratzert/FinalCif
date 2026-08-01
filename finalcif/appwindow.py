@@ -916,7 +916,27 @@ class AppWindow(QMainWindow):
         dialog = SqueezeSolventDialog(cif=self.cif, mode=mode, parent=self)
         if dialog._cancelled:
             return False
-        return bool(dialog.exec())
+        accepted = bool(dialog.exec())
+        if accepted:
+            self._refresh_after_squeeze_dialog(dialog)
+        return accepted
+
+    def _refresh_after_squeeze_dialog(self, dialog: SqueezeSolventDialog) -> None:
+        """
+        Show the values written by the solvent dialog without leaving the current page.
+        """
+        self._update_squeeze_details_row(dialog.details_key, dialog.details_text)
+        if self.ui.MainStackedWidget.on_loops_page():
+            self.ui.loops_page.reload()
+
+    def _update_squeeze_details_row(self, key: str, text: str) -> None:
+        if not self.ui.cif_main_table.rowCount():
+            return
+        if not self.ui.cif_main_table.has_key(key):
+            if not text:
+                return
+            self.add_row(key=key, value=text, at_start=True)
+        self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=text)
 
     def _ccdc_deposit(self) -> None:
         """

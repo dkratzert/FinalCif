@@ -460,6 +460,23 @@ class LoopsPage(QtWidgets.QWidget):
         self._cif = cif
         self.make_loops_tables()
 
+    def reload(self) -> None:
+        """Rebuild all loop tabs from the current CIF, keeping the active tab selected."""
+        if self._cif is None:
+            return
+        previous_index = self.tab_widget.currentIndex()
+        previous_tooltip = self.tab_widget.tabToolTip(previous_index)
+        self.make_loops_tables()
+        self._restore_current_tab(previous_index, previous_tooltip)
+
+    def _restore_current_tab(self, previous_index: int, previous_tooltip: str) -> None:
+        for index in range(self.tab_widget.count()):
+            if previous_tooltip and self.tab_widget.tabToolTip(index) == previous_tooltip:
+                self.tab_widget.setCurrentIndex(index)
+                return
+        if 0 <= previous_index < self.tab_widget.count():
+            self.tab_widget.setCurrentIndex(previous_index)
+
     def make_loops_tables(self) -> None:
         """Remove all loop tabs (keeping Author Editor at 0 if present) and rebuild."""
         first_loop_index = 1 if self._has_author_tab else 0

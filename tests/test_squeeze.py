@@ -8,13 +8,16 @@
 import os
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 
 os.environ["RUNNING_TEST"] = 'True'
 
 from qtpy.QtWidgets import QApplication
 
 from finalcif.cif.cif_file_io import CifContainer
+from finalcif.gui.custom_classes import Column
 from finalcif.tools.squeeze import electrons_from_formula, build_details_text
+from tests.helpers import AppWindowTestCase
 
 app = QApplication.instance()
 if app is None:
@@ -259,6 +262,15 @@ class TestSqueezeSolventDialog(unittest.TestCase):
         self.assertIn('CH2Cl2', details)
         self.assertIn('SQUEEZE', details)
 
+    def test_details_key_property(self):
+        dlg = self._make_dialog()
+        self.assertEqual('_platon_squeeze_details', dlg.details_key)
+
+    def test_details_text_property(self):
+        dlg = self._make_dialog()
+        dlg.details_edit.setPlainText('  some text  ')
+        self.assertEqual('some text', dlg.details_text)
+
     def test_fill_down_with_single_row(self):
         """Fill-down on a single-void structure should not raise."""
         # Build a CIF with only one void
@@ -403,6 +415,10 @@ class TestSmtbxMasksDialog(unittest.TestCase):
         self.assertIn('16(H2O)', details)
         self.assertIn('SMTBX', details)
 
+    def test_details_key_property(self):
+        dlg = self._make_dialog()
+        self.assertEqual('_smtbx_masks_special_details', dlg.details_key)
+
     def test_explicit_mode_parameter(self):
         """Passing SqueezeMode.SMTBX explicitly should work even if auto-detection would differ."""
         from finalcif.gui.squeeze_dialog import SqueezeMode
@@ -432,6 +448,57 @@ class TestHasSmtbxMasksLoop(unittest.TestCase):
         from finalcif.gui.squeeze_dialog import has_smtbx_masks_loop
         cif = CifContainer(SQF_FILE)
         self.assertFalse(has_smtbx_masks_loop(cif))
+
+
+# ---------------------------------------------------------------------------
+# AppWindow refresh after the dialog was accepted
+# ---------------------------------------------------------------------------
+
+class TestAppWindowRefreshAfterSqueezeDialog(AppWindowTestCase):
+    """The values written by the dialog must show up without leaving the page."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        from finalcif.appwindow import AppWindow
+        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        self.app = AppWindow(file=self.testcif)
+
+    def tearDown(self) -> None:
+        self.app.cif.finalcif_file.unlink(missing_ok=True)
+        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        super().tearDown()
+
+    @staticmethod
+    def _fake_dialog(text: str = 'Solvent removed with SQUEEZE') -> SimpleNamespace:
+        return SimpleNamespace(details_key='_platon_squeeze_details', details_text=text)
+
+    def _scattering_loop_value(self) -> str:
+        page = self.app.ui.loops_page
+        for index in range(page.tab_widget.count()):
+            if page.tab_widget.tabToolTip(index) == '_atom_type_symbol':
+                return page.tab_widget.widget(index).model().index(0, 2).data()
+        self.fail('Scattering loop tab not found')
+
+    def test_details_row_is_updated_in_main_table(self):
+        self.app._refresh_after_squeeze_dialog(self._fake_dialog())
+        text = self.app.ui.cif_main_table.getTextFromKey('_platon_squeeze_details', Column.EDIT)
+        self.assertEqual('Solvent removed with SQUEEZE', text)
+
+    def test_loops_page_is_reloaded_when_visible(self):
+        self.app._on_go_to_loops_page()
+        loop = self.app.cif.get_loop('_atom_type_symbol')
+        self.app.cif.block.find(loop.tags)[0][2] = '9.876'
+        self.app._refresh_after_squeeze_dialog(self._fake_dialog())
+        self.assertEqual('9.876', self._scattering_loop_value())
+
+    def test_loops_page_not_reloaded_when_not_visible(self):
+        self.app._on_go_to_loops_page()
+        before = self._scattering_loop_value()
+        self.app.ui.MainStackedWidget.got_to_main_page()
+        loop = self.app.cif.get_loop('_atom_type_symbol')
+        self.app.cif.block.find(loop.tags)[0][2] = '9.876'
+        self.app._refresh_after_squeeze_dialog(self._fake_dialog())
+        self.assertEqual(before, self._scattering_loop_value())
 
 
 if __name__ == '__main__':
