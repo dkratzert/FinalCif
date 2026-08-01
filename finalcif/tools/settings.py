@@ -258,10 +258,6 @@ class FinalCifSettings:
                 logger.warning("No QSettings data to migrate (or Qt not available).", exc_info=True)
                 self._data = {}
 
-        # Cached property helpers (same semantics as before)
-        self.property_keys_and_values = self.load_property_keys_and_values()
-        self.property_keys = self.load_cif_keys_of_properties()
-
     # ------------------------------------------------------------------
     # Low-level JSON I/O
     # ------------------------------------------------------------------
@@ -397,15 +393,25 @@ class FinalCifSettings:
                 pass
         return keylist
 
+    @property
+    def property_keys_and_values(self) -> list:
+        return self.load_property_keys_and_values()
+
+    @property
+    def property_keys(self) -> list[str]:
+        return self.load_cif_keys_of_properties()
+
     def load_cif_keys_of_properties(self) -> list[str]:
         return [x[0] for x in self.load_property_keys_and_values()]
 
     def load_property_values_by_key(self, cif_key: str):
         num_value_pairs = []
-        if self.property_keys and cif_key in self.property_keys:
-            keys_and_values = self.property_keys_and_values[self.property_keys.index(cif_key)]
-            if len(keys_and_values) >= 1:
-                property_values = keys_and_values[1]
+        keys_and_values = self.load_property_keys_and_values()
+        keys = [x[0] for x in keys_and_values]
+        if cif_key in keys:
+            key_and_values = keys_and_values[keys.index(cif_key)]
+            if len(key_and_values) >= 1:
+                property_values = key_and_values[1]
             else:
                 property_values = ['']
             for n, val in enumerate(property_values):
@@ -418,8 +424,6 @@ class FinalCifSettings:
         logger.debug("Saving %s %s", name, items)
         self._data[name] = items
         self._schedule_flush()
-        self.property_keys_and_values = self.load_property_keys_and_values()
-        self.property_keys = self.load_cif_keys_of_properties()
 
     def save_key_value(self, name: str, item: str | list | tuple | dict | int | bool):
         """Save a single key/value pair at the root level."""

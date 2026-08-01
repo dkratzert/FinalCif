@@ -55,6 +55,19 @@ class TestFinalCifSettings(TestCase):
     def test_load_property_values_by_key_empty(self):
         self.assertEqual([(0, '')], self.s.load_property_values_by_key(''))
 
+    def test_property_values_of_later_added_property(self):
+        """Properties imported after the instance was created must be visible (no stale cache)."""
+        self.s.save_settings_list('property', '_diffrn_ambient_temperature',
+                                  ['_diffrn_ambient_temperature', ['', '100(2)', '298(2)']])
+        self.assertIn('_diffrn_ambient_temperature', self.s.property_keys)
+        self.assertEqual([(0, ''), (1, '100(2)'), (2, '298(2)')],
+                         self.s.load_property_values_by_key('_diffrn_ambient_temperature'))
+
+    def test_property_values_of_deleted_property(self):
+        self.s.delete_template('property', '_diffrn_ambient_environment')
+        self.assertNotIn('_diffrn_ambient_environment', self.s.property_keys)
+        self.assertEqual([(0, '')], self.s.load_property_values_by_key('_diffrn_ambient_environment'))
+
 
 class TestSettingsSaveLoad(TestCase):
 
