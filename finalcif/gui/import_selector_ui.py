@@ -13,9 +13,10 @@ from qtpy.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from qtpy.QtWidgets import (QApplication, QHBoxLayout, QHeaderView, QLabel,
-    QMainWindow, QPushButton, QSizePolicy, QSpacerItem,
-    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
+from qtpy.QtWidgets import (QApplication, QCheckBox, QHBoxLayout, QHeaderView,
+    QLabel, QMainWindow, QPushButton, QSizePolicy,
+    QSpacerItem, QTableWidget, QTableWidgetItem, QVBoxLayout,
+    QWidget)
 
 class Ui_importSelectMainWindow(object):
     def setupUi(self, importSelectMainWindow):
@@ -68,6 +69,11 @@ class Ui_importSelectMainWindow(object):
 
         self.horizontalLayout.addItem(self.horizontalSpacer)
 
+        self.skipEmptyValuesCheckBox = QCheckBox(self.centralwidget)
+        self.skipEmptyValuesCheckBox.setObjectName(u"skipEmptyValuesCheckBox")
+
+        self.horizontalLayout.addWidget(self.skipEmptyValuesCheckBox)
+
         self.selectOnlyNewPB = QPushButton(self.centralwidget)
         self.selectOnlyNewPB.setObjectName(u"selectOnlyNewPB")
 
@@ -98,6 +104,10 @@ class Ui_importSelectMainWindow(object):
         ___qtablewidgetitem1 = self.importTable_loops.horizontalHeaderItem(0)
         ___qtablewidgetitem1.setText(QCoreApplication.translate("importSelectMainWindow", u"loops", None))
         self.importSelectedPushbutton.setText(QCoreApplication.translate("importSelectMainWindow", u"Import Selected", None))
+#if QT_CONFIG(tooltip)
+        self.skipEmptyValuesCheckBox.setToolTip(QCoreApplication.translate("importSelectMainWindow", u"Do not preselect keys that have no value or only a question mark.", None))
+#endif // QT_CONFIG(tooltip)
+        self.skipEmptyValuesCheckBox.setText(QCoreApplication.translate("importSelectMainWindow", u"Skip empty values", None))
         self.selectOnlyNewPB.setText(QCoreApplication.translate("importSelectMainWindow", u"Select Only New Data", None))
         self.saveSelectionPushbutton.setText(QCoreApplication.translate("importSelectMainWindow", u"Save current Selection", None))
     # retranslateUi
