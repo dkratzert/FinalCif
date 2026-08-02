@@ -1769,8 +1769,7 @@ class AppWindow(QMainWindow):
         fixfont.setPointSize(fixfont.pointSize() + 2)
         doc.setDefaultFont(fixfont)
         final_textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
-        final_textedit.setPlainText(self.cif.finalcif_file.read_text(encoding='utf-8', errors='ignore'))
-        single_shot(self, 0, lambda: final_textedit.highlighter.setDocument(doc))
+        final_textedit.set_cif_text(self.cif.as_saved_string())
 
     def import_additional_cif(self, filename: str):
         """
