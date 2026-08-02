@@ -13,6 +13,10 @@ from finalcif.tools.settings import FinalCifSettings
 EMPTY_VALUES = frozenset(('', '?'))
 
 
+def is_empty_value(raw_value: str) -> bool:
+    return gemmi.cif.as_string(raw_value).strip() in EMPTY_VALUES
+
+
 class ImportSelector(QtWidgets.QMainWindow):
     import_clicked = QtCore.Signal(list, list)
 
@@ -27,7 +31,7 @@ class ImportSelector(QtWidgets.QMainWindow):
         self.keys_to_import: int = 0
         self.loops_to_import: int = 0
         self.selected: int = 0
-        self._raw_values: dict[str, str] = {}
+        self._empty_keys: set[str] = set()
         self._excluded_kv: Iterable[str] = ()
         self._excluded_loops: Iterable[str] = ()
         self._connect_signals_and_slots()
@@ -47,7 +51,8 @@ class ImportSelector(QtWidgets.QMainWindow):
         for item in self.import_cif.block:
             if item.pair is not None:
                 key, raw_value = item.pair
-                self._raw_values[key] = raw_value
+                if is_empty_value(raw_value):
+                    self._empty_keys.add(key)
                 self._add_checkbox(key, row, self.ui.importTable_keys,
                                    checked=self._should_preselect(key))
                 self.keys_to_import += 1
@@ -122,14 +127,11 @@ class ImportSelector(QtWidgets.QMainWindow):
                 loops.append(loop)
         return loops
 
-    def _is_empty_value(self, key: str) -> bool:
-        return gemmi.cif.as_string(self._raw_values.get(key, '')).strip() in EMPTY_VALUES
-
     def _is_auto_excluded(self, key: str) -> bool:
         """A key that is never preselected because of an automatic rule."""
         if key.startswith('_vrf'):
             return True
-        return self.ui.skipEmptyValuesCheckBox.isChecked() and self._is_empty_value(key)
+        return self.ui.skipEmptyValuesCheckBox.isChecked() and key in self._empty_keys
 
     def _should_preselect(self, key: str) -> bool:
         if self._is_auto_excluded(key):
