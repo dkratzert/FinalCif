@@ -1,6 +1,3 @@
-import os
-
-os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from tests.helpers import AppWindowTestCase
 from pathlib import Path

@@ -6,9 +6,7 @@ No AppWindow is instantiated.  Each test uses only:
 - A plain ``QPlainTextEdit`` populated with that text.
 - The two standalone functions from ``finalcif.gui.shelx_navigation``.
 """
-import os
 
-os.environ["RUNNING_TEST"] = "True"
 
 import unittest
 from pathlib import Path

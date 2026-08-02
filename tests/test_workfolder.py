@@ -1,8 +1,5 @@
-import os
-
 from qtpy import QtWidgets
 
-os.environ['RUNNING_TEST'] = 'True'
 import unittest
 from tests.helpers import AppWindowTestCase, processevents
 from pathlib import Path
@@ -27,7 +24,6 @@ class TestFileIsOpened(AppWindowTestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         self.app = AppWindow(file=self.testcif)
         self.app.ui.trackChangesCifCheckBox.setChecked(True)
@@ -51,7 +47,6 @@ class TestWorkfolder(AppWindowTestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
         # TODO: Adapt this to the bahavior with the changes file:
         (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
@@ -287,7 +282,6 @@ class TestWorkfolderOtherCifName(AppWindowTestCase):
     """A CIF fle in a complete work folder"""
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = (data / 'examples/work/p21c.cif').resolve()
         self.app = AppWindow(file=self.testcif)
         self.app.ui.trackChangesCifCheckBox.setChecked(True)

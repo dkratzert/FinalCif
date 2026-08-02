@@ -4,9 +4,7 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-import os
 
-os.environ["RUNNING_TEST"] = 'True'
 
 import unittest
 from pathlib import Path
@@ -667,7 +665,6 @@ class TestLoopsResFile(unittest.TestCase):
 
 class TestLoopsMove(unittest.TestCase):
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = SMALL_CIF.resolve()
         (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         self.cif = CifContainer(self.testcif)

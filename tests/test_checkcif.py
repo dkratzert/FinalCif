@@ -39,7 +39,6 @@ else:
 @unittest.skipIf(not request, 'Skip without network')
 class TestCheckCifInterface(TestCase):
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         if os.environ.get('NO_NETWORK'):
             self.skipTest('No network available.')
         page = fromstring(request.text)

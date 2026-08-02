@@ -1,6 +1,3 @@
-import os
-
-os.environ["RUNNING_TEST"] = 'True'
 import json
 import unittest
 from tests.helpers import AppWindowTestCase

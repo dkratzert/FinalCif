@@ -1,11 +1,8 @@
-import os
-
 from qtpy.QtWidgets import QApplication
 app = QApplication.instance()
 if app is None:
     app = QApplication([])
 
-os.environ["RUNNING_TEST"] = 'True'
 import shutil
 import unittest
 from pathlib import Path

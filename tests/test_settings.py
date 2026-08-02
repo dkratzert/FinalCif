@@ -1,5 +1,4 @@
 import json
-import os
 import shutil
 import tempfile
 from pathlib import Path
@@ -17,7 +16,6 @@ from finalcif.tools.settings import (
 class TestFinalCifSettings(TestCase):
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         # Create a temp JSON file with test fixture data
         self.tmpdir = tempfile.mkdtemp()
         self.settings_path = Path(self.tmpdir) / 'test_settings.json'

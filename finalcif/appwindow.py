@@ -77,7 +77,8 @@ from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
 from finalcif.tools.misc import (next_path, celltxt, to_float, is_database_number,
-                                 open_file, strip_finalcif_of_name, file_age_in_days, open_in_text_editor)
+                                 open_file, strip_finalcif_of_name, file_age_in_days, open_in_text_editor,
+                                 running_inside_unit_test as is_unit_test)
 from finalcif.tools.options import Options
 from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
@@ -156,6 +157,7 @@ class _StructureFactorReportThread(QtCore.QThread):
 
 
 class AppWindow(QMainWindow):
+    thread_shutdown_timeout_ms = 10_000
 
     def __init__(self, file: Path | None = None):
         super().__init__()
@@ -164,6 +166,7 @@ class AppWindow(QMainWindow):
         self.thread_version = None
         self.worker = None
         self._z_thread: _ZEstimatorThread | None = None
+        self.structure_factor_thread: _StructureFactorReportThread | None = None
         self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
         # This prevents some things to happen during unit tests:
         # Open of target dir of shred cif,
@@ -270,9 +273,9 @@ class AppWindow(QMainWindow):
 
     @property
     def running_inside_unit_test(self):
-        if "RUNNING_TEST" in os.environ:
+        if is_unit_test():
             if DEBUG:
-                print(f'pytest process running: {os.environ["PYTEST_CURRENT_TEST"]}')
+                print(f'pytest process running: {os.environ.get("PYTEST_CURRENT_TEST")}')
             return True
         return False
 
@@ -876,7 +879,25 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             self._savesize()
         self.settings.flush()
+        self._stop_background_threads()
         super().closeEvent(event)
+
+    def _stop_background_threads(self) -> None:
+        """Finish all worker threads before Qt destroys them together with this window.
+
+        Qt aborts the whole process when a running QThread is deleted. findChildren()
+        is used instead of the individual attributes because a superseded worker may
+        still run after its attribute was cleared.
+        """
+        for thread in self.findChildren(QtCore.QThread):
+            if not thread.isRunning():
+                continue
+            # Prevent a result from being delivered into the dying window.
+            thread.blockSignals(True)
+            thread.quit()
+            if not thread.wait(self.thread_shutdown_timeout_ms):
+                thread.terminate()
+                thread.wait()
 
     def show_help(self) -> None:
         QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
@@ -2594,7 +2615,7 @@ class AppWindow(QMainWindow):
         table.clearSelection()
 
     def check_cecksums(self):
-        if "RUNNING_TEST" in os.environ:
+        if self.running_inside_unit_test:
             return
         if not self.cif.test_res_checksum():
             show_res_checksum_warning(parent=self)
