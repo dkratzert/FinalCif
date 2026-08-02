@@ -70,6 +70,7 @@ from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.validators import calculated_z_validator
 from finalcif.gui.checkcif_browser import CheckCifBrowser
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
+from finalcif.gui.timers import single_shot
 from finalcif.cif.vrf_entry import VRFEntry
 from finalcif.gui.vrf_classes import MyVRFContainer
 from finalcif.template.templates import ReportTemplates
@@ -1748,7 +1749,7 @@ class AppWindow(QMainWindow):
         doc.setDefaultFont(fixfont)
         final_textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
         final_textedit.setPlainText(self.cif.finalcif_file.read_text(encoding='utf-8', errors='ignore'))
-        QtCore.QTimer().singleShot(0, lambda: final_textedit.highlighter.setDocument(doc))
+        single_shot(self, 0, lambda: final_textedit.highlighter.setDocument(doc))
 
     def import_additional_cif(self, filename: str):
         """
@@ -1838,18 +1839,16 @@ class AppWindow(QMainWindow):
         if not self.cif.chars_ok:
             self.warn_about_bad_cif()
         # Do this only when sure we can load the file:
-        QtCore.QTimer.singleShot(0, lambda: self.save_current_recent_files_list(filepath))
+        single_shot(self, 0, lambda: self.save_current_recent_files_list(filepath))
         self._load_block(block, load_changes=load_changes)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
         self.ui.datanameComboBox.blockSignals(False)
-        QtCore.QTimer.singleShot(500, self.ui.cif_main_table.resizeRowsToContents)
+        single_shot(self, 500, self.ui.cif_main_table.resizeRowsToContents)
         if self.cif.is_multi_cif:
             self._flash_block_combobox()
         self.cif.set_order_keys(self.ui.cifOrderWidget.order_keys)
-        QtCore.QTimer().singleShot(0, self._find_video)
-        # Enable to find widgets without parent:
-        # QtCore.QTimer(self).singleShot(1000, self.find_widgets_without_parent)
+        single_shot(self, 0, self._find_video)
 
     def _find_video(self) -> None:
         self.video.reset()
@@ -1873,8 +1872,8 @@ class AppWindow(QMainWindow):
         pal.setColor(QtGui.QPalette.ColorRole.Base, light_blue)
         self.ui.datanameComboBox.setAutoFillBackground(True)
         # short after start, because window size is not finished before:
-        QtCore.QTimer(self).singleShot(1500, lambda: self.ui.datanameComboBox.setPalette(pal))
-        QtCore.QTimer(self).singleShot(2600, lambda: self.ui.datanameComboBox.setPalette(orig_pal))
+        single_shot(self, 1500, lambda: self.ui.datanameComboBox.setPalette(pal))
+        single_shot(self, 2600, lambda: self.ui.datanameComboBox.setPalette(orig_pal))
 
     def add_data_names_to_combobox(self) -> None:
         self.ui.datanameComboBox.clear()
@@ -1952,8 +1951,7 @@ class AppWindow(QMainWindow):
                 self.show_residuals()
                 self.redraw_molecule()
             self._update_z_label()
-            t = QtCore.QTimer(self)
-            t.singleShot(1000, self.check_cecksums)
+            single_shot(self, 1000, self.check_cecksums)
 
     def _delete_current_block(self, index: int) -> None:
         self.cif.delete_block(index)
@@ -2152,8 +2150,7 @@ class AppWindow(QMainWindow):
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
         self._show_shelx_file()
         try:
-            QtCore.QTimer(self).singleShot(0, lambda: self.view_molecule(reset_view=True))
-            # threading.Thread(target=self.view_molecule).start()
+            single_shot(self, 0, lambda: self.view_molecule(reset_view=True))
         except Exception:
             print('Molecule view crashed!')
 

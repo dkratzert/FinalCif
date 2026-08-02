@@ -14,6 +14,7 @@ from finalcif.cif.text import retranslate_delimiter, utf8_to_str
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.dialogs import cif_file_open_dialog, show_general_warning, cif_file_save_dialog
 from finalcif.gui.plaintextedit import PlainTextEditTemplate
+from finalcif.gui.timers import single_shot
 from finalcif.tools import misc
 from finalcif.tools.settings import FinalCifSettings
 
@@ -72,7 +73,7 @@ class Properties(QtCore.QObject):
             self.lb.setText(f'key {key} already exists')
             self.lb.move(self.app.ui.cifKeywordLineEdit.mapToGlobal(QtCore.QPoint(15, 25)))
             self.lb.show()
-            QtCore.QTimer().singleShot(5000, self.hide_label)
+            single_shot(self.lb, 5000, self.hide_label)
         else:
             self.app.ui.SavePropertiesButton.setEnabled(True)
             self.lb.hide()
@@ -118,7 +119,7 @@ class Properties(QtCore.QObject):
                 self._rename_old_name = item.text()
                 # Defer editItem() to the next event-loop tick so that all
                 # menu-close events are processed before Qt starts the editor.
-                QtCore.QTimer.singleShot(0, lambda: listw.editItem(item))
+                single_shot(listw, 0, lambda: listw.editItem(item))
 
         menu.triggered.connect(_on_triggered)
         menu.popup(listw.viewport().mapToGlobal(pos))

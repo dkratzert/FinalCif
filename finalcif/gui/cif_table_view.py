@@ -15,6 +15,7 @@ from finalcif.gui.cif_table_model import CifTableModel, Column, blue, CifRowData
 from finalcif.gui.combobox import MyComboBox
 from finalcif.gui.dialogs import show_keyword_help
 from finalcif.gui.plaintextedit import MyQPlainTextEdit
+from finalcif.gui.timers import single_shot
 
 DEBUG = False
 
@@ -381,7 +382,7 @@ class CifTableView(QTableView):
         return QObject.eventFilter(self, widget, event)
 
     def resizeEvent(self, e: QtGui.QResizeEvent) -> None:
-        QtCore.QTimer(self).singleShot(0, self.resizeRowsToContents)
+        single_shot(self, 0, self.resizeRowsToContents)
         super().resizeEvent(e)
 
 
