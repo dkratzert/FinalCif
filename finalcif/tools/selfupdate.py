@@ -5,12 +5,13 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-"""Self update of a per-user installation of FinalCif.
+"""Self update of a FinalCif installation on Windows.
 
-A machine wide installation lives in ``C:\\Program Files`` and can only be replaced by an
-elevated process, therefore it still uses ``update.exe``.  An installation made with
-``FinalCif-setup-x64-vNNN.exe /CURRENTUSER`` lives in ``%LocalAppData%\\Programs\\FinalCif``
-and is writable by the user, so FinalCif downloads and starts the installer itself.
+FinalCif downloads the installer of the new version itself and starts it afterward.  An
+installation made with ``FinalCif-setup-x64-vNNN.exe /CURRENTUSER`` lives in
+``%LocalAppData%\\Programs\\FinalCif`` and is replaced by an ordinary process, a machine wide
+installation in ``C:\\Program Files`` needs an elevated installer, which is requested with
+``ShellExecuteW('runas', ...)``.
 
 Everything in here is deliberately free of Qt imports so that it can be tested without a
 running QApplication.  The GUI part lives in :mod:`finalcif.gui.dialogs`.
@@ -24,6 +25,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 from collections.abc import Callable
 from contextlib import suppress
 from pathlib import Path
@@ -40,6 +42,11 @@ CHECKSUM_URL = 'https://dkratzert.de/files/finalcif/FinalCif-setup-x64-v{version
 RUNNING_MUTEX_NAME = 'FinalCifSetupMutex'
 DOWNLOAD_TIMEOUT = 30
 BLOCK_SIZE = 65536
+# A virus scanner can hold the freshly downloaded installer for a moment:
+LOCKED_FILE_ATTEMPTS = 5
+LOCKED_FILE_DELAY = 1.0
+# Downloads of this age belong to a previous update and not to a second running FinalCif:
+LEFTOVER_DOWNLOAD_AGE = 3600.0
 # Seconds granted for a regular Qt shutdown before the process is ended the hard way:
 EXIT_TIMEOUT = 10.0
 
@@ -54,8 +61,12 @@ class UpdateCancelled(UpdateError):
     """The user cancelled the download."""
 
 
+class ElevationRefused(UpdateError):
+    """The installer of a machine wide installation did not get administrator rights."""
+
+
 def installation_directory() -> Path:
-    """Directory that contains finalcif.exe, update.exe and the finalcif package."""
+    """Directory that contains finalcif.exe and the finalcif package."""
     return Path(__file__).resolve().parent.parent.parent
 
 
@@ -63,21 +74,51 @@ def is_windows() -> bool:
     return sys.platform.startswith('win')
 
 
+def can_self_update() -> bool:
+    """Only the Windows version is shipped with an installer."""
+    return is_windows()
+
+
+def is_installed() -> bool:
+    """False when FinalCif runs from a source checkout instead of from an installation.
+
+    An installation ships its own python.exe next to the finalcif package, a checkout runs
+    with the python.exe of a virtual environment somewhere else.
+    """
+    return Path(sys.executable).resolve().parent == installation_directory()
+
+
 def is_user_installation() -> bool:
-    """True if the installation can be replaced without administrator rights."""
-    return is_windows() and _is_writable(installation_directory())
+    """True if the installation belongs to the current user and needs no elevation.
 
-
-def _is_writable(directory: Path) -> bool:
-    probe = directory / f'.finalcif-write-test-{os.getpid()}'
-    try:
-        probe.touch()
-    except OSError:
+    Being able to write into the installation directory is not sufficient, because an
+    elevated FinalCif may write into ``C:\\Program Files`` as well, while its installer
+    still has to run as administrator.
+    """
+    if not is_windows():
         return False
-    finally:
-        with suppress(OSError):
-            probe.unlink()
-    return True
+    local_app_data = os.environ.get('LOCALAPPDATA')
+    if not local_app_data:
+        return False
+    installation = installation_directory()
+    user_directory = Path(local_app_data).resolve()
+    return user_directory == installation or user_directory in installation.parents
+
+
+def user_installation_directory() -> Path:
+    """The place a per-user installation goes to (see ``/CURRENTUSER`` in the Inno script)."""
+    local_app_data = os.environ.get('LOCALAPPDATA')
+    base = Path(local_app_data) if local_app_data else Path.home() / 'AppData' / 'Local'
+    return base / 'Programs' / 'FinalCif'
+
+
+def is_elevated() -> bool:
+    """True if FinalCif itself runs with administrator rights."""
+    if not is_windows():
+        return False
+    with suppress(OSError, AttributeError):
+        return bool(ctypes.windll.shell32.IsUserAnAdmin())
+    return False
 
 
 def _headers() -> dict[str, str]:
@@ -92,6 +133,7 @@ def download_installer(version: str,
     The installer is never written into the installation directory, because the running
     setup would not be able to remove it there.  The returned file is checksum verified.
     """
+    _remove_leftover_downloads()
     target_dir = Path(tempfile.mkdtemp(prefix='finalcif-update-'))
     url = SETUP_URL.format(version=version)
     setup_file = target_dir / url.rsplit('/', 1)[-1]
@@ -102,6 +144,19 @@ def download_installer(version: str,
         shutil.rmtree(target_dir, ignore_errors=True)
         raise
     return setup_file
+
+
+def _remove_leftover_downloads() -> None:
+    """An installer of a previous update is a few hundred megabytes of garbage.
+
+    Only old directories are touched; a young one may belong to a second FinalCif that is
+    downloading right now or has just started its installer.
+    """
+    too_old = time.time() - LEFTOVER_DOWNLOAD_AGE
+    for directory in Path(tempfile.gettempdir()).glob('finalcif-update-*'):
+        with suppress(OSError):
+            if directory.is_dir() and directory.stat().st_mtime < too_old:
+                shutil.rmtree(directory, ignore_errors=True)
 
 
 def _download_to_file(url: str, target: Path,
@@ -116,15 +171,18 @@ def _download_to_file(url: str, target: Path,
             raise UpdateError(f'The installer is not available at\n{url}\n(HTTP {response.status_code}).')
         total = int(response.headers.get('content-length', 0))
         received = 0
-        # The context manager guarantees that no handle to the setup file survives:
-        with target.open('wb') as setup:
-            for chunk in response.iter_content(BLOCK_SIZE):
-                if should_cancel is not None and should_cancel():
-                    raise UpdateCancelled('The update was cancelled.')
-                setup.write(chunk)
-                received += len(chunk)
-                if progress is not None:
-                    progress(received, total)
+        try:
+            # The context manager guarantees that no handle to the setup file survives:
+            with target.open('wb') as setup:
+                for chunk in response.iter_content(BLOCK_SIZE):
+                    if should_cancel is not None and should_cancel():
+                        raise UpdateCancelled('The update was cancelled.')
+                    setup.write(chunk)
+                    received += len(chunk)
+                    if progress is not None:
+                        progress(received, total)
+        except (requests.RequestException, OSError) as err:
+            raise UpdateError(f'The download of the installer failed:\n{err}') from err
     if total and received != total:
         raise UpdateError('The download of the installer is incomplete.')
 
@@ -137,35 +195,105 @@ def _verify_checksum(setup_file: Path, checksum_url: str) -> None:
     with response:
         if response.status_code != 200:
             raise UpdateError('No checksum file was found for this version.')
-        expected = response.content.decode('ascii', errors='ignore').strip()
+        content = response.content.decode('ascii', errors='ignore')
+    # A checksum file may hold the file name behind the hash ('<hash> *installer.exe'):
+    words = content.split()
+    expected = words[0].lower() if words else ''
     if not expected:
         raise UpdateError('The checksum file of this version is empty.')
-    if sha512_checksum_of_file(str(setup_file)) != expected:
+    if _checksum_of_downloaded_file(setup_file).lower() != expected:
         raise UpdateError('The checksum of the downloaded installer is wrong.\n'
                           'The file was not installed.')
+
+
+def _checksum_of_downloaded_file(setup_file: Path, attempts: int = LOCKED_FILE_ATTEMPTS) -> str:
+    """A virus scanner may still hold the freshly written installer, so this waits a bit."""
+    for attempt in range(attempts):
+        try:
+            return sha512_checksum_of_file(str(setup_file))
+        except OSError as err:
+            if attempt == attempts - 1:
+                raise UpdateError(f'The downloaded installer could not be read:\n{err}') from err
+            time.sleep(LOCKED_FILE_DELAY)
+    raise UpdateError('The downloaded installer could not be read.')
 
 
 def start_installer(setup_file: Path) -> None:
     """Start the downloaded installer as a detached process.
 
     Every handle FinalCif might hold in the installation directory is released before, the
-    process itself has to end immediately afterwards (see `finalcif.gui.dialogs`).
+    process itself has to end immediately afterwards (see `finalcif.gui.dialogs`).  A machine
+    wide installation is only replaceable by an elevated installer, so the user is asked for
+    administrator rights.  Without them, :class:`ElevationRefused` offers the caller the
+    per-user installation as a way out.
     """
     release_running_mutex()
     _leave_installation_directory()
-    command = [str(setup_file), *installer_parameters()]
-    subprocess.Popen(command,
-                     cwd=str(setup_file.parent),
-                     close_fds=True,
-                     creationflags=_detached_flags(),
-                     stdin=subprocess.DEVNULL,
-                     stdout=subprocess.DEVNULL,
-                     stderr=subprocess.DEVNULL)
+    if not is_installed():
+        # A source checkout must not be overwritten by the installer:
+        _start_detached(setup_file, user_installer_parameters())
+    elif is_user_installation():
+        _start_detached(setup_file, installer_parameters())
+    else:
+        _start_elevated(setup_file)
+
+
+def start_user_installer(setup_file: Path) -> None:
+    """Install into the user directory, which needs no administrator rights at all.
+
+    This is the fallback for restricted accounts that cannot update the machine wide
+    installation in ``C:\\Program Files``.
+    """
+    release_running_mutex()
+    _leave_installation_directory()
+    _start_detached(setup_file, user_installer_parameters())
+
+
+def _start_detached(setup_file: Path, parameters: list[str]) -> None:
+    command = [str(setup_file), *parameters]
+    for attempt in range(LOCKED_FILE_ATTEMPTS):
+        try:
+            subprocess.Popen(command,
+                             cwd=str(setup_file.parent),
+                             close_fds=True,
+                             creationflags=_detached_flags(),
+                             stdin=subprocess.DEVNULL,
+                             stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
+            return
+        except OSError as err:
+            if attempt == LOCKED_FILE_ATTEMPTS - 1:
+                raise UpdateError(f'The installer could not be started:\n{err}') from err
+            time.sleep(LOCKED_FILE_DELAY)
+
+
+def _start_elevated(setup_file: Path) -> None:
+    """Ask for administrator rights and start the installer with them."""
+    if is_elevated():
+        # A child of an elevated FinalCif is elevated as well, no UAC prompt needed:
+        _start_detached(setup_file, installer_parameters())
+        return
+    parameters = subprocess.list2cmdline(installer_parameters())
+    result = _shell_execute(str(setup_file), parameters, str(setup_file.parent))
+    # ShellExecuteW returns a value greater than 32 on success:
+    if result <= 32:
+        raise ElevationRefused(f'{installation_directory()}\n'
+                               'can only be updated with administrator rights, which were not granted.')
+
+
+def _shell_execute(file: str, parameters: str, directory: str) -> int:
+    """Run `file` with the 'runas' verb, which triggers the UAC prompt."""
+    return ctypes.windll.shell32.ShellExecuteW(None, 'runas', file, parameters, directory, 1)
 
 
 def installer_parameters() -> list[str]:
     """Keep the installation in the same place and with the same privileges as before."""
-    return ['/CURRENTUSER', f'/DIR={installation_directory()}']
+    scope = '/CURRENTUSER' if is_user_installation() else '/ALLUSERS'
+    return [scope, f'/DIR={installation_directory()}']
+
+
+def user_installer_parameters() -> list[str]:
+    return ['/CURRENTUSER', f'/DIR={user_installation_directory()}']
 
 
 def _detached_flags() -> int:
@@ -218,9 +346,3 @@ def start_exit_watchdog(timeout: float = EXIT_TIMEOUT) -> threading.Timer:
     watchdog.daemon = True
     watchdog.start()
     return watchdog
-
-
-def start_elevated_updater(version: str) -> None:
-    """Machine wide installations need update.exe running with administrator rights."""
-    updater_exe = str(installation_directory() / 'update.exe')
-    ctypes.windll.shell32.ShellExecuteW(None, 'runas', updater_exe, f'-v {version} -p finalcif', None, 1)

@@ -22,8 +22,10 @@ AppMutex=FinalCifSetupMutex
 ; per-user install into {localappdata}\Programs\FinalCif that needs no administrator rights, e.g.:
 ;   FinalCif-setup-x64-vXXX.exe /CURRENTUSER /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
 ; /ALLUSERS forces the machine-wide install. {autopf} and {group} follow the selected mode.
+; "dialog" lets users without administrator rights (restricted domain accounts) choose the
+; per-user install in the Setup wizard instead of being stopped by the UAC prompt.
 PrivilegesRequired=admin
-PrivilegesRequiredOverridesAllowed=commandline
+PrivilegesRequiredOverridesAllowed=commandline dialog
 UsePreviousPrivileges=yes
 DefaultDirName={autopf}\{#MyAppName}
 OutputBaseFilename={#MyAppName}-setup-x64-v{#MyAppVersion}
@@ -58,7 +60,7 @@ AlwaysShowComponentsList=False
 ShowComponentSizes=False
 SetupIconFile="..\finalcif\icon\finalcif2.ico"
 UninstallDisplayIcon={app}\{#MyAppName}.exe
-SignTool=sign_sha256
+;SignTool=sign_sha256
 ArchitecturesInstallIn64BitMode=x64
 
 [Files]
@@ -72,7 +74,6 @@ Source: "..\finalcif\finalcif_start.py"; DestDir: "{app}\finalcif"; Flags: ignor
 Source: "..\dist\python_dist\*";    DestDir: "{app}";           Flags: ignoreversion createallsubdirs recursesubdirs; \
     Excludes: "*.debug.pak,*_metatypes.json,**\*.pdb,**\test\*,**\tests\*,**\*.dist-info\RECORD,**\*.dist-info\REQUESTED,qml\*,doc\*,tkinter\*,*.py,__pycache__,*.pyi"
 Source: "..\finalcif.exe";          DestDir: "{app}";           Flags: ignoreversion
-Source: "..\update.exe";            DestDir: "{app}";           Flags: ignoreversion
 Source: "..\vc_redist.x64.exe";     DestDir: "{app}";           Flags: ignoreversion
 Source: "..\platon\platon_special.exe";    DestDir: "{app}\platon";    Flags: ignoreversion
 
@@ -95,6 +96,8 @@ Type: filesandordirs; Name: "{app}\finalcif"
 Type: filesandordirs; Name: "{app}\Lib"
 Type: filesandordirs; Name: "{app}\Scripts"
 Type: filesandordirs; Name: "{app}\python*.*"
+; FinalCif downloads and starts its installer itself, update.exe is not used anymore:
+Type: files; Name: "{app}\update.exe"
 
 
 [UninstallDelete]

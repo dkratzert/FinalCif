@@ -9,7 +9,7 @@ site_packages = next(p for p in sys.path if 'site-packages' in p)
 
 a = Analysis(['finalcif/finalcif_start.py'],
              pathex=['finalcif'],
-             binaries=[('update.exe', '.')],
+             binaries=[],
              datas=[('finalcif/gui', 'gui'),
                     (path.join(site_packages, "docx", "templates"), 'finalcif/docx/templates'),
                     ('finalcif/template', 'template'), ('finalcif/icon', 'icon'),

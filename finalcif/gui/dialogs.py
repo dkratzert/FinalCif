@@ -1,52 +1,80 @@
 import os
 import sys
 import threading
+import traceback
 from pathlib import Path
 
-from finalcif import VERSION
-from finalcif.tools.selfupdate import UpdateCancelled, UpdateError, download_installer, is_user_installation, \
-    start_elevated_updater, start_exit_watchdog, start_installer
 from qtpy import QtCore, compat
+from qtpy import QtWidgets
 from qtpy.QtCore import QProcess
-from qtpy.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QTextEdit, QPushButton, QFrame, QProgressDialog, \
-    QApplication
+from qtpy.QtWidgets import QApplication
+from qtpy.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QTextEdit, QPushButton, QFrame, QProgressDialog
+
+from finalcif import VERSION
+from finalcif.tools.selfupdate import ElevationRefused, UpdateCancelled, UpdateError, can_self_update, \
+    download_installer, start_exit_watchdog, start_installer, start_user_installer, user_installation_directory
+
+# Keeps the running downloads alive, a local variable would be garbage collected:
+_running_updates: set = set()
 
 
-class InstallerDownload(QtCore.QObject):
-    """Downloads the FinalCif installer in a background thread."""
-    progress = QtCore.Signal(int, int)
-    failed = QtCore.Signal(str)
-    downloaded = QtCore.Signal(str)
+class InstallerDownload:
+    """Downloads the FinalCif installer in a background thread.
+
+    Not a single Qt object is touched from that thread; the GUI polls the state of the
+    download with a timer instead (see :func:`update_installation`).
+    """
 
     def __init__(self, version: str) -> None:
-        super().__init__(None)
         self.version = version
+        self.setup_file: Path | None = None
+        self.error = ''
+        self.finished = False
+        self._lock = threading.Lock()
+        self._received = 0
+        self._total = 0
         self._cancelled = False
+
+    def start(self) -> None:
+        threading.Thread(target=self.run, daemon=True).start()
 
     def cancel(self) -> None:
         self._cancelled = True
 
+    @property
+    def progress(self) -> tuple[int, int]:
+        with self._lock:
+            return self._received, self._total
+
+    def _report_progress(self, received: int, total: int) -> None:
+        with self._lock:
+            self._received = received
+            self._total = total
+
     def run(self) -> None:
         try:
-            setup_file = download_installer(self.version,
-                                            progress=self.progress.emit,
-                                            should_cancel=lambda: self._cancelled)
+            self.setup_file = download_installer(self.version,
+                                                 progress=self._report_progress,
+                                                 should_cancel=lambda: self._cancelled)
         except UpdateCancelled:
-            return
+            pass
         except UpdateError as err:
-            self.failed.emit(str(err))
-            return
-        self.downloaded.emit(str(setup_file))
+            self.error = str(err)
+        except Exception as err:  # The dialog would wait forever for a thread that died:
+            traceback.print_exc()
+            self.error = f'The installer could not be downloaded:\n{err!r}'
+        finally:
+            self.finished = True
 
 
 def do_update_program(version: str, parent=None) -> None:
-    if is_user_installation():
-        update_user_installation(version, parent)
+    if can_self_update():
+        update_installation(version, parent)
     else:
-        start_elevated_updater(version)
+        print('No update available.')
 
 
-def update_user_installation(version: str, parent=None) -> None:
+def update_installation(version: str, parent=None) -> None:
     """Download the installer and hand the installation directory over to it."""
     progress_dialog = QProgressDialog('Downloading the FinalCif installer...', 'Cancel', 0, 100, parent)
     progress_dialog.setWindowTitle('FinalCif update')
@@ -55,35 +83,93 @@ def update_user_installation(version: str, parent=None) -> None:
     progress_dialog.setAutoReset(False)
     progress_dialog.setMinimumDuration(0)
     progress_dialog.setValue(0)
-    # A plain local variable would be garbage collected while the thread is downloading:
     downloader = InstallerDownload(version)
-    progress_dialog.setProperty('downloader', downloader)
+    # Everything below runs in the GUI thread, driven by this timer:
+    timer = QtCore.QTimer(progress_dialog)
+    timer.setInterval(200)
+    # Plain local variables would be garbage collected while the thread is downloading:
+    running_update = (downloader, progress_dialog)
 
-    def on_progress(received: int, total: int) -> None:
+    def show_progress() -> None:
+        received, total = downloader.progress
         if total:
+            progress_dialog.setRange(0, 100)
             progress_dialog.setValue(int(100 * received / total))
-        progress_dialog.setLabelText(f'Downloading the FinalCif installer... '
-                                     f'({received / 1024 ** 2:.1f} MB)')
+        elif received:
+            # Without a content-length there is nothing to calculate a percentage from:
+            progress_dialog.setRange(0, 0)
+        if received and received == total:
+            progress_dialog.setLabelText('Verifying the downloaded installer...')
+        else:
+            progress_dialog.setLabelText(f'Downloading the FinalCif installer... '
+                                         f'({received / 1024 ** 2:.1f} MB)')
 
     def on_failed(message: str) -> None:
         progress_dialog.close()
         show_general_warning(parent, warn_text='The update failed.', info_text=message,
                              window_title='FinalCif update')
 
-    def on_downloaded(setup_file: str) -> None:
+    def on_downloaded(setup_file: Path) -> None:
         progress_dialog.setLabelText('Starting the installer...')
+        progress_dialog.setRange(0, 100)
         progress_dialog.setValue(100)
+        QApplication.processEvents()
         release_installation_directory()
-        start_installer(Path(setup_file))
+        try:
+            start_installer(setup_file)
+        except ElevationRefused as err:
+            progress_dialog.close()
+            if not install_into_user_directory(setup_file, str(err), parent):
+                return
+        except UpdateError as err:
+            on_failed(str(err))
+            return
         progress_dialog.close()
         quit_application()
 
-    downloader.progress.connect(on_progress)
-    downloader.failed.connect(on_failed)
-    downloader.downloaded.connect(on_downloaded)
+    def check_download() -> None:
+        show_progress()
+        if not downloader.finished:
+            return
+        timer.stop()
+        _running_updates.discard(running_update)
+        if downloader.error:
+            on_failed(downloader.error)
+        elif downloader.setup_file is not None:
+            on_downloaded(downloader.setup_file)
+        else:
+            progress_dialog.close()
+
+    timer.timeout.connect(check_download)
     progress_dialog.canceled.connect(downloader.cancel)
-    threading.Thread(target=downloader.run, daemon=True).start()
+    _running_updates.add(running_update)
+    downloader.start()
     progress_dialog.show()
+    timer.start()
+
+
+def install_into_user_directory(setup_file: Path, reason: str, parent=None) -> bool:
+    """Offer the per-user installation to accounts without administrator rights."""
+    question = QMessageBox(parent)
+    question.setWindowTitle('FinalCif update')
+    question.setIcon(QMessageBox.Icon.Question)
+    question.setText('FinalCif can be installed in your personal folder instead.')
+    question.setInformativeText(f'{reason}\n\n'
+                                f'Install FinalCif into\n{user_installation_directory()}\ninstead? '
+                                f'This needs no administrator rights.\n\n'
+                                f'The current installation stays where it is. Start the new FinalCif '
+                                f'from your personal start menu entry afterwards.')
+    question.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+    question.setDefaultButton(QMessageBox.StandardButton.Yes)
+    if question.exec() != QMessageBox.StandardButton.Yes:
+        return False
+    try:
+        start_user_installer(setup_file)
+    except UpdateError as err:
+        show_general_warning(parent, warn_text='The update failed.', info_text=str(err),
+                             window_title='FinalCif update')
+        return False
+    return True
 
 
 def release_installation_directory() -> None:
@@ -332,9 +418,6 @@ def video_file_open_dialog(parent: object = None, filter: str = "Video file (*.v
 
 
 if __name__ == '__main__':
-    from qtpy import QtWidgets
-    from qtpy.QtWidgets import QApplication
-
     app = QApplication.instance()
     if app is None:
         app = QApplication([])
@@ -351,10 +434,10 @@ if __name__ == '__main__':
     # show_ok_cancel_warning(parent=w, warn_text='foobar')
     # show_keyword_help(parent=w, helptext="This is a helptext", title='A Title')
     # show_general_warning(parent=w, warn_text='Warning text', info_text='Info text', window_title='Title')
-    # show_hkl_checksum_warning(parent=w)
+    #show_hkl_checksum_warning(parent=w)
     # show_res_checksum_warning(parent=w)
-    # unable_to_open_message(parent=w, not_ok=Exception('foo'), filepath=Path('C:/foo.txt'))
-    # do_update_program('127')
-    # window.show()
+    unable_to_open_message(parent=w, not_ok=Exception('foo'), filepath=Path('C:/foo.txt'))
+    #do_update_program('170')
+    w.show()
 
     app.exec()
