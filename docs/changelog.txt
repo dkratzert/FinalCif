@@ -1,6 +1,13 @@
 FinalCif recent changes
 -----------------------
-* v170 Newly saved author, equipment, property and text templates are no longer lost when FinalCif is closed.
+* v170 FinalCif can now update itself directly from within the program: it downloads the new version and starts
+       the installer for you while showing the progress. Updating a FinalCif that is installed for all users of
+       a computer asks for administrator rights, and if these are not granted, FinalCif offers to install itself
+       just for you instead. The setup program now offers this choice as well. The update no longer gets stuck
+       when the download fails or a virus scanner briefly blocks the downloaded installer.
+       FinalCif no longer crashes when browsing through crystal images or trying to use a crystal picture for
+       the report while no crystal video was loaded.
+       Newly saved author, equipment, property and text templates are no longer lost when FinalCif is closed.
        Several parts of the program used separate settings objects, each rewriting the complete settings file
        from its own outdated copy, so the last writer discarded changes made elsewhere. All parts now share
        one settings object.
