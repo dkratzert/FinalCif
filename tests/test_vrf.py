@@ -3,12 +3,10 @@
 Covers VRFEntry dataclass, MyVRFContainer widget, inline VRF placement in the
 main CIF table, span clearing on reload, and the integrated save flow.
 """
-import os
 import shutil
 import unittest
 from pathlib import Path
 
-os.environ['RUNNING_TEST'] = 'True'
 
 from qtpy.QtWidgets import QApplication
 
@@ -233,7 +231,6 @@ class TestVRFInlineInTable(AppWindowTestCase):
     """Verify VRF widgets are placed inline in the main CIF table."""
 
     def setUp(self) -> None:
-        os.environ['RUNNING_TEST'] = 'True'
         self.testcif = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         from finalcif.appwindow import AppWindow
         self.app = AppWindow(file=self.testcif)
@@ -287,7 +284,6 @@ class TestSpanClearedOnReload(AppWindowTestCase):
     """Ensure column spans are cleared when the CIF table is reloaded."""
 
     def setUp(self) -> None:
-        os.environ['RUNNING_TEST'] = 'True'
         self.testcif = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()
         from finalcif.appwindow import AppWindow
         self.app = AppWindow(file=self.testcif)
@@ -327,7 +323,6 @@ class TestVRFSaveIntegration(AppWindowTestCase):
     """VRF responses are saved when save_current_cif_file is called."""
 
     def setUp(self) -> None:
-        os.environ['RUNNING_TEST'] = 'True'
         import tempfile
         # Copy test CIF to a temp location so we can modify it
         src = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').absolute()

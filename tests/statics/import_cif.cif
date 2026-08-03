@@ -3,6 +3,17 @@ data_title
 _cell_length_a                   19.678(3)
 _foo_bar baz
 _hello 12.3
+_empty_key ?
+_vrf_PLAT029_title
+;
+PROBLEM: _diffrn_measured_fraction_theta_full Low .......       0.976 Why ?
+RESPONSE: ?
+;
+_vrf_PLAT911_title
+;
+PROBLEM: Missing FCF Refl Between THmin & STh/L=      0.600         21 Report
+RESPONSE: The reflections were obscured by the beam stop.
+;
 
 loop_
  _my_atom_type_symbol

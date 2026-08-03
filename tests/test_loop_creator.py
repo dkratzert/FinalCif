@@ -1,4 +1,3 @@
-import os
 import unittest
 from pathlib import Path
 
@@ -16,7 +15,6 @@ data = Path('.')
 
 class TestLoopCreator(unittest.TestCase):
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.w = QMainWindow()
         self.cif = CifContainer(data / 'test-data/1000006.cif')
         self.lc = LoopCreator(parent=self.w, cif=self.cif)

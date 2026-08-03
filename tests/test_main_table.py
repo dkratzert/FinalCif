@@ -4,12 +4,10 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-import os
 from unittest.mock import patch
 
 import pytest
 
-os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from tests.helpers import AppWindowTestCase
 from pathlib import Path

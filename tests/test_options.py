@@ -1,5 +1,3 @@
-import os
-
 import unittest
 from tests.helpers import AppWindowTestCase
 from pathlib import Path
@@ -7,7 +5,6 @@ from pathlib import Path
 from finalcif import appwindow
 
 data = Path('.')
-os.environ["RUNNING_TEST"] = 'True'
 
 
 class TestOptions(AppWindowTestCase):

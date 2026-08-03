@@ -1,6 +1,5 @@
 import os
 
-os.environ["RUNNING_TEST"] = 'True'
 import time
 import unittest
 from tests.helpers import AppWindowTestCase
@@ -70,7 +69,6 @@ class TestPlatonCheckCIF(AppWindowTestCase):
 class TestPlatonCheckCIFwithCIFwithoutHKLdata(AppWindowTestCase):
 
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
             self.skipTest('No PLATON executable found or NO_NETWORK is set. Skipping test!')
         self.app = AppWindow(file=Path('./test-data/1000007.cif').resolve())

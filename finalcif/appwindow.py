@@ -70,13 +70,15 @@ from finalcif.gui.plaintextedit import MyQPlainTextEdit
 from finalcif.gui.validators import calculated_z_validator
 from finalcif.gui.checkcif_browser import CheckCifBrowser
 from finalcif.gui.text_value_editor import MyTextTemplateEdit, TextEditItem
+from finalcif.gui.timers import single_shot
 from finalcif.cif.vrf_entry import VRFEntry
 from finalcif.gui.vrf_classes import MyVRFContainer
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
 from finalcif.tools.misc import (next_path, celltxt, to_float, is_database_number,
-                                 open_file, strip_finalcif_of_name, file_age_in_days, open_in_text_editor)
+                                 open_file, strip_finalcif_of_name, file_age_in_days, open_in_text_editor,
+                                 running_inside_unit_test as is_unit_test)
 from finalcif.tools.options import Options
 from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
@@ -155,6 +157,7 @@ class _StructureFactorReportThread(QtCore.QThread):
 
 
 class AppWindow(QMainWindow):
+    thread_shutdown_timeout_ms = 10_000
 
     def __init__(self, file: Path | None = None):
         super().__init__()
@@ -163,6 +166,7 @@ class AppWindow(QMainWindow):
         self.thread_version = None
         self.worker = None
         self._z_thread: _ZEstimatorThread | None = None
+        self.structure_factor_thread: _StructureFactorReportThread | None = None
         self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
         # This prevents some things to happen during unit tests:
         # Open of target dir of shred cif,
@@ -269,9 +273,9 @@ class AppWindow(QMainWindow):
 
     @property
     def running_inside_unit_test(self):
-        if "RUNNING_TEST" in os.environ:
+        if is_unit_test():
             if DEBUG:
-                print(f'pytest process running: {os.environ["PYTEST_CURRENT_TEST"]}')
+                print(f'pytest process running: {os.environ.get("PYTEST_CURRENT_TEST")}')
             return True
         return False
 
@@ -875,7 +879,25 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             self._savesize()
         self.settings.flush()
+        self._stop_background_threads()
         super().closeEvent(event)
+
+    def _stop_background_threads(self) -> None:
+        """Finish all worker threads before Qt destroys them together with this window.
+
+        Qt aborts the whole process when a running QThread is deleted. findChildren()
+        is used instead of the individual attributes because a superseded worker may
+        still run after its attribute was cleared.
+        """
+        for thread in self.findChildren(QtCore.QThread):
+            if not thread.isRunning():
+                continue
+            # Prevent a result from being delivered into the dying window.
+            thread.blockSignals(True)
+            thread.quit()
+            if not thread.wait(self.thread_shutdown_timeout_ms):
+                thread.terminate()
+                thread.wait()
 
     def show_help(self) -> None:
         QtGui.QDesktopServices.openUrl(QtCore.QUrl('https://dkratzert.de/files/finalcif/docs/'))
@@ -916,7 +938,27 @@ class AppWindow(QMainWindow):
         dialog = SqueezeSolventDialog(cif=self.cif, mode=mode, parent=self)
         if dialog._cancelled:
             return False
-        return bool(dialog.exec())
+        accepted = bool(dialog.exec())
+        if accepted:
+            self._refresh_after_squeeze_dialog(dialog)
+        return accepted
+
+    def _refresh_after_squeeze_dialog(self, dialog: SqueezeSolventDialog) -> None:
+        """
+        Show the values written by the solvent dialog without leaving the current page.
+        """
+        self._update_squeeze_details_row(dialog.details_key, dialog.details_text)
+        if self.ui.MainStackedWidget.on_loops_page():
+            self.ui.loops_page.reload()
+
+    def _update_squeeze_details_row(self, key: str, text: str) -> None:
+        if not self.ui.cif_main_table.rowCount():
+            return
+        if not self.ui.cif_main_table.has_key(key):
+            if not text:
+                return
+            self.add_row(key=key, value=text, at_start=True)
+        self.ui.cif_main_table.setText(key=key, column=Column.EDIT, txt=text)
 
     def _ccdc_deposit(self) -> None:
         """
@@ -1727,8 +1769,7 @@ class AppWindow(QMainWindow):
         fixfont.setPointSize(fixfont.pointSize() + 2)
         doc.setDefaultFont(fixfont)
         final_textedit.setLineWrapMode(QPlainTextEdit.LineWrapMode.NoWrap)
-        final_textedit.setPlainText(self.cif.finalcif_file.read_text(encoding='utf-8', errors='ignore'))
-        QtCore.QTimer().singleShot(0, lambda: final_textedit.highlighter.setDocument(doc))
+        final_textedit.set_cif_text(self.cif.as_saved_string())
 
     def import_additional_cif(self, filename: str):
         """
@@ -1818,18 +1859,16 @@ class AppWindow(QMainWindow):
         if not self.cif.chars_ok:
             self.warn_about_bad_cif()
         # Do this only when sure we can load the file:
-        QtCore.QTimer.singleShot(0, lambda: self.save_current_recent_files_list(filepath))
+        single_shot(self, 0, lambda: self.save_current_recent_files_list(filepath))
         self._load_block(block, load_changes=load_changes)
         self.add_data_names_to_combobox()
         self.ui.datanameComboBox.setCurrentIndex(block)
         self.ui.datanameComboBox.blockSignals(False)
-        QtCore.QTimer.singleShot(500, self.ui.cif_main_table.resizeRowsToContents)
+        single_shot(self, 500, self.ui.cif_main_table.resizeRowsToContents)
         if self.cif.is_multi_cif:
             self._flash_block_combobox()
         self.cif.set_order_keys(self.ui.cifOrderWidget.order_keys)
-        QtCore.QTimer().singleShot(0, self._find_video)
-        # Enable to find widgets without parent:
-        # QtCore.QTimer(self).singleShot(1000, self.find_widgets_without_parent)
+        single_shot(self, 0, self._find_video)
 
     def _find_video(self) -> None:
         self.video.reset()
@@ -1853,8 +1892,8 @@ class AppWindow(QMainWindow):
         pal.setColor(QtGui.QPalette.ColorRole.Base, light_blue)
         self.ui.datanameComboBox.setAutoFillBackground(True)
         # short after start, because window size is not finished before:
-        QtCore.QTimer(self).singleShot(1500, lambda: self.ui.datanameComboBox.setPalette(pal))
-        QtCore.QTimer(self).singleShot(2600, lambda: self.ui.datanameComboBox.setPalette(orig_pal))
+        single_shot(self, 1500, lambda: self.ui.datanameComboBox.setPalette(pal))
+        single_shot(self, 2600, lambda: self.ui.datanameComboBox.setPalette(orig_pal))
 
     def add_data_names_to_combobox(self) -> None:
         self.ui.datanameComboBox.clear()
@@ -1932,8 +1971,7 @@ class AppWindow(QMainWindow):
                 self.show_residuals()
                 self.redraw_molecule()
             self._update_z_label()
-            t = QtCore.QTimer(self)
-            t.singleShot(1000, self.check_cecksums)
+            single_shot(self, 1000, self.check_cecksums)
 
     def _delete_current_block(self, index: int) -> None:
         self.cif.delete_block(index)
@@ -2132,8 +2170,7 @@ class AppWindow(QMainWindow):
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
         self._show_shelx_file()
         try:
-            QtCore.QTimer(self).singleShot(0, lambda: self.view_molecule(reset_view=True))
-            # threading.Thread(target=self.view_molecule).start()
+            single_shot(self, 0, lambda: self.view_molecule(reset_view=True))
         except Exception:
             print('Molecule view crashed!')
 
@@ -2577,7 +2614,7 @@ class AppWindow(QMainWindow):
         table.clearSelection()
 
     def check_cecksums(self):
-        if "RUNNING_TEST" in os.environ:
+        if self.running_inside_unit_test:
             return
         if not self.cif.test_res_checksum():
             show_res_checksum_warning(parent=self)

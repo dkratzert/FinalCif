@@ -14,6 +14,7 @@ from finalcif.cif.text import retranslate_delimiter, string_to_utf8
 from finalcif.equip_property.tools import read_document_from_cif_file
 from finalcif.gui.custom_classes import Column, light_green
 from finalcif.gui.dialogs import show_general_warning, cif_file_open_dialog, cif_file_save_dialog
+from finalcif.gui.timers import single_shot
 from finalcif.tools import misc
 from finalcif.tools.misc import include_equipment_imports
 from finalcif.tools.settings import FinalCifSettings
@@ -94,7 +95,7 @@ class Equipment:
                 self._rename_old_name = item.text()
                 # Defer editItem() to the next event-loop tick so that all
                 # menu-close events are processed before Qt starts the editor.
-                QtCore.QTimer.singleShot(0, lambda: listw.editItem(item))
+                single_shot(listw, 0, lambda: listw.editItem(item))
 
         menu.triggered.connect(_on_triggered)
         menu.popup(listw.viewport().mapToGlobal(pos))

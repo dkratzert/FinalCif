@@ -154,6 +154,16 @@ class SqueezeSolventDialog(QDialog):
             # smtbx loop absent - nothing to import; populate (empty) table
             self._populate_table()
 
+    @property
+    def details_key(self) -> str:
+        """CIF key the details text is written to, according to the resolved mode."""
+        return self._cfg['details_key']
+
+    @property
+    def details_text(self) -> str:
+        """Current details text of the dialog."""
+        return self.details_edit.toPlainText().strip()
+
     # ------------------------------------------------------------------
     # Mode detection
     # ------------------------------------------------------------------
@@ -528,7 +538,7 @@ class SqueezeSolventDialog(QDialog):
 
         # Write details text
         details_key = cfg['details_key']
-        details = self.details_edit.toPlainText().strip()
+        details = self.details_text
         if details:
             self.cif[details_key] = details
         elif details_key in self.cif:

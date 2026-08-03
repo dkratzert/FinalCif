@@ -38,6 +38,10 @@ import re
 
 from qtpy.QtGui import QTextCharFormat, QSyntaxHighlighter, QColor, QFont
 
+#: Prefix of the placeholder line that replaces a folded region in the text
+#: view. Lines starting with it are never part of a real CIF file.
+FOLD_PLACEHOLDER_PREFIX = '    \u2026 '
+
 
 def _make_format(color: str | None = None, bold: bool = False) -> QTextCharFormat:
     """Build a QTextCharFormat, shared by the CIF and SHELX highlighters."""
@@ -86,11 +90,40 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
         self.vrf_values_format.setForeground(QColor("#8b0000"))
         self.vrf_values_format.setFontWeight(QFont.Weight.Bold)
 
+        self.folded_format = QTextCharFormat()
+        self.folded_format.setForeground(QColor("#808080"))
+        self.folded_format.setFontItalic(True)
+
         self.field_re = re.compile(r'^_[A-Za-z][A-Za-z0-9_.\-\[\]()/]*')
         self.quoted_re = re.compile(r"'[^']*'")
 
+    def _highlight_multiline(self, text: str, in_multiline: bool) -> bool:
+        """Format a ';' delimited text field; True when *text* belongs to one."""
+        if text.startswith(';'):
+            self.setFormat(0, 1, self.bold_format)
+            # self.setFormat(0, len(text), self.multiline_format)
+            self.setCurrentBlockState(0 if in_multiline else self.MULTILINE)
+            return True
+        if in_multiline:
+            # Formatting the whole line here is quite slow:
+            # self.setFormat(0, len(text), self.multiline_format)
+            self.setCurrentBlockState(self.MULTILINE)
+            return True
+        return False
+
     def highlightBlock(self, text: str) -> None:
         prev_state = self.previousBlockState()
+
+        # ---------- Placeholder of a folded region ----------
+
+        # The block state is passed through unchanged so that folding a region
+        # does not disturb the multiline/loop state machine of the following
+        # blocks.
+        if text.startswith(FOLD_PLACEHOLDER_PREFIX):
+            self.setFormat(0, len(text), self.folded_format)
+            self.setCurrentBlockState(prev_state)
+            return
+
         in_multiline = prev_state == self.MULTILINE
         in_loop_fields = prev_state == self.LOOP_FIELDS
         in_loop_data = prev_state == self.LOOP_DATA
@@ -100,20 +133,7 @@ class CIFSyntaxHighlighter(QSyntaxHighlighter):
 
         # ---------- Multiline text blocks ----------
 
-        if text.startswith(';'):
-            self.setFormat(0, 1, self.bold_format)
-            # self.setFormat(0, len(text), self.multiline_format)
-
-            if in_multiline:
-                self.setCurrentBlockState(0)
-            else:
-                self.setCurrentBlockState(self.MULTILINE)
-            return
-
-        if in_multiline:
-            # This line is quite slow:
-            # self.setFormat(0, len(text), self.multiline_format)
-            self.setCurrentBlockState(self.MULTILINE)
+        if self._highlight_multiline(text, in_multiline):
             return
 
         # ---------- Loop start ----------

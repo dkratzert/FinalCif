@@ -6,7 +6,6 @@
 #   ----------------------------------------------------------------------------
 import os
 
-os.environ["RUNNING_TEST"] = 'True'
 import time
 import unittest
 from tests.helpers import AppWindowTestCase

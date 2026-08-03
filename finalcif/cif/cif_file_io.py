@@ -386,6 +386,20 @@ class CifContainer:
             else:
                 self.block.set_pair(key, quote(txt))
 
+    def write_options(self) -> gemmi.cif.WriteOptions:
+        """The gemmi write options used to save and to display the CIF."""
+        options = gemmi.cif.WriteOptions()
+        options.prefer_pairs = False
+        options.compact = False
+        options.align_pairs = 33
+        options.align_loops = 15
+        options.misuse_hash = False
+        return options
+
+    def as_saved_string(self) -> str:
+        """The CIF text exactly as :meth:`save` writes it to disk."""
+        return self.doc.as_string(options=self.write_options())
+
     def save(self, filename: Path | None = None) -> None:
         """
         Saves the current cif file. It uses the '[basename]-finalcif.cif' suffix by default.
@@ -400,16 +414,7 @@ class CifContainer:
             raise PermissionError(f'Failed to open {filename.resolve()} for writing: Operation not permitted')
         self.order_cif_keys()
         print('Saving CIF to', Path(filename).resolve())
-        if Version(gemmi.__version__) > Version('0.6.3'):
-            options = gemmi.cif.WriteOptions()
-            options.prefer_pairs = False
-            options.compact = False
-            options.align_pairs = 33
-            options.align_loops = 15
-            options.misuse_hash = False
-            self.doc.write_file(str(filename), options=options)
-        else:
-            self.doc.write_file(str(filename), gemmi.cif.Style.Indent35)
+        self.doc.write_file(str(filename), options=self.write_options())
 
     def is_writable(self, filepath: Path | str) -> bool:
         filepath = Path(filepath)
@@ -973,9 +978,9 @@ class CifContainer:
         publ_loop = self.block.find_loop('_geom_angle_publ_flag') or len(label1) * ['?']
         angle = namedtuple('angle', ('label1', 'label2', 'label3', 'angle_val', 'symm1', 'symm2'))
         for label1, label2, label3, angle_val, symm1, symm2, publ in (
-            zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=False)):
+                zip(label1, label2, label3, angle_val, symm1, symm2, publ_loop, strict=False)):
             if ((without_H and (self.ishydrogen(label1) or self.ishydrogen(label2) or self.ishydrogen(label3))) or
-                self.yes_not_set(publ)):
+                    self.yes_not_set(publ)):
                 continue
             else:
                 yield angle(label1=label1, label2=label2, label3=label3, angle_val=angle_val,
@@ -1049,7 +1054,7 @@ class CifContainer:
         hydr = namedtuple('HydrogenBond', ('label_d', 'label_h', 'label_a', 'dist_dh', 'dist_ha', 'dist_da',
                                            'angle_dha', 'symm'))
         for label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ in (
-            zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop, strict=False)):
+                zip(label_d, label_h, label_a, dist_dh, dist_ha, dist_da, angle_dha, symm, publ_loop, strict=False)):
             if self.yes_not_set(publ):
                 continue
             if self.picometer:

@@ -35,8 +35,10 @@ from qtpy.QtGui import (QFocusEvent, QSyntaxHighlighter, QTextBlockUserData, QTe
                            QContextMenuEvent)
 from qtpy.QtWidgets import (QApplication, QMenu, QPlainTextEdit)
 
+from finalcif.tools.misc import running_inside_unit_test
+
 try:
-    if "RUNNING_TEST" in os.environ:
+    if running_inside_unit_test():
         raise ImportError
     import enchant
     from enchant import tokenize

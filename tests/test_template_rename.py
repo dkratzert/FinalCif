@@ -1,6 +1,3 @@
-import os
-
-os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from pathlib import Path
 from tempfile import NamedTemporaryFile

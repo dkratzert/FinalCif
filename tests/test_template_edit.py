@@ -1,6 +1,3 @@
-import os
-
-os.environ["RUNNING_TEST"] = 'True'
 import unittest
 from tests.helpers import AppWindowTestCase
 from pathlib import Path
@@ -47,7 +44,6 @@ class EquipmentTestCase(AppWindowTestCase):
 
 class PropertiesTestCase(AppWindowTestCase):
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.app = AppWindow(file=Path('test-data/1000006.cif'))
         self.app.hide()
 

@@ -1,4 +1,3 @@
-import os
 import unittest
 from tests.helpers import AppWindowTestCase
 from pathlib import Path
@@ -16,7 +15,6 @@ from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.tables import make_report_from
 
-os.environ["RUNNING_TEST"] = 'True'
 data = Path('tests')
 test_data = Path('test-data')
 

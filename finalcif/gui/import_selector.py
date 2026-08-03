@@ -2,13 +2,19 @@ import shutil
 from pathlib import Path
 from typing import Any, Iterable
 
+import gemmi
 from qtpy import QtWidgets, QtCore
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.import_selector_ui import Ui_importSelectMainWindow
 from finalcif.tools import misc
-from finalcif.tools.misc import do_not_import_keys, do_not_import_from_stoe_cfx
 from finalcif.tools.settings import FinalCifSettings
+
+EMPTY_VALUES = frozenset(('', '?'))
+
+
+def is_empty_value(raw_value: str) -> bool:
+    return gemmi.cif.as_string(raw_value).strip() in EMPTY_VALUES
 
 
 class ImportSelector(QtWidgets.QMainWindow):
@@ -25,23 +31,30 @@ class ImportSelector(QtWidgets.QMainWindow):
         self.keys_to_import: int = 0
         self.loops_to_import: int = 0
         self.selected: int = 0
+        self._empty_keys: set[str] = set()
+        self._excluded_kv: Iterable[str] = ()
+        self._excluded_loops: Iterable[str] = ()
         self._connect_signals_and_slots()
 
     def _connect_signals_and_slots(self) -> None:
         self.ui.saveSelectionPushbutton.clicked.connect(self._save_selection)
         self.ui.selectOnlyNewPB.clicked.connect(self._select_only_new)
         self.ui.importSelectedPushbutton.clicked.connect(self.import_key_loop)
+        self.ui.skipEmptyValuesCheckBox.toggled.connect(self._apply_preselection)
 
     def import_key_loop(self) -> None:
         self.import_clicked.emit(self.get_keys(include=True), self.get_loops(include=True))
 
     def show_import_window(self) -> None:
         row = 0
-        excluded_kv, excluded_loops = self._get_excluded_items()
+        self._excluded_kv, self._excluded_loops = self._get_excluded_items()
         for item in self.import_cif.block:
             if item.pair is not None:
-                key, _ = item.pair
-                self._add_checkbox(key, row, self.ui.importTable_keys, checked=key not in excluded_kv)
+                key, raw_value = item.pair
+                if is_empty_value(raw_value):
+                    self._empty_keys.add(key)
+                self._add_checkbox(key, row, self.ui.importTable_keys,
+                                   checked=self._should_preselect(key))
                 self.keys_to_import += 1
             else:
                 continue
@@ -52,7 +65,8 @@ class ImportSelector(QtWidgets.QMainWindow):
                 first_key = item.loop.tags[0]
                 self.loops_to_import += 1
                 key = '\n'.join(list(item.loop.tags))
-                self._add_checkbox(key, row, self.ui.importTable_loops, checked=first_key not in excluded_loops)
+                self._add_checkbox(key, row, self.ui.importTable_loops,
+                                   checked=first_key not in self._excluded_loops)
             else:
                 continue
             row += 1
@@ -63,7 +77,10 @@ class ImportSelector(QtWidgets.QMainWindow):
         self._set_label()
 
     def _save_selection(self) -> None:
-        self.settings.save_key_value('do_not_import_keys', self.get_keys(include=False))
+        # Keys that are unchecked only because of the automatic rules must not end up
+        # in the persistent exclusion list.
+        keys = [key for key in self.get_keys(include=False) if not self._is_auto_excluded(key)]
+        self.settings.save_key_value('do_not_import_keys', keys)
         self.settings.save_key_value('do_not_import_loops', self.get_loops(include=False))
 
     def _empty_saved_selection(self) -> None:
@@ -98,13 +115,7 @@ class ImportSelector(QtWidgets.QMainWindow):
         checkbox.setChecked(checked)
 
     def get_keys(self, include: bool) -> list[str]:
-        keys = []
-        rows = self.ui.importTable_keys.rowCount()
-        for row in range(rows):
-            widget: QtWidgets.QCheckBox = self.ui.importTable_keys.cellWidget(row, 0)
-            if widget and widget.isChecked() == include:
-                keys.append(widget.text())
-        return keys
+        return [widget.text() for widget in self._key_widgets() if widget.isChecked() == include]
 
     def get_loops(self, include: bool) -> list[list[str]]:
         loops = []
@@ -116,30 +127,38 @@ class ImportSelector(QtWidgets.QMainWindow):
                 loops.append(loop)
         return loops
 
-    def do_not_import_this_key(self, key: str) -> bool:
-        value = self.import_cif[key]
-        if value == '?' or value.strip() == '':
+    def _is_auto_excluded(self, key: str) -> bool:
+        """A key that is never preselected because of an automatic rule."""
+        if key.startswith('_vrf'):
             return True
-        if key in do_not_import_keys:
-            return True
-        if key in do_not_import_from_stoe_cfx and '.cfx' in self.import_cif.fileobj.name:
-            return True
-        return False
+        return self.ui.skipEmptyValuesCheckBox.isChecked() and key in self._empty_keys
+
+    def _should_preselect(self, key: str) -> bool:
+        if self._is_auto_excluded(key):
+            return False
+        return key not in self._excluded_kv
+
+    def _apply_preselection(self) -> None:
+        for widget in self._key_widgets():
+            widget.setChecked(self._should_preselect(widget.text()))
 
     def _select_only_new(self) -> None:
         self.select_pairs()
         self.select_loops()
 
-    def select_pairs(self):
-        rows = self.ui.importTable_keys.rowCount()
-        for row in range(rows):
+    def _key_widgets(self) -> list[QtWidgets.QCheckBox]:
+        widgets = []
+        for row in range(self.ui.importTable_keys.rowCount()):
             widget: QtWidgets.QCheckBox = self.ui.importTable_keys.cellWidget(row, 0)
+            if widget:
+                widgets.append(widget)
+        return widgets
+
+    def select_pairs(self):
+        for widget in self._key_widgets():
             key = widget.text()
-            if self.target_cif[key]:
-                # Import only new key/values
-                widget.setChecked(False)
-                continue
-            widget.setChecked(True)
+            # Import only new key/values
+            widget.setChecked(not self.target_cif[key] and not self._is_auto_excluded(key))
 
     def select_loops(self):
         rows = self.ui.importTable_loops.rowCount()

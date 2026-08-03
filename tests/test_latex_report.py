@@ -9,12 +9,10 @@ Covers:
   rendered output contains the expected LaTeX table commands and data.  Both report.tex
   and report2.tex templates are exercised.
 """
-import os
 import tempfile
 import unittest
 from pathlib import Path
 
-os.environ['RUNNING_TEST'] = 'True'
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.templated_report import (

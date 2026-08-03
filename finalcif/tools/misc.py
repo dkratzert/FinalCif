@@ -62,6 +62,15 @@ one_bar = '\u0031\u0305'
 zero_width_space = '\u200B'
 
 
+def running_inside_unit_test() -> bool:
+    """Whether the code is executed by pytest.
+
+    PYTEST_CURRENT_TEST is set by pytest itself, but only while a test runs. The
+    sys.modules check additionally covers import time, when modules are collected.
+    """
+    return 'PYTEST_CURRENT_TEST' in os.environ or 'pytest' in sys.modules
+
+
 def isnumeric(value: str) -> bool:
     """
     Determines if a string can be converted to a number.

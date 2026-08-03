@@ -1,11 +1,9 @@
-import os
 from unittest.mock import Mock
 
 import pytest
 
 from finalcif.tools.options import Options
 
-os.environ['RUNNING_TEST'] = 'True'
 import unittest
 from tests.helpers import AppWindowTestCase
 from pathlib import Path

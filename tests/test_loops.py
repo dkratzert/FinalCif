@@ -4,9 +4,7 @@
 #   this notice you can do whatever you want with this stuff. If we meet some day,
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
-import os
 
-os.environ["RUNNING_TEST"] = 'True'
 
 import unittest
 from pathlib import Path
@@ -603,6 +601,25 @@ class TestLoops(unittest.TestCase):
         view.setCurrentIndex(view.model().index(last_row, 0))
         view._row_up(None)  # must not raise
 
+    def test_reload_shows_values_changed_outside_the_page(self):
+        tab_index = self.get_index_of('Scattering')
+        loop = self.cif.get_loop('_atom_type_symbol')
+        col = loop.tags.index('_atom_type_scat_dispersion_real')
+        self.cif.block.find(loop.tags)[0][col] = '1.234'
+        self.loops_page.reload()
+        model = self.loops_page.tab_widget.widget(tab_index).model()
+        self.assertEqual('1.234', model.index(0, col).data())
+
+    def test_reload_keeps_current_tab_selected(self):
+        tab_index = self.get_index_of('Citations')
+        self.loops_page.tab_widget.setCurrentIndex(tab_index)
+        self.loops_page.reload()
+        self.assertEqual(tab_index, self.loops_page.tab_widget.currentIndex())
+
+    def test_reload_does_not_duplicate_tabs(self):
+        self.loops_page.reload()
+        self.assertEqual(9, self.loops_page.tab_widget.count())
+
 
 class TestLoopsResFile(unittest.TestCase):
     """Tests that require a CIF with an embedded SHELX res file."""
@@ -648,7 +665,6 @@ class TestLoopsResFile(unittest.TestCase):
 
 class TestLoopsMove(unittest.TestCase):
     def setUp(self) -> None:
-        os.environ["RUNNING_TEST"] = 'True'
         self.testcif = SMALL_CIF.resolve()
         (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         self.cif = CifContainer(self.testcif)

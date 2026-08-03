@@ -11,6 +11,7 @@ from qtpy.QtWidgets import QApplication
 from qtpy.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QTextEdit, QPushButton, QFrame, QProgressDialog
 
 from finalcif import VERSION
+from finalcif.tools.misc import running_inside_unit_test
 from finalcif.tools.selfupdate import ElevationRefused, UpdateCancelled, UpdateError, can_self_update, \
     download_installer, start_exit_watchdog, start_installer, start_user_installer, user_installation_directory
 
@@ -198,7 +199,7 @@ def unable_to_open_message(parent, filepath: Path, not_ok: Exception) -> None:
     """
     Shows a message if the current cif file can not be opened.
     """
-    if "PYTEST_CURRENT_TEST" in os.environ:
+    if running_inside_unit_test():
         print('DBG> Running inside a pytest -> not showing error message.')
         return
     info = QMessageBox(parent=parent)
@@ -225,7 +226,7 @@ def show_res_checksum_warning(parent) -> None:
     """
     A message box to display if the checksums do not agree.
     """
-    if "PYTEST_CURRENT_TEST" in os.environ:
+    if running_inside_unit_test():
         print('DBG> Running inside a pytest -> not showing error message.')
         return
     info = QMessageBox(parent=parent)
@@ -240,7 +241,7 @@ def show_hkl_checksum_warning(parent) -> None:
     """
     A message box to display if the checksums do not agree.
     """
-    if "PYTEST_CURRENT_TEST" in os.environ:
+    if running_inside_unit_test():
         print('DBG> Running inside a pytest -> not showing error message.')
         return
     info = QMessageBox(parent=parent)
@@ -258,7 +259,7 @@ def show_general_warning(parent, warn_text: str = '', info_text: str = '', windo
     """
     if not warn_text:
         return None
-    if "PYTEST_CURRENT_TEST" in os.environ:
+    if running_inside_unit_test():
         print(f'DBG> Running inside a pytest -> not showing error message:\n{warn_text}\n{info_text}')
         return None
     box = QMessageBox(parent=parent)

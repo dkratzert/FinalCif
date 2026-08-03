@@ -6,7 +6,6 @@ results page.
 """
 import os
 
-os.environ["RUNNING_TEST"] = "True"
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
 import unittest
