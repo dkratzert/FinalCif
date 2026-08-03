@@ -435,10 +435,10 @@ if __name__ == '__main__':
     # show_ok_cancel_warning(parent=w, warn_text='foobar')
     # show_keyword_help(parent=w, helptext="This is a helptext", title='A Title')
     # show_general_warning(parent=w, warn_text='Warning text', info_text='Info text', window_title='Title')
-    #show_hkl_checksum_warning(parent=w)
+    # show_hkl_checksum_warning(parent=w)
     # show_res_checksum_warning(parent=w)
     unable_to_open_message(parent=w, not_ok=Exception('foo'), filepath=Path('C:/foo.txt'))
-    #do_update_program('170')
+    # do_update_program('170')
     w.show()
 
     app.exec()
