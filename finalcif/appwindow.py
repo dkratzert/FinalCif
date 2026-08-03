@@ -544,8 +544,8 @@ class AppWindow(QMainWindow):
 
     def set_video_image_for_report(self):
         image_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='_video-finalcif.png')
-        self.video.save_image(image_filename)
-        self.options.video_image = image_filename
+        if self.video.save_image(image_filename):
+            self.options.video_image = image_filename
 
     def _select_crystal_video(self, video_file: Path | None = None) -> None:
         if video_file is None:

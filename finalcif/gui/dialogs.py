@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import os
 import sys
 import threading
@@ -7,7 +9,7 @@ from pathlib import Path
 from qtpy import QtCore, compat
 from qtpy import QtWidgets
 from qtpy.QtCore import QProcess
-from qtpy.QtWidgets import QApplication
+from qtpy.QtWidgets import QApplication, QWidget
 from qtpy.QtWidgets import QMessageBox, QMainWindow, QVBoxLayout, QTextEdit, QPushButton, QFrame, QProgressDialog
 
 from finalcif import VERSION
@@ -68,14 +70,14 @@ class InstallerDownload:
             self.finished = True
 
 
-def do_update_program(version: str, parent=None) -> None:
+def do_update_program(version: str, parent: QWidget | None = None) -> None:
     if can_self_update():
         update_installation(version, parent)
     else:
         print('No update available.')
 
 
-def update_installation(version: str, parent=None) -> None:
+def update_installation(version: str, parent: QWidget | None = None) -> None:
     """Download the installer and hand the installation directory over to it."""
     progress_dialog = QProgressDialog('Downloading the FinalCif installer...', 'Cancel', 0, 100, parent)
     progress_dialog.setWindowTitle('FinalCif update')
@@ -149,7 +151,7 @@ def update_installation(version: str, parent=None) -> None:
     timer.start()
 
 
-def install_into_user_directory(setup_file: Path, reason: str, parent=None) -> bool:
+def install_into_user_directory(setup_file: Path, reason: str, parent: QWidget | None = None) -> bool:
     """Offer the per-user installation to accounts without administrator rights."""
     question = QMessageBox(parent)
     question.setWindowTitle('FinalCif update')
@@ -195,7 +197,7 @@ def quit_application() -> None:
     app.quit()
 
 
-def unable_to_open_message(parent, filepath: Path, not_ok: Exception) -> None:
+def unable_to_open_message(parent: QWidget | None, filepath: Path, not_ok: Exception) -> None:
     """
     Shows a message if the current cif file can not be opened.
     """
@@ -222,7 +224,7 @@ def unable_to_open_message(parent, filepath: Path, not_ok: Exception) -> None:
     info.show()
 
 
-def show_res_checksum_warning(parent) -> None:
+def show_res_checksum_warning(parent: QWidget | None) -> None:
     """
     A message box to display if the checksums do not agree.
     """
@@ -237,7 +239,7 @@ def show_res_checksum_warning(parent) -> None:
     info.show()
 
 
-def show_hkl_checksum_warning(parent) -> None:
+def show_hkl_checksum_warning(parent: QWidget | None) -> None:
     """
     A message box to display if the checksums do not agree.
     """
@@ -251,7 +253,7 @@ def show_hkl_checksum_warning(parent) -> None:
     info.show()
 
 
-def show_general_warning(parent, warn_text: str = '', info_text: str = '', window_title=' ') -> None:
+def show_general_warning(parent: QWidget | None, warn_text: str = '', info_text: str = '', window_title=' ') -> None:
     """
     A message box to display if the checksums do not agree.
     warn_text is displayed bold.
@@ -277,7 +279,7 @@ def show_general_warning(parent, warn_text: str = '', info_text: str = '', windo
         box.close()
 
 
-def show_keyword_help(parent, helptext: str, title: str = ''):
+def show_keyword_help(parent: QWidget | None, helptext: str, title: str = ''):
     """
     A window to display help texts from the CIF dictionaries.
     """
@@ -310,7 +312,7 @@ def show_keyword_help(parent, helptext: str, title: str = ''):
     button.clicked.connect(window.close)
 
 
-def show_ok_cancel_warning(parent, warn_text: str = '') -> bool:
+def show_ok_cancel_warning(parent: QWidget | None, warn_text: str = '') -> bool:
     box = QMessageBox(parent=parent)
     box.setTextFormat(QtCore.Qt.TextFormat.AutoText)
     box.setWindowTitle(" ")
@@ -323,7 +325,7 @@ def show_ok_cancel_warning(parent, warn_text: str = '') -> bool:
     return box.result() == QMessageBox.StandardButton.Ok
 
 
-def show_update_warning(parent, remote_version: int = 0) -> None:
+def show_update_warning(parent: QWidget | None, remote_version: int = 0) -> None:
     """
     A message box to display if the checksums do not agree.
     """
@@ -343,7 +345,7 @@ def show_update_warning(parent, remote_version: int = 0) -> None:
     box.show()
 
 
-def bad_z_message(parent, z: float) -> None:
+def bad_z_message(parent: QWidget | None, z: float) -> None:
     zinfo = QMessageBox(parent)
     zinfo.setIcon(QMessageBox.Icon.Information)
     zinfo.setText(f'The number of formula units Z={z:.0f} is probably wrong.\n'
@@ -371,7 +373,7 @@ def show_bug_found_warning(logfile) -> None:
     window.show()
 
 
-def show_yes_now_question(title: str, question: str, parent=None) -> bool:
+def show_yes_now_question(title: str, question: str, parent: QWidget | None = None) -> bool:
     response = QMessageBox.question(parent, title, question,
                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                                     QMessageBox.StandardButton.No)
@@ -381,7 +383,7 @@ def show_yes_now_question(title: str, question: str, parent=None) -> bool:
         return False
 
 
-def cif_file_open_dialog(parent: object = None, filter: str = "CIF file (*.cif)", last_dir='', options=None) -> str:
+def cif_file_open_dialog(parent: QWidget | None = None, filter: str = "CIF file (*.cif)", last_dir='', options=None) -> str:
     """
     Returns a cif file name from a file dialog.
     """
@@ -395,7 +397,7 @@ def cif_file_open_dialog(parent: object = None, filter: str = "CIF file (*.cif)"
     return filename
 
 
-def cif_file_save_dialog(filename: str, parent=None) -> str:
+def cif_file_save_dialog(filename: str, parent: QWidget | None = None) -> str:
     """
     Returns a cif file name from a file dialog.
     """
@@ -407,7 +409,8 @@ def cif_file_save_dialog(filename: str, parent=None) -> str:
     return filename
 
 
-def video_file_open_dialog(parent: object = None, filter: str = "Video file (*.vzs; *.jpg)", last_dir='', options=None) -> str:
+def video_file_open_dialog(parent: QWidget | None = None, filter: str = "Video file (*.vzs; *.jpg)", last_dir='',
+                           options=None) -> str:
     filename, _ = compat.getopenfilename(parent=parent,
                                          caption='Open a crystal video file',
                                          basedir=last_dir,

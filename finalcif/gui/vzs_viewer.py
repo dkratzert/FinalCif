@@ -78,13 +78,15 @@ class VZSImageViewer(QtWidgets.QWidget):
         self.pixmap = QtGui.QPixmap().fromImage(rotated)
         self.update()
 
-    def save_image(self, file_path: Path) -> None:
+    def save_image(self, file_path: Path) -> bool:
+        if not self.pixmap:
+            return False
         size = self.pixmap.size()
-        cropped = self.pixmap.copy(self.zoom_rect)
+        cropped = self.pixmap.copy(self.zoom_rect) if self.zoom_rect else self.pixmap.copy()
         scaled = cropped.scaled(size, Qt.AspectRatioMode.KeepAspectRatio,
                                 Qt.TransformationMode.SmoothTransformation)
         self.pixmap = scaled
-        self.pixmap.save(str(file_path))
+        return self.pixmap.save(str(file_path))
 
     def _read_data(self) -> bytes:
         if self.zipfile:
@@ -127,10 +129,14 @@ class VZSImageViewer(QtWidgets.QWidget):
             self.previous()
 
     def previous(self) -> None:
+        if not self.image_names:
+            return
         self.index = (self.index + 1) % len(self.image_names)
         self._load_current_image()
 
     def next(self) -> None:
+        if not self.image_names:
+            return
         self.index = (self.index - 1) % len(self.image_names)
         self._load_current_image()
 
