@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.gui.import_selector import ImportSelector, is_empty_value
+from finalcif.gui.import_selector import ImportSelector, is_empty_value, shorten_value
 from finalcif.tools.settings import FinalCifSettings
 
 data = Path('tests')
@@ -87,6 +87,59 @@ class MyTestCase(unittest.TestCase):
     def test_other(self):
         self.assertEqual('import_cif.cif', self.imp.import_cif.filename)
         self.assertEqual('p21c-copy.cif', self.imp.target_cif.filename)
+
+    def _tooltip_of_key(self, key: str) -> str:
+        for widget in self.imp._key_widgets():
+            if widget.text() == key:
+                return widget.toolTip()
+        raise AssertionError(f'No checkbox for {key}')
+
+    def test_key_checkbox_has_value_tooltip(self):
+        self.assertEqual('12.3', self._tooltip_of_key('_hello'))
+        self.assertEqual('19.678(3)', self._tooltip_of_key('_cell_length_a'))
+
+    def test_empty_key_has_no_tooltip(self):
+        self.assertEqual('', self._tooltip_of_key('_empty_key'))
+
+    def test_multiline_tooltip_keeps_line_breaks(self):
+        tooltip = self._tooltip_of_key('_vrf_PLAT911_title')
+        self.assertEqual('PROBLEM: Missing FCF Refl Between THmin & STh/L= 0.600 21 Report\n'
+                         'RESPONSE: The reflections were obs…', tooltip)
+
+    def test_loop_checkbox_has_no_tooltip(self):
+        widget = self.imp.ui.importTable_loops.cellWidget(0, 0)
+        self.assertEqual('', widget.toolTip())
+
+
+class ShortenValueTestCase(unittest.TestCase):
+    def test_short_value_is_unchanged(self):
+        self.assertEqual('foo bar', shorten_value('foo bar'))
+
+    def test_quoted_value_is_unquoted(self):
+        self.assertEqual('foo bar', shorten_value("'foo bar'"))
+
+    def test_inline_spaces_are_collapsed(self):
+        self.assertEqual('foo bar', shorten_value('foo   \t bar'))
+
+    def test_line_breaks_are_preserved(self):
+        self.assertEqual('foo\nbar', shorten_value(';\nfoo\nbar\n;'))
+
+    def test_empty_values_give_no_tooltip(self):
+        self.assertEqual('', shorten_value('?'))
+        self.assertEqual('', shorten_value(''))
+        self.assertEqual('', shorten_value("''"))
+
+    def test_long_value_is_truncated(self):
+        result = shorten_value('a' * 200)
+        self.assertEqual(100, len(result))
+        self.assertTrue(result.endswith('…'))
+        self.assertEqual('a' * 99 + '…', result)
+
+    def test_max_length_is_configurable(self):
+        self.assertEqual('abcd…', shorten_value('abcdefgh', max_length=5))
+
+    def test_value_of_exact_max_length_is_unchanged(self):
+        self.assertEqual('a' * 100, shorten_value('a' * 100))
 
 
 if __name__ == '__main__':

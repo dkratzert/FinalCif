@@ -1,3 +1,4 @@
+import re
 import shutil
 from pathlib import Path
 from typing import Any, Iterable
@@ -12,6 +13,9 @@ from finalcif.tools import misc
 from finalcif.tools.settings import FinalCifSettings
 
 EMPTY_VALUES = frozenset(('', '?'))
+MAX_TOOLTIP_LENGTH = 100
+ELLIPSIS = '…'
+_INLINE_SPACES = re.compile(r'[ \t]+')
 
 
 def is_empty_value(key: str, raw_value: str) -> bool:
@@ -23,6 +27,17 @@ def is_empty_value(key: str, raw_value: str) -> bool:
     if key.startswith('_vrf'):
         return VRFEntry.from_cif_pair(key, raw_value).response.strip() in EMPTY_VALUES
     return gemmi.cif.as_string(raw_value).strip() in EMPTY_VALUES
+
+
+def shorten_value(raw_value: str, max_length: int = MAX_TOOLTIP_LENGTH) -> str:
+    """The CIF value as a short preview text, line breaks preserved."""
+    lines = [_INLINE_SPACES.sub(' ', line).strip() for line in gemmi.cif.as_string(raw_value).splitlines()]
+    value = '\n'.join(lines).strip('\n')
+    if value in EMPTY_VALUES:
+        return ''
+    if len(value) > max_length:
+        return value[:max_length - len(ELLIPSIS)] + ELLIPSIS
+    return value
 
 
 class ImportSelector(QtWidgets.QMainWindow):
@@ -61,7 +76,8 @@ class ImportSelector(QtWidgets.QMainWindow):
                 if is_empty_value(key, raw_value):
                     self._empty_keys.add(key)
                 self._add_checkbox(key, row, self.ui.importTable_keys,
-                                   checked=self._should_preselect(key))
+                                   checked=self._should_preselect(key),
+                                   tooltip=shorten_value(raw_value))
                 self.keys_to_import += 1
             else:
                 continue
@@ -112,12 +128,14 @@ class ImportSelector(QtWidgets.QMainWindow):
                                         f"{len(self.get_keys(include=True)) + len(self.get_loops(include=True))} "
                                         f"are selected for import.")
 
-    def _add_checkbox(self, text: str, row: int, col: QtWidgets.QTableWidget, checked: bool = False) -> None:
+    def _add_checkbox(self, text: str, row: int, col: QtWidgets.QTableWidget, checked: bool = False,
+                      tooltip: str = '') -> None:
         if col.rowCount() <= row:
             col.insertRow(row)
         checkbox = QtWidgets.QCheckBox(col)
         checkbox.stateChanged.connect(self._set_label)
         checkbox.setText(text)
+        checkbox.setToolTip(tooltip)
         col.setCellWidget(row, 0, checkbox)
         checkbox.setChecked(checked)
 
