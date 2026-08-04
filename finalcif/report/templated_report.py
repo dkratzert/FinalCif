@@ -4,10 +4,12 @@ import abc
 import base64
 import dataclasses
 import enum
+import functools
 import pathlib
 import re
 import sys
 from collections import namedtuple
+from collections.abc import Callable
 from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
@@ -43,6 +45,8 @@ from finalcif.report.symm import SymmetryElement
 from finalcif.tools.misc import (this_or_quest, timessym, angstrom, protected_space,
                                  less_or_equal, halbgeviert, minus_sign, ellipsis_mid, angstrom_to_pm,
                                  angstrom_to_nanometers, do_nothing)
+from finalcif.tools.mol_file_writer import (mol_from_asymmetric_unit, mol_from_grown_atoms,
+                                            mol_from_packed_cell)
 from finalcif.tools.options import Options
 from finalcif.tools.space_groups import SpaceGroups
 from finalcif.tools.sumformula import SUBSCRIPT, SUPERSCRIPT, formula_parts
@@ -1375,9 +1379,50 @@ class TemplatedReport:
                    'experiment_time'        : self.text_formatter.get_experiment_time(cif),
                    'bootstrap_css'          : (app_path.application_path /
                                                'template/bootstrap/bootstrap.min.css').read_text(encoding='utf-8'),
-
                    }
+        context.update(self._get_html_context(cif))
         return context
+
+    def _get_html_context(self, cif: CifContainer) -> dict[str, str]:
+        """The 3D viewer data and its javascript libraries are only needed by the HTML report."""
+        if self.format is not ReportFormat.HTML:
+            return {}
+        return {'miew_js'      : _read_template_file('template/miew/Miew.min.js'),
+                'three_js'     : _read_template_file('template/miew/three.js'),
+                'lodash_js'    : _read_template_file('template/miew/lodash.min.js'),
+                'miew_css'     : _read_template_file('template/miew/Miew.css'),
+                'xyz_data_fill': self.get_xyz_filled_cell(cif),
+                'xyz_data_grow': self.get_xyz_grow(cif),
+                'xyz_data_fuse': self.get_xyz_fused(cif),
+                }
+
+    def get_xyz_fused(self, cif: CifContainer) -> str:
+        """A mol file of the atoms as they are in the CIF file."""
+        return self._mol_file(mol_from_asymmetric_unit, cif)
+
+    def get_xyz_grow(self, cif: CifContainer) -> str:
+        """A mol file of the symmetry completed molecules."""
+        return self._mol_file(mol_from_grown_atoms, cif)
+
+    def get_xyz_filled_cell(self, cif: CifContainer) -> str:
+        """A mol file of the packed unit cell."""
+        return self._mol_file(mol_from_packed_cell, cif)
+
+    @staticmethod
+    def _mol_file(method: Callable[[CifContainer], str], cif: CifContainer) -> str:
+        """A report must not fail because the 3D data could not be generated."""
+        if not cif.is_valid_structure_cif:
+            return ''
+        try:
+            return method(cif)
+        except Exception as e:
+            print(f'Could not generate 3D structure data: {e}')
+            return ''
+
+
+@functools.cache
+def _read_template_file(relative_path: str) -> str:
+    return (app_path.application_path / relative_path).read_text(encoding='utf-8')
 
 
 def save_docx_to_pdf(docx_file: Path):

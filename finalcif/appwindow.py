@@ -25,7 +25,6 @@ if TYPE_CHECKING:
 
 from fastmolwidget import Atomtuple
 from fastmolwidget.part_combo import PartFilterWidget
-from fastmolwidget.sdm import SDM
 
 from finalcif.gui.shelx_navigation import find_shelx_line_for_atom, scroll_and_highlight_shelx_atom
 from finalcif.gui.syntax_highlighter import ShelxSyntaxHighlighter
@@ -76,6 +75,7 @@ from finalcif.gui.vrf_classes import MyVRFContainer
 from finalcif.template.templates import ReportTemplates
 from finalcif.tools.download import MyDownloader
 from finalcif.tools.dsrmath import my_isnumeric
+from finalcif.tools.mol_file_writer import grown_atoms
 from finalcif.tools.misc import (next_path, celltxt, to_float, is_database_number,
                                  open_file, strip_finalcif_of_name, file_age_in_days, open_in_text_editor,
                                  running_inside_unit_test as is_unit_test)
@@ -2342,13 +2342,7 @@ class AppWindow(QMainWindow):
 
     def _calc_grown_atoms(self):
         """Helper to generate the symmetry expanded atoms without drawing them."""
-        atoms_fract = tuple(self.cif.atoms_fract)
-        if not atoms_fract:
-            return []
-
-        sdm = SDM(atoms_fract, self.cif.symmops, self.cif.cell[:6], centric=self.cif.is_centrosymm)
-        needsymm = sdm.calc_sdm()
-        return sdm.packer(sdm, needsymm)
+        return grown_atoms(self.cif)
 
     def get_adps(self) -> dict:
         adp_dict = {}

@@ -1,0 +1,23 @@
+Third-party assets vendored for the self-contained HTML report (report_miew.tmpl).
+All three are distributed under the MIT license.
+
+Miew - 3D Molecular Viewer, version 0.12.0
+  Files:     Miew.min.js (dist/Miew.min.js), Miew.css (dist/Miew.min.css)
+  Copyright: 2015-2026 EPAM Systems, Inc.
+  Homepage:  https://github.com/epam/miew
+  License:   MIT
+
+three.js, version 0.153.0
+  File:      three.js (build/three.min.js)
+  Copyright: 2010-2023 three.js authors
+  Homepage:  https://github.com/mrdoob/three.js
+  License:   MIT
+
+Lodash, version 4.17.21
+  File:      lodash.min.js
+  Copyright: JS Foundation and other contributors
+  Homepage:  https://github.com/lodash/lodash
+  License:   MIT
+
+The Miew UMD bundle expects the globals `THREE` and `_`, therefore the report
+template loads the scripts in the order three.js -> lodash.min.js -> Miew.min.js.
