@@ -592,7 +592,7 @@
             };
             const viewer = new Miew({
                 container: document.getElementById('miew-viewer'),
-                settings: {axes: false, fps: false}
+                settings: {axes: true, fps: false, bg: {color: 0xFFFFFF}, fog: false}
             });
             if (!viewer.init()) {
                 return;
