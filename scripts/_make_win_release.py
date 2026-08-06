@@ -7,6 +7,7 @@
 #  ----------------------------------------------------------------------------
 
 import os
+import re
 import subprocess
 import sys
 import winreg
@@ -71,6 +72,21 @@ def get_innosetup_path() -> str:
     raise FileNotFoundError('Inno Setup 6 compiler (ISCC.exe) not found. Please install Inno Setup 6.')
 
 
+SIGNTOOL_DIRECTIVE = re.compile(r'^SignTool\s*=\s*sign_sha256\b', re.IGNORECASE)
+
+
+def is_signing_enabled(iss_file: str | Path) -> bool:
+    """Whether the Inno Setup script has an active (uncommented) SignTool=sign_sha256 directive."""
+    path = Path(iss_file)
+    if not path.exists():
+        return False
+    for line in path.read_text(encoding='utf-8', errors='ignore').splitlines():
+        stripped = line.strip()
+        if not stripped.startswith(';') and SIGNTOOL_DIRECTIVE.match(stripped):
+            return True
+    return False
+
+
 def make_installer(iss_file: str):
     innosetup_compiler = get_innosetup_path()
     subprocess.run([innosetup_compiler, '/Qp', f'/dMyAppVersion={VERSION}', iss_file], check=False)
@@ -92,14 +108,19 @@ def compile_python_files():
 if __name__ == '__main__':
     iss_file = 'scripts/finalcif-install_win64.iss'
 
+    os.chdir(application_path)
+
+    if not is_signing_enabled(iss_file):
+        print(f"Error: Code signing is disabled. No active 'SignTool=sign_sha256' line found in {iss_file}.\n"
+              "Enable it there before building a release.")
+        sys.exit(1)
+
     compile_ui(uic_path=application_path / 'dist/python_dist/Scripts')
     # disable_debug must edit the source BEFORE compile_python_files: the shipped installer is
     # sourceless (only the legacy .pyc are kept), so a .pyc compiled before this edit would ship the
     # old DEBUG/PROFILE values baked in.
     disable_debug('finalcif/appwindow.py')
     compile_python_files()
-
-    os.chdir(application_path)
 
     make_installer(iss_file)
 
