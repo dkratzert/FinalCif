@@ -65,10 +65,10 @@
             <div class="card mt-4 mb-4">
                 <div class="card-header">
                     <div class="btn-group btn-group-sm" role="group" aria-label="Structure display mode">
-                        <button type="button" class="btn btn-outline-secondary active" id="mol-btn-fuse">
+                        <button type="button" class="btn btn-outline-secondary" id="mol-btn-fuse">
                             Asymmetric unit
                         </button>
-                        <button type="button" class="btn btn-outline-secondary" id="mol-btn-grow">
+                        <button type="button" class="btn btn-outline-secondary active" id="mol-btn-grow">
                             Completed molecule
                         </button>
                         <button type="button" class="btn btn-outline-secondary" id="mol-btn-fill">
@@ -583,7 +583,11 @@
             const structure = {{ structure_json|safe }};
             const viewer = Fastmolwidget.createViewer(
                 document.getElementById('mol-viewer'), structure,
-                {controls: true, grow: false, pack: false, background: '#ffffff'});
+                {
+                    // Growing is already driven by the button group above the viewer.
+                    controls: {grow: false, bondWidth: false, pack: false},
+                    grow: true, pack: false, background: '#ffffff'
+                });
 
             function show(kind) {
                 if (kind === 'fill') {

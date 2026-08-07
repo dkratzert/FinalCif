@@ -166,6 +166,8 @@ class TestReportContext(unittest.TestCase):
                                                               template_file='report_fastmolwidget.tmpl'))
             text = output.read_text(encoding='utf-8')
         self.assertIn('Fastmolwidget.createViewer(', text)
+        self.assertIn('grow: false, bondWidth: false', text)
+        self.assertIn('id="mol-btn-grow"', text)
         self.assertNotIn("fileType: 'mol2'", text)
 
 
