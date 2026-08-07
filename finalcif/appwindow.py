@@ -21,8 +21,9 @@ from math import sin, radians
 from pathlib import Path, WindowsPath
 from typing import cast, TYPE_CHECKING
 
+
 if TYPE_CHECKING:
-    from finalcif.cif.checkcif.checkcif import MyHTMLParser
+    from finalcif.cif.checkcif.checkcif import MyHTMLParser, handle_fcf_upload_form
 
 from fastmolwidget import Atomtuple
 from fastmolwidget.part_combo import PartFilterWidget
@@ -1183,29 +1184,73 @@ class AppWindow(QMainWindow):
         from finalcif.cif.checkcif.checkcif import MyHTMLParser, AlertHelp
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
+
+        # =====================================================================
+        # NEU: FCF-FORMULAR ABFANGEN UND DATEI HOCHLADEN
+        # =====================================================================
         try:
+            # 1. Aktuelles HTML aus der Datei lesen
+            current_html = self.htmlfile.read_text('utf-8', 'ignore')
+
+            # 2. Prüfen, ob der Server nach der FCF fragt
+            if "File name of structure factor file" in current_html:
+                self.ui.CheckCifLogPlainTextEdit.appendHtml(
+                    '<br><b>IUCr server requires explicit FCF upload. Sending .fcf file...</b>'
+                )
+
+                # 3. FCF-Pfad ableiten (analog zum GIF im Originalcode)
+                fcf_file_path = Path(strip_finalcif_of_name(self.cif.finalcif_file,
+                                                        till_name_ends=True)).with_suffix('.fcf')
+
+                # 4. Unsere Hilfsfunktion aufrufen (diese muss in der Datei definiert sein!)
+                # Sie parst das HTML, schickt die FCF ab und liefert den fertigen Report zurück
+                from finalcif.cif.checkcif.checkcif import handle_fcf_upload_form
+                new_html = handle_fcf_upload_form(
+                    response_html=current_html,
+                    fcf_file_path=str(fcf_file_path),
+                    original_url=self.options.checkcif_url
+                )
+
+                # 5. Die temporäre htmlfile mit dem neuen, korrekten Report überschreiben
+                self.htmlfile.write_text(new_html, encoding='utf-8')
+                self.ui.CheckCifLogPlainTextEdit.appendPlainText('FCF upload successful. Parsing report...')
+
+        except Exception as e:
+            # Fehler abfangen, damit FinalCif nicht abstürzt, falls das Netzwerk streikt
+            print(f"Fehler beim automatischen FCF-Upload: {e}")
+        # =====================================================================
+        # ENDE DES NEUEN BLOCKS
+        # =====================================================================
+
+        try:
+            # Ab hier läuft dein originaler Code weiter und parst nun den ECHTEN Report
             parser = MyHTMLParser(self.htmlfile.read_text())
         except FileNotFoundError:
             # happens if checkcif fails, e.g. takes too much time.
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
                                                         'Please try it at https://checkcif.iucr.org/ instead.</b>')
             return
+
         self.checkcif_browser = CheckCifBrowser(parent=self, checkdef=self.checkdef)
         self.ui.htmlCHeckCifGridLayout.addWidget(self.checkcif_browser)
         self.ui.MainStackedWidget.go_to_checkcif_page()
         self.ui.CheckCIFResultsTabWidget.setCurrentIndex(1)  # Index 1 is html page
+
         # Save the structure image locally and point the HTML to it. The remote image URL
         # is session-specific and expires, so the locally saved copy is used for display.
         gif_file = self.cif.finalcif_file.with_suffix('.gif')
         parser.save_image(gif_file)
+
         try:
             html = self.htmlfile.resolve().read_text('utf-8', 'ignore')
             local_images = {parser.imageurl: gif_file} if parser.imageurl else {}
             self.checkcif_browser.set_checkcif_html(html, local_images)
         except FileNotFoundError:
             print(f'{self.htmlfile} not found')
+
         self._display_structure_factor_report(parser)
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('CheckCIF Report finished.')
+
         html_entries = parser.response_forms
         # Merge HTML-parsed entries into the main table:
         # - Entries already shown in the main table (source='cif') get their source badge
@@ -1215,6 +1260,7 @@ class AppWindow(QMainWindow):
         #   the main table, marked 'checkcif'.
         a = AlertHelp(self.checkdef)
         table = self.ui.cif_main_table
+
         # Build a lookup of already-saved CIF VRF entries once, outside the loop.
         existing_by_key = {e.key: e for e in self.cif.get_vrf_entries()}
         for entry in html_entries:
@@ -1239,6 +1285,7 @@ class AppWindow(QMainWindow):
                 vrf.template_requested.connect(self._on_vrf_template_requested)
                 self.validation_response_forms_list.append(vrf)
                 table.place_vrf_widget(insert_pos, vrf)
+
         if html_entries:
             n = len(html_entries)
             form_noun = 'form' if n == 1 else 'forms'

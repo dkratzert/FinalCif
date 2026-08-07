@@ -22,6 +22,160 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.vrf_entry import VRFEntry
 from finalcif.gui.dialogs import show_general_warning
 
+import os
+import requests
+from html.parser import HTMLParser
+from urllib.parse import urljoin
+
+
+# ============================================================================
+# 1. PARSER-KLASSE (Nativer Python HTML-Parser, keine externen Abhängigkeiten)
+# ============================================================================
+
+class CheckCifFormParser(HTMLParser):
+    """
+    Ein minimalistischer Parser, der aus dem IUCr-HTML das Formular
+    für den FCF-Upload extrahiert.
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.action = None
+        self.hidden_data = {}
+        self.submit_data = {}
+        self.file_input_name = None
+        self.in_target_form = False
+
+    def handle_starttag(self, tag, attrs):
+        attrs_dict = dict(attrs)
+
+        # Formular-Tag erkennen und Action-URL (Zieladresse) speichern
+        if tag == 'form':
+            self.in_target_form = True
+            self.action = attrs_dict.get('action')
+
+        # Inputs innerhalb des Formulars sammeln
+        elif tag == 'input' and self.in_target_form:
+            inp_type = attrs_dict.get('type', '').lower()
+            name = attrs_dict.get('name')
+            value = attrs_dict.get('value', '')
+
+            if not name:
+                return
+
+            if inp_type == 'hidden':
+                self.hidden_data[name] = value
+            elif inp_type == 'submit':
+                self.submit_data[name] = value
+            elif inp_type == 'file':
+                self.file_input_name = name
+
+    def handle_endtag(self, tag):
+        if tag == 'form':
+            self.in_target_form = False
+
+
+# ============================================================================
+# 2. HILFSFUNKTION FÜR DEN FCF UPLOAD
+# ============================================================================
+
+def handle_fcf_upload_form(response_html: str, fcf_file_path: str, original_url: str) -> str:
+    """
+    Prüft, ob der IUCr-Server das FCF-Upload-Formular (Zwischenseite) zurückgegeben hat.
+    Wenn ja, wird das Formular geparst und die .fcf Datei automatisch nachgereicht.
+    Gibt den finalen HTML-Report (oder den ursprünglichen bei Fehlern) zurück.
+    """
+    # Prüfen, ob der spezifische Text der Zwischenseite in der Antwort steht
+    if "File name of structure factor file" not in response_html:
+        return response_html  # Alles normal, gib den originalen Report zurück
+
+    print("Info: IUCr Server verlangt expliziten FCF Upload. Formular wird verarbeitet...")
+
+    if not os.path.exists(fcf_file_path):
+        print(f"Warnung: .fcf Datei nicht gefunden unter {fcf_file_path}. Report wird ohne FCF generiert.")
+        return response_html
+
+    # Formular mit dem eingebauten HTMLParser analysieren
+    parser = CheckCifFormParser()
+    parser.feed(response_html)
+
+    # Prüfen, ob das Datei-Feld erfolgreich gefunden wurde
+    if not parser.file_input_name:
+        print("Fehler: Konnte das Datei-Upload-Feld im IUCr-Formular nicht finden.")
+        return response_html
+
+    # Action-URL und Parameter für den POST-Request zusammenbauen
+    submit_url = urljoin(original_url, parser.action) if parser.action else original_url
+
+    # Versteckte Felder (Session-IDs, Run-Hashes) und den Submit-Button in die Payload packen
+    data = parser.hidden_data.copy()
+    data.update(parser.submit_data)
+
+    # Zweiten Request mit der FCF-Datei absenden
+    try:
+        with open(fcf_file_path, 'rb') as f:
+            files = {
+                parser.file_input_name: (os.path.basename(fcf_file_path), f, 'application/octet-stream')
+            }
+            print(f"Sende {os.path.basename(fcf_file_path)} an {submit_url} ...")
+
+            # Request senden
+            new_response = requests.post(submit_url, data=data, files=files, timeout=180)
+            new_response.raise_for_status()
+
+            print("Erfolg: FCF-Upload abgeschlossen, finaler Report empfangen.")
+            return new_response.text
+
+    except Exception as e:
+        print(f"Fehler beim automatischen Senden der FCF-Datei: {e}")
+        return response_html
+
+
+# ============================================================================
+# 3. HAUPTFUNKTION (Integration in die FinalCif CheckCIF Routine)
+# ============================================================================
+
+def send_checkcif_request(cif_file_path: str, url: str = "https://checkcif.iucr.org/cgi-bin/checkcif_hkl.pl") -> str:
+    """
+    Sendet die CIF-Datei an den Server und fängt automatisch die FCF-Rückfrage ab.
+    Diese Methode ersetzt die bisherige Request-Logik in checkcif.py.
+    """
+    # Pfad zur FCF Datei ableiten (.cif Endung zu .fcf ändern)
+    fcf_file_path = cif_file_path.rsplit('.', 1)[0] + '.fcf'
+
+    # Standard-Parameter für FinalCif (müssen ggf. an deine genaue Config angepasst werden)
+    data = {
+        'runtype'    : 'full',
+        'send_binary': '1',
+        # Weitere Parameter (wie 'UPLOAD_FORMAT') hier hinzufügen, falls FinalCif sie nutzt
+    }
+
+    try:
+        # 1. Ursprünglicher Request mit der .cif Datei
+        with open(cif_file_path, 'rb') as cif_file:
+            files = {
+                'file': (os.path.basename(cif_file_path), cif_file, 'text/plain')
+            }
+            print(f"Sende initiale CIF-Datei an {url} ...")
+            response = requests.post(url, data=data, files=files, timeout=180)
+            response.raise_for_status()
+
+            html_content = response.text
+
+        # 2. Formular-Check (Das ist der neue, entscheidende Schritt)
+        # Wenn der IUCr-Server nach der FCF-Datei fragt, greift diese Funktion ein.
+        final_html_content = handle_fcf_upload_form(
+            response_html=html_content,
+            fcf_file_path=fcf_file_path,
+            original_url=url
+        )
+
+        return final_html_content
+
+    except requests.exceptions.RequestException as e:
+        error_msg = f"<html><body><h3>Netzwerkfehler beim CheckCIF-Request:</h3><p>{e}</p></body></html>"
+        print(error_msg)
+        return error_msg
 
 class CheckCif(QThread):
     progress = Signal(str)
