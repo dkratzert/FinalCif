@@ -19,6 +19,8 @@ from finalcif.tools.selfupdate import ElevationRefused, UpdateCancelled, UpdateE
 
 # Keeps the running downloads alive, a local variable would be garbage collected:
 _running_updates: set = set()
+# The same for a message box without a parent:
+_open_message_boxes: set = set()
 
 
 class InstallerDownload:
@@ -334,7 +336,7 @@ def show_update_warning(parent: QWidget | None, remote_version: int = 0) -> None
                 "https://dkratzert.de/finalcif.html</a>"
     box = QMessageBox(parent)
     box.setTextFormat(QtCore.Qt.TextFormat.AutoText)
-    box.setWindowTitle(" ")
+    box.setWindowTitle("FinalCif update")
     box.setTextInteractionFlags(QtCore.Qt.TextInteractionFlag.TextBrowserInteraction)
     if sys.platform.startswith("win"):
         warn_text += r"<br><br>Updating now will end all running FinalCIF programs!"
@@ -342,7 +344,12 @@ def show_update_warning(parent: QWidget | None, remote_version: int = 0) -> None
         update_button.clicked.connect(lambda: do_update_program(str(remote_version), parent))
     box.setText(warn_text.format(remote_version))
     box.setModal(True)
+    _open_message_boxes.add(box)
+    box.finished.connect(lambda _: _open_message_boxes.discard(box))
     box.show()
+    # The main window is shown right after this box during startup and covers it otherwise:
+    box.raise_()
+    box.activateWindow()
 
 
 def bad_z_message(parent: QWidget | None, z: float) -> None:

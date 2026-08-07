@@ -14,6 +14,7 @@ import sys
 import threading
 import time
 import warnings
+from collections.abc import Callable
 from contextlib import suppress
 from datetime import datetime
 from math import sin, radians
@@ -164,7 +165,7 @@ class AppWindow(QMainWindow):
         self.thread_download = None
         self.ckf = None
         self.thread_version = None
-        self.worker = None
+        self._downloaders: set[MyDownloader] = set()
         self._z_thread: _ZEstimatorThread | None = None
         self.structure_factor_thread: _StructureFactorReportThread | None = None
         self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
@@ -989,11 +990,36 @@ class AppWindow(QMainWindow):
             print('Skipping version.txt download because NO_NETWORK variable is set.')
             return
         mainurl = "https://dkratzert.de/files/finalcif/version.txt"
-        # parent must be None, otherwise it can't be moved to a thread:
-        self.worker = MyDownloader(mainurl, parent=None)
-        self.worker.loaded.connect(self.is_update_necessary)
-        self.thread_version = threading.Thread(target=self.worker.download, daemon=True)
-        self.thread_version.start()
+        self.thread_version = self._start_download(mainurl, self.is_update_necessary)
+
+    def _start_download(self, url: str, on_loaded: Callable[[bytes], None]) -> threading.Thread:
+        """Download `url` in a daemon thread and hand the content to `on_loaded`.
+
+        The worker must not have a parent, otherwise it could not be moved to a thread, so it
+        is kept in `_downloaders` until it is done.  Without that reference it would be
+        garbage collected as soon as the next download starts, and its queued signals would
+        never reach the main thread.
+        """
+        worker = MyDownloader(url, parent=None)
+        self._downloaders.add(worker)
+        worker.loaded.connect(on_loaded)
+        worker.failed.connect(self._download_failed)
+        worker.finished.connect(self._download_finished)
+        thread = threading.Thread(target=worker.download, daemon=True)
+        thread.start()
+        return thread
+
+    def _download_finished(self) -> None:
+        # These slots run in the main thread, so 'loaded' was already delivered here:
+        self._forget_downloader(cast(MyDownloader, self.sender()))
+
+    def _download_failed(self, status_code: int) -> None:
+        worker = cast(MyDownloader, self.sender())
+        print(f'Download of {worker.url} failed with status code {status_code}.')
+        self._forget_downloader(worker)
+
+    def _forget_downloader(self, worker: MyDownloader) -> None:
+        self._downloaders = {each for each in self._downloaders if each is not worker}
 
     def is_update_necessary(self, content: bytes) -> None:
         """
@@ -1060,10 +1086,7 @@ class AppWindow(QMainWindow):
             print('Skipping check.def download because NO_NETWORK variable is set.')
             return
         url = 'http://www.platonsoft.nl/xraysoft/unix/platon/check.def'
-        self.worker = MyDownloader(url, parent=None)
-        self.worker.loaded.connect(self._save_checkdef)
-        self.thread_download = threading.Thread(target=self.worker.download, daemon=True)
-        self.thread_download.start()
+        self.thread_download = self._start_download(url, self._save_checkdef)
 
     def _save_checkdef(self, reply: bytes) -> None:
         """
