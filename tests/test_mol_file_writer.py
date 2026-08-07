@@ -142,6 +142,9 @@ class TestReportContext(unittest.TestCase):
             self.assertTrue(context[key])
         for key in ('xyz_data_fill', 'xyz_data_grow', 'xyz_data_fuse'):
             self.assertIn('@<TRIPOS>ATOM', context[key])
+        self.assertTrue(context['fastmolwidget_js'])
+        self.assertIn('"cell"', context['structure_json'])
+        self.assertIn('"atoms"', context['structure_json'])
 
     def test_docx_context_has_no_viewer_data(self):
         report = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
@@ -151,17 +154,19 @@ class TestReportContext(unittest.TestCase):
         reader.assert_not_called()
         self.assertNotIn('miew_js', context)
         self.assertNotIn('xyz_data_fuse', context)
+        self.assertNotIn('fastmolwidget_js', context)
+        self.assertNotIn('structure_json', context)
 
-    def test_html_report_with_miew_template(self):
+    def test_html_report_with_fastmolwidget_template(self):
         report = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / 'report.html'
             self.assertTrue(report.make_templated_html_report(output_filename=str(output),
                                                               template_path=Path('finalcif/template'),
-                                                              template_file='report_miew.tmpl'))
+                                                              template_file='report_fastmolwidget.tmpl'))
             text = output.read_text(encoding='utf-8')
-        self.assertIn('new Miew(', text)
-        self.assertEqual(3, text.count('@<TRIPOS>ATOM'))
+        self.assertIn('Fastmolwidget.createViewer(', text)
+        self.assertNotIn("fileType: 'mol2'", text)
 
 
 if __name__ == '__main__':

@@ -48,7 +48,7 @@ dependencies = [
     "urllib3==2.7.0",
     "docxtpl[subdoc]>=0.20.2",
     "shelxfile==24",
-    "fastmolwidget>=0.9.7",
+    "fastmolwidget>=1.0.0",  # needs the fastmolwidget.web submodule used by report_fastmolwidget.tmpl
     "pyenchant",
     "charset-normalizer",
     "pyside6-essentials",

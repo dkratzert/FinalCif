@@ -1384,17 +1384,47 @@ class TemplatedReport:
         return context
 
     def _get_html_context(self, cif: CifContainer) -> dict[str, str]:
-        """The 3D viewer data and its javascript libraries are only needed by the HTML report."""
+        """The 3D viewer data and its javascript libraries are only needed by the HTML report.
+
+        Kept for backwards compatibility: 'miew_js'/'three_js'/'lodash_js'/'miew_css' and
+        'xyz_data_fill'/'xyz_data_grow'/'xyz_data_fuse' are still provided for any custom
+        template that still relies on the Miew/three.js viewer. New templates should use
+        'fastmolwidget_js'/'structure_json' instead (see report_fastmolwidget.tmpl).
+        """
         if self.format is not ReportFormat.HTML:
             return {}
-        return {'miew_js'      : _read_template_file('template/miew/Miew.min.js'),
-                'three_js'     : _read_template_file('template/miew/three.js'),
-                'lodash_js'    : _read_template_file('template/miew/lodash.min.js'),
-                'miew_css'     : _read_template_file('template/miew/Miew.css'),
-                'xyz_data_fill': self.get_xyz_filled_cell(cif),
-                'xyz_data_grow': self.get_xyz_grow(cif),
-                'xyz_data_fuse': self.get_xyz_fused(cif),
+        return {'miew_js'         : _read_template_file('template/miew/Miew.min.js'),
+                'three_js'        : _read_template_file('template/miew/three.js'),
+                'lodash_js'       : _read_template_file('template/miew/lodash.min.js'),
+                'miew_css'        : _read_template_file('template/miew/Miew.css'),
+                'xyz_data_fill'   : self.get_xyz_filled_cell(cif),
+                'xyz_data_grow'   : self.get_xyz_grow(cif),
+                'xyz_data_fuse'   : self.get_xyz_fused(cif),
+                'fastmolwidget_js': self._get_fastmolwidget_js(),
+                'structure_json'  : self._get_fastmolwidget_structure_json(cif),
                 }
+
+    @staticmethod
+    def _get_fastmolwidget_js() -> str:
+        """The self-contained fastmolwidget JavaScript renderer bundle for the HTML report."""
+        try:
+            from fastmolwidget.web import bundle_js
+            return bundle_js()
+        except Exception as e:
+            print(f'Could not generate fastmolwidget JavaScript bundle: {e}')
+            return ''
+
+    @staticmethod
+    def _get_fastmolwidget_structure_json(cif: CifContainer) -> str:
+        """The structure of cif as fractional-coordinate JSON for the fastmolwidget renderer."""
+        if not cif.is_valid_structure_cif:
+            return ''
+        try:
+            from fastmolwidget.web import structure_json
+            return structure_json(cif.fileobj)
+        except Exception as e:
+            print(f'Could not generate fastmolwidget structure data: {e}')
+            return ''
 
     def get_xyz_fused(self, cif: CifContainer) -> str:
         """A mol file of the atoms as they are in the CIF file."""

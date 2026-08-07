@@ -40,10 +40,7 @@
         {{ bootstrap_css }}
     </style>
     <style>
-        {{ miew_css|safe }}
-    </style>
-    <style>
-        #miew-viewer {
+        #mol-viewer {
             position: relative;
             width: 100%;
             height: 500px;
@@ -64,23 +61,23 @@
 
         <h2>Crystal Structure Report for {{ cif.block.name }}</h2>
 
-        {% if xyz_data_fuse %}
+        {% if structure_json %}
             <div class="card mt-4 mb-4">
                 <div class="card-header">
                     <div class="btn-group btn-group-sm" role="group" aria-label="Structure display mode">
-                        <button type="button" class="btn btn-outline-secondary active" id="miew-btn-fuse">
+                        <button type="button" class="btn btn-outline-secondary active" id="mol-btn-fuse">
                             Asymmetric unit
                         </button>
-                        <button type="button" class="btn btn-outline-secondary" id="miew-btn-grow">
+                        <button type="button" class="btn btn-outline-secondary" id="mol-btn-grow">
                             Completed molecule
                         </button>
-                        <button type="button" class="btn btn-outline-secondary" id="miew-btn-fill">
+                        <button type="button" class="btn btn-outline-secondary" id="mol-btn-fill">
                             Unit cell
                         </button>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div id="miew-viewer"></div>
+                    <div id="mol-viewer"></div>
                 </div>
             </div>
         {% endif %}
@@ -579,42 +576,31 @@
     </div>
 </div>
 
-{% if xyz_data_fuse %}
-    <script>{{ three_js|safe }}</script>
-    <script>{{ lodash_js|safe }}</script>
-    <script>{{ miew_js|safe }}</script>
+{% if structure_json %}
+    <script>{{ fastmolwidget_js|safe }}</script>
     <script>
         (function () {
-            const structures = {
-                fuse: `{{ xyz_data_fuse|safe }}`,
-                grow: `{{ xyz_data_grow|safe }}`,
-                fill: `{{ xyz_data_fill|safe }}`
-            };
-            const viewer = new Miew({
-                container: document.getElementById('miew-viewer'),
-                settings: {axes: true, fps: false, bg: {color: 0xFFFFFF}, fog: false}
-            });
-            if (!viewer.init()) {
-                return;
-            }
-            viewer.run();
+            const structure = {{ structure_json|safe }};
+            const viewer = Fastmolwidget.createViewer(
+                document.getElementById('mol-viewer'), structure,
+                {controls: true, grow: false, pack: false, background: '#ffffff'});
 
             function show(kind) {
-                const data = structures[kind];
-                if (!data || !data.trim()) {
-                    return;
+                if (kind === 'fill') {
+                    viewer.setPack(true);
+                } else if (kind === 'grow') {
+                    viewer.setPack(false);
+                    viewer.setGrow(true);
+                } else {
+                    viewer.setPack(false);
+                    viewer.setGrow(false);
                 }
-                viewer.load(data, {sourceType: 'immediate', fileType: 'mol2', keepRepsInfo: true})
-                    .then(function () {
-                        viewer.rep(0, {mode: 'BS', colorer: 'EL'});
-                        viewer.resetView();
-                    });
             }
 
             const buttons = {
-                fuse: document.getElementById('miew-btn-fuse'),
-                grow: document.getElementById('miew-btn-grow'),
-                fill: document.getElementById('miew-btn-fill')
+                fuse: document.getElementById('mol-btn-fuse'),
+                grow: document.getElementById('mol-btn-grow'),
+                fill: document.getElementById('mol-btn-fill')
             };
             Object.keys(buttons).forEach(function (kind) {
                 buttons[kind].addEventListener('click', function () {
@@ -624,8 +610,6 @@
                     show(kind);
                 });
             });
-
-            show('fuse');
         })();
     </script>
 {% endif %}
