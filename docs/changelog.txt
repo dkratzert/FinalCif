@@ -1,8 +1,8 @@
 FinalCif recent changes
 -----------------------
 * v173 Fixed updater so that it kills FinalCif before updating.
-       Improved twinabs/sadabs file parsing for better detection of the right Rint value. Calculate Rint if missing
-       in hklf 4 results.
+        Improved twinabs/sadabs file parsing for better detection of the right Rint value for twinned data.
+        Calculate Rint if missing in hklf 4 results.
 * v172 CheckCIF now automatically retries a failed validation by sending the structure factor (FCF) file along with
         the CIF and reports the outcome to the user. The 3D molecule viewer used for HTML and Word reports now runs
         on Fastmolwidget instead of Miew.
