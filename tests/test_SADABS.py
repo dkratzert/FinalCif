@@ -23,8 +23,9 @@ class TestSADABSWU19(unittest.TestCase):
         self.assertEqual('IK_WU19_0m.hkl', self.s.dataset(0).hklfile)
 
     def test_rint(self):
-        print(self.s.filename)
-        self.assertEqual(0.0472, self.s.Rint)
+        # SADABS has no overall R(int), only wR2(int) of the parameter refinement:
+        self.assertIsNone(self.s.Rint)
+        self.assertEqual(0.0472, self.s.wR2int)
 
     def test_transmission(self):
         self.assertEqual('min: 0.7135, max: 0.7459', str(self.s.dataset(0).transmission))
@@ -182,7 +183,8 @@ class TestSADABSMultipleOutputs(unittest.TestCase):
                          [x.reflections_number for x in self.s.datasets])
 
     def test_rint_is_the_global_one(self) -> None:
-        self.assertEqual([0.044] * 6, [x.rint for x in self.s.datasets])
+        # SADABS listings contain no R(int), it is calculated from the reflection data instead:
+        self.assertEqual([None] * 6, [x.rint for x in self.s.datasets])
 
     def test_select_dataset_by_name(self) -> None:
         self.assertEqual(42039, self.s.select_dataset(hkl_basename='xd_face.hkl').reflections_number)

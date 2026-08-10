@@ -12,6 +12,7 @@ from pathlib import Path
 from gemmi import cif as gcif
 
 from finalcif.cif.cif_file_io import CifContainer
+from finalcif.cif.hkl import calculate_rint
 from finalcif.datafiles.bruker_frame import BrukerFrameHeader
 from finalcif.datafiles.data import WorkDataMixin
 from finalcif.datafiles.p4p_reader import P4PFile
@@ -220,12 +221,28 @@ class BrukerData(WorkDataMixin):
                                         hklf=self.cif.hklf_number)
         if not dataset:
             return
-        if dataset.rint:
-            self.sources['_diffrn_reflns_av_R_equivalents'] = (dataset.rint, sadabs.filename.name)
+        rint = dataset.rint or self._rint_from_hkl_data()
+        if rint:
+            self.sources['_diffrn_reflns_av_R_equivalents'] = (rint, self._rint_source(dataset, sadabs))
         if dataset.reflections_number:
             self.sources['_diffrn_reflns_number'] = (dataset.reflections_number, sadabs.filename.name)
         if sadabs.is_twinabs and dataset.filetype == 5:
             self.overrides.update({'_diffrn_reflns_av_R_equivalents', '_diffrn_reflns_number'})
+
+    def _rint_source(self, dataset, sadabs: Sadabs) -> str:
+        return sadabs.filename.name if dataset.rint else f'calculated from {self.cif.fileobj.name}'
+
+    def _rint_from_hkl_data(self) -> float | None:
+        """
+        SADABS writes no overall R(int) into its listing file, therefore it is calculated from
+        the reflection data, but only if the CIF has no R(int) yet. SHELXL can not calculate it
+        for the composite reflections of HKLF 5 data.
+        """
+        if self.cif.hklf_number != 4:
+            return None
+        if gcif.as_string(self.cif['_diffrn_reflns_av_R_equivalents']).strip(' ?'):
+            return None
+        return calculate_rint(self.cif.hkl_file, self.cif.space_group)
 
     @property
     def _hkl_basename(self) -> str:

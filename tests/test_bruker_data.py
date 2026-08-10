@@ -81,5 +81,33 @@ class ReflectionsFromSadabsFileTestCase(unittest.TestCase):
         self.assertEqual(set(), self.data.overrides)
 
 
+class RintFallbackTestCase(unittest.TestCase):
+    """
+    SADABS writes no R(int), it is calculated from the reflection data, but only if the CIF
+    does not contain the value already.
+    """
+
+    example = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif')
+
+    def test_rint_of_shelxl_is_not_replaced(self):
+        data = BrukerData(FakeApp(), CifContainer(self.example))
+        self.assertIsNone(data.sources['_diffrn_reflns_av_R_equivalents'])
+
+    def test_rint_is_calculated_for_a_cif_without_rint(self):
+        tempdir = Path(tempfile.mkdtemp())
+        try:
+            for suffix in ('.abs', '.p4p'):
+                for source in self.example.parent.glob(f'cu_BruecknerJK_153F40*{suffix}'):
+                    shutil.copy(source, tempdir / source.name)
+            cif_file = tempdir / self.example.name
+            cif_file.write_text(self.example.read_text(errors='ignore').replace(
+                '_diffrn_reflns_av_R_equivalents   0.0302', '_diffrn_reflns_av_R_equivalents   ?'))
+            data = BrukerData(FakeApp(), CifContainer(cif_file))
+            self.assertEqual((0.0311, f'calculated from {cif_file.name}'),
+                             data.sources['_diffrn_reflns_av_R_equivalents'])
+        finally:
+            shutil.rmtree(tempdir, ignore_errors=True)
+
+
 if __name__ == '__main__':
     unittest.main()

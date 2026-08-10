@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 from collections import namedtuple
 from pathlib import Path
@@ -85,6 +87,50 @@ class HKL:
         h_max, k_max, l_max = np.max(miller, axis=0)
         h_min, k_min, l_min = np.min(miller, axis=0)
         return Limit(h_max=h_max, h_min=h_min, k_max=k_max, k_min=k_min, l_max=l_max, l_min=l_min)
+
+
+def calculate_rint(hkl_file: str, space_group: str) -> float | None:
+    """
+    Rint of an unmerged SHELX HKLF 4 file, merged in the Laue group of the space group.
+
+    SADABS does not write an overall Rint into its listing file, only the wR2(int) of the
+    parameter refinement and R(int) values of the individual runs.
+    """
+    miller, intensities, sigmas = _reflections_from_shelx_hkl(hkl_file)
+    if not len(miller) or not space_group:
+        return None
+    try:
+        data = gemmi.Intensities()
+        data.set_data(gemmi.UnitCell(10, 10, 10, 90, 90, 90),
+                      gemmi.SpaceGroup(space_group), miller, intensities, sigmas)
+        data.sort()
+        stats = data.calculate_merging_stats(None)[0]
+    except (RuntimeError, ValueError):
+        return None
+    if stats.unique_refl >= stats.all_refl:
+        # Merged data have no equivalent reflections to compare:
+        return None
+    return round(stats.r_merge(), 4)
+
+
+def _reflections_from_shelx_hkl(hkl_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    miller, intensities, sigmas = [], [], []
+    for line in hkl_file.splitlines(keepends=False):
+        if len(line) < 28:
+            continue
+        try:
+            index = (int(line[0:4]), int(line[4:8]), int(line[8:12]))
+            if not any(index):
+                break
+            intensity, sigma = float(line[12:20]), float(line[20:28])
+        except ValueError:
+            continue
+        miller.append(index)
+        intensities.append(intensity)
+        sigmas.append(sigma)
+    return (np.array(miller, dtype=np.int32).reshape(-1, 3),
+            np.array(intensities, dtype=np.float64),
+            np.array(sigmas, dtype=np.float64))
 
 
 if __name__ == '__main__':

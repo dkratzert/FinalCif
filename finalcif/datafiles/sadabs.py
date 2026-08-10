@@ -195,10 +195,8 @@ class Sadabs:
             self.input_files.append(spline[-1])
             self.batch_input = spline[2]
         if line.startswith(' wR2(int)'):
-            if self.is_twinabs:
-                self.wR2int = to_float(spline[2])
-            else:
-                self.Rint = to_float(spline[2])
+            # wR2(int) is not R(int)! SADABS writes no overall R(int) at all.
+            self.wR2int = to_float(spline[2])
         if line.startswith(' Crystal faces:'):
             self.faces = True
         if 'SADABS' in line or 'TWINABS' in line:
