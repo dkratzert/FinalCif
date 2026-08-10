@@ -108,7 +108,7 @@ class RintFallbackTestCase(unittest.TestCase):
             cif_file.write_text(self.example.read_text(errors='ignore').replace(
                 '_diffrn_reflns_av_R_equivalents   0.0302', '_diffrn_reflns_av_R_equivalents   ?'))
             data = BrukerData(FakeApp(), CifContainer(cif_file))
-            self.assertEqual((0.0311, f'calculated from {cif_file.resolve()}'),
+            self.assertEqual((0.0302, f'calculated from {cif_file.resolve()}'),
                              data.sources['_diffrn_reflns_av_R_equivalents'])
         finally:
             shutil.rmtree(tempdir, ignore_errors=True)

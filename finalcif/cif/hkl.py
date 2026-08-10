@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from collections import namedtuple
+from collections.abc import Sequence
 from pathlib import Path
 
 import gemmi
@@ -89,28 +90,111 @@ class HKL:
         return Limit(h_max=h_max, h_min=h_min, k_max=k_max, k_min=k_min, l_max=l_max, l_min=l_min)
 
 
-def calculate_rint(hkl_file: str, space_group: str) -> float | None:
+def calculate_rint(hkl_file: str, space_group: str, cell: Sequence[float] | None = None,
+                   resolution: tuple[float, float] | None = None) -> float | None:
     """
-    Rint of an unmerged SHELX HKLF 4 file, merged in the Laue group of the space group.
+    R(int) of an unmerged SHELX HKLF 4 file, calculated the way SHELXL does it:
 
-    SADABS does not write an overall Rint into its listing file, only the wR2(int) of the
-    parameter refinement and R(int) values of the individual runs.
+        R(int) = sum|Fo^2 - Fo^2(mean)| / sum[Fo^2]
+
+    Systematically absent reflections are rejected and Friedel opposites are only merged in
+    centrosymmetric space groups. Fo^2(mean) is the mean weighted with 1/sigma^2.
+
+    SADABS writes no overall R(int) into its listing file, only the wR2(int) of the parameter
+    refinement and the R(int) values of the individual runs.
+
+    Args:
+        hkl_file: Content of a SHELX HKLF 4 file.
+        space_group: Space group name, e.g. 'P n a 21'.
+        cell: Unit cell parameters, needed to apply a resolution limit.
+        resolution: Lowest and highest resolution in Angstrom (a SHELX SHEL instruction).
     """
     miller, intensities, sigmas = _reflections_from_shelx_hkl(hkl_file)
     if not len(miller) or not space_group:
         return None
     try:
-        data = gemmi.Intensities()
-        data.set_data(gemmi.UnitCell(10, 10, 10, 90, 90, 90),
-                      gemmi.SpaceGroup(space_group), miller, intensities, sigmas)
-        data.sort()
-        stats = data.calculate_merging_stats(None)[0]
+        operations = gemmi.SpaceGroup(space_group).operations()
     except (RuntimeError, ValueError):
         return None
-    if stats.unique_refl >= stats.all_refl:
+    used = ~_systematically_absent(miller, operations)
+    used &= _within_resolution(miller, cell, resolution)
+    miller, intensities, sigmas = miller[used], intensities[used], sigmas[used]
+    if not len(miller):
+        return None
+    groups, counts = _group_equivalents(miller, operations)
+    if len(counts) >= len(miller):
         # Merged data have no equivalent reflections to compare:
         return None
-    return round(stats.r_merge(), 4)
+    return _rint_of_groups(groups, counts, intensities, sigmas)
+
+
+def _within_resolution(miller: np.ndarray, cell: Sequence[float] | None,
+                       resolution: tuple[float, float] | None) -> np.ndarray:
+    """
+    Applies the resolution limits of a SHELX SHEL instruction.
+    """
+    if not resolution or not cell:
+        return np.ones(len(miller), dtype=bool)
+    lowest, highest = max(resolution), min(resolution)
+    try:
+        spacing = gemmi.UnitCell(*cell[:6]).calculate_d_array(miller)
+    except (RuntimeError, TypeError, ValueError):
+        return np.ones(len(miller), dtype=bool)
+    return (spacing <= lowest) & (spacing >= highest)
+
+
+def _rint_of_groups(groups: np.ndarray, counts: np.ndarray, intensities: np.ndarray,
+                    sigmas: np.ndarray) -> float | None:
+    weights = np.where(sigmas > 0.0, 1.0 / np.square(np.where(sigmas > 0.0, sigmas, 1.0)), 1.0)
+    weight_sum = np.bincount(groups, weights=weights, minlength=len(counts))
+    mean = np.bincount(groups, weights=weights * intensities, minlength=len(counts)) / weight_sum
+    with_equivalents = counts[groups] > 1
+    numerator = np.abs(intensities - mean[groups])[with_equivalents].sum()
+    denominator = intensities[with_equivalents].sum()
+    if not denominator:
+        return None
+    return round(float(numerator / denominator), 4)
+
+
+def _group_equivalents(miller: np.ndarray, operations: gemmi.GroupOps) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Assigns a group number to every reflection that is symmetry equivalent to another one.
+    """
+    equivalents = [_encode(miller @ _rotation(op)) for op in operations.sym_ops]
+    if operations.is_centrosymmetric():
+        equivalents += [_encode(-(miller @ _rotation(op))) for op in operations.sym_ops]
+    representative = np.max(np.stack(equivalents), axis=0)
+    _, groups, counts = np.unique(representative, return_inverse=True, return_counts=True)
+    return groups, counts
+
+
+def _systematically_absent(miller: np.ndarray, operations: gemmi.GroupOps) -> np.ndarray:
+    absent = np.zeros(len(miller), dtype=bool)
+    for op in operations.sym_ops:
+        translation = np.array(op.tran, dtype=np.float64) / op.DEN
+        if not translation.any():
+            continue
+        unchanged = (miller @ _rotation(op) == miller).all(axis=1)
+        phase = miller @ translation
+        absent |= unchanged & (np.abs(phase - np.round(phase)) > 1e-6)
+    for centering in operations.cen_ops:
+        translation = np.array(centering, dtype=np.float64) / gemmi.Op.DEN
+        if not translation.any():
+            continue
+        phase = miller @ translation
+        absent |= np.abs(phase - np.round(phase)) > 1e-6
+    return absent
+
+
+def _rotation(op: gemmi.Op) -> np.ndarray:
+    """The rotation part of a symmetry operation, applicable as ``miller @ rotation``."""
+    return np.array(op.rot, dtype=np.int64) // op.DEN
+
+
+def _encode(miller: np.ndarray) -> np.ndarray:
+    """Packs Miller indices into single numbers that keep their lexicographic order."""
+    shifted = miller.astype(np.int64) + 2 ** 20
+    return (shifted[:, 0] << 42) | (shifted[:, 1] << 21) | shifted[:, 2]
 
 
 def _reflections_from_shelx_hkl(hkl_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:

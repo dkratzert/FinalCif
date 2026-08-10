@@ -58,12 +58,22 @@ class TestRintCalculation(TestCase):
         self.hkl = CifContainer(data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').hkl_file
 
     def test_rint_of_a_shelx_hkl_file(self):
-        # SHELXL wrote 0.0302 for the reflections it used:
-        self.assertEqual(0.0311, calculate_rint(self.hkl, 'P 21 21 2'))
+        # This is exactly the value SHELXL wrote into the CIF:
+        self.assertEqual(0.0302, calculate_rint(self.hkl, 'P 21 21 2'))
 
     def test_rint_of_the_hkl_data_in_a_cif(self):
         cif = CifContainer(data / 'examples/work/cu_BruecknerJK_153F40_0m.cif')
-        self.assertEqual(0.0311, calculate_rint(cif.hkl_file, cif.space_group))
+        self.assertEqual('0.0302', cif['_diffrn_reflns_av_R_equivalents'])
+        self.assertEqual(0.0302, calculate_rint(cif.hkl_file, cif.space_group))
+
+    def test_friedel_opposites_are_only_merged_in_centrosymmetric_groups(self):
+        centrosymmetric = calculate_rint(self.hkl, 'P -1')
+        self.assertNotEqual(centrosymmetric, calculate_rint(self.hkl, 'P 21 21 2'))
+
+    def test_resolution_limits_of_a_shel_instruction_are_applied(self):
+        cell = (5.7859, 12.545, 13.3116, 90.0, 90.0, 90.0)
+        self.assertNotEqual(calculate_rint(self.hkl, 'P 21 21 2'),
+                            calculate_rint(self.hkl, 'P 21 21 2', cell=cell, resolution=(999.0, 0.9)))
 
     def test_merged_data_have_no_rint(self):
         hkl = ('   1   0   0 0.36031 0.34981\n'
@@ -73,6 +83,9 @@ class TestRintCalculation(TestCase):
 
     def test_no_space_group_gives_no_rint(self):
         self.assertIsNone(calculate_rint(self.hkl, ''))
+
+    def test_unknown_space_group_gives_no_rint(self):
+        self.assertIsNone(calculate_rint(self.hkl, 'Foo 42'))
 
     def test_empty_hkl_data_give_no_rint(self):
         self.assertIsNone(calculate_rint('', 'P 21 21 2'))

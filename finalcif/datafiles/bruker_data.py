@@ -261,7 +261,17 @@ class BrukerData(WorkDataMixin):
             return None
         if gcif.as_string(self.cif['_diffrn_reflns_av_R_equivalents']).strip(' ?'):
             return None
-        return calculate_rint(self.cif.hkl_file, self.cif.space_group)
+        return calculate_rint(self.cif.hkl_file, self.cif.space_group,
+                              cell=self.cif.cell, resolution=self._resolution_limits())
+
+    def _resolution_limits(self) -> tuple[float, float] | None:
+        """The resolution limits of a SHELX SHEL instruction, if there is one."""
+        shel = getattr(self.cif.shx, 'shel', None)
+        if not shel:
+            return None
+        with suppress(AttributeError, TypeError):
+            return float(shel.lowres), float(shel.highres)
+        return None
 
     @property
     def _hkl_basename(self) -> str:
