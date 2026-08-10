@@ -1,5 +1,8 @@
 FinalCif recent changes
 -----------------------
+* v172 CheckCIF now automatically retries a failed validation by sending the structure factor (FCF) file along with
+        the CIF and reports the outcome to the user. The 3D molecule viewer used for HTML and Word reports now runs
+        on Fastmolwidget instead of Miew.
 * v171 Hovering over a key in the CIF import window now shows the value that would be imported. Keys that hold no
        value at all are no longer selected by 'Select only new' and are also no longer remembered as keys you never
        want to import. For validation response forms only the RESPONSE text counts.
