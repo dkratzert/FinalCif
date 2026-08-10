@@ -53,10 +53,13 @@ _refln_scale_group_code
 class TestRintCalculation(TestCase):
     """SADABS files contain no overall R(int), it has to be calculated from the reflections."""
 
+    def setUp(self) -> None:
+        # The .hkl files are not part of the repository, thus the reflections come from a CIF:
+        self.hkl = CifContainer(data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').hkl_file
+
     def test_rint_of_a_shelx_hkl_file(self):
-        hkl = (data / 'examples/work/p21c.hkl').read_text()
         # SHELXL wrote 0.0302 for the reflections it used:
-        self.assertEqual(0.0311, calculate_rint(hkl, 'P 21 21 2'))
+        self.assertEqual(0.0311, calculate_rint(self.hkl, 'P 21 21 2'))
 
     def test_rint_of_the_hkl_data_in_a_cif(self):
         cif = CifContainer(data / 'examples/work/cu_BruecknerJK_153F40_0m.cif')
@@ -69,8 +72,7 @@ class TestRintCalculation(TestCase):
         self.assertIsNone(calculate_rint(hkl, 'P 21 21 2'))
 
     def test_no_space_group_gives_no_rint(self):
-        hkl = (data / 'examples/work/p21c.hkl').read_text()
-        self.assertIsNone(calculate_rint(hkl, ''))
+        self.assertIsNone(calculate_rint(self.hkl, ''))
 
     def test_empty_hkl_data_give_no_rint(self):
         self.assertIsNone(calculate_rint('', 'P 21 21 2'))

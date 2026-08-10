@@ -1072,6 +1072,7 @@ class AppWindow(QMainWindow):
             source_item = MyTableWidgetItem(s)
             source_item.setUneditable()
             data_item = MyTableWidgetItem(self.sources[s][1])
+            data_item.setToolTip(str(self.sources[s][1]))
             data_item.setUneditable()
             table.setItem(rownum, COL_key, source_item)
             table.setItem(rownum, COL_source_data, data_item)
@@ -2565,7 +2566,7 @@ class AppWindow(QMainWindow):
                 self.add_row('_database_code_depnum_ccdc_archive', '', at_start=True)
             txt = self.ui.cif_main_table.getTextFromKey('_database_code_depnum_ccdc_archive', Column.EDIT).strip()
             if not txt or (txt == '?'):
-                self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile.name))
+                self.sources['_database_code_depnum_ccdc_archive'] = (str(ccdc.depnum), str(ccdc.emlfile))
                 self.missing_data.add('_database_code_depnum_ccdc_archive')
 
     def refresh_combo_boxes(self) -> None:

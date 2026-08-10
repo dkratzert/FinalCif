@@ -38,10 +38,14 @@ class ReflectionsFromAbsFileTestCase(unittest.TestCase):
         cif_file.write_text(CIF_TEXT, encoding='utf-8')
         return BrukerData(FakeApp(), CifContainer(cif_file))
 
+    @property
+    def abs_file(self) -> str:
+        return str((self.tempdir / 'twin.abs').resolve())
+
     def test_values_of_the_matching_hklf5_dataset(self):
         data = self._bruker_data('t5_dom1.cif')
-        self.assertEqual((20257, 'twin.abs'), data.sources['_diffrn_reflns_number'])
-        self.assertEqual((0.0398, 'twin.abs'), data.sources['_diffrn_reflns_av_R_equivalents'])
+        self.assertEqual((20257, self.abs_file), data.sources['_diffrn_reflns_number'])
+        self.assertEqual((0.0398, self.abs_file), data.sources['_diffrn_reflns_av_R_equivalents'])
 
     def test_hklf5_values_override_the_cif_values(self):
         data = self._bruker_data('t5_dom1.cif')
@@ -49,17 +53,17 @@ class ReflectionsFromAbsFileTestCase(unittest.TestCase):
 
     def test_hklf4_values_do_not_override_the_cif_values(self):
         data = self._bruker_data('t4_dom1.cif')
-        self.assertEqual((20257, 'twin.abs'), data.sources['_diffrn_reflns_number'])
+        self.assertEqual((20257, self.abs_file), data.sources['_diffrn_reflns_number'])
         self.assertEqual(set(), data.overrides)
 
     def test_all_domains_dataset(self):
         data = self._bruker_data('t5_dom-2.cif')
-        self.assertEqual((32954, 'twin.abs'), data.sources['_diffrn_reflns_number'])
-        self.assertEqual((0.0438, 'twin.abs'), data.sources['_diffrn_reflns_av_R_equivalents'])
+        self.assertEqual((32954, self.abs_file), data.sources['_diffrn_reflns_number'])
+        self.assertEqual((0.0438, self.abs_file), data.sources['_diffrn_reflns_av_R_equivalents'])
 
     def test_finalcif_suffix_is_ignored_for_the_file_name_match(self):
         data = self._bruker_data('t5_dom2-finalcif.cif')
-        self.assertEqual((32954, 'twin.abs'), data.sources['_diffrn_reflns_number'])
+        self.assertEqual((32954, self.abs_file), data.sources['_diffrn_reflns_number'])
 
 
 class ReflectionsFromSadabsFileTestCase(unittest.TestCase):
@@ -75,7 +79,8 @@ class ReflectionsFromSadabsFileTestCase(unittest.TestCase):
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def test_written_reflections_are_used(self):
-        self.assertEqual((152800, 'IK_WU19.abs'), self.data.sources['_diffrn_reflns_number'])
+        self.assertEqual((152800, str((self.tempdir / 'IK_WU19.abs').resolve())),
+                         self.data.sources['_diffrn_reflns_number'])
 
     def test_sadabs_values_never_override(self):
         self.assertEqual(set(), self.data.overrides)
@@ -103,7 +108,7 @@ class RintFallbackTestCase(unittest.TestCase):
             cif_file.write_text(self.example.read_text(errors='ignore').replace(
                 '_diffrn_reflns_av_R_equivalents   0.0302', '_diffrn_reflns_av_R_equivalents   ?'))
             data = BrukerData(FakeApp(), CifContainer(cif_file))
-            self.assertEqual((0.0311, f'calculated from {cif_file.name}'),
+            self.assertEqual((0.0311, f'calculated from {cif_file.resolve()}'),
                              data.sources['_diffrn_reflns_av_R_equivalents'])
         finally:
             shutil.rmtree(tempdir, ignore_errors=True)

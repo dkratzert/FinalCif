@@ -22,6 +22,20 @@ from finalcif.datafiles.shelx_lst import SolutionProgram
 from finalcif.gui.dialogs import show_general_warning
 
 
+def source_path(file: Path | str | None) -> str:
+    """
+    Returns the absolute path of a data source file or an empty string if it does not exist.
+    """
+    if not file:
+        return ''
+    path = Path(file)
+    with suppress(OSError):
+        path = path.resolve()
+        if path.is_file():
+            return str(path)
+    return ''
+
+
 class MissingCifData:
     def __init__(self):
         self.data = {}
@@ -82,31 +96,32 @@ class BrukerData(WorkDataMixin):
         except (AttributeError, KeyError, FileNotFoundError):
             milliamps = ''
         try:
-            frame_name = self.frame_header.filename.name
+            frame_name = source_path(self.frame_header.filename)
         except FileNotFoundError:
             frame_name = ''
         if not self.cif['_computing_structure_solution'] and self.cif.solution_program_details:
-            solution_program = (self.cif.solution_program_details, self.cif.fileobj.name)
+            solution_program = (self.cif.solution_program_details, source_path(self.cif.fileobj))
         if self.cif['_computing_structure_solution']:
-            solution_program = (gcif.as_string(self.cif['_computing_structure_solution']), self.cif.fileobj.name)
+            solution_program = (gcif.as_string(self.cif['_computing_structure_solution']),
+                                source_path(self.cif.fileobj))
         if not solution_program:
-            solution_program = (sol.program.version, Path(sol.program.filename).name)
+            solution_program = (sol.program.version, source_path(sol.program.filename))
         if self.cif.absorpt_process_details:
-            absdetails = (self.cif.absorpt_process_details, self.cif.fileobj.name)
+            absdetails = (self.cif.absorpt_process_details, source_path(self.cif.fileobj))
         else:
-            absdetails = (sadabs.version, sadabs.filename.name)
+            absdetails = (sadabs.version, source_path(sadabs.filename))
         if self.cif.absorpt_correction_type:
-            abscorrtype = (self.cif.absorpt_correction_type, self.cif.fileobj.name)
+            abscorrtype = (self.cif.absorpt_correction_type, source_path(self.cif.fileobj))
         else:
-            abscorrtype = (abstype, sadabs.filename.name)
+            abscorrtype = (abstype, source_path(sadabs.filename))
         if self.cif.absorpt_correction_t_max:
-            abs_tmax = (self.cif.absorpt_correction_t_max, self.cif.fileobj.name)
+            abs_tmax = (self.cif.absorpt_correction_t_max, source_path(self.cif.fileobj))
         else:
-            abs_tmax = (str(t_max), sadabs.filename.name)
+            abs_tmax = (str(t_max), source_path(sadabs.filename))
         if self.cif.absorpt_correction_t_min:
-            abs_tmin = (self.cif.absorpt_correction_t_min, self.cif.fileobj.name)
+            abs_tmin = (self.cif.absorpt_correction_t_min, source_path(self.cif.fileobj))
         else:
-            abs_tmin = (str(t_min), sadabs.filename.name)
+            abs_tmin = (str(t_min), source_path(sadabs.filename))
 
         self._add_reflection_data(sadabs)
         temp2 = self.p4p.temperature
@@ -164,25 +179,26 @@ class BrukerData(WorkDataMixin):
         # All sources that are not filled with data will be yellow in the main table
         #                          data                         tooltip
         self.sources['_cell_measurement_reflns_used'] = (
-            self.saint_data.cell_reflections, self.saint_data.filename.name)
+            self.saint_data.cell_reflections, source_path(self.saint_data.filename))
         self.sources['_cell_measurement_theta_min'] = (
-            self.saint_data.cell_res_min_theta or '', self.saint_data.filename.name)
+            self.saint_data.cell_res_min_theta or '', source_path(self.saint_data.filename))
         self.sources['_cell_measurement_theta_max'] = (
-            self.saint_data.cell_res_max_theta or '', self.saint_data.filename.name)
-        self.sources['_computing_data_collection'] = (saint_first_ls.aquire_software, saint_first_ls.filename.name)
-        self.sources['_computing_cell_refinement'] = (self.saint_data.version, self.saint_data.filename.name)
-        self.sources['_computing_data_reduction'] = (self.saint_data.version, self.saint_data.filename.name)
+            self.saint_data.cell_res_max_theta or '', source_path(self.saint_data.filename))
+        self.sources['_computing_data_collection'] = (saint_first_ls.aquire_software,
+                                                      source_path(saint_first_ls.filename))
+        self.sources['_computing_cell_refinement'] = (self.saint_data.version, source_path(self.saint_data.filename))
+        self.sources['_computing_data_reduction'] = (self.saint_data.version, source_path(self.saint_data.filename))
         self.sources['_exptl_absorpt_correction_type'] = abscorrtype
         self.sources['_exptl_absorpt_correction_T_min'] = abs_tmin
         self.sources['_exptl_absorpt_correction_T_max'] = abs_tmax
         self.sources['_exptl_absorpt_process_details'] = absdetails
-        self.sources['_cell_measurement_temperature'] = (temperature, self.p4p.filename.name)
-        self.sources['_diffrn_ambient_temperature'] = (temperature, self.p4p.filename.name)
-        self.sources['_exptl_crystal_colour'] = (self.p4p.crystal_color, self.p4p.filename.name)
-        self.sources['_exptl_crystal_description'] = (self.p4p.morphology, self.p4p.filename.name)
-        self.sources['_exptl_crystal_size_min'] = (self.p4p.crystal_size[0] or '', self.p4p.filename.name)
-        self.sources['_exptl_crystal_size_mid'] = (self.p4p.crystal_size[1] or '', self.p4p.filename.name)
-        self.sources['_exptl_crystal_size_max'] = (self.p4p.crystal_size[2] or '', self.p4p.filename.name)
+        self.sources['_cell_measurement_temperature'] = (temperature, source_path(self.p4p.filename))
+        self.sources['_diffrn_ambient_temperature'] = (temperature, source_path(self.p4p.filename))
+        self.sources['_exptl_crystal_colour'] = (self.p4p.crystal_color, source_path(self.p4p.filename))
+        self.sources['_exptl_crystal_description'] = (self.p4p.morphology, source_path(self.p4p.filename))
+        self.sources['_exptl_crystal_size_min'] = (self.p4p.crystal_size[0] or '', source_path(self.p4p.filename))
+        self.sources['_exptl_crystal_size_mid'] = (self.p4p.crystal_size[1] or '', source_path(self.p4p.filename))
+        self.sources['_exptl_crystal_size_max'] = (self.p4p.crystal_size[2] or '', source_path(self.p4p.filename))
         self.sources['_computing_structure_solution'] = solution_program
         self.sources['_atom_sites_solution_primary'] = (sol.method, 'Inherited from solution program.')
         self.sources['_diffrn_source_voltage'] = (kilovolt or '', frame_name)
@@ -196,19 +212,20 @@ class BrukerData(WorkDataMixin):
         if self.saint_data.is_twin and self.saint_data.components_firstsample == 2:
             with suppress(Exception):
                 law = self.saint_data.twinlaw[next(iter(self.saint_data.twinlaw.keys()))]
-                self.sources['_twin_individual_twin_matrix_11'] = (str(law[0][1]), self.saint_data.filename.name)
-                self.sources['_twin_individual_twin_matrix_12'] = (str(law[0][2]), self.saint_data.filename.name)
-                self.sources['_twin_individual_twin_matrix_13'] = (str(law[0][0]), self.saint_data.filename.name)
-                self.sources['_twin_individual_twin_matrix_21'] = (str(law[1][1]), self.saint_data.filename.name)
-                self.sources['_twin_individual_twin_matrix_22'] = (str(law[1][2]), self.saint_data.filename.name)
-                self.sources['_twin_individual_twin_matrix_23'] = (str(law[1][0]), self.saint_data.filename.name)
-                self.sources['_twin_individual_twin_matrix_31'] = (str(law[2][1]), self.saint_data.filename.name)
-                self.sources['_twin_individual_twin_matrix_32'] = (str(law[2][2]), self.saint_data.filename.name)
-                self.sources['_twin_individual_twin_matrix_33'] = (str(law[2][0]), self.saint_data.filename.name)
+                saint_file = source_path(self.saint_data.filename)
+                self.sources['_twin_individual_twin_matrix_11'] = (str(law[0][1]), saint_file)
+                self.sources['_twin_individual_twin_matrix_12'] = (str(law[0][2]), saint_file)
+                self.sources['_twin_individual_twin_matrix_13'] = (str(law[0][0]), saint_file)
+                self.sources['_twin_individual_twin_matrix_21'] = (str(law[1][1]), saint_file)
+                self.sources['_twin_individual_twin_matrix_22'] = (str(law[1][2]), saint_file)
+                self.sources['_twin_individual_twin_matrix_23'] = (str(law[1][0]), saint_file)
+                self.sources['_twin_individual_twin_matrix_31'] = (str(law[2][1]), saint_file)
+                self.sources['_twin_individual_twin_matrix_32'] = (str(law[2][2]), saint_file)
+                self.sources['_twin_individual_twin_matrix_33'] = (str(law[2][0]), saint_file)
                 self.sources['_twin_individual_id'] = (
-                    str(self.saint_data.components_firstsample), self.saint_data.filename.name)
+                    str(self.saint_data.components_firstsample), saint_file)
                 self.sources['_twin_special_details'] = (
-                    'The data was integrated as a 2-component twin.', self.saint_data.filename.name)
+                    'The data was integrated as a 2-component twin.', saint_file)
 
     def _add_reflection_data(self, sadabs: Sadabs) -> None:
         """
@@ -225,12 +242,14 @@ class BrukerData(WorkDataMixin):
         if rint:
             self.sources['_diffrn_reflns_av_R_equivalents'] = (rint, self._rint_source(dataset, sadabs))
         if dataset.reflections_number:
-            self.sources['_diffrn_reflns_number'] = (dataset.reflections_number, sadabs.filename.name)
+            self.sources['_diffrn_reflns_number'] = (dataset.reflections_number, source_path(sadabs.filename))
         if sadabs.is_twinabs and dataset.filetype == 5:
             self.overrides.update({'_diffrn_reflns_av_R_equivalents', '_diffrn_reflns_number'})
 
     def _rint_source(self, dataset, sadabs: Sadabs) -> str:
-        return sadabs.filename.name if dataset.rint else f'calculated from {self.cif.fileobj.name}'
+        if dataset.rint:
+            return source_path(sadabs.filename)
+        return f'calculated from {source_path(self.cif.fileobj)}'
 
     def _rint_from_hkl_data(self) -> float | None:
         """
