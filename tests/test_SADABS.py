@@ -66,5 +66,127 @@ class TestTWINABS(unittest.TestCase):
         self.assertEqual(5484, self.s.dataset(1).written_reflections)
 
 
+class TestTWINABSMultipleOutputs(unittest.TestCase):
+    """
+    A TWINABS run where the user wrote all possible HKLF 4 and HKLF 5 variants in a row.
+    """
+
+    def setUp(self) -> None:
+        self.s = Sadabs(fileobj=Path('test-data/twinabs_multi_options.abs'))
+
+    def test_all_datasets_are_found(self) -> None:
+        self.assertEqual(['t4_dom0.hkl', 't4_dom1.hkl', 't4_dom-2.hkl',
+                          't5_dom1.hkl', 't5_dom2.hkl', 't5_dom-2.hkl'],
+                         [x.hklfile for x in self.s.datasets])
+
+    def test_hklf_types(self) -> None:
+        self.assertEqual([4, 4, 4, 5, 5, 5], [x.filetype for x in self.s.datasets])
+
+    def test_domain_selections(self) -> None:
+        self.assertEqual([('all', None), ('single', 1), ('up_to', 2),
+                          ('single', 1), ('single', 2), ('up_to', 2)],
+                         [(x.domain_mode, x.domain_number) for x in self.s.datasets])
+
+    def test_reflections_number(self) -> None:
+        # N(all) for all domains and N(1) for the first domain only:
+        self.assertEqual([32954, 20257, 32954, 20257, 32954, 32954],
+                         [x.reflections_number for x in self.s.datasets])
+
+    def test_rint(self) -> None:
+        self.assertEqual([0.0438, 0.0398, 0.0438, 0.0398, 0.0438, 0.0438],
+                         [x.rint for x in self.s.datasets])
+
+    def test_hklf4_of_first_domain_uses_own_table(self) -> None:
+        table = self.s.dataset(1).table
+        self.assertEqual((1, 20257, 0.0398, 32215, 0.0429),
+                         (table.domain_label, table.n_domain, table.rint_domain, table.n_all, table.rint_all))
+
+    def test_written_reflections_are_the_merged_ones(self) -> None:
+        self.assertEqual([3930, 3761, 3930, 5781, 5779, 8954],
+                         [x.written_reflections for x in self.s.datasets])
+
+    def test_select_dataset_by_name(self) -> None:
+        self.assertEqual(20257, self.s.select_dataset(hkl_basename='t5_dom1.hkl').reflections_number)
+        self.assertEqual(20257, self.s.select_dataset(hkl_basename='t5_dom1').reflections_number)
+
+    def test_select_dataset_by_reflection_number(self) -> None:
+        self.assertEqual('t5_dom-2.hkl', self.s.select_dataset(reflections=8954).hklfile)
+
+    def test_select_dataset_by_hklf_number(self) -> None:
+        self.assertEqual('t5_dom-2.hkl', self.s.select_dataset(hklf=5).hklfile)
+        self.assertEqual('t4_dom-2.hkl', self.s.select_dataset(hklf=4).hklfile)
+
+    def test_select_dataset_without_criteria_takes_the_last(self) -> None:
+        self.assertEqual('t5_dom-2.hkl', self.s.select_dataset().hklfile)
+
+    def test_transmission_of_every_dataset(self) -> None:
+        self.assertEqual([0.692919, 0.692919, 0.692919, 0.693129, 0.691391, 0.691391],
+                         [x.transmission.tmin for x in self.s.datasets])
+
+
+class TestTWINABSHKLF5BeforeTable(unittest.TestCase):
+    """
+    An HKLF 5 file may be written before any reflection table was printed. The same file name
+    can also be written twice, then the last data set wins.
+    """
+
+    def setUp(self) -> None:
+        self.s = Sadabs(fileobj=Path('test-data/twinabs_hklf5_first.abs'))
+
+    def test_first_dataset_uses_the_table_written_later(self) -> None:
+        self.assertEqual(20616, self.s.dataset(0).reflections_number)
+        self.assertEqual(0.0423, self.s.dataset(0).rint)
+
+    def test_last_written_file_wins(self) -> None:
+        dataset = self.s.select_dataset(hkl_basename='f5_a.hkl')
+        self.assertEqual(8954, dataset.written_reflections)
+        self.assertEqual(32954, dataset.reflections_number)
+
+
+class TestTWINABSRealWorldFile(unittest.TestCase):
+    def setUp(self) -> None:
+        self.s = Sadabs(fileobj=Path('test-data/DK_ML766_twin.abs'))
+
+    def test_number_of_datasets(self) -> None:
+        self.assertEqual(4, len(self.s.datasets))
+
+    def test_hklf4_gets_all_reflections(self) -> None:
+        self.assertEqual(32949, self.s.dataset(0).reflections_number)
+        self.assertEqual(0.0416, self.s.dataset(0).rint)
+
+    def test_hklf5_of_domain_one(self) -> None:
+        self.assertEqual(20615, self.s.dataset(1).reflections_number)
+        self.assertEqual(0.0394, self.s.dataset(1).rint)
+
+    def test_selection_takes_the_last_file_with_that_name(self) -> None:
+        dataset = self.s.select_dataset(hkl_basename='DK_ML766_0m_5.hkl')
+        self.assertEqual(6502, dataset.written_reflections)
+        self.assertEqual(20615, dataset.reflections_number)
+
+
+class TestSADABSMultipleOutputs(unittest.TestCase):
+    """
+    SADABS output files have no reflection table, the written reflections are used instead.
+    """
+
+    def setUp(self) -> None:
+        self.s = Sadabs(fileobj=Path('test-data/sad.abs'))
+
+    def test_all_datasets_are_found(self) -> None:
+        self.assertEqual(['sad_noface_u.hkl', 'sad_noface_m.hkl', 'xd.hkl',
+                          'sad_face_u.hkl', 'sad_face_m.hkl', 'xd_face.hkl'],
+                         [x.hklfile for x in self.s.datasets])
+
+    def test_reflections_number_is_the_written_one(self) -> None:
+        self.assertEqual([275136, 45285, 42035, 275137, 45285, 42039],
+                         [x.reflections_number for x in self.s.datasets])
+
+    def test_rint_is_the_global_one(self) -> None:
+        self.assertEqual([0.044] * 6, [x.rint for x in self.s.datasets])
+
+    def test_select_dataset_by_name(self) -> None:
+        self.assertEqual(42039, self.s.select_dataset(hkl_basename='xd_face.hkl').reflections_number)
+
+
 if __name__ == '__main__':
     unittest.main()

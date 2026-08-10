@@ -1,0 +1,350 @@
+
+ TWINABS - Bruker AXS scaling for twinned crystals - Version 2012/1
+ ------------------------------------------------------------------
+
+ Equivalent reflections defined according to point group 1     
+
+ Reading batch  1 from file DK_ML766_0m.mul
+
+  2 twin components present
+
+ Mean and maximum errors in direction cosine check function =   0.000   0.004
+ The mean error should not exceed 0.008, and is usually caused by matrix
+ changes during data processing.
+
+ Maximum 2-theta =  54.94 deg.   Approximate wavelength = 0.71092 Angstroms
+ Approximate highest resolution = 0.771 Angstroms
+ Approximate unit-cell:   8.143   9.426  11.606   79.48   82.69   79.64
+
+ ==============================================================================
+
+ PART 1 - Refinement of parameters to model systematic errors
+
+    12414 data (   4285 unique ) involve domain  1 only,  mean I/sigma   7.4
+    12389 data (   4286 unique ) involve domain  2 only,  mean I/sigma   4.8
+     8294 data (   3351 unique ) involve   2 domains,  mean I/sigma   8.1
+
+ Settings for parameter refinement:
+
+ Maximum resolution =  0.1000 A
+ (Intensity/sigma) threshold = 1.500
+ Restraint esd for equal adjacent scale factors =  0.0070
+ Maximum odd and even orders for spherical harmonics =   3   6
+
+
+ Parameter refinement for twin component  1
+ ------------------------------------------
+
+    8364 single and      0 composite reflections used for parameter fitting
+ Effective data to parameter ratio =    2.10
+
+ wR2(int) =  0.0789 (selected reflections only, before parameter refinement)
+
+ Cycle wR2(incid) wR2(diffr) Mean wt.
+    1    0.0562    0.0456    0.9262
+    2    0.0422    0.0412    0.9290
+    3    0.0406    0.0403    0.9293
+    4    0.0402    0.0401    0.9293
+    5    0.0400    0.0400    0.9293
+    6    0.0399    0.0399    0.9293
+    7    0.0399    0.0399    0.9293
+    8    0.0398    0.0398    0.9293
+    9    0.0398    0.0398    0.9293
+   10    0.0398    0.0398    0.9293
+   11    0.0398    0.0398    0.9293
+   12    0.0398    0.0398    0.9293
+   13    0.0398    0.0398    0.9294
+   14    0.0398    0.0398    0.9294
+   15    0.0398    0.0398    0.9294
+   16    0.0398    0.0398    0.9294
+   17    0.0398    0.0398    0.9294
+   18    0.0398    0.0398    0.9293
+   19    0.0397    0.0398    0.9293
+   20    0.0397    0.0398    0.9293
+   21    0.0397    0.0398    0.9293
+   22    0.0397    0.0397    0.9293
+   23    0.0397    0.0397    0.9293
+   24    0.0397    0.0397    0.9294
+   25    0.0397    0.0397    0.9294
+   26    0.0397    0.0397    0.9294
+   27    0.0397    0.0397    0.9294
+   28    0.0397    0.0397    0.9294
+   29    0.0397    0.0397    0.9294
+   30    0.0397    0.0397    0.9294
+   31    0.0397    0.0397    0.9294
+   32    0.0397    0.0397    0.9294
+   33    0.0397    0.0397    0.9294
+   34    0.0397    0.0397    0.9294
+   35    0.0397    0.0397    0.9294
+   36    0.0397    0.0397    0.9294
+   37    0.0397    0.0397    0.9294
+   38    0.0397    0.0397    0.9294
+   39    0.0397    0.0397    0.9294
+   40    0.0397    0.0397    0.9294
+   41    0.0397    0.0397    0.9294
+   42    0.0397    0.0397    0.9294
+   43    0.0397    0.0397    0.9294
+   44    0.0397    0.0397    0.9294
+   45    0.0397    0.0397    0.9294
+   46    0.0397    0.0397    0.9294
+   47    0.0397    0.0397    0.9294
+   48    0.0397    0.0397    0.9294
+   49    0.0397    0.0397    0.9294
+   50    0.0397    0.0397    0.9294
+
+ wR2(int) =  0.0397 (selected reflections only, after parameter refinement)
+
+
+ Parameter refinement for twin component  2
+ ------------------------------------------
+
+    7045 single and      0 composite reflections used for parameter fitting
+ Effective data to parameter ratio =    1.76
+
+ wR2(int) =  0.1056 (selected reflections only, before parameter refinement)
+
+ Cycle wR2(incid) wR2(diffr) Mean wt.
+    1    0.0724    0.0591    0.9057
+    2    0.0525    0.0504    0.9117
+    3    0.0491    0.0484    0.9127
+    4    0.0480    0.0477    0.9131
+    5    0.0474    0.0473    0.9132
+    6    0.0472    0.0471    0.9133
+    7    0.0470    0.0470    0.9133
+    8    0.0469    0.0469    0.9133
+    9    0.0469    0.0468    0.9134
+   10    0.0468    0.0468    0.9134
+   11    0.0468    0.0468    0.9134
+   12    0.0467    0.0467    0.9133
+   13    0.0467    0.0467    0.9133
+   14    0.0467    0.0467    0.9133
+   15    0.0467    0.0467    0.9133
+   16    0.0467    0.0467    0.9133
+   17    0.0467    0.0467    0.9133
+   18    0.0467    0.0467    0.9133
+   19    0.0467    0.0467    0.9133
+   20    0.0467    0.0467    0.9133
+   21    0.0466    0.0467    0.9133
+   22    0.0466    0.0466    0.9133
+   23    0.0466    0.0466    0.9133
+   24    0.0466    0.0466    0.9133
+   25    0.0466    0.0466    0.9133
+   26    0.0466    0.0466    0.9133
+   27    0.0466    0.0466    0.9133
+   28    0.0466    0.0466    0.9133
+   29    0.0466    0.0466    0.9133
+   30    0.0466    0.0466    0.9133
+   31    0.0466    0.0466    0.9133
+   32    0.0466    0.0466    0.9133
+   33    0.0466    0.0466    0.9133
+   34    0.0466    0.0466    0.9133
+   35    0.0466    0.0466    0.9133
+   36    0.0466    0.0466    0.9133
+   37    0.0466    0.0466    0.9133
+   38    0.0466    0.0466    0.9133
+   39    0.0466    0.0466    0.9133
+   40    0.0466    0.0466    0.9133
+   41    0.0466    0.0466    0.9133
+   42    0.0466    0.0466    0.9133
+   43    0.0466    0.0466    0.9133
+   44    0.0466    0.0466    0.9133
+   45    0.0466    0.0466    0.9133
+   46    0.0466    0.0466    0.9133
+   47    0.0466    0.0466    0.9132
+   48    0.0466    0.0466    0.9132
+   49    0.0466    0.0466    0.9132
+   50    0.0466    0.0466    0.9132
+
+ wR2(int) =  0.0466 (selected reflections only, after parameter refinement)
+
+ ==============================================================================
+
+ PART 2 - Reject outliers and establish error model
+
+ Rejected reflections are ignored in the statistics and Postscript plots
+ (except the detector diagnostics) and in the output .hkl files. All statistics
+ and error estimates refer to total intensities (of single or composite
+ reflections) only. Before applying rejections there are:
+
+   33097 total and  11922 unique reflections.
+
+ Reflections rejected for which |I-<I>|/su >   3.00
+ Where:  su^2 = sigma(I)^2 + (  0.04000 <I>)^2  (sigma(I) from SAINT)
+   32949 total and  11913 unique reflections left after |I-<I>|/su test
+
+
+ g = 0.0222 gave best error model; g set to 0.0222 for further calculations
+
+
+ Statistics for singles of twin component  1
+ -------------------------------------------
+
+ Scan 2-theta  R(int)  Incid. factors  Diffr. factors    K     Total I>2sig(I)
+    1  -30.0  0.0272   0.824 - 1.045   0.982 - 1.024   0.577    1905    1540
+    2  -17.5  0.0303   0.820 - 1.009   0.982 - 1.028   0.620    2083    1612
+    3  -10.0  0.0235   0.721 - 1.120   0.979 - 1.029   0.663    1521    1277
+    4  -20.0  0.0331   0.790 - 1.027   0.979 - 1.027   0.622    1651    1279
+    5   27.5  0.0185   0.768 - 0.964   0.982 - 1.028   0.628    1310    1045
+    6  -25.0  0.0268   0.843 - 1.002   0.982 - 1.030   0.594    1731    1369
+    7  -20.0  0.0268   0.737 - 1.075   0.977 - 1.027   0.659    2154    1658
+
+   All scans  0.0272   0.721 - 1.120   0.977 - 1.030   0.623   12355    9780
+
+
+ Statistics for singles of twin component  2
+ -------------------------------------------
+
+ Scan 2-theta  R(int)  Incid. factors  Diffr. factors    K     Total I>2sig(I)
+    1  -30.0  0.0405   0.747 - 0.960   0.959 - 1.055   0.577    1889    1373
+    2  -17.5  0.0438   0.767 - 0.955   0.959 - 1.056   0.620    2086    1417
+    3  -10.0  0.0354   0.640 - 1.077   0.959 - 1.023   0.663    1542    1156
+    4  -20.0  0.0496   0.789 - 1.101   0.959 - 1.055   0.622    1642    1076
+    5   27.5  0.0192   0.663 - 0.945   0.959 - 1.055   0.628    1316     910
+    6  -25.0  0.0366   0.684 - 0.941   0.959 - 1.056   0.594    1714    1216
+    7  -20.0  0.0423   0.809 - 1.225   0.968 - 1.052   0.659    2145    1375
+
+   All scans  0.0392   0.640 - 1.225   0.959 - 1.056   0.623   12334    8523
+
+
+ Statistics for all composite reflections
+ ----------------------------------------
+
+ Scan 2-theta  R(int)  Incid. factors  Diffr. factors    K     Total I>2sig(I)
+    1  -30.0  0.0378   0.786 - 1.017   0.968 - 1.037   0.577    1273    1154
+    2  -17.5  0.0478   0.794 - 0.985   0.967 - 1.035   0.620    1303    1158
+    3  -10.0  0.0386   0.683 - 1.107   0.966 - 1.016   0.663     832     784
+    4  -20.0  0.0578   0.809 - 1.028   0.970 - 1.028   0.622    1144     974
+    5   27.5  0.0346   0.688 - 0.952   0.965 - 1.026   0.628    1332    1198
+    6  -25.0  0.0431   0.745 - 0.981   0.971 - 1.033   0.594    1146    1026
+    7  -20.0  0.0680   0.788 - 1.148   0.980 - 1.028   0.659    1230    1049
+
+   All scans  0.0473   0.683 - 1.148   0.965 - 1.037   0.623    8260    7343
+
+
+ Statistics for all single and composite reflections
+ ---------------------------------------------------
+
+ Scan 2-theta  R(int)  Incid. factors  Diffr. factors    K     Total I>2sig(I)
+    1  -30.0  0.0334   0.747 - 1.045   0.959 - 1.055   0.577    5067    4067
+    2  -17.5  0.0385   0.767 - 1.009   0.959 - 1.056   0.620    5472    4187
+    3  -10.0  0.0303   0.640 - 1.120   0.959 - 1.029   0.663    3895    3217
+    4  -20.0  0.0434   0.789 - 1.101   0.959 - 1.055   0.622    4437    3329
+    5   27.5  0.0229   0.663 - 0.964   0.959 - 1.055   0.628    3958    3153
+    6  -25.0  0.0339   0.684 - 1.002   0.959 - 1.056   0.594    4591    3611
+    7  -20.0  0.0398   0.737 - 1.225   0.968 - 1.052   0.659    5529    4082
+
+   All scans  0.0355   0.640 - 1.225   0.959 - 1.056   0.623   32949   25646
+
+ su = K * Sqrt[ sigma^2(I) + (g<I>)^2 ]  where sigma(I) is estimated by SAINT
+
+ The above statistics are based on all non-rejected data, ignoring
+ reflections without equivalents when estimating R(int) and K.
+
+ ==============================================================================
+
+ PART 3 - Output Postscript diagnostics and corrected data
+
+ Diagnostic plots written to Postscript file DK_ML766.eps
+
+
+ Blue = component 1, red = 2
+
+ The R(int) and R(sigma) plots are based on all singles and composites,
+ <|E^2-1|> is calculated for all individual contributions from domain 1
+ assuming SAINT partitioning and the chi^2 and spatial plots show only
+ those single and composite reflections actually fitted.
+
+
+ Unique HKLF 4 data extracted from all observed data
+
+ Cycle   N(1) Rint(1)  N(all) Rint(all) Twin fractions
+    1   19471  0.0706   30525  0.0683   0.7072  0.2928
+    2   20615  0.0486   32949  0.0491   0.7062  0.2938
+    3   20615  0.0429   32949  0.0444   0.7061  0.2939
+    4   20615  0.0418   32949  0.0436   0.7059  0.2941
+    5   20615  0.0411   32949  0.0430   0.7056  0.2944
+    6   20615  0.0406   32949  0.0426   0.7054  0.2946
+    7   20615  0.0403   32949  0.0424   0.7053  0.2947
+    8   20615  0.0401   32949  0.0422   0.7051  0.2949
+    9   20615  0.0399   32949  0.0420   0.7050  0.2950
+   10   20615  0.0398   32949  0.0419   0.7049  0.2951
+   11   20615  0.0397   32949  0.0419   0.7049  0.2951
+   12   20615  0.0396   32949  0.0418   0.7048  0.2952
+   13   20615  0.0396   32949  0.0418   0.7048  0.2952
+   14   20615  0.0395   32949  0.0417   0.7047  0.2953
+   15   20615  0.0395   32949  0.0417   0.7047  0.2953
+   16   20615  0.0395   32949  0.0417   0.7047  0.2953
+   17   20615  0.0394   32949  0.0417   0.7047  0.2953
+   18   20615  0.0394   32949  0.0417   0.7046  0.2954
+   19   20615  0.0394   32949  0.0416   0.7046  0.2954
+   20   20615  0.0394   32949  0.0416   0.7046  0.2954
+
+ N(1) and Rint(1) refer to singles and composites that include domain 1.
+
+ Rint = 0.0416  for all   32949  observations and
+ Rint = 0.0335  for all   15043  observations with I > 3sigma(I)
+
+ Rint is based on agreement between observed single and composite intensities
+ and those calculated from refined unique intensities and twin fractions.
+
+    7680 Corrected reflections written to file DK_ML766_0m_4.hkl
+ Reflections merged according to point-group 1     
+ Minimum and maximum apparent transmission:  0.675165  0.745541
+ Additional spherical absorption correction applied with mu*r =  0.2000
+
+
+ HKLF 5 dataset constructed from all observations involving domain 1
+   10266 Corrected reflections written to file DK_ML766_0m_5.hkl
+ Reflections merged according to point-group 1     
+ Single reflections that also occur in composites omitted
+ Racemic twinning not included for all components
+ Second component not inverted relative to first
+ Minimum and maximum apparent transmission:  0.675438  0.745541
+ Additional spherical absorption correction applied with mu*r =  0.2000
+
+
+ Unique HKLF 4 data extracted from all observed data
+
+ Cycle   N(1) Rint(1)  N(all) Rint(all) Twin fractions
+    1   19471  0.0706   30525  0.0683   0.7072  0.2928
+    2   20615  0.0486   32949  0.0491   0.7062  0.2938
+    3   20615  0.0429   32949  0.0444   0.7061  0.2939
+    4   20615  0.0418   32949  0.0436   0.7059  0.2941
+    5   20615  0.0411   32949  0.0430   0.7056  0.2944
+    6   20615  0.0406   32949  0.0426   0.7054  0.2946
+    7   20615  0.0403   32949  0.0424   0.7053  0.2947
+    8   20615  0.0401   32949  0.0422   0.7051  0.2949
+    9   20615  0.0399   32949  0.0420   0.7050  0.2950
+   10   20615  0.0398   32949  0.0419   0.7049  0.2951
+   11   20615  0.0397   32949  0.0419   0.7049  0.2951
+   12   20615  0.0396   32949  0.0418   0.7048  0.2952
+   13   20615  0.0396   32949  0.0418   0.7048  0.2952
+   14   20615  0.0395   32949  0.0417   0.7047  0.2953
+   15   20615  0.0395   32949  0.0417   0.7047  0.2953
+   16   20615  0.0395   32949  0.0417   0.7047  0.2953
+   17   20615  0.0394   32949  0.0417   0.7047  0.2953
+   18   20615  0.0394   32949  0.0417   0.7046  0.2954
+   19   20615  0.0394   32949  0.0416   0.7046  0.2954
+   20   20615  0.0394   32949  0.0416   0.7046  0.2954
+
+ N(1) and Rint(1) refer to singles and composites that include domain 1.
+
+ Rint = 0.0416  for all   32949  observations and
+ Rint = 0.0335  for all   15043  observations with I > 3sigma(I)
+
+ Rint is based on agreement between observed single and composite intensities
+ and those calculated from refined unique intensities and twin fractions.
+
+    7680 Corrected reflections written to file DK_ML766_0m_4.hkl
+ Reflections merged according to point-group 1     
+ Minimum and maximum apparent transmission:  0.675165  0.745541
+ Additional spherical absorption correction applied with mu*r =  0.2000
+
+
+ HKLF 5 dataset constructed from all observations involving domain 1
+    6502 Corrected reflections written to file DK_ML766_0m_5.hkl
+ Reflections merged according to point-group -1    
+ Single reflections that also occur in composites not omitted
+ Minimum and maximum apparent transmission:  0.675438  0.745541
+ Additional spherical absorption correction applied with mu*r =  0.2000
+

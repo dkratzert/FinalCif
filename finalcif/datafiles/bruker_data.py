@@ -54,12 +54,13 @@ class BrukerData(WorkDataMixin):
         abstype = '?'
         t_min = '?'
         t_max = '?'
+        sadabs = self.sadabs
         # Going back from last dataset:
-        for n in range(1, len(self.sadabs.datasets) + 1):
+        for n in range(1, len(sadabs.datasets) + 1):
             try:
-                abstype = 'numerical' if self.sadabs.dataset(-n).numerical else 'multi-scan'
-                t_min = self.sadabs.dataset(-n).transmission.tmin
-                t_max = self.sadabs.dataset(-n).transmission.tmax
+                abstype = 'numerical' if sadabs.dataset(-n).numerical else 'multi-scan'
+                t_min = sadabs.dataset(-n).transmission.tmin
+                t_max = sadabs.dataset(-n).transmission.tmax
                 if all([abstype, t_min, t_max]):
                     break
             except (KeyError, AttributeError, TypeError):
@@ -92,23 +93,21 @@ class BrukerData(WorkDataMixin):
         if self.cif.absorpt_process_details:
             absdetails = (self.cif.absorpt_process_details, self.cif.fileobj.name)
         else:
-            absdetails = (self.sadabs.version, self.sadabs.filename.name)
+            absdetails = (sadabs.version, sadabs.filename.name)
         if self.cif.absorpt_correction_type:
             abscorrtype = (self.cif.absorpt_correction_type, self.cif.fileobj.name)
         else:
-            abscorrtype = (abstype, self.sadabs.filename.name)
+            abscorrtype = (abstype, sadabs.filename.name)
         if self.cif.absorpt_correction_t_max:
             abs_tmax = (self.cif.absorpt_correction_t_max, self.cif.fileobj.name)
         else:
-            abs_tmax = (str(t_max), self.sadabs.filename.name)
+            abs_tmax = (str(t_max), sadabs.filename.name)
         if self.cif.absorpt_correction_t_min:
             abs_tmin = (self.cif.absorpt_correction_t_min, self.cif.fileobj.name)
         else:
-            abs_tmin = (str(t_min), self.sadabs.filename.name)
+            abs_tmin = (str(t_min), sadabs.filename.name)
 
-        if self.sadabs.Rint:
-            rint = (self.sadabs.Rint, self.sadabs.filename.name)
-            self.sources['_diffrn_reflns_av_R_equivalents'] = rint
+        self._add_reflection_data(sadabs)
         temp2 = self.p4p.temperature
         if temp1 is not None and temp2 is not None:
             temperature = round(min([temp1, temp2]), 1)
@@ -209,6 +208,39 @@ class BrukerData(WorkDataMixin):
                     str(self.saint_data.components_firstsample), self.saint_data.filename.name)
                 self.sources['_twin_special_details'] = (
                     'The data was integrated as a 2-component twin.', self.saint_data.filename.name)
+
+    def _add_reflection_data(self, sadabs: Sadabs) -> None:
+        """
+        Adds the number of measured reflections and R(int) of the data set that belongs to the
+        hkl file of this refinement. SHELXL can not determine these values from an HKLF 5 file,
+        thus the values of a TWINABS file take precedence over the values in the CIF.
+        """
+        dataset = sadabs.select_dataset(hkl_basename=self._hkl_basename,
+                                        reflections=self._reflections_in_hkl_file(),
+                                        hklf=self.cif.hklf_number)
+        if not dataset:
+            return
+        if dataset.rint:
+            self.sources['_diffrn_reflns_av_R_equivalents'] = (dataset.rint, sadabs.filename.name)
+        if dataset.reflections_number:
+            self.sources['_diffrn_reflns_number'] = (dataset.reflections_number, sadabs.filename.name)
+        if sadabs.is_twinabs and dataset.filetype == 5:
+            self.overrides.update({'_diffrn_reflns_av_R_equivalents', '_diffrn_reflns_number'})
+
+    @property
+    def _hkl_basename(self) -> str:
+        return self.cif.fileobj.stem.replace('-finalcif', '')
+
+    def _reflections_in_hkl_file(self) -> int | None:
+        """
+        The number of reflections in the hkl file of this refinement, without the terminating
+        0 0 0 reflection and the SADABS/TWINABS footer.
+        """
+        hkl = self.cif.hkl_file_without_foot
+        if not hkl:
+            return None
+        lines = [x for x in hkl.splitlines(keepends=False) if x.strip()]
+        return len(lines) - 1 if lines else None
 
     @property
     def sadabs(self):

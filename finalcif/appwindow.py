@@ -2499,7 +2499,8 @@ class AppWindow(QMainWindow):
         Tries to determine the sources of missing data in the cif file, e.g. Tmin/Tmax from SADABS.
         """
         self.check_Z()
-        self.sources = BrukerData(self, self.cif).sources
+        bruker_data = BrukerData(self, self.cif)
+        self.sources = bruker_data.sources
         squeeze_dialog_shown = False
         if self.sources:
             # Add the CCDC number in case we have a deposition mail lying around:
@@ -2540,6 +2541,20 @@ class AppWindow(QMainWindow):
                 # TypeError my originate from incomplete self.missing_data list!
                 # print(e, '##', miss_key)
                 pass
+        self._apply_source_overrides(bruker_data.overrides)
+
+    def _apply_source_overrides(self, overrides: set[str]) -> None:
+        """
+        Replaces values that are known to be wrong in the CIF (SHELXL writes for example
+        wrong reflection numbers for twins) by the value of the corresponding data source.
+        """
+        for key in overrides:
+            source = self.sources.get(key)
+            if not source or not source[0] or key in self.missing_data:
+                continue
+            if not self.ui.cif_main_table.has_key(key):
+                continue
+            self.ui.cif_main_table.setText(key=key, column=Column.DATA, txt=str(source[0]), color=light_green)
 
     def add_ccdc_number(self):
         ccdc = CCDCMail(self.cif)

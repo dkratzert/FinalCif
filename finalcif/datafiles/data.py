@@ -13,6 +13,8 @@ class WorkDataMixin:
     """
 
     def __init__(self):
+        # Keys whose source value replaces an already existing (wrong) value in the CIF:
+        self.overrides: set[str] = set()
         self.sources = {'_atom_sites_solution_primary'           : None,
                         '_cell_measurement_reflns_used'          : None,
                         '_cell_measurement_temperature'          : None,
@@ -27,6 +29,7 @@ class WorkDataMixin:
                         '_database_code_depnum_ccdc_archive'     : None,
                         '_diffrn_ambient_temperature'            : None,
                         '_diffrn_reflns_av_R_equivalents'        : None,
+                        '_diffrn_reflns_number'                  : None,
                         '_diffrn_source_voltage'                 : None,
                         '_diffrn_source_current'                 : None,
                         '_exptl_absorpt_correction_type'         : None,

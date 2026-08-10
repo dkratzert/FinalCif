@@ -6,7 +6,7 @@
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
 #
-import sys
+import re
 from contextlib import suppress
 from pathlib import Path
 
@@ -14,6 +14,9 @@ from finalcif.datafiles.utils import get_file_to_parse
 
 
 class SaintListFile:
+    _component_regex = re.compile(r'^\s*(\d+\.\d+\(\d+\))\s+\d+\s+\d+\s+\d+\s+[\d.]+\s+[\d.]+\s+[\d.]+\s+[\d.]+\s*$')
+    _all_components_regex = re.compile(r'^\s*All\s+\d+\s+\d+\s+\d+\s+[\d.]+\s+[\d.]+\s+[\d.]+\s+[\d.]+\s*$')
+
     def __init__(self, name_patt: str, directory: Path | None = None, file_to_parse: Path | None = None):
         self.cell_reflections = ''
         self.cell_res_min_2t = 0.0
@@ -25,6 +28,8 @@ class SaintListFile:
         self.nsamples = 1
         self.components_firstsample = 1
         self.filename = Path('')
+        self._components: dict[str, tuple[int, float, float]] = {}
+        self._all_components: tuple[int, float, float] | None = None
         if file_to_parse:
             self._fileobj = file_to_parse
         elif directory:
@@ -40,10 +45,8 @@ class SaintListFile:
 
     def parse_file(self):
         text = self._fileobj.read_text(encoding='ascii', errors='ignore').splitlines(keepends=False)
-        summary = None
-        orientation = 0
+        in_summary = False
         for num, line in enumerate(text):
-            # spline = line.strip().split()
             if num == 0:
                 self.version = line
             if line.startswith('Refinement includes'):
@@ -57,32 +60,18 @@ class SaintListFile:
                 'RLV.Excl' are reflections excluded after cycle 1 because RLV error exceeded 0.0250:
                  Component     Input  RLV.Excl      Used  WorstRes   BestRes   Min.2Th   Max.2Th
                     1.1(1)      9478         0      9478    8.7419    0.7731     4.660    54.727
-                    
-                Or in *_01._ls:
-                
-                Reflection Summary:
-                 Component     Input  RLV.Excl      Used  WorstRes   BestRes   Min.2Th   Max.2Th
-                    1.1(1)       202         0       202    6.9242    1.2823     5.884    32.178
+
+                A twinned crystal has one row per component, either in one summary or in a
+                separate summary for every component (then also with a leading sample number):
+
+                    1.1(1)      3665         0      3665    9.1422    0.7352     4.455    57.808
+                    1.2(2)      2337         0      2337    9.1422    0.8216     4.455    51.257
+                       All      6002         0      6002    9.1422    0.7352     4.455    57.808
                 """
-                summary = True
-            if summary and line.lstrip().startswith('1.1(1)'):
-                summary = line.split()
-                if len(summary) == 8:
-                    self.cell_reflections = summary[3] or 0
-                    self.cell_res_min_2t = summary[6] or 0.0
-                    self.cell_res_max_2t = summary[7] or 0.0
-                # summary = False
-            # This is the twin case:
-            if summary and line.lstrip().startswith('All'):
-                summary = line.split()
-                if len(summary) == 8:
-                    self.cell_reflections = summary[3] or 0
-                    self.cell_res_min_2t = summary[6] or 0.0
-                    self.cell_res_max_2t = summary[7] or 0.0
-                # essential to prevent wrong parsing:
-                summary = False
-            if line.startswith("Orientation ('UB') matrix"):
-                orientation += 1
+                in_summary = True
+                continue
+            if in_summary:
+                in_summary = self._parse_summary_line(line)
             if line.startswith('Twin Law'):
                 self.is_twin = True
                 # S.C(F) -> S Sample number, C Combonent number, F number in the file
@@ -96,14 +85,43 @@ class SaintListFile:
                 except (KeyError, ValueError):
                     print('Could not determine twin law fro m._ls file.')
                     pass
-            if summary and orientation == 2:
-                summary = False
             if line.startswith('Frames were acquired'):
                 """
                 Frames were acquired with BIS 2018.9.0.3/05-Dec-2018 && APEX3_2018.7-2
                     Rescan threshold is 95% of A/D conversion range
                 """
                 self.aquire_software = 'Bruker ' + ' '.join(line.split()[4:]).replace('&&', 'and')
+        self._set_cell_measurement_values()
+
+    def _parse_summary_line(self, line: str) -> bool:
+        """
+        Collects the component rows of a reflection summary. Returns False if the summary ended.
+        """
+        component = self._component_regex.match(line)
+        if component:
+            self._components[component.group(1)] = self._summary_values(line)
+            return True
+        if self._all_components_regex.match(line):
+            self._all_components = self._summary_values(line)
+            return True
+        return not line.strip() or line.lstrip().startswith(("Component", "'RLV.Excl'"))
+
+    @staticmethod
+    def _summary_values(line: str) -> tuple[int, float, float]:
+        spline = line.split()
+        return int(spline[3]), float(spline[6]), float(spline[7])
+
+    def _set_cell_measurement_values(self) -> None:
+        """
+        The 'All' row holds the values of all twin domains. Without it, all components have to
+        be summed up, because otherwise only the first domain would be counted.
+        """
+        components = [self._all_components] if self._all_components else list(self._components.values())
+        if not components:
+            return
+        self.cell_reflections = str(sum(x[0] for x in components))
+        self.cell_res_min_2t = f'{min(x[1] for x in components):.3f}'
+        self.cell_res_max_2t = f'{max(x[2] for x in components):.3f}'
 
     @property
     def cell_res_min_theta(self):
@@ -134,25 +152,6 @@ class SaintListFile:
 
 
 if __name__ == "__main__":
-    saint = SaintListFile(name_patt='*._ls', directory=Path(r"D:\frames\finalcif_twin_bug"))
-    print(saint)
-
-    print('#####')
-    s = SaintListFile('*._ls', file_to_parse=Path('test-data/Esser_JW316_01._ls'))
-    print(s)
-
-    print('#####')
-    s = SaintListFile('*._ls', file_to_parse=Path('test-data/test766_0m._ls'))
-    print(s)
-
-    print('#####')
-    s = SaintListFile('*_0[?]m._ls', file_to_parse=Path(r'test-data/DK_Zucker2_0m._ls'))
-    print(s)
-
-    paths = Path(r'D:\frames').rglob('*_0*m._ls')
-    l = Path(r'D:\refltest.txt')
-    content = []
-    for p in paths:
-        s = SaintListFile(name_patt='*_0*m._ls', directory=p.resolve())
-        content.append(s.cell_reflections)
-    l.write_text('\n'.join(content))
+    for name in ('TB_fs20_v1_0m._ls', 'test766_0m._ls', 'DK_Zucker2_0m._ls', 'DK_ML766_twin._ls'):
+        print('#####')
+        print(SaintListFile('*._ls', file_to_parse=Path('test-data') / name))
