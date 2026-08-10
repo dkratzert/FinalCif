@@ -416,6 +416,21 @@ def cif_file_save_dialog(filename: str, parent: QWidget | None = None) -> str:
     return filename
 
 
+def fcf_file_open_dialog(parent: QWidget | None = None, last_dir: str = '', options=None) -> str:
+    """
+    Returns the name of a structure factor file from a file dialog.
+    """
+    file_filter = "Structure factor file (*.fcf)"
+    filename, _ = compat.getopenfilename(parent=parent,
+                                         caption='Select the structure factor (.fcf) file for this CIF',
+                                         basedir=last_dir,
+                                         filters=file_filter,
+                                         selectedfilter=file_filter,
+                                         options=options
+                                         )
+    return filename
+
+
 def video_file_open_dialog(parent: QWidget | None = None, filter: str = "Video file (*.vzs; *.jpg)", last_dir='',
                            options=None) -> str:
     filename, _ = compat.getopenfilename(parent=parent,

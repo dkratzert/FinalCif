@@ -23,7 +23,7 @@ from typing import cast, TYPE_CHECKING
 
 
 if TYPE_CHECKING:
-    from finalcif.cif.checkcif.checkcif import MyHTMLParser, handle_fcf_upload_form
+    from finalcif.cif.checkcif.checkcif import MyHTMLParser
 
 from fastmolwidget import Atomtuple
 from fastmolwidget.part_combo import PartFilterWidget
@@ -61,7 +61,7 @@ from finalcif.gui.custom_classes import Column, light_green, yellow, light_blue,
     white, light_red, MyTableWidgetItem, blue
 from finalcif.gui.cif_table_model import CifRowData
 from finalcif.gui.dialogs import show_update_warning, unable_to_open_message, show_general_warning, \
-    cif_file_open_dialog, \
+    cif_file_open_dialog, fcf_file_open_dialog, \
     bad_z_message, show_res_checksum_warning, show_hkl_checksum_warning, cif_file_save_dialog, show_yes_now_question, \
     video_file_open_dialog
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
@@ -165,6 +165,8 @@ class AppWindow(QMainWindow):
         super().__init__()
         self.thread_download = None
         self.ckf = None
+        self.htmlfile: Path | None = None
+        self.pdf_htmlfile: Path | None = None
         self.thread_version = None
         self._downloaders: set[MyDownloader] = set()
         self._z_thread: _ZEstimatorThread | None = None
@@ -1174,6 +1176,53 @@ class AppWindow(QMainWindow):
     def _checkcif_failed(self, txt: str) -> None:
         self.ui.CheckCifLogPlainTextEdit.appendHtml(f'<b>{txt}</b>')
 
+    def _log_checkcif(self, txt: str) -> None:
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
+        app.processEvents()
+
+    def _resolve_structure_factor_upload(self, html_file: Path) -> None:
+        """
+        Answers the CheckCIF page that asks for an explicit upload of the structure factor file.
+
+        The structure factor file belonging to the current CIF is searched next to it. If no
+        matching file is found, the user is asked for one. When the user cancels the dialog, the
+        check is continued without the remaining structure factors.
+        """
+        from finalcif.cif.checkcif.checkcif import (fix_iucr_urls, needs_structure_factor_upload,
+                                                    submit_without_structure_factors, upload_structure_factors)
+        try:
+            html = html_file.read_text('utf-8', 'ignore')
+        except OSError:
+            return
+        if not needs_structure_factor_upload(html):
+            return
+        self.ui.CheckCifLogPlainTextEdit.appendHtml(
+            '<b>CheckCIF requests the structure factor file for this CIF.</b>')
+        app.processEvents()
+        fcf_file = self._get_structure_factor_file()
+        if fcf_file:
+            new_html = upload_structure_factors(response_html=html, fcf_file=fcf_file,
+                                                url=self.options.checkcif_url, progress=self._log_checkcif)
+        else:
+            self._log_checkcif('No structure factor file selected. '
+                               'Continuing without the remaining structure factors.')
+            new_html = submit_without_structure_factors(response_html=html, url=self.options.checkcif_url,
+                                                        progress=self._log_checkcif)
+        if new_html == html:
+            return
+        with suppress(OSError):
+            html_file.write_text(fix_iucr_urls(new_html), encoding='utf-8')
+
+    def _get_structure_factor_file(self) -> Path | None:
+        from finalcif.cif.checkcif.checkcif import find_matching_fcf_file
+        fcf_file = find_matching_fcf_file(self.cif.finalcif_file)
+        if fcf_file:
+            self._log_checkcif(f'Found structure factor file {fcf_file.name}.')
+            return fcf_file
+        self._log_checkcif('No structure factor file found for the current CIF. Please select one.')
+        filename = fcf_file_open_dialog(parent=self, last_dir=str(self.cif.finalcif_file.parent))
+        return Path(filename) if filename else None
+
     def _ckf_progress(self, txt: str) -> None:
         self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
 
@@ -1185,45 +1234,9 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
 
-        # =====================================================================
-        # NEU: FCF-FORMULAR ABFANGEN UND DATEI HOCHLADEN
-        # =====================================================================
-        try:
-            # 1. Aktuelles HTML aus der Datei lesen
-            current_html = self.htmlfile.read_text('utf-8', 'ignore')
-
-            # 2. Prüfen, ob der Server nach der FCF fragt
-            if "File name of structure factor file" in current_html:
-                self.ui.CheckCifLogPlainTextEdit.appendHtml(
-                    '<br><b>IUCr server requires explicit FCF upload. Sending .fcf file...</b>'
-                )
-
-                # 3. FCF-Pfad ableiten (analog zum GIF im Originalcode)
-                fcf_file_path = Path(strip_finalcif_of_name(self.cif.finalcif_file,
-                                                        till_name_ends=True)).with_suffix('.fcf')
-
-                # 4. Unsere Hilfsfunktion aufrufen (diese muss in der Datei definiert sein!)
-                # Sie parst das HTML, schickt die FCF ab und liefert den fertigen Report zurück
-                from finalcif.cif.checkcif.checkcif import handle_fcf_upload_form
-                new_html = handle_fcf_upload_form(
-                    response_html=current_html,
-                    fcf_file_path=str(fcf_file_path),
-                    original_url=self.options.checkcif_url
-                )
-
-                # 5. Die temporäre htmlfile mit dem neuen, korrekten Report überschreiben
-                self.htmlfile.write_text(new_html, encoding='utf-8')
-                self.ui.CheckCifLogPlainTextEdit.appendPlainText('FCF upload successful. Parsing report...')
-
-        except Exception as e:
-            # Fehler abfangen, damit FinalCif nicht abstürzt, falls das Netzwerk streikt
-            print(f"Fehler beim automatischen FCF-Upload: {e}")
-        # =====================================================================
-        # ENDE DES NEUEN BLOCKS
-        # =====================================================================
+        self._resolve_structure_factor_upload(self.htmlfile)
 
         try:
-            # Ab hier läuft dein originaler Code weiter und parst nun den ECHTEN Report
             parser = MyHTMLParser(self.htmlfile.read_text())
         except FileNotFoundError:
             # happens if checkcif fails, e.g. takes too much time.
@@ -1379,6 +1392,14 @@ class AppWindow(QMainWindow):
     def _pdf_checkcif_finished(self) -> None:
         self.ui.CheckcifPDFOnlineButton.setEnabled(True)
         self.ui.CheckcifHTMLOnlineButton.setEnabled(True)
+        if self.pdf_htmlfile is None:
+            return
+        self._resolve_structure_factor_upload(self.pdf_htmlfile)
+        self.ckf.show_pdf_report()
+        self.ui.CheckCifLogPlainTextEdit.appendPlainText('PDF Checkcif report finished.')
+        with suppress(OSError):
+            self.pdf_htmlfile.unlink(missing_ok=True)
+        self.pdf_htmlfile = None
 
     def _on_vrf_deleted(self, vrf_widget) -> None:
         """
@@ -1430,14 +1451,14 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>Unable to save CIF file. Aborting action...</b>')
             return None
         self.load_cif_file(self.cif.finalcif_file, current_block, load_changes=False)
-        htmlfile = self.cif.finalcif_file_prefixed(prefix='checkpdf-', suffix='.html')
+        self.pdf_htmlfile = self.cif.finalcif_file_prefixed(prefix='checkpdf-', suffix='.html')
         try:
-            htmlfile.unlink()
+            self.pdf_htmlfile.unlink()
         except (FileNotFoundError, PermissionError):
             pass
         self.ui.CheckCifLogPlainTextEdit.appendPlainText(
             f'Sending pdf report request to {self.options.checkcif_url} ...')
-        self.ckf = CheckCif(parent=self, cif=self.cif, outfile=htmlfile,
+        self.ckf = CheckCif(parent=self, cif=self.cif, outfile=self.pdf_htmlfile,
                             hkl_upload=(not self.ui.structfactCheckBox.isChecked()),
                             pdf=True, url=self.options.checkcif_url,
                             full_iucr=self.ui.fullIucrCheckBox.isChecked(),
@@ -1449,11 +1470,6 @@ class AppWindow(QMainWindow):
         self.ui.CheckcifPDFOnlineButton.setDisabled(True)
         self.ui.CheckcifHTMLOnlineButton.setDisabled(True)
         self.ckf.start()
-        self.ui.CheckCifLogPlainTextEdit.appendPlainText('PDF Checkcif report finished.')
-        try:
-            htmlfile.unlink()
-        except (FileNotFoundError, PermissionError):
-            pass
 
     def do_offline_checkcif(self) -> None:
         self.ui.CheckcifButton.setDisabled(True)

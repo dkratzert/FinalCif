@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head><title>checkCIF</title></head>
+<body>
+<h1>checkCIF (basic structural check) running</h1>
+<hr/>
+<br/>
+<i>Checking for embedded fcf data in CIF ... </i>
+<br/>
+<i>Found embedded fcf data in CIF. Extracting fcf data from uploaded CIF, please wait</i>
+<h1>checkCIF/PLATON (basic structural check)</h1>
+<hr/>
+<form method="post" action="//checkcif.iucr.org/cgi-bin/checkcif_hkl.pl" enctype="multipart/form-data">
+    <input type="hidden" name="Qcifid" value="sNB9cLi6MS"/>
+    <input type="hidden" name="referer" value="checkcif_server"/>
+    <input type="hidden" name="runtype" value="symmonly"/>
+    <input type="hidden" name="validtype" value="checkcif_with_hkl"/>
+    <input type="hidden" name="outputtype" value="HTML"/>
+    <input type="hidden" name="valout" value="vrfab"/>
+    <input type="hidden" name="duplic" value="duplicno"/>
+    <input type="hidden" name="Qdatablock" value="zubju66_a_sq"/>
+    <p>File name of structure factor file (in CIF format) on your local filesystem: </p>
+    <input type="file" name="filehkl"/>
+    &nbsp;&nbsp;
+    <input type="submit" name="Upload structure factor file" value="Upload structure factor file"/>
+</form>
+<br/>
+<form method="post" action="//checkcif.iucr.org/cgi-bin/checkcif_hkl.pl" enctype="multipart/form-data">
+    <input type="hidden" name="Qcifid" value="sNB9cLi6MS"/>
+    <input type="hidden" name="referer" value="checkcif_server"/>
+    <input type="hidden" name="runtype" value="symmonly"/>
+    <input type="hidden" name="validtype" value="checkcif_with_hkl"/>
+    <input type="hidden" name="outputtype" value="HTML"/>
+    <input type="hidden" name="valout" value="vrfab"/>
+    <input type="hidden" name="duplic" value="duplicno"/>
+    <input type="submit" name="Qsubmitnow" value="Submit for checking (without remaining structure factors)"/>
+</form>
+<p>STRUCTURAL DATABLOCKS number zubju66_a_sq</p>
+</body>
+</html>
