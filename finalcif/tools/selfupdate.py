@@ -13,6 +13,11 @@ installation made with ``FinalCif-setup-x64-vNNN.exe /CURRENTUSER`` lives in
 installation in ``C:\\Program Files`` needs an elevated installer, which is requested with
 ``ShellExecuteW('runas', ...)``.
 
+FinalCif cannot end itself before the installer starts, but every loaded ``.exe``/``.pyd``/
+``.dll`` keeps a lock in the installation directory.  Therefore the installer is not started
+directly but by a small ``.cmd`` launcher that ends all FinalCif processes with ``taskkill``
+first and starts the installer afterwards, exactly like the standalone updater did before.
+
 Everything in here is deliberately free of Qt imports so that it can be tested without a
 running QApplication.  The GUI part lives in :mod:`finalcif.gui.dialogs`.
 """
@@ -49,6 +54,14 @@ LOCKED_FILE_DELAY = 1.0
 LEFTOVER_DOWNLOAD_AGE = 3600.0
 # Seconds granted for a regular Qt shutdown before the process is ended the hard way:
 EXIT_TIMEOUT = 10.0
+# The launcher ends every process with this name before it starts the installer:
+PROCESS_NAME = 'finalcif.exe'
+LAUNCHER_SCRIPT_NAME = 'update-finalcif.cmd'
+# Rounds of taskkill the launcher performs before it starts the installer anyway:
+KILL_ATTEMPTS = 5
+# nShowCmd values of ShellExecuteW:
+SW_HIDE = 0
+SW_SHOWNORMAL = 1
 
 _running_mutex: int | None = None
 
@@ -219,23 +232,23 @@ def _checksum_of_downloaded_file(setup_file: Path, attempts: int = LOCKED_FILE_A
 
 
 def start_installer(setup_file: Path) -> None:
-    """Start the downloaded installer as a detached process.
+    """Hand the downloaded installer over to the launcher script.
 
-    Every handle FinalCif might hold in the installation directory is released before, the
-    process itself has to end immediately afterwards (see `finalcif.gui.dialogs`).  A machine
-    wide installation is only replaceable by an elevated installer, so the user is asked for
-    administrator rights.  Without them, :class:`ElevationRefused` offers the caller the
-    per-user installation as a way out.
+    The launcher ends every running FinalCif before the installer replaces the files, so this
+    process may (and should) quit immediately afterwards (see `finalcif.gui.dialogs`).  A
+    machine wide installation is only replaceable by an elevated installer, so the user is
+    asked for administrator rights.  Without them, :class:`ElevationRefused` offers the caller
+    the per-user installation as a way out.
     """
     release_running_mutex()
     _leave_installation_directory()
     if not is_installed():
         # A source checkout must not be overwritten by the installer:
-        _start_detached(setup_file, user_installer_parameters())
+        _start_update(setup_file, user_installer_parameters(), elevated=False)
     elif is_user_installation():
-        _start_detached(setup_file, installer_parameters())
+        _start_update(setup_file, installer_parameters(), elevated=False)
     else:
-        _start_elevated(setup_file)
+        _start_update(setup_file, installer_parameters(), elevated=True)
 
 
 def start_user_installer(setup_file: Path) -> None:
@@ -246,7 +259,108 @@ def start_user_installer(setup_file: Path) -> None:
     """
     release_running_mutex()
     _leave_installation_directory()
-    _start_detached(setup_file, user_installer_parameters())
+    _start_update(setup_file, user_installer_parameters(), elevated=False)
+
+
+def _start_update(setup_file: Path, parameters: list[str], elevated: bool) -> None:
+    """Start the launcher script that kills FinalCif and installs the new version.
+
+    A launcher that cannot be written or started is no reason to give up the update; the
+    installer is started directly then and complains itself about files in use.
+    """
+    script = _write_launcher_script(setup_file, parameters)
+    if script is None:
+        _start_installer_directly(setup_file, parameters, elevated)
+        return
+    try:
+        if elevated:
+            _start_launcher_elevated(script)
+        else:
+            _start_launcher(script)
+    except ElevationRefused:
+        raise
+    except UpdateError:
+        _start_installer_directly(setup_file, parameters, elevated)
+
+
+def _start_installer_directly(setup_file: Path, parameters: list[str], elevated: bool) -> None:
+    if elevated:
+        _start_elevated(setup_file, parameters)
+    else:
+        _start_detached(setup_file, parameters)
+
+
+def _write_launcher_script(setup_file: Path, parameters: list[str]) -> Path | None:
+    """Write the script that ends FinalCif and starts the installer next to the installer."""
+    script = setup_file.parent / LAUNCHER_SCRIPT_NAME
+    try:
+        script.write_text(_launcher_script_text(setup_file, parameters), encoding='ascii')
+    except (OSError, UnicodeEncodeError):
+        return None
+    return script
+
+
+def _launcher_script_text(setup_file: Path, parameters: list[str]) -> str:
+    """The batch equivalent of the former standalone updater.
+
+    ``taskkill`` reports a non-zero exit code once no FinalCif is left, which ends the wait
+    loop.  Neither pipes nor ``start`` nor ``timeout`` are used, because the launcher runs
+    without a console; ``ping`` is the sleep of a console-less script.
+    """
+    installer = subprocess.list2cmdline([str(setup_file), *parameters])
+    return ('@echo off\r\n'
+            f'for /l %%A in (1,1,{KILL_ATTEMPTS}) do (\r\n'
+            f'    taskkill /f /im "{PROCESS_NAME}" >nul 2>&1 || goto install\r\n'
+            '    ping -n 3 127.0.0.1 >nul\r\n'
+            ')\r\n'
+            ':install\r\n'
+            f'{installer}\r\n')
+
+
+def _start_launcher(script: Path) -> None:
+    """Run the launcher hidden and detached, so it survives the end of FinalCif."""
+    command = [_command_processor(), '/c', str(script)]
+    for attempt in range(LOCKED_FILE_ATTEMPTS):
+        try:
+            subprocess.Popen(command,
+                             cwd=str(script.parent),
+                             close_fds=True,
+                             creationflags=_detached_flags(),
+                             stdin=subprocess.DEVNULL,
+                             stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
+            return
+        except OSError as err:
+            if attempt == LOCKED_FILE_ATTEMPTS - 1:
+                raise UpdateError(f'The installer could not be started:\n{err}') from err
+            time.sleep(LOCKED_FILE_DELAY)
+
+
+def _start_launcher_elevated(script: Path) -> None:
+    """Ask for administrator rights and run the launcher with them.
+
+    The UAC prompt is answered before FinalCif quits, so a refusal can still be reported.
+    """
+    if is_elevated():
+        # A child of an elevated FinalCif is elevated as well, no UAC prompt needed:
+        _start_launcher(script)
+        return
+    parameters = subprocess.list2cmdline(['/c', str(script)])
+    result = _shell_execute(_command_processor(), parameters, str(script.parent), show=SW_HIDE)
+    # ShellExecuteW returns a value greater than 32 on success:
+    if result <= 32:
+        raise ElevationRefused(f'{installation_directory()}\n'
+                               'can only be updated with administrator rights, which were not granted.')
+
+
+def _command_processor() -> str:
+    """cmd.exe of the system directory, which no FinalCif installation can ever lock."""
+    system_root = os.environ.get('SystemRoot')
+    if system_root:
+        cmd = Path(system_root) / 'System32' / 'cmd.exe'
+        if cmd.is_file():
+            return str(cmd)
+    return os.environ.get('COMSPEC') or 'cmd.exe'
 
 
 def _start_detached(setup_file: Path, parameters: list[str]) -> None:
@@ -267,23 +381,22 @@ def _start_detached(setup_file: Path, parameters: list[str]) -> None:
             time.sleep(LOCKED_FILE_DELAY)
 
 
-def _start_elevated(setup_file: Path) -> None:
+def _start_elevated(setup_file: Path, parameters: list[str]) -> None:
     """Ask for administrator rights and start the installer with them."""
     if is_elevated():
         # A child of an elevated FinalCif is elevated as well, no UAC prompt needed:
-        _start_detached(setup_file, installer_parameters())
+        _start_detached(setup_file, parameters)
         return
-    parameters = subprocess.list2cmdline(installer_parameters())
-    result = _shell_execute(str(setup_file), parameters, str(setup_file.parent))
+    result = _shell_execute(str(setup_file), subprocess.list2cmdline(parameters), str(setup_file.parent))
     # ShellExecuteW returns a value greater than 32 on success:
     if result <= 32:
         raise ElevationRefused(f'{installation_directory()}\n'
                                'can only be updated with administrator rights, which were not granted.')
 
 
-def _shell_execute(file: str, parameters: str, directory: str) -> int:
+def _shell_execute(file: str, parameters: str, directory: str, show: int = SW_SHOWNORMAL) -> int:
     """Run `file` with the 'runas' verb, which triggers the UAC prompt."""
-    return ctypes.windll.shell32.ShellExecuteW(None, 'runas', file, parameters, directory, 1)
+    return ctypes.windll.shell32.ShellExecuteW(None, 'runas', file, parameters, directory, show)
 
 
 def installer_parameters() -> list[str]:

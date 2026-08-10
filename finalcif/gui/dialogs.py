@@ -115,7 +115,7 @@ def update_installation(version: str, parent: QWidget | None = None) -> None:
                              window_title='FinalCif update')
 
     def on_downloaded(setup_file: Path) -> None:
-        progress_dialog.setLabelText('Starting the installer...')
+        progress_dialog.setLabelText('Closing FinalCif for the installation...')
         progress_dialog.setRange(0, 100)
         progress_dialog.setValue(100)
         QApplication.processEvents()
