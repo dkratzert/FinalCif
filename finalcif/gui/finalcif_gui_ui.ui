@@ -1066,7 +1066,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>5</number>
+           <number>6</number>
           </property>
           <widget class="QWidget" name="page_MainTable">
            <layout class="QVBoxLayout" name="verticalLayout">
@@ -2950,6 +2950,55 @@ The data source will be ignored until next program restart.</string>
           </widget>
           <widget class="QWidget" name="page_checkcif">
            <layout class="QGridLayout" name="gridLayout_8">
+            <item row="4" column="4" rowspan="3">
+             <spacer name="horizontalSpacer_17">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>13</width>
+                <height>47</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="5" column="1" colspan="2">
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Policy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>13</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="5" column="3">
+             <widget class="QPushButton" name="BackFromPlatonPushButton">
+              <property name="text">
+               <string>Back to CIF Table</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="6" rowspan="3">
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>225</width>
+                <height>47</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
             <item row="1" column="0" colspan="8">
              <widget class="QTabWidget" name="CheckCIFResultsTabWidget">
               <property name="sizePolicy">
@@ -3137,70 +3186,6 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
-            <item row="4" column="5" rowspan="4">
-             <widget class="QGroupBox" name="groupBox_checkcif_2">
-              <property name="title">
-               <string/>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_14">
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="1" column="2">
-                <widget class="QPushButton" name="CheckcifPDFOnlineButton">
-                 <property name="text">
-                  <string>Checkcif Online PDF</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0" colspan="3">
-                <layout class="QHBoxLayout" name="horizontalLayout_9">
-                 <item>
-                  <widget class="QCheckBox" name="structfactCheckBox">
-                   <property name="text">
-                    <string>without structure factors (fast but not complete)</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="fullIucrCheckBox">
-                   <property name="text">
-                    <string>Full IUCr publication validation</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QCheckBox" name="checkDuplicatesCheckBox">
-                   <property name="text">
-                    <string>Check for duplicates in CSD</string>
-                   </property>
-                   <property name="checked">
-                    <bool>true</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item row="1" column="0">
-                <widget class="QPushButton" name="CheckcifButton">
-                 <property name="text">
-                  <string>CheckCif Offline</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="1">
-                <widget class="QPushButton" name="CheckcifHTMLOnlineButton">
-                 <property name="text">
-                  <string>Checkcif Online HTML</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
             <item row="2" column="0" colspan="7">
              <widget class="QFrame" name="ButtonFrame">
               <property name="frameShape">
@@ -3228,54 +3213,82 @@ The data source will be ignored until next program restart.</string>
               </layout>
              </widget>
             </item>
-            <item row="4" column="6" rowspan="3">
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
+            <item row="4" column="5" rowspan="4">
+             <widget class="QGroupBox" name="groupBox_checkcif_2">
+              <property name="title">
+               <string/>
               </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>225</width>
-                <height>47</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="5" column="3">
-             <widget class="QPushButton" name="BackFromPlatonPushButton">
-              <property name="text">
-               <string>Back to CIF Table</string>
-              </property>
+              <layout class="QGridLayout" name="gridLayout_14">
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="1" column="0">
+                <widget class="QPushButton" name="CheckcifButton">
+                 <property name="text">
+                  <string>CheckCif Offline</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QPushButton" name="CheckcifHTMLOnlineButton">
+                 <property name="text">
+                  <string>Checkcif Online HTML</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QPushButton" name="CheckcifPDFOnlineButton">
+                 <property name="text">
+                  <string>Checkcif Online PDF</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0" colspan="3">
+                <layout class="QGridLayout" name="gridLayout_13">
+                 <item row="1" column="1">
+                  <widget class="QCheckBox" name="explainCAlertsCheckBox">
+                   <property name="toolTip">
+                    <string>Also request validation response forms for level C alerts.</string>
+                   </property>
+                   <property name="text">
+                    <string>Also explain C alerts</string>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QCheckBox" name="checkDuplicatesCheckBox">
+                   <property name="text">
+                    <string>Check for duplicates in CSD</string>
+                   </property>
+                   <property name="checked">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QCheckBox" name="fullIucrCheckBox">
+                   <property name="text">
+                    <string>Full IUCr publication validation</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QCheckBox" name="structfactCheckBox">
+                   <property name="text">
+                    <string>without structure factors (fast but not complete)</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </widget>
-            </item>
-            <item row="5" column="1" colspan="2">
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Policy::Fixed</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>13</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="4" column="4" rowspan="3">
-             <spacer name="horizontalSpacer_17">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>13</width>
-                <height>47</height>
-               </size>
-              </property>
-             </spacer>
             </item>
            </layout>
           </widget>
@@ -4586,8 +4599,7 @@ Contact authors should always also appear as regular authors.</string>
   <tabstop>SaveAuthorLoopToTemplateButton_cif</tabstop>
   <tabstop>AddThisAuthorToLoopPushButton_cif</tabstop>
   <tabstop>newLoopPushButton</tabstop>
-  <tabstop>structfactCheckBox</tabstop>
-  <tabstop>fullIucrCheckBox</tabstop>
+  <tabstop>checkDuplicatesCheckBox</tabstop>
   <tabstop>BackFromPlatonPushButton</tabstop>
   <tabstop>depositHKLcheckBox</tabstop>
   <tabstop>Upload_hkl_pushButton</tabstop>

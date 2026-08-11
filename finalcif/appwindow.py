@@ -1306,8 +1306,9 @@ class AppWindow(QMainWindow):
             self.ui.CheckCifLogPlainTextEdit.appendHtml(
                 f'<br><b>{n} validation response forms {form_noun} added to the main table.</b>')
         else:
+            levels = 'A, B or C' if self.ui.explainCandGAlertsCheckBox.isChecked() else 'A or B'
             self.ui.CheckCifLogPlainTextEdit.appendHtml(
-                '<br><b>No level A, B or C alerts require a response.</b>')
+                f'<br><b>No level {levels} alerts require a response.</b>')
 
     def _vrf_insert_position(self) -> int:
         """Return the row index just after the last existing ``_vrf_*`` row in the main table.
@@ -1359,7 +1360,8 @@ class AppWindow(QMainWindow):
                             hkl_upload=(not self.ui.structfactCheckBox.isChecked()), pdf=False,
                             url=self.options.checkcif_url,
                             full_iucr=self.ui.fullIucrCheckBox.isChecked(),
-                            check_duplicates=self.ui.checkDuplicatesCheckBox.isChecked())
+                            check_duplicates=self.ui.checkDuplicatesCheckBox.isChecked(),
+                            explain_c=self.ui.explainCAlertsCheckBox.isChecked())
         self.ckf.progress.connect(self._ckf_progress)
         self.ckf.failed.connect(self._checkcif_failed)
         self.ckf.finished.connect(self._checkcif_finished)

@@ -215,7 +215,8 @@ class CheckCif(QThread):
     failed = Signal(str)
 
     def __init__(self, parent, cif: CifContainer, outfile: Path, hkl_upload: bool = True,
-                 pdf: bool = False, url: str = '', full_iucr: bool = False, check_duplicates: bool = True):
+                 pdf: bool = False, url: str = '', full_iucr: bool = False, check_duplicates: bool = True,
+                 explain_c: bool = False):
         # hkl == False means no hkl upload
         super().__init__(parent=parent)
         self.hkl_upload = hkl_upload
@@ -225,6 +226,7 @@ class CheckCif(QThread):
         self.checkcif_url = url
         self.full_iucr = full_iucr
         self.check_duplicates = check_duplicates
+        self.explain_c = explain_c
 
     def _html_check(self) -> None:
         if self.hkl_upload:
@@ -232,12 +234,12 @@ class CheckCif(QThread):
         else:
             self.progress.emit('Running Checkcif with no hkl data')
 
-    def get_vrf(self):
+    def get_vrf(self) -> str:
+        """The 'valout' request value defining which alert levels get a response form."""
         if self.pdf:
             return 'vrfno'
-        else:
-            # Currently, the vrfabc option misses some validation response forms. Only vrfab gives correct results.
-            return 'vrfabc'
+        # The IUCr server offers no response forms for level G alerts.
+        return 'vrfabc' if self.explain_c else 'vrfab'
 
     def run(self) -> None:
         """

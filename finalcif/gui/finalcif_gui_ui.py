@@ -1682,6 +1682,23 @@ class Ui_FinalCifWindow(object):
         self.page_checkcif.setObjectName(u"page_checkcif")
         self.gridLayout_8 = QGridLayout(self.page_checkcif)
         self.gridLayout_8.setObjectName(u"gridLayout_8")
+        self.horizontalSpacer_17 = QSpacerItem(13, 47, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_8.addItem(self.horizontalSpacer_17, 4, 4, 3, 1)
+
+        self.horizontalSpacer_2 = QSpacerItem(13, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_8.addItem(self.horizontalSpacer_2, 5, 1, 1, 2)
+
+        self.BackFromPlatonPushButton = QPushButton(self.page_checkcif)
+        self.BackFromPlatonPushButton.setObjectName(u"BackFromPlatonPushButton")
+
+        self.gridLayout_8.addWidget(self.BackFromPlatonPushButton, 5, 3, 1, 1)
+
+        self.horizontalSpacer = QSpacerItem(225, 47, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_8.addItem(self.horizontalSpacer, 4, 6, 3, 1)
+
         self.CheckCIFResultsTabWidget = QTabWidget(self.page_checkcif)
         self.CheckCIFResultsTabWidget.setObjectName(u"CheckCIFResultsTabWidget")
         sizePolicy27 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
@@ -1775,50 +1792,6 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_8.addWidget(self.groupBox_7, 0, 0, 1, 8)
 
-        self.groupBox_checkcif_2 = QGroupBox(self.page_checkcif)
-        self.groupBox_checkcif_2.setObjectName(u"groupBox_checkcif_2")
-        self.gridLayout_14 = QGridLayout(self.groupBox_checkcif_2)
-        self.gridLayout_14.setObjectName(u"gridLayout_14")
-        self.gridLayout_14.setContentsMargins(-1, 0, -1, 0)
-        self.CheckcifPDFOnlineButton = QPushButton(self.groupBox_checkcif_2)
-        self.CheckcifPDFOnlineButton.setObjectName(u"CheckcifPDFOnlineButton")
-
-        self.gridLayout_14.addWidget(self.CheckcifPDFOnlineButton, 1, 2, 1, 1)
-
-        self.horizontalLayout_9 = QHBoxLayout()
-        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
-        self.structfactCheckBox = QCheckBox(self.groupBox_checkcif_2)
-        self.structfactCheckBox.setObjectName(u"structfactCheckBox")
-
-        self.horizontalLayout_9.addWidget(self.structfactCheckBox)
-
-        self.fullIucrCheckBox = QCheckBox(self.groupBox_checkcif_2)
-        self.fullIucrCheckBox.setObjectName(u"fullIucrCheckBox")
-
-        self.horizontalLayout_9.addWidget(self.fullIucrCheckBox)
-
-        self.checkDuplicatesCheckBox = QCheckBox(self.groupBox_checkcif_2)
-        self.checkDuplicatesCheckBox.setObjectName(u"checkDuplicatesCheckBox")
-        self.checkDuplicatesCheckBox.setChecked(True)
-
-        self.horizontalLayout_9.addWidget(self.checkDuplicatesCheckBox)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_9, 2, 0, 1, 3)
-
-        self.CheckcifButton = QPushButton(self.groupBox_checkcif_2)
-        self.CheckcifButton.setObjectName(u"CheckcifButton")
-
-        self.gridLayout_14.addWidget(self.CheckcifButton, 1, 0, 1, 1)
-
-        self.CheckcifHTMLOnlineButton = QPushButton(self.groupBox_checkcif_2)
-        self.CheckcifHTMLOnlineButton.setObjectName(u"CheckcifHTMLOnlineButton")
-
-        self.gridLayout_14.addWidget(self.CheckcifHTMLOnlineButton, 1, 1, 1, 1)
-
-
-        self.gridLayout_8.addWidget(self.groupBox_checkcif_2, 4, 5, 4, 1)
-
         self.ButtonFrame = QFrame(self.page_checkcif)
         self.ButtonFrame.setObjectName(u"ButtonFrame")
         self.ButtonFrame.setFrameShape(QFrame.Shape.NoFrame)
@@ -1830,22 +1803,55 @@ class Ui_FinalCifWindow(object):
 
         self.gridLayout_8.addWidget(self.ButtonFrame, 2, 0, 1, 7)
 
-        self.horizontalSpacer = QSpacerItem(225, 47, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.groupBox_checkcif_2 = QGroupBox(self.page_checkcif)
+        self.groupBox_checkcif_2.setObjectName(u"groupBox_checkcif_2")
+        self.gridLayout_14 = QGridLayout(self.groupBox_checkcif_2)
+        self.gridLayout_14.setObjectName(u"gridLayout_14")
+        self.gridLayout_14.setContentsMargins(-1, 0, -1, 0)
+        self.CheckcifButton = QPushButton(self.groupBox_checkcif_2)
+        self.CheckcifButton.setObjectName(u"CheckcifButton")
 
-        self.gridLayout_8.addItem(self.horizontalSpacer, 4, 6, 3, 1)
+        self.gridLayout_14.addWidget(self.CheckcifButton, 1, 0, 1, 1)
 
-        self.BackFromPlatonPushButton = QPushButton(self.page_checkcif)
-        self.BackFromPlatonPushButton.setObjectName(u"BackFromPlatonPushButton")
+        self.CheckcifHTMLOnlineButton = QPushButton(self.groupBox_checkcif_2)
+        self.CheckcifHTMLOnlineButton.setObjectName(u"CheckcifHTMLOnlineButton")
 
-        self.gridLayout_8.addWidget(self.BackFromPlatonPushButton, 5, 3, 1, 1)
+        self.gridLayout_14.addWidget(self.CheckcifHTMLOnlineButton, 1, 1, 1, 1)
 
-        self.horizontalSpacer_2 = QSpacerItem(13, 20, QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Minimum)
+        self.CheckcifPDFOnlineButton = QPushButton(self.groupBox_checkcif_2)
+        self.CheckcifPDFOnlineButton.setObjectName(u"CheckcifPDFOnlineButton")
 
-        self.gridLayout_8.addItem(self.horizontalSpacer_2, 5, 1, 1, 2)
+        self.gridLayout_14.addWidget(self.CheckcifPDFOnlineButton, 1, 2, 1, 1)
 
-        self.horizontalSpacer_17 = QSpacerItem(13, 47, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        self.gridLayout_13 = QGridLayout()
+        self.gridLayout_13.setObjectName(u"gridLayout_13")
+        self.explainCAlertsCheckBox = QCheckBox(self.groupBox_checkcif_2)
+        self.explainCAlertsCheckBox.setObjectName(u"explainCAlertsCheckBox")
+        self.explainCAlertsCheckBox.setChecked(False)
 
-        self.gridLayout_8.addItem(self.horizontalSpacer_17, 4, 4, 3, 1)
+        self.gridLayout_13.addWidget(self.explainCAlertsCheckBox, 1, 1, 1, 1)
+
+        self.checkDuplicatesCheckBox = QCheckBox(self.groupBox_checkcif_2)
+        self.checkDuplicatesCheckBox.setObjectName(u"checkDuplicatesCheckBox")
+        self.checkDuplicatesCheckBox.setChecked(True)
+
+        self.gridLayout_13.addWidget(self.checkDuplicatesCheckBox, 2, 1, 1, 1)
+
+        self.fullIucrCheckBox = QCheckBox(self.groupBox_checkcif_2)
+        self.fullIucrCheckBox.setObjectName(u"fullIucrCheckBox")
+
+        self.gridLayout_13.addWidget(self.fullIucrCheckBox, 2, 0, 1, 1)
+
+        self.structfactCheckBox = QCheckBox(self.groupBox_checkcif_2)
+        self.structfactCheckBox.setObjectName(u"structfactCheckBox")
+
+        self.gridLayout_13.addWidget(self.structfactCheckBox, 1, 0, 1, 1)
+
+
+        self.gridLayout_14.addLayout(self.gridLayout_13, 3, 0, 1, 3)
+
+
+        self.gridLayout_8.addWidget(self.groupBox_checkcif_2, 4, 5, 4, 1)
 
         self.MainStackedWidget.addWidget(self.page_checkcif)
         self.page_cod = QWidget()
@@ -2684,9 +2690,8 @@ class Ui_FinalCifWindow(object):
         QWidget.setTabOrder(self.PhoneLineEdit_cif, self.SaveAuthorLoopToTemplateButton_cif)
         QWidget.setTabOrder(self.SaveAuthorLoopToTemplateButton_cif, self.AddThisAuthorToLoopPushButton_cif)
         QWidget.setTabOrder(self.AddThisAuthorToLoopPushButton_cif, self.newLoopPushButton)
-        QWidget.setTabOrder(self.newLoopPushButton, self.structfactCheckBox)
-        QWidget.setTabOrder(self.structfactCheckBox, self.fullIucrCheckBox)
-        QWidget.setTabOrder(self.fullIucrCheckBox, self.BackFromPlatonPushButton)
+        QWidget.setTabOrder(self.newLoopPushButton, self.checkDuplicatesCheckBox)
+        QWidget.setTabOrder(self.checkDuplicatesCheckBox, self.BackFromPlatonPushButton)
         QWidget.setTabOrder(self.BackFromPlatonPushButton, self.depositHKLcheckBox)
         QWidget.setTabOrder(self.depositHKLcheckBox, self.Upload_hkl_pushButton)
         QWidget.setTabOrder(self.Upload_hkl_pushButton, self.userEmailLineEdit)
@@ -2710,7 +2715,7 @@ class Ui_FinalCifWindow(object):
 
         self.TemplatesStackedWidget.setCurrentIndex(0)
         self.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
-        self.MainStackedWidget.setCurrentIndex(5)
+        self.MainStackedWidget.setCurrentIndex(6)
         self.picturesTabWidget.setCurrentIndex(0)
         self.PropertiesTemplatesStackedWidget.setCurrentIndex(1)
         self.CheckCIFResultsTabWidget.setCurrentIndex(1)
@@ -2880,6 +2885,7 @@ class Ui_FinalCifWindow(object):
         self.deleteLoopButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Loop", None))
         self.newLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Loop", None))
         self.revertLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Revert Changes", None))
+        self.BackFromPlatonPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.platon_page), QCoreApplication.translate("FinalCifWindow", u"PLATON CheckCIF result", None))
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.html_page), QCoreApplication.translate("FinalCifWindow", u"html CheckCIF result", None))
         self.label_5.setText(QCoreApplication.translate("FinalCifWindow", u"The resulting PDF file will be displayed in an external program after CheckCIF has completed.", None))
@@ -2887,13 +2893,16 @@ class Ui_FinalCifWindow(object):
         self.CheckCIFResultsTabWidget.setTabText(self.CheckCIFResultsTabWidget.indexOf(self.ckf_page), QCoreApplication.translate("FinalCifWindow", u"Structure Factor Report", None))
         self.groupBox_7.setTitle(QCoreApplication.translate("FinalCifWindow", u"CheckCIF log messages", None))
         self.groupBox_checkcif_2.setTitle("")
-        self.CheckcifPDFOnlineButton.setText(QCoreApplication.translate("FinalCifWindow", u"Checkcif Online PDF", None))
-        self.structfactCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"without structure factors (fast but not complete)", None))
-        self.fullIucrCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Full IUCr publication validation", None))
-        self.checkDuplicatesCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Check for duplicates in CSD", None))
         self.CheckcifButton.setText(QCoreApplication.translate("FinalCifWindow", u"CheckCif Offline", None))
         self.CheckcifHTMLOnlineButton.setText(QCoreApplication.translate("FinalCifWindow", u"Checkcif Online HTML", None))
-        self.BackFromPlatonPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
+        self.CheckcifPDFOnlineButton.setText(QCoreApplication.translate("FinalCifWindow", u"Checkcif Online PDF", None))
+#if QT_CONFIG(tooltip)
+        self.explainCAlertsCheckBox.setToolTip(QCoreApplication.translate("FinalCifWindow", u"Also request validation response forms for level C alerts.", None))
+#endif // QT_CONFIG(tooltip)
+        self.explainCAlertsCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Also explain C alerts", None))
+        self.checkDuplicatesCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Check for duplicates in CSD", None))
+        self.fullIucrCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"Full IUCr publication validation", None))
+        self.structfactCheckBox.setText(QCoreApplication.translate("FinalCifWindow", u"without structure factors (fast but not complete)", None))
         self.personalDepositRadioButton.setText(QCoreApplication.translate("FinalCifWindow", u"personal (private) communication", None))
         self.prepublicationDepositRadioButton.setText(QCoreApplication.translate("FinalCifWindow", u"prepublication", None))
         self.publishedDepositionRadioButton.setText(QCoreApplication.translate("FinalCifWindow", u"already published", None))
