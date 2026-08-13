@@ -26,6 +26,8 @@ if TYPE_CHECKING:
     from finalcif.cif.checkcif.checkcif import MyHTMLParser
 
 from fastmolwidget import Atomtuple
+from fastmolwidget.density_controls import ResidualDensityControls
+from fastmolwidget.hkl_io import find_reflection_file, has_reflections
 from fastmolwidget.part_combo import PartFilterWidget
 
 from finalcif.gui.shelx_navigation import find_shelx_line_for_atom, scroll_and_highlight_shelx_atom
@@ -194,6 +196,14 @@ class AppWindow(QMainWindow):
         self.parts_combo = PartFilterWidget(parent=self.ui.molGroupBox, label=' ', min_combo_width=90)
         self.parts_combo.setObjectName('partsFilterWidget')
         self.ui.horizontalLayout_7.insertWidget(3, self.parts_combo)
+        # Residual density button and level spin box, next to the parts selector.
+        # The file dialog is switched off: without reflection data the structure
+        # is simply shown without density.
+        self.density_controls = ResidualDensityControls(render_widget=self.ui.render_widget,
+                                                        parent=self.ui.molGroupBox,
+                                                        allow_reflection_dialog=False)
+        self.density_controls.setObjectName('residualDensityControls')
+        self.ui.horizontalLayout_7.insertWidget(4, self.density_controls)
         # Inject the Author Editor tab (defined in the .ui file) into LoopsPage
         self.ui.loops_page.set_author_editor_tab(self.ui.author_editor_widget)
         self.fixfont = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
@@ -2258,6 +2268,7 @@ class AppWindow(QMainWindow):
         if peak:
             self.ui.peakLineEdit.setText("{} / {}".format(peak, self.cif['_refine_diff_density_min']))
         self._show_shelx_file()
+        self._update_residual_density_source()
         try:
             single_shot(self, 0, lambda: self.view_molecule(reset_view=True))
         except Exception:
@@ -2318,6 +2329,29 @@ class AppWindow(QMainWindow):
             else:
                 self.ui.render_widget.grow_molecule(atom_tuples,
                                                     cell=self.cif.cell[:6])
+
+    def _update_residual_density_source(self) -> None:
+        """Tell the viewer which model and reflections the shown atoms come from.
+
+        The block in memory is used, not the file on disk, so that the density
+        follows unsaved edits and the block the user selected in a multi-block
+        CIF.  Without any reflection data the density button stays disabled and
+        the structure is simply displayed without density.
+        """
+        with suppress(Exception):
+            self.ui.render_widget.set_model_source(self.cif.block,
+                                                   reflections=self._reflection_source())
+            self.density_controls.update_density_availability()
+
+    def _reflection_source(self) -> gemmi.cif.Block | Path | None:
+        """Where the reflections of the current structure are, if anywhere.
+
+        Self-contained SHELXL CIFs carry the whole ``.hkl`` in the block itself;
+        otherwise a sibling ``.hkl``/``.fcf`` of the CIF on disk is used.
+        """
+        if has_reflections(self.cif.block):
+            return self.cif.block
+        return find_reflection_file(self.cif.fileobj)
 
     def _update_z_label(self) -> None:
         """Start a background computation of Z and Z′ and show a placeholder.

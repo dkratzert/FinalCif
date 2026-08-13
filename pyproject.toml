@@ -40,19 +40,19 @@ dependencies = [
     "pefile",
     "pybind11>=3",
     "python-docx",
-    "packaging==26.2",
+    "packaging==26.3",
     "QtAwesome",
     "QtPy",
     "numpy==2.4.6",
     "requests",
     "urllib3==2.7.0",
     "docxtpl[subdoc]>=0.20.2",
-    "shelxfile==24",
-    "fastmolwidget>=1.0.0",  # needs the fastmolwidget.web submodule used by report_fastmolwidget.tmpl
+    "shelxfile>=24",
+    "fastmolwidget>=1.2.0",  # needs set_model_source/ResidualDensityControls and the web submodule
     "pyenchant",
     "charset-normalizer",
     "pyside6-essentials",
-    "docxcompose==2.2.0",
+    "docxcompose>=2.2.0",
 ]
 
 [dependency-groups]
