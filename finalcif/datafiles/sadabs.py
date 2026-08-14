@@ -24,6 +24,38 @@ DOMAIN_ALL = 'all'
 DOMAIN_SINGLE = 'single'
 DOMAIN_UP_TO = 'up_to'
 
+# Reflection populations of the 'PART 2' statistics of a TWINABS output file:
+STATS_SINGLES = 'singles'
+STATS_COMPOSITES = 'composites'
+STATS_ALL = 'all'
+
+
+@dataclasses.dataclass
+class ScanStatistics:
+    """
+    A 'PART 2 - Reject outliers and establish error model' statistics block of a TWINABS file:
+
+     Statistics for singles of twin component  1
+     -------------------------------------------
+
+     Scan 2-theta  R(int)  Incid. factors  Diffr. factors    K     Total I>2sig(I)
+        1  -30.0  0.0332   0.734 - 0.918   0.974 - 1.025   0.612    2283    1808
+        ...
+       All scans  0.0340   0.655 - 1.056   0.959 - 1.030   0.615   37875   30125
+
+    Unlike the R(int) of the 'PART 3' extraction table, these values are the agreement of
+    equivalent measured intensities and not a residual of the twin fraction refinement.
+    """
+    kind: str = STATS_ALL
+    component: int | None = None
+    rint: float | None = None
+    total: int | None = None
+    i_gt_2sigma: int | None = None
+
+    def __repr__(self):
+        name = f'{self.kind}({self.component})' if self.component else self.kind
+        return f'{name}: R(int)={self.rint}, total={self.total}, I>2sigma={self.i_gt_2sigma}'
+
 
 @dataclasses.dataclass
 class Transmission:
@@ -77,6 +109,10 @@ class Dataset:
         self.is_twin: bool = False
         self.fallback_reflections: int | None = None
         self.fallback_rint: float | None = None
+        # The 'PART 2' statistics blocks that are valid for this output file:
+        self.statistics: list[ScanStatistics] = []
+        # Point group the equivalent reflections were defined with:
+        self.equivalents_point_group: str | None = None
 
     @property
     def reflections_number(self) -> int | None:
@@ -96,14 +132,65 @@ class Dataset:
     def rint(self) -> float | None:
         """
         R(int) of the reflections in this output file (_diffrn_reflns_av_R_equivalents).
+
+        For HKLF 5 files the statistics of the 'PART 2' section are preferred, because the
+        R(int) of the 'PART 3' extraction table is the agreement between observed intensities
+        and intensities calculated from the twin fractions refined by TWINABS. Such a file is
+        refined with the twin fractions of SHELXL instead.
         """
         if not self.is_twin:
             return self.fallback_rint
-        if self.table:
-            if self.domain_mode == DOMAIN_SINGLE and self.table.rint_domain is not None:
-                return self.table.rint_domain
-            if self.table.rint_all is not None:
-                return self.table.rint_all
+        if self.filetype and self.filetype >= 5:
+            return self.rint_of_singles or self._rint_of_table() or self._rint_fallback()
+        return self._rint_of_table() or self._rint_fallback()
+
+    @property
+    def rint_of_singles(self) -> float | None:
+        """
+        R(int) of the singly indexed reflections of the domain of this output file. This is the
+        population Olex2 uses for the R(int) of HKLF 5 data.
+        """
+        statistics = self.singles_statistics
+        return statistics.rint if statistics else None
+
+    @property
+    def singles_statistics(self) -> ScanStatistics | None:
+        """
+        The statistics of the singly indexed reflections of the domain of this output file, or
+        of the domain with the most singles if this file is not restricted to one domain.
+        """
+        singles = [x for x in self.statistics if x.kind == STATS_SINGLES and x.rint]
+        if not singles:
+            return None
+        domain = self.domain_number if self.domain_mode == DOMAIN_SINGLE else None
+        domain = domain or self._largest_component(singles)
+        for stats in singles:
+            if stats.component == domain:
+                return stats
+        return None
+
+    @property
+    def statistics_of_all_reflections(self) -> ScanStatistics | None:
+        for stats in self.statistics:
+            if stats.kind == STATS_ALL:
+                return stats
+        return None
+
+    @staticmethod
+    def _largest_component(singles: list[ScanStatistics]) -> int | None:
+        return max(singles, key=lambda x: x.total or 0).component
+
+    def _rint_of_table(self) -> float | None:
+        if not self.table:
+            return None
+        if self.domain_mode == DOMAIN_SINGLE and self.table.rint_domain is not None:
+            return self.table.rint_domain
+        return self.table.rint_all
+
+    def _rint_fallback(self) -> float | None:
+        all_reflections = self.statistics_of_all_reflections
+        if all_reflections and all_reflections.rint:
+            return all_reflections.rint
         return self.rint_observations or self.fallback_rint
 
     def __repr__(self):
@@ -135,6 +222,12 @@ class Sadabs:
     _hklf5_regex = re.compile(r'^\s*HKLF\s+(\d+)\s+dataset constructed', re.IGNORECASE)
     _table_header_regex = re.compile(r'^\s*Cycle\s+N\((\d+)\)\s+Rint\(\d+\)\s+N\(all\)\s+Rint\(all\)')
     _table_row_regex = re.compile(r'^\s*\d+\s+\d+\s+\d+\.\d+\s+\d+\s+\d+\.\d+')
+    _statistics_regex = re.compile(r'^\s*Statistics for (singles of twin component\s+(\d+)|'
+                                   r'all composite reflections|all single and composite reflections)',
+                                   re.IGNORECASE)
+    _all_scans_regex = re.compile(r'^\s*All scans\s+(\d+\.\d+)')
+    _point_group_regex = re.compile(r'^\s*Equivalent reflections defined (?:according to|by) '
+                                    r'point group\s+(\S+)', re.IGNORECASE)
     _domain_single_regex = re.compile(r'involving domain\s+(\d+)', re.IGNORECASE)
     _domain_up_to_regex = re.compile(r'involving domains\s+1\.\.(\d+)', re.IGNORECASE)
     _rejections_regex = re.compile(r'^\s*(\d+)\s+total and\s+\d+\s+unique reflections left after')
@@ -156,8 +249,11 @@ class Sadabs:
         self.batch_input = None
         self.filename = Path('')
         self.tables: list[ExtractionTable] = []
+        self.statistics: list[ScanStatistics] = []
+        self.equivalents_point_group: str | None = None
         self._current_dataset: Dataset | None = None
         self._current_table: ExtractionTable | None = None
+        self._current_statistics: ScanStatistics | None = None
         self._reflections_after_rejection: int | None = None
         if fileobj:
             self._fileobj = fileobj
@@ -209,6 +305,18 @@ class Sadabs:
             self._reflections_after_rejection = to_int(spline[0])
         if line.startswith(' Reflections merged according'):
             self._dataset().point_group_merge = spline[-1]
+        if self._point_group_regex.match(line):
+            #   Equivalent reflections defined according to point group -1
+            self.equivalents_point_group = self._point_group_regex.match(line).group(1)
+        if 'PART 2 - Reject outliers' in line:
+            # A listing file may contain more than one program run:
+            self.statistics = []
+        if self._statistics_regex.match(line):
+            #  Statistics for singles of twin component  1
+            self._start_statistics(line)
+        elif self._current_statistics and self._all_scans_regex.match(line):
+            #    All scans  0.0340   0.655 - 1.056   0.959 - 1.030   0.615   37875   30125
+            self._all_scans_row(spline)
         if self._extraction_regex.match(line):
             #  Unique HKLF 4 data extracted from all observations involving domain 1
             self._start_extraction(line)
@@ -322,11 +430,36 @@ class Sadabs:
         self._current_table.n_all = to_int(spline[3])
         self._current_table.rint_all = to_float(spline[4])
 
+    def _start_statistics(self, line: str) -> None:
+        """
+        Starts a 'Statistics for ...' block of the PART 2 section.
+        """
+        component = to_int(self._statistics_regex.match(line).group(2) or '0')
+        if component:
+            kind = STATS_SINGLES
+        elif 'single and composite' in line.lower():
+            kind = STATS_ALL
+        else:
+            kind = STATS_COMPOSITES
+        self._current_statistics = ScanStatistics(kind=kind, component=component or None)
+        self.statistics.append(self._current_statistics)
+
+    def _all_scans_row(self, spline: list[str]) -> None:
+        """
+        The 'All scans' summary row closes a statistics block.
+        """
+        self._current_statistics.rint = to_float(spline[2])
+        self._current_statistics.total = to_int(spline[-2])
+        self._current_statistics.i_gt_2sigma = to_int(spline[-1])
+        self._current_statistics = None
+
     def _apply_global_values(self) -> None:
         for dataset in self.datasets:
             dataset.is_twin = self.is_twinabs
             dataset.fallback_reflections = self._reflections_after_rejection
             dataset.fallback_rint = self.Rint
+            dataset.statistics = self.statistics
+            dataset.equivalents_point_group = self.equivalents_point_group
             if dataset.table is None:
                 # An HKLF 5 file may be written before any table was printed:
                 dataset.table = self._table_written_later(dataset)

@@ -90,28 +90,42 @@ class HKL:
         return Limit(h_max=h_max, h_min=h_min, k_max=k_max, k_min=k_min, l_max=l_max, l_min=l_min)
 
 
-def calculate_rint(hkl_file: str, space_group: str, cell: Sequence[float] | None = None,
-                   resolution: tuple[float, float] | None = None) -> float | None:
+def calculate_rint(hkl_file: str, space_group: str, *, cell: Sequence[float] | None = None,
+                   resolution: tuple[float, float] | None = None, hklf: int = 4,
+                   twst: int | None = None) -> float | None:
     """
-    R(int) of an unmerged SHELX HKLF 4 file, calculated the way SHELXL does it:
+    R(int) of an unmerged SHELX hkl file, calculated the way SHELXL and Olex2 do it:
 
         R(int) = sum|Fo^2 - Fo^2(mean)| / sum[Fo^2]
 
     Systematically absent reflections are rejected and Friedel opposites are only merged in
     centrosymmetric space groups. Fo^2(mean) is the mean weighted with 1/sigma^2.
 
+    For HKLF 5 data only the singly indexed reflections of the reference domain are used,
+    because composite (overlapped) reflections have no symmetry equivalents to compare with.
+
     SADABS writes no overall R(int) into its listing file, only the wR2(int) of the parameter
-    refinement and the R(int) values of the individual runs.
+    refinement and the R(int) values of the individual runs. The R(int) of a TWINABS listing
+    file describes a data treatment that a HKLF 5 refinement does not use.
 
     Args:
-        hkl_file: Content of a SHELX HKLF 4 file.
+        hkl_file: Content of a SHELX hkl file.
         space_group: Space group name, e.g. 'P n a 21'.
         cell: Unit cell parameters, needed to apply a resolution limit.
         resolution: Lowest and highest resolution in Angstrom (a SHELX SHEL instruction).
+        hklf: The SHELX HKLF file type. Data with negative batch numbers are always treated as
+            HKLF 5 data.
+        twst: The domain of a SHELX TWST instruction, only used for HKLF 5 data.
     """
-    miller, intensities, sigmas = _reflections_from_shelx_hkl(hkl_file)
+    miller, intensities, sigmas, batches = _reflections_from_shelx_hkl(hkl_file)
     if not len(miller) or not space_group:
         return None
+    if hklf >= 5 or bool((batches < 0).any()):
+        # Only an HKLF 5 file has negative batch numbers:
+        singles = _singles_of_reference_domain(batches, twst)
+        miller, intensities, sigmas = miller[singles], intensities[singles], sigmas[singles]
+        if not len(miller):
+            return None
     try:
         operations = gemmi.SpaceGroup(space_group).operations()
     except (RuntimeError, ValueError):
@@ -126,6 +140,45 @@ def calculate_rint(hkl_file: str, space_group: str, cell: Sequence[float] | None
         # Merged data have no equivalent reflections to compare:
         return None
     return _rint_of_groups(groups, counts, intensities, sigmas)
+
+
+def reference_domain(hkl_file: str, twst: int | None = None) -> int | None:
+    """
+    The twin domain whose singly indexed reflections are used for the R(int) of HKLF 5 data.
+    """
+    *_, batches = _reflections_from_shelx_hkl(hkl_file)
+    if not len(batches):
+        return None
+    return _largest_domain(batches[_singles(batches)]) or None
+
+
+def _singles_of_reference_domain(batches: np.ndarray, twst: int | None) -> np.ndarray:
+    """
+    The singly indexed reflections of the reference domain of an HKLF 5 file.
+
+    The reference domain is the domain of a SHELX TWST instruction or, like in Olex2, the
+    domain with the most singly indexed reflections.
+    """
+    singles = _singles(batches)
+    domain = twst if twst and twst > 0 else _largest_domain(batches[singles])
+    return singles & (batches == domain)
+
+
+def _singles(batches: np.ndarray) -> np.ndarray:
+    """
+    In an HKLF 5 file all members of a composite reflection except the last one have a negative
+    batch number, thus a reflection is a single if its own batch number and that of its
+    predecessor are positive.
+    """
+    previous = np.concatenate(([1], batches[:-1]))
+    return (batches > 0) & (previous > 0)
+
+
+def _largest_domain(domains: np.ndarray) -> int:
+    if not len(domains):
+        return 0
+    values, counts = np.unique(domains, return_counts=True)
+    return int(values[np.argmax(counts)])
 
 
 def _within_resolution(miller: np.ndarray, cell: Sequence[float] | None,
@@ -197,8 +250,8 @@ def _encode(miller: np.ndarray) -> np.ndarray:
     return (shifted[:, 0] << 42) | (shifted[:, 1] << 21) | shifted[:, 2]
 
 
-def _reflections_from_shelx_hkl(hkl_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    miller, intensities, sigmas = [], [], []
+def _reflections_from_shelx_hkl(hkl_file: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    miller, intensities, sigmas, batches = [], [], [], []
     for line in hkl_file.splitlines(keepends=False):
         if len(line) < 28:
             continue
@@ -212,9 +265,20 @@ def _reflections_from_shelx_hkl(hkl_file: str) -> tuple[np.ndarray, np.ndarray, 
         miller.append(index)
         intensities.append(intensity)
         sigmas.append(sigma)
+        batches.append(_batch_number(line))
     return (np.array(miller, dtype=np.int32).reshape(-1, 3),
             np.array(intensities, dtype=np.float64),
-            np.array(sigmas, dtype=np.float64))
+            np.array(sigmas, dtype=np.float64),
+            np.array(batches, dtype=np.int32))
+
+
+def _batch_number(line: str) -> int:
+    """The batch number of an HKLF 5 reflection, negative for all but the last member of a
+    composite reflection."""
+    try:
+        return int(line[28:32])
+    except ValueError:
+        return 1
 
 
 if __name__ == '__main__':

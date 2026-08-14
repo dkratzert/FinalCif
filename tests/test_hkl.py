@@ -2,7 +2,7 @@ from pathlib import Path
 from unittest import TestCase
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.cif.hkl import calculate_rint
+from finalcif.cif.hkl import calculate_rint, reference_domain
 
 data = Path('tests')
 
@@ -89,3 +89,59 @@ class TestRintCalculation(TestCase):
 
     def test_empty_hkl_data_give_no_rint(self):
         self.assertIsNone(calculate_rint('', 'P 21 21 2'))
+
+
+class TestRintOfTwinnedData(TestCase):
+    """
+    SHELXL writes no R(int) for HKLF 5 data. Like Olex2, FinalCif calculates it from the singly
+    indexed reflections of the reference domain; composite reflections have no equivalents.
+    """
+
+    @staticmethod
+    def _hkl(*reflections: tuple[int, int, int, float, float, int]) -> str:
+        return '\n'.join('{:4d}{:4d}{:4d}{:8.2f}{:8.2f}{:4d}'.format(*x) for x in reflections) + '\n'
+
+    def setUp(self) -> None:
+        self.hkl = self._hkl(
+            # Singles of domain 1:
+            (1, 0, 0, 100.0, 1.0, 1),
+            (-1, 0, 0, 110.0, 1.0, 1),
+            (0, 1, 0, 200.0, 1.0, 1),
+            (0, -1, 0, 200.0, 1.0, 1),
+            # A composite reflection of both domains:
+            (2, 0, 0, 500.0, 1.0, -1),
+            (2, 0, 0, 500.0, 1.0, 2),
+            # Singles of domain 2:
+            (1, 0, 0, 300.0, 1.0, 2),
+            (-1, 0, 0, 330.0, 1.0, 2),
+            (0, 0, 0, 0.0, 0.0, 0),
+        )
+
+    def test_rint_of_the_domain_with_the_most_singles(self):
+        # (|100-105| + |110-105|) / (100 + 110 + 200 + 200)
+        self.assertEqual(0.0164, calculate_rint(self.hkl, 'P -1', hklf=5))
+
+    def test_reference_domain_of_a_twst_instruction(self):
+        # (|300-315| + |330-315|) / (300 + 330)
+        self.assertEqual(0.0476, calculate_rint(self.hkl, 'P -1', hklf=5, twst=2))
+
+    def test_composite_reflections_are_only_included_without_batch_numbers(self):
+        without_batches = '\n'.join(x[:28] for x in self.hkl.splitlines())
+        self.assertNotEqual(calculate_rint(self.hkl, 'P -1', hklf=5),
+                            calculate_rint(without_batches, 'P -1', hklf=4))
+
+    def test_negative_batch_numbers_are_recognized_without_a_hklf_instruction(self):
+        self.assertEqual(calculate_rint(self.hkl, 'P -1', hklf=5),
+                         calculate_rint(self.hkl, 'P -1', hklf=4))
+
+    def test_data_without_singles_give_no_rint(self):
+        hkl = self._hkl((1, 0, 0, 100.0, 1.0, -1),
+                        (1, 0, 0, 110.0, 1.0, 2),
+                        (0, 0, 0, 0.0, 0.0, 0))
+        self.assertIsNone(calculate_rint(hkl, 'P -1', hklf=5))
+
+    def test_reference_domain_is_the_one_with_the_most_singles(self):
+        self.assertEqual(1, reference_domain(self.hkl))
+
+    def test_no_reference_domain_without_reflections(self):
+        self.assertIsNone(reference_domain(''))

@@ -27,6 +27,13 @@ class TestSADABSWU19(unittest.TestCase):
         self.assertIsNone(self.s.Rint)
         self.assertEqual(0.0472, self.s.wR2int)
 
+    def test_no_statistics_blocks(self):
+        # A SADABS file has no 'Statistics for ...' blocks, only per scan values:
+        self.assertEqual([], self.s.statistics)
+
+    def test_point_group_of_the_scaling(self):
+        self.assertEqual('2/m', self.s.equivalents_point_group)
+
     def test_transmission(self):
         self.assertEqual('min: 0.7135, max: 0.7459', str(self.s.dataset(0).transmission))
 
@@ -94,8 +101,23 @@ class TestTWINABSMultipleOutputs(unittest.TestCase):
                          [x.reflections_number for x in self.s.datasets])
 
     def test_rint(self) -> None:
-        self.assertEqual([0.0438, 0.0398, 0.0438, 0.0398, 0.0438, 0.0438],
+        # HKLF 4 data use the extraction table, HKLF 5 data the singles of their domain:
+        self.assertEqual([0.0438, 0.0398, 0.0438, 0.0313, 0.0442, 0.0313],
                          [x.rint for x in self.s.datasets])
+
+    def test_statistics_blocks(self) -> None:
+        self.assertEqual([('singles', 1), ('singles', 2), ('composites', None), ('all', None)],
+                         [(x.kind, x.component) for x in self.s.statistics])
+
+    def test_values_of_the_all_scans_row(self) -> None:
+        singles = self.s.statistics[0]
+        self.assertEqual((0.0313, 12355, 9776), (singles.rint, singles.total, singles.i_gt_2sigma))
+
+    def test_point_group_of_the_equivalent_reflections(self) -> None:
+        self.assertEqual('-1', self.s.equivalents_point_group)
+
+    def test_hklf5_of_all_domains_uses_the_domain_with_most_singles(self) -> None:
+        self.assertEqual(1, self.s.select_dataset(hkl_basename='t5_dom-2.hkl').singles_statistics.component)
 
     def test_hklf4_of_first_domain_uses_own_table(self) -> None:
         table = self.s.dataset(1).table
@@ -136,7 +158,8 @@ class TestTWINABSHKLF5BeforeTable(unittest.TestCase):
 
     def test_first_dataset_uses_the_table_written_later(self) -> None:
         self.assertEqual(20616, self.s.dataset(0).reflections_number)
-        self.assertEqual(0.0423, self.s.dataset(0).rint)
+        # The R(int) comes from the statistics of the singles of domain 1:
+        self.assertEqual(0.0313, self.s.dataset(0).rint)
 
     def test_last_written_file_wins(self) -> None:
         dataset = self.s.select_dataset(hkl_basename='f5_a.hkl')
@@ -157,7 +180,11 @@ class TestTWINABSRealWorldFile(unittest.TestCase):
 
     def test_hklf5_of_domain_one(self) -> None:
         self.assertEqual(20615, self.s.dataset(1).reflections_number)
-        self.assertEqual(0.0394, self.s.dataset(1).rint)
+        # Not the 0.0394 of the extraction table, which is a twin fraction refinement residual:
+        self.assertEqual(0.0272, self.s.dataset(1).rint)
+
+    def test_scaling_in_point_group_1_is_visible(self) -> None:
+        self.assertEqual('1', self.s.equivalents_point_group)
 
     def test_selection_takes_the_last_file_with_that_name(self) -> None:
         dataset = self.s.select_dataset(hkl_basename='DK_ML766_0m_5.hkl')

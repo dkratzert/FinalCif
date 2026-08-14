@@ -5,6 +5,8 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
+from __future__ import annotations
+
 import re
 from contextlib import suppress
 from pathlib import Path
@@ -12,11 +14,11 @@ from pathlib import Path
 from gemmi import cif as gcif
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.cif.hkl import calculate_rint
+from finalcif.cif.hkl import calculate_rint, reference_domain
 from finalcif.datafiles.bruker_frame import BrukerFrameHeader
 from finalcif.datafiles.data import WorkDataMixin
 from finalcif.datafiles.p4p_reader import P4PFile
-from finalcif.datafiles.sadabs import Sadabs
+from finalcif.datafiles.sadabs import Dataset, Sadabs
 from finalcif.datafiles.saint import SaintListFile
 from finalcif.datafiles.shelx_lst import SolutionProgram
 from finalcif.gui.dialogs import show_general_warning
@@ -231,38 +233,91 @@ class BrukerData(WorkDataMixin):
         """
         Adds the number of measured reflections and R(int) of the data set that belongs to the
         hkl file of this refinement. SHELXL can not determine these values from an HKLF 5 file,
-        thus the values of a TWINABS file take precedence over the values in the CIF.
+        thus the number of reflections of a TWINABS file and a calculated R(int) take precedence
+        over the values in the CIF.
         """
         dataset = sadabs.select_dataset(hkl_basename=self._hkl_basename,
                                         reflections=self._reflections_in_hkl_file(),
                                         hklf=self.cif.hklf_number)
-        if not dataset:
-            return
-        rint = dataset.rint or self._rint_from_hkl_data()
-        if rint:
-            self.sources['_diffrn_reflns_av_R_equivalents'] = (rint, self._rint_source(dataset, sadabs))
-        if dataset.reflections_number:
+        self._add_rint(dataset, sadabs)
+        if dataset and dataset.reflections_number:
             self.sources['_diffrn_reflns_number'] = (dataset.reflections_number, source_path(sadabs.filename))
-        if sadabs.is_twinabs and dataset.filetype == 5:
-            self.overrides.update({'_diffrn_reflns_av_R_equivalents', '_diffrn_reflns_number'})
+            if sadabs.is_twinabs and dataset.filetype == 5:
+                self.overrides.add('_diffrn_reflns_number')
 
-    def _rint_source(self, dataset, sadabs: Sadabs) -> str:
-        if dataset.rint:
-            return source_path(sadabs.filename)
+    def _add_rint(self, dataset: Dataset | None, sadabs: Sadabs) -> None:
+        """
+        The R(int) of an HKLF 5 refinement is calculated from the reflection data, because the
+        R(int) of a TWINABS listing file is a residual of the TWINABS twin fraction refinement
+        and not the agreement of symmetry equivalent reflections.
+        """
+        calculated = self._rint_from_hkl_data()
+        listed = dataset.rint if dataset else None
+        twinned = self._is_twinned(dataset, sadabs)
+        if twinned:
+            rint, source = calculated, self._calculated_rint_source(twinned)
+            if not rint:
+                rint, source = listed, self._listed_rint_source(dataset, sadabs)
+        else:
+            rint, source = listed, source_path(sadabs.filename)
+            if not rint:
+                rint, source = calculated, self._calculated_rint_source(twinned)
+        if not rint:
+            return
+        self.sources['_diffrn_reflns_av_R_equivalents'] = (rint, source)
+        if twinned:
+            self.overrides.add('_diffrn_reflns_av_R_equivalents')
+
+    def _is_twinned(self, dataset: Dataset | None, sadabs: Sadabs) -> bool:
+        """
+        SHELXL can not determine R(int) of HKLF 5 data, thus FinalCif has to do it.
+        """
+        return self.cif.hklf_number >= 5 or bool(
+            sadabs.is_twinabs and dataset and dataset.filetype == 5)
+
+    def _calculated_rint_source(self, twinned: bool) -> str:
+        if twinned:
+            return (f'calculated from {source_path(self.cif.fileobj)} '
+                    f'(singles of twin component {self._reference_domain()}, '
+                    f'merged in {self.cif.space_group})')
         return f'calculated from {source_path(self.cif.fileobj)}'
+
+    def _reference_domain(self) -> int | None:
+        return self._twst() or reference_domain(self.cif.hkl_file)
+
+    def _listed_rint_source(self, dataset: Dataset | None, sadabs: Sadabs) -> str:
+        """
+        The R(int) of the TWINABS statistics is only valid for the point group the equivalent
+        reflections were defined with.
+        """
+        source = source_path(sadabs.filename)
+        statistics = dataset.singles_statistics if dataset else None
+        if statistics and dataset.equivalents_point_group:
+            return (f'{source} (singles of twin component {statistics.component}, '
+                    f'point group {dataset.equivalents_point_group})')
+        return source
 
     def _rint_from_hkl_data(self) -> float | None:
         """
-        SADABS writes no overall R(int) into its listing file, therefore it is calculated from
-        the reflection data, but only if the CIF has no R(int) yet. SHELXL can not calculate it
-        for the composite reflections of HKLF 5 data.
+        R(int) calculated from the reflection data of the CIF.
+
+        SADABS writes no overall R(int) into its listing file and SHELXL can not determine it
+        from an HKLF 5 file, therefore it is calculated here. For HKLF 4 data this only happens
+        if the CIF has no R(int) yet, while for HKLF 5 data the calculated value is always
+        preferred over the R(int) of a TWINABS listing file, which is a model residual of the
+        TWINABS twin fraction refinement instead of a merging R(int).
         """
-        if self.cif.hklf_number != 4:
-            return None
-        if gcif.as_string(self.cif['_diffrn_reflns_av_R_equivalents']).strip(' ?'):
+        if self.cif.hklf_number == 4 and gcif.as_string(
+                self.cif['_diffrn_reflns_av_R_equivalents']).strip(' ?'):
             return None
         return calculate_rint(self.cif.hkl_file, self.cif.space_group,
-                              cell=self.cif.cell, resolution=self._resolution_limits())
+                              cell=self.cif.cell, resolution=self._resolution_limits(),
+                              hklf=self.cif.hklf_number, twst=self._twst())
+
+    def _twst(self) -> int | None:
+        """The reference domain of a SHELX TWST instruction."""
+        match = re.search(r'^TWST\s+(-?\d+)', self.cif.res_file_data or '', re.MULTILINE)
+        return int(match.group(1)) if match else None
 
     def _resolution_limits(self) -> tuple[float, float] | None:
         """The resolution limits of a SHELX SHEL instruction, if there is one."""
