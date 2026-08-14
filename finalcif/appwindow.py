@@ -1082,7 +1082,6 @@ class AppWindow(QMainWindow):
             source_item = MyTableWidgetItem(s)
             source_item.setUneditable()
             data_item = MyTableWidgetItem(self.sources[s][1])
-            data_item.setToolTip(str(self.sources[s][1]))
             data_item.setUneditable()
             table.setItem(rownum, COL_key, source_item)
             table.setItem(rownum, COL_source_data, data_item)
@@ -2579,6 +2578,18 @@ class AppWindow(QMainWindow):
                 # print(e, '##', miss_key)
                 pass
         self._apply_source_overrides(bruker_data.overrides)
+        self._add_source_tooltips()
+
+    def _add_source_tooltips(self) -> None:
+        """
+        Shows the file a value of the data source column came from as a tooltip.
+        """
+        for key, source in self.sources.items():
+            if not source or not source[1] or not self.ui.cif_main_table.has_key(key):
+                continue
+            widget = self.ui.cif_main_table.widget_from_key(key, Column.DATA)
+            if widget:
+                widget.setToolTip(f'Source: {source[1]}')
 
     def _apply_source_overrides(self, overrides: set[str]) -> None:
         """

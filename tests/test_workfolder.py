@@ -205,6 +205,16 @@ class TestWorkfolder(AppWindowTestCase):
         self.assertEqual('#ffffff', self.app.ui.cif_main_table.widget_from_key('_computing_molecular_graphics',
                                                                                Column.DATA).getBackgroundColor().name())
 
+    def test_data_column_shows_its_source_as_tooltip(self):
+        tooltip = self.app.ui.cif_main_table.widget_from_key('_computing_cell_refinement',
+                                                             Column.DATA).toolTip()
+        self.assertTrue(tooltip.startswith('Source: '), tooltip)
+        self.assertTrue(tooltip.endswith('cu_BruecknerJK_153F40_0m._ls'), tooltip)
+
+    def test_keys_without_a_source_have_no_tooltip(self):
+        self.assertEqual('', self.app.ui.cif_main_table.widget_from_key('_computing_molecular_graphics',
+                                                                        Column.DATA).toolTip())
+
     def test_exptl_crystal_size(self):
         self.assertEqual('0.220', self.cell_text('_exptl_crystal_size_max', Column.DATA))
         self.assertEqual('0.100', self.cell_text('_exptl_crystal_size_mid', Column.DATA))
