@@ -88,6 +88,7 @@ from finalcif.tools.platon import PlatonRunner
 from finalcif.tools.settings import FinalCifSettings
 from finalcif.tools.shred import ShredCIF
 from finalcif.tools.space_groups import SpaceGroups
+from finalcif.tools.squeeze import append_unknown_solvent, has_unassigned_solvent
 from finalcif.tools.z_from_packing import count_z_and_zprime, ZResult
 from finalcif.tools.spgr_format import spgrps
 from finalcif.tools.statusbar import StatusBar
@@ -1518,6 +1519,20 @@ class AppWindow(QMainWindow):
             self.ui.cif_main_table.setText(key='_chemical_formula_moiety', txt=formula_moiety, column=Column.EDIT)
         self.show_moiety_formula_tooltip(moiety if moiety not in ['', '?'] else formula_moiety)
 
+    def _with_squeezed_solvent(self, formula_moiety: str) -> str:
+        """Mark a generated moiety formula with ``+[solvent]`` for squeezed structures.
+
+        The unmodelled solvent of a PLATON SQUEEZE / Olex2-SMTBX structure is
+        missing from the atom model, so the moiety derived from the bond graph
+        is incomplete unless the void content was assigned a formula.
+        """
+        try:
+            if has_unassigned_solvent(self.cif):
+                return append_unknown_solvent(formula_moiety)
+        except Exception:
+            pass
+        return formula_moiety
+
     def append_to_ciflog_without_newline(self, text: str = '') -> None:
         self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.MoveOperation.End)
         self.ui.CheckCifLogPlainTextEdit.insertPlainText(text)
@@ -2407,7 +2422,7 @@ class AppWindow(QMainWindow):
             return
         # Propagate moiety formula to the CIF table if not already filled.
         if result.moiety_formula:
-            self.add_moiety_furmula(result.moiety_formula)
+            self.add_moiety_furmula(self._with_squeezed_solvent(result.moiety_formula))
         confidence_icon = {'high': '✓', 'medium': '~', 'formula': '≡', 'low': '?'}[result.confidence]
         self.ui.zEstimateLabel.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")
         self.ui.zEstimateLabel2.setText(f"Z = {result.z}  Z′ = {result.z_prime:.3g}  {confidence_icon}")

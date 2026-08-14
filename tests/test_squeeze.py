@@ -14,7 +14,8 @@ from qtpy.QtWidgets import QApplication
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.custom_classes import Column
-from finalcif.tools.squeeze import electrons_from_formula, build_details_text
+from finalcif.tools.squeeze import (append_unknown_solvent, build_details_text, electrons_from_formula,
+                                    has_unassigned_solvent)
 from tests.helpers import AppWindowTestCase
 
 app = QApplication.instance()
@@ -449,6 +450,41 @@ class TestHasSmtbxMasksLoop(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
+# Unassigned solvent marker for the moiety formula
+# ---------------------------------------------------------------------------
+
+class TestUnassignedSolvent(unittest.TestCase):
+
+    def test_squeeze_loop_without_content_is_unassigned(self):
+        self.assertTrue(has_unassigned_solvent(CifContainer(SQF_FILE)))
+
+    def test_smtbx_loop_without_content_is_unassigned(self):
+        self.assertTrue(has_unassigned_solvent(CifContainer(SMTBX_FILE)))
+
+    def test_cif_without_void_loop_is_not_unassigned(self):
+        cif = CifContainer(Path('tests/examples/1979688.cif').absolute())
+        self.assertFalse(has_unassigned_solvent(cif))
+
+    def test_assigned_void_content_is_not_unassigned(self):
+        cif = CifContainer(SQF_FILE)
+        loop = cif.get_loop('_platon_squeeze_void_nr')
+        cif.block.find(loop.tags)[0][6] = 'C4H8O'
+        self.assertFalse(has_unassigned_solvent(cif))
+
+    def test_marker_is_appended(self):
+        self.assertEqual('C6 H6, 2(H2 O) +[solvent]',
+                         append_unknown_solvent('C6 H6, 2(H2 O)'))
+
+    def test_marker_is_added_only_once(self):
+        once = append_unknown_solvent('C6 H6')
+        self.assertEqual(once, append_unknown_solvent(once))
+
+    def test_empty_formula_stays_empty(self):
+        self.assertEqual('', append_unknown_solvent(''))
+        self.assertEqual('?', append_unknown_solvent('?'))
+
+
+# ---------------------------------------------------------------------------
 # AppWindow refresh after the dialog was accepted
 # ---------------------------------------------------------------------------
 
@@ -497,6 +533,35 @@ class TestAppWindowRefreshAfterSqueezeDialog(AppWindowTestCase):
         self.app.cif.block.find(loop.tags)[0][2] = '9.876'
         self.app._refresh_after_squeeze_dialog(self._fake_dialog())
         self.assertEqual(before, self._scattering_loop_value())
+
+
+class TestAppWindowSqueezedSolventMarker(AppWindowTestCase):
+    """The generated moiety formula is marked when solvent was squeezed away."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        from finalcif.appwindow import AppWindow
+        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        self.app = AppWindow(file=self.testcif)
+
+    def tearDown(self) -> None:
+        self.app.cif.finalcif_file.unlink(missing_ok=True)
+        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        super().tearDown()
+
+    def _add_empty_squeeze_loop(self) -> None:
+        loop = self.app.cif.init_loop(['_platon_squeeze_void_nr',
+                                       '_platon_squeeze_void_volume',
+                                       '_platon_squeeze_void_count_electrons',
+                                       '_platon_squeeze_void_content'])
+        loop.add_row(['1', '248.3', '42', '?'])
+
+    def test_no_marker_without_squeeze_loop(self):
+        self.assertEqual('C6 H6', self.app._with_squeezed_solvent('C6 H6'))
+
+    def test_marker_added_for_unassigned_squeeze_void(self):
+        self._add_empty_squeeze_loop()
+        self.assertEqual('C6 H6 +[solvent]', self.app._with_squeezed_solvent('C6 H6'))
 
 
 if __name__ == '__main__':

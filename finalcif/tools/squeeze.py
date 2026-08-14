@@ -11,10 +11,13 @@ Helper utilities for handling PLATON SQUEEZE structures.
 from __future__ import annotations
 
 import re
-from typing import Literal
+from typing import Literal, TYPE_CHECKING
 
 from finalcif.cif.atoms import element2num
 from finalcif.tools.chemparse import parse_formula, ChemparseError
+
+if TYPE_CHECKING:
+    from finalcif.cif.cif_file_io import CifContainer
 
 # Atomic numbers (= electron count for neutral atoms) for elements common in crystallography.
 ATOMIC_NUMBERS: dict[str, int] = element2num
@@ -142,3 +145,53 @@ def build_details_text(void_rows: list[dict], method: Literal['squeeze', 'smtbx'
                 f'in a void of {volume} \u212b\u00b3 was treated by SQUEEZE.'
             )
     return '\n'.join(sentences)
+
+
+# Marker appended to a moiety formula when solvent was removed from the model
+# (PLATON SQUEEZE / Olex2-SMTBX masks) without being assigned a formula.
+UNKNOWN_SOLVENT_MARKER: str = '+[solvent]'
+
+# ``_*_void_content`` tags of the two supported solvent-masking programs.
+VOID_CONTENT_TAGS: tuple[str, ...] = (
+    '_platon_squeeze_void_content',
+    '_smtbx_masks_void_content',
+)
+
+_EMPTY_VALUES: frozenset[str] = frozenset({'', '?', '.'})
+
+
+def has_unassigned_solvent(cif: CifContainer) -> bool:
+    """Return ``True`` when solvent was squeezed away but no formula was assigned.
+
+    A structure qualifies when a PLATON SQUEEZE or Olex2/SMTBX void loop exists
+    and *none* of its ``void_content`` values names a solvent.
+
+    Args:
+        cif: A :class:`~finalcif.cif.cif_file_io.CifContainer`.
+    """
+    found_loop = False
+    for tag in VOID_CONTENT_TAGS:
+        try:
+            contents = cif.get_loop_column(tag)
+        except (AttributeError, RuntimeError, TypeError):
+            continue
+        if not contents:
+            continue
+        found_loop = True
+        if any(value.strip() not in _EMPTY_VALUES for value in contents):
+            return False
+    return found_loop
+
+
+def append_unknown_solvent(moiety_formula: str) -> str:
+    """Append :data:`UNKNOWN_SOLVENT_MARKER` to *moiety_formula*.
+
+    Returns the formula unchanged when it is empty or already carries the
+    marker, so the function can be applied repeatedly.
+    """
+    formula = moiety_formula.strip()
+    if not formula or formula in _EMPTY_VALUES:
+        return moiety_formula
+    if UNKNOWN_SOLVENT_MARKER in formula:
+        return formula
+    return f'{formula} {UNKNOWN_SOLVENT_MARKER}'

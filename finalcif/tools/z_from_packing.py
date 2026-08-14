@@ -210,6 +210,60 @@ def _snap_to_int_if_close(value: float) -> float:
     return value
 
 
+@dataclasses.dataclass(frozen=True)
+class _ClassifiedComponent:
+    """One bond-graph component reduced to the data needed for Z and moiety generation.
+
+    Attributes:
+        composition: Element counts identifying the chemical species.
+        effective:   How many whole molecules of that species the component
+                     represents (``max(occ)`` for a uniform component, ``1.0``
+                     for a multi-part disorder aggregate).
+        max_occupancy: Highest site occupancy inside the component.
+        uniform:     ``True`` when all atoms share the same occupancy.
+    """
+
+    composition: dict[str, float]
+    effective: float
+    max_occupancy: float
+    uniform: bool
+
+    @property
+    def species_key(self) -> tuple:
+        """Hashable key grouping components of identical chemical composition."""
+        return tuple(sorted((el, round(n, _OCC_DECIMALS))
+                            for el, n in self.composition.items()))
+
+
+def _classify_component(component: list[AtomRecord]) -> _ClassifiedComponent | None:
+    """Classify a bond-graph component as uniform-occupancy or multi-part disorder.
+
+    * **Uniform** (all occupancies equal within :data:`_UNIFORM_OCC_TOL`): the raw
+      element counts identify the species and ``effective`` is that shared
+      occupancy, so two half-occupied solvent copies add up to one molecule.
+    * **Multi-part** (PART 1 + PART 2 of the same site fused into one component):
+      occupancy-weighted, snap-to-integer counts identify the species and
+      ``effective`` is ``1.0``, because the parts together are one molecule.
+
+    Returns ``None`` for an empty component.
+    """
+    occupancies = [_atom_occupancy(atom) for atom in component]
+    if not occupancies:
+        return None
+    uniform = (max(occupancies) - min(occupancies)) <= _UNIFORM_OCC_TOL
+    if uniform:
+        composition = {element: float(count) for element, count in
+                       Counter(_normalize_element(_atom_element(atom))
+                               for atom in component).items()}
+        effective = max(occupancies)
+    else:
+        weighted = _weighted_element_counts(component)
+        composition = {element: _snap_to_int_if_close(count) for element, count in weighted.items()}
+        effective = 1.0
+    return _ClassifiedComponent(composition=composition, effective=effective,
+                                max_occupancy=max(occupancies), uniform=uniform)
+
+
 # Tolerance used when testing whether Z' is close to a simple fraction.
 _ZPRIME_TOLERANCE: float = 0.05
 
@@ -227,6 +281,14 @@ PARTIAL_OCC_THRESHOLD: float = 0.85
 # Valid rotation-symmetry denominators in crystals (1-, 2-, 3-, 4-, 6-fold axes).
 # Z' must be k/n for n in this set (k ≥ 1) to be crystallographically meaningful.
 _VALID_Z_DENOMINATORS: tuple[int, ...] = (1, 2, 3, 4, 6)
+
+# Tolerances used when comparing occupancy-weighted unit-cell element counts
+# with `_chemical_formula_sum × Z`.  Occupancies of a disorder model rarely sum
+# to exactly 1, and a squeezed / partially occupied structure may carry a
+# genuinely fractional formula (e.g. 'F73.11'), so both an absolute and a
+# relative slack are granted.
+_FORMULA_ABS_TOL: float = 0.5
+_FORMULA_REL_TOL: float = 0.01
 
 
 @dataclasses.dataclass(frozen=True)
@@ -695,20 +757,30 @@ def _asu_components(
 
 
 def _z_from_components(components: list[list[AtomRecord]]) -> int | SupportsIndex:
-    """Derive Z as the GCD of per-composition component multiplicities.
+    """Derive Z as the GCD of per-species molecule counts in the unit cell.
 
     Each distinct molecular species (identified by its elemental composition)
     appears exactly Z times in the unit cell.  Taking the GCD of those
     per-species counts gives Z without needing a packing coefficient.
 
-    Minor disordered fragments — components in which *every* atom has an
-    occupancy below :data:`PARTIAL_OCC_THRESHOLD` (e.g. a pair of disordered
-    solvent oxygens with ``dg=0, occ=0.5`` and no disorder-group label) — are
-    excluded from the GCD calculation because they do not represent complete
-    formula units.  If, however, *all* components fall below the threshold
-    (e.g. a centrosymmetric molecule sitting entirely on an inversion centre),
-    no filtering is applied so that the algorithm can still return a meaningful
-    result.
+    Components are reduced via :func:`_classify_component`, so a molecule that
+    is disordered over two PARTs contributes ``1.0`` instead of appearing as
+    two independent fractional species.  This matters for structures where only
+    *some* copies of a species are disordered: eight anions of which two are
+    PART-split would otherwise be counted as ``6 + 2 + 2`` and drag the GCD
+    down to 2 instead of 8.
+
+    A species enters the GCD only when
+
+    * at least one of its components is (near-)fully occupied
+      (``max(occ) ≥`` :data:`PARTIAL_OCC_THRESHOLD`), and
+    * its summed molecule count is (near-)integral — fractionally disordered
+      solvent (e.g. benzene/fluorobenzene sharing one site) never adds up to a
+      whole number of molecules and must not constrain Z.
+
+    If no species survives those filters, the rounded effective molecule count
+    per species is used instead (e.g. a centrosymmetric molecule sitting
+    entirely on an inversion centre, where every atom has ``occ = 0.5``).
 
     Examples
     --------
@@ -716,6 +788,7 @@ def _z_from_components(components: list[list[AtomRecord]]) -> int | SupportsInde
     * Salt like R·HCl (4 organic + 4 Cl⁻): GCD({org: 4, Cl: 4}) = 4.
     * 1:1 co-crystal (4+4 of two different species): GCD = 4.
     * Z=2 organic + disordered solvent (occ=0.5, count=1): GCD({org: 2}) = 2.
+    * Salt with 8 anions (2 of them PART-split) + 4 cations: GCD({8, 4}) = 4.
 
     Known limitation
     ----------------
@@ -727,24 +800,34 @@ def _z_from_components(components: list[list[AtomRecord]]) -> int | SupportsInde
     if not components:
         return 1
 
-    # Separate components into "major" (contain at least one fully-ordered atom)
-    # and "minor" (all atoms are partially occupied — likely disordered solvent).
-    major = [
-        comp for comp in components
-        if max(_atom_occupancy(atom) for atom in comp) >= PARTIAL_OCC_THRESHOLD
-    ]
-    # Fallback: if every component is partial-occupancy (e.g. the whole molecule
-    # sits on an inversion centre), do not exclude anything.
-    active = major or components
+    classified = [item for item in map(_classify_component, components) if item is not None]
+    if not classified:
+        return 1
 
-    comp_counts: dict[tuple, int] = {}
-    for comp in active:
-        weighted = _weighted_element_counts(comp)
-        # Snap near-integer counts so 0.99/1.01 group with 1.0 (rounding tolerance).
-        snapped = {el: _snap_to_int_if_close(n) for el, n in weighted.items()}
-        key = tuple(sorted(snapped.items()))
-        comp_counts[key] = comp_counts.get(key, 0) + 1
-    return reduce(gcd, comp_counts.values())
+    species: dict[tuple, list[_ClassifiedComponent]] = {}
+    for item in classified:
+        species.setdefault(item.species_key, []).append(item)
+
+    whole_molecule_counts: list[int] = []
+    for group in species.values():
+        if max(item.max_occupancy for item in group) < PARTIAL_OCC_THRESHOLD:
+            continue
+        total = sum(item.effective for item in group)
+        if abs(total - round(total)) > _OCC_INT_SNAP_TOL or round(total) < 1:
+            continue
+        whole_molecule_counts.append(round(total))
+
+    if not whole_molecule_counts:
+        # Fallback: no species is both fully occupied and integral (e.g. a
+        # molecule that sits entirely on an inversion centre, or a site that is
+        # split over two PARTs which the bond graph could not fuse).  Use the
+        # rounded effective molecule count per species, but never below one.
+        whole_molecule_counts = [
+            max(1, round(sum(item.effective for item in group)))
+            for group in species.values()
+        ]
+
+    return reduce(gcd, whole_molecule_counts)
 
 
 # ---------------------------------------------------------------------------
@@ -1057,22 +1140,12 @@ def _moiety_formula_impl(
     # Classify components and build per-component (comp_dict, effective, charge) triples.
     classified: list[tuple[dict[str, float], float, FragmentCharge]] = []
     for comp in components:
-        occs = [_atom_occupancy(atom) for atom in comp]
-        if not occs:
+        item = _classify_component(comp)
+        if item is None:
             continue
-        is_uniform = (max(occs) - min(occs)) <= _UNIFORM_OCC_TOL
-        if is_uniform:
-            comp_dict = {el: float(c) for el, c in
-                         Counter(_normalize_element(_atom_element(atom))
-                                 for atom in comp).items()}
-            effective = max(occs)
-        else:
-            weighted = _weighted_element_counts(comp)
-            comp_dict = {el: _snap_to_int_if_close(n) for el, n in weighted.items()}
-            effective = 1.0
-        charge = perceive_fragment_charge(_charge_atoms(comp), comp_dict,
-                                          weighted=not is_uniform)
-        classified.append((comp_dict, effective, charge))
+        charge = perceive_fragment_charge(_charge_atoms(comp), item.composition,
+                                          weighted=not item.uniform)
+        classified.append((item.composition, item.effective, charge))
 
     if not classified:
         return ''
@@ -1152,66 +1225,78 @@ def _parse_formula_sum(formula_sum: str | None) -> dict[str, float] | None:
 
 def _expanded_element_counts(
         expanded: list[ExpandedAtom],
-) -> dict[str, int]:
+) -> dict[str, float]:
     """Return occupancy-weighted total atom count per element across all expanded unit-cell sites.
 
     Each atom contributes its occupancy (not 1) so that PART 1 + PART 2
     disorder, whose per-site occupancies sum to ≈1, yields the same total
     as the corresponding ordered structure.  Element symbols are normalised
     via :func:`_normalize_element` so that oxidation-state suffixes (e.g.
-    ``'Ni0+'``, ``'O1-'``) are stripped before aggregation.  Each total is
-    rounded to the nearest integer (occupancies of all parts at one site
-    sum to 1 by convention, with at most rounding-error noise).
+    ``'Ni0+'``, ``'O1-'``) are stripped before aggregation.
+
+    Totals are *not* rounded: a partially occupied solvent site legitimately
+    contributes a fractional count that matches a fractional
+    ``_chemical_formula_sum`` entry such as ``F73.11``.  Callers compare with
+    a relative tolerance (see :data:`_FORMULA_REL_TOL`).
     """
     weighted: dict[str, float] = {}
     for atom in expanded:
         key = _normalize_element(atom[0])
         weighted[key] = weighted.get(key, 0.0) + float(atom[2])
-    return {el: round(n) for el, n in weighted.items()}
+    return weighted
+
+
+def _counts_agree(actual: float, expected: float) -> bool:
+    """Return ``True`` when *actual* matches *expected* within the formula tolerance.
+
+    Both an absolute and a relative tolerance are allowed so that small
+    element counts (rounding noise of a few hundredths) and large ones
+    (fractional occupancies accumulated over hundreds of sites) are treated
+    alike.
+    """
+    return abs(actual - expected) <= max(_FORMULA_ABS_TOL, _FORMULA_REL_TOL * abs(expected))
 
 
 def _gcd_matches_formula(
         z_gcd: int,
-        cell_counts: dict[str, int],
+        cell_counts: dict[str, float],
         formula: dict[str, float],
 ) -> bool:
-    """Return True iff ``cell_counts == formula × z_gcd`` for every non-H element.
+    """Return True iff ``cell_counts ≈ formula × z_gcd`` for every non-H element.
 
     Hydrogen is excluded because riding/omitted hydrogens commonly cause a
     benign mismatch that has no bearing on Z.  All other elements present in
-    the formula must match exactly (the expanded unit cell is integer-valued
-    by construction once disorder has been collapsed).
+    the formula must match within :func:`_counts_agree`.
     """
     for el, n_per_fu in formula.items():
         if el == 'H' or n_per_fu <= 0:
             continue
-        expected = round(n_per_fu * z_gcd)
-        if cell_counts.get(el.capitalize(), 0) != expected:
+        if not _counts_agree(cell_counts.get(el.capitalize(), 0.0), n_per_fu * z_gcd):
             return False
     return True
 
 
 def _z_from_formula(
-        cell_counts: dict[str, int],
+        cell_counts: dict[str, float],
         formula: dict[str, float],
 ) -> int | None:
     """Derive Z from the per-element ratio ``cell_counts / formula``.
 
     Hydrogen is ignored (see :func:`_gcd_matches_formula`).  Every remaining
-    element in the formula must yield the *same* positive integer Z (spread
-    of zero, exact integer ratio); otherwise ``None`` is returned and the
-    caller falls back to the bond-graph GCD.
+    element in the formula must yield the *same* positive integer Z, each
+    ratio being integral within :func:`_counts_agree`; otherwise ``None`` is
+    returned and the caller falls back to the bond-graph GCD.
     """
     zs: list[int] = []
     for el, n_per_fu in formula.items():
         if el == 'H' or n_per_fu <= 0:
             continue
-        n_in_cell = cell_counts.get(el.capitalize(), 0)
+        n_in_cell = cell_counts.get(el.capitalize(), 0.0)
         if n_in_cell <= 0:
             return None
         ratio = n_in_cell / n_per_fu
         z = int(round(ratio))
-        if z < 1 or abs(ratio - z) > 1e-6:
+        if z < 1 or not _counts_agree(n_in_cell, n_per_fu * z):
             return None
         zs.append(z)
     if not zs:

@@ -12,6 +12,8 @@ from finalcif.tools.z_from_packing import (
     _count_components,
     _get_components,
     _z_from_components,
+    _z_from_formula,
+    _gcd_matches_formula,
     _build_bond_graph,
     _z_sg_from_symmops,
     _normalize_element,
@@ -199,6 +201,57 @@ class TestZFromComponents:
         # Centrosymmetric molecule on inversion centre: all occ=0.5, appears once.
         mol = [('C', 0.5)] * 10 + [('O', 0.5)] * 3
         assert _z_from_components([mol]) == 1
+
+    def test_part_split_copies_group_with_ordered_copies(self):
+        """8 anions (2 of them split over two PARTs) + 4 cations → Z=4, not 2.
+
+        Keying components by their occupancy-weighted composition would list the
+        two PART fragments as separate species (counts 6, 2, 2, 4) and yield
+        GCD=2.  Grouping by chemical species restores the true count of 8.
+        """
+        anion = [('Al', 1.0)] + [('F', 1.0)] * 36 + [('O', 1.0)] * 4
+        part_a = [('Al', 0.77)] + [('F', 0.77)] * 36 + [('O', 0.77)] * 4
+        part_b = [('Al', 0.23)] + [('F', 0.23)] * 36 + [('O', 0.23)] * 4
+        cation = [('B', 1.0)] * 2 + [('N', 1.0)] * 6 + [('P', 1.0)]
+        components = [anion] * 6 + [part_a] * 2 + [part_b] * 2 + [cation] * 4
+        assert _z_from_components(components) == 4
+
+    def test_fractionally_disordered_solvent_does_not_constrain_z(self):
+        """A species whose molecule count is non-integral must not constrain Z.
+
+        The benzene copies are nearly fully occupied (so the occupancy filter
+        keeps them) but share their site with another solvent, so 12 copies add
+        up to 10.8 molecules — not a whole number of formula units.
+        """
+        mol = [('C', 1.0)] * 20 + [('O', 1.0)] * 2
+        benzene = [('C', 0.9)] * 6
+        components = [mol] * 4 + [benzene] * 12
+        assert _z_from_components(components) == 4
+
+
+class TestFormulaCrossCheck:
+    """The formula cross-check must tolerate fractional element counts."""
+
+    def test_fractional_formula_matches_gcd(self):
+        # Squeezed structure: F73.11 per formula unit, Z=4 → 292.44 F in the cell.
+        cell_counts = {'C': 504.0, 'F': 292.44, 'Al': 8.0}
+        formula = {'C': 126.0, 'F': 73.11, 'Al': 2.0}
+        assert _gcd_matches_formula(4, cell_counts, formula)
+
+    def test_wrong_z_does_not_match(self):
+        cell_counts = {'C': 504.0, 'F': 292.44, 'Al': 8.0}
+        formula = {'C': 126.0, 'F': 73.11, 'Al': 2.0}
+        assert not _gcd_matches_formula(2, cell_counts, formula)
+
+    def test_z_derived_from_fractional_formula(self):
+        cell_counts = {'C': 504.0, 'F': 292.44, 'Al': 8.0}
+        formula = {'C': 126.0, 'F': 73.11, 'Al': 2.0}
+        assert _z_from_formula(cell_counts, formula) == 4
+
+    def test_inconsistent_elements_give_none(self):
+        cell_counts = {'C': 504.0, 'Al': 6.0}
+        formula = {'C': 126.0, 'Al': 2.0}
+        assert _z_from_formula(cell_counts, formula) is None
 
 
 # ---------------------------------------------------------------------------
