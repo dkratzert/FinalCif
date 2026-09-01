@@ -329,7 +329,9 @@ class TestMoietyFormulaWithCharges:
         water = [('O', 1.0, (('H', 1), ('H', 1))),
                  ('H', 1.0, (('O', 2),)), ('H', 1.0, (('O', 2),))]
         result = moiety_formula_from_components([cation, chloride, water], z=1)
-        assert result == 'H2 O, N 1+, Cl 1-'
+        # All three species have a single non-hydrogen atom, so the discovery
+        # order decides (see the PLATON ordering rule).
+        assert result == 'N 1+, Cl 1-, H2 O'
 
     def test_explicit_oxidation_states_from_type_symbols(self):
         sodium = [('Na1+', 1.0, ())]
@@ -415,6 +417,37 @@ class TestMoietyFormulaOfRealStructures:
 
     def test_sucrose_is_neutral(self):
         assert self._moiety('test-data/DK_Zucker2_0m.cif') == 'C12 H22 O11'
+
+    def test_disordered_anion_precedes_the_larger_cation(self):
+        """1548072: PLATON reports ``'4(C16 Al F36 O4), C60 H48 In4 N12'``.
+
+        The aluminate has fewer atoms in its formula than the indium cation but
+        is disordered over more sites, so its residue holds the larger number of
+        modelled non-hydrogen atoms and PLATON lists it first.
+        """
+        assert (self._moiety('test-data/1548072_many_atoms.cif')
+                == '4(C16 Al F36 O4), C60 H48 In4 N12')
+
+
+class TestMoietyOrderFollowsPlaton:
+    """PLATON orders moieties by descending modelled non-hydrogen atom count.
+
+    Every disorder part counts once and occupancies are ignored, so a
+    disordered fragment can precede a chemically larger, ordered one.  A
+    deviating sequence makes checkCIF raise ``042_ALERT_1_C``.
+    """
+
+    def test_disordered_fragment_comes_first(self):
+        ordered = [('C', 1.0, ())] * 10
+        # Two parts of the same six-carbon molecule: six carbons in the formula,
+        # but twelve modelled carbons.
+        disordered = [('C', 0.6, ())] * 6 + [('C', 0.4, ())] * 6
+        assert moiety_formula_from_components([ordered, disordered], z=1) == 'C6, C10'
+
+    def test_equal_counts_keep_the_discovery_order(self):
+        first = [('Na', 1.0, ())]
+        second = [('Cl', 1.0, ())]
+        assert moiety_formula_from_components([first, second], z=1) == 'Na 1+, Cl 1-'
 
 
 # ---------------------------------------------------------------------------
@@ -546,7 +579,9 @@ class TestDisorderedSolventPocket:
                  + self._ring(0.6, disorder_group=1)
                  + self._ring(0.4, disorder_group=2, twist=7.0))
         # The bridging carbon fuses both parts into a single seven-carbon unit.
-        assert self._moiety(atoms) == 'C8, C7'
+        # Its 13 modelled carbons outnumber the eight of the main chain, so it
+        # is listed first (PLATON orders by modelled non-hydrogen atom count).
+        assert self._moiety(atoms) == 'C7, C8'
 
     def test_a_fully_occupied_pivot_inside_a_part_still_bridges(self):
         """The pivot of a rotationally disordered group may sit in a PART itself.
@@ -559,7 +594,7 @@ class TestDisorderedSolventPocket:
         atoms = (self._main_molecule() + bridge
                  + self._ring(0.6, disorder_group=1)
                  + self._ring(0.4, disorder_group=2, twist=7.0))
-        assert self._moiety(atoms) == 'C8, C7'
+        assert self._moiety(atoms) == 'C7, C8'
 
 
 class TestAggregateMerging:
@@ -593,11 +628,11 @@ class TestAggregateMerging:
         assert result == 'C20, C10'
 
     def test_non_integral_total_is_kept(self):
-        """``2(H2 O), 0.03833(H12 O6)`` must survive: 2 + 6*0.03833 is not whole."""
+        """``0.03833(H12 O6), 2(H2 O)`` must survive: 2 + 6*0.03833 is not whole."""
         water = [('H', 1.0, ()), ('H', 1.0, ()), ('O', 1.0, ())]
         hexamer = [('H', 0.03833, ())] * 12 + [('O', 0.03833, ())] * 6
         result = moiety_formula_from_components([water, water, hexamer], z=1)
-        assert result == '2(H2 O), 0.03833(H12 O6)'
+        assert result == '0.03833(H12 O6), 2(H2 O)'
 
     def test_different_elements_are_never_folded(self):
         """A composition that is not an exact multiple is left alone."""

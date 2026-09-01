@@ -221,12 +221,17 @@ class _ClassifiedComponent:
                      for a multi-part disorder aggregate).
         max_occupancy: Highest site occupancy inside the component.
         uniform:     ``True`` when all atoms share the same occupancy.
+        modelled_non_h: Number of non-hydrogen atoms actually present in the
+                     model, counting every disorder part once and ignoring
+                     occupancies.  This is the quantity PLATON sorts its
+                     residues on (see :func:`_moiety_formula_impl`).
     """
 
     composition: dict[str, float]
     effective: float
     max_occupancy: float
     uniform: bool
+    modelled_non_h: int
 
     @property
     def species_key(self) -> tuple:
@@ -260,8 +265,11 @@ def _classify_component(component: list[AtomRecord]) -> _ClassifiedComponent | N
         weighted = _weighted_element_counts(component)
         composition = {element: _snap_to_int_if_close(count) for element, count in weighted.items()}
         effective = 1.0
+    modelled_non_h = sum(1 for atom in component
+                         if _normalize_element(_atom_element(atom)) != 'H')
     return _ClassifiedComponent(composition=composition, effective=effective,
-                                max_occupancy=max(occupancies), uniform=uniform)
+                                max_occupancy=max(occupancies), uniform=uniform,
+                                modelled_non_h=modelled_non_h)
 
 
 # Tolerance used when testing whether Z' is close to a simple fraction.
@@ -922,6 +930,8 @@ def moiety_formula_from_components(
     water molecules (occ = 0.5) contribute 1.0 to the effective count, giving
     a ratio of ``1.0 / Z`` per formula unit.
 
+    The moieties are listed in PLATON's order — see :func:`_moiety_formula_impl`.
+
     **Polymeric / extended structures** (``formula_derived=True``):
     When *formula_sum_dict* is supplied, the per-formula-unit chemical formula
     is expressed as a single moiety token (e.g. ``'C24 H16 N4 Zn'`` for a Zn-MOF
@@ -1063,9 +1073,9 @@ def _is_integral(value: float) -> bool:
 
 
 def _merge_multiple_species(
-        species: list[tuple[dict[str, float], float, bool, float, FragmentCharge]],
+        species: list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int]],
         z: int,
-) -> list[tuple[dict[str, float], float, bool, float, FragmentCharge]]:
+) -> list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int]]:
     """Fold aggregate species back into the monomer they are a multiple of.
 
     A molecule that is bonded to a symmetry copy of itself shows up twice: once
@@ -1105,7 +1115,9 @@ def _merge_multiple_species(
                 if not _is_integral(total / z):
                     continue
                 merged[j] = (monomer[0], total, monomer[2] or aggregate[2],
-                             monomer[3], monomer[4])
+                             monomer[3], monomer[4],
+                             max(monomer[5], aggregate[5]),
+                             min(monomer[6], aggregate[6]))
                 del merged[i]
                 break
             else:
@@ -1136,44 +1148,60 @@ def _moiety_formula_impl(
 
     Every species is finally given the formal charge perceived by
     :mod:`finalcif.tools.formal_charge` and balanced across the formula unit.
+
+    The moieties are ordered the way PLATON orders them: by descending number
+    of non-hydrogen atoms *as modelled*, i.e. every disorder part is counted
+    once and occupancies are ignored.  A heavily disordered small ion can
+    therefore precede a larger but fully ordered molecule.  The IUCr rules
+    (``docs/formula_definitions.txt``) do not prescribe an order between
+    moieties, but checkCIF raises ``042_ALERT_1_C`` when the reported sequence
+    differs from PLATON's.  Charges are not part of that comparison — PLATON
+    skips blanks and charge tokens while comparing the strings.
     """
-    # Classify components and build per-component (comp_dict, effective, charge) triples.
-    classified: list[tuple[dict[str, float], float, FragmentCharge]] = []
+    # Classify components and build per-component (comp_dict, effective, charge, non_h) tuples.
+    classified: list[tuple[dict[str, float], float, FragmentCharge, int]] = []
     for comp in components:
         item = _classify_component(comp)
         if item is None:
             continue
         charge = perceive_fragment_charge(_charge_atoms(comp), item.composition,
                                           weighted=not item.uniform)
-        classified.append((item.composition, item.effective, charge))
+        classified.append((item.composition, item.effective, charge, item.modelled_non_h))
 
     if not classified:
         return ''
 
     # Group by composition and charge (rounded for float-stable equality).
-    comp_groups: dict[tuple, list[tuple[dict[str, float], float, FragmentCharge]]] = {}
-    for comp_dict, effective, charge in classified:
+    comp_groups: dict[tuple, list[tuple[dict[str, float], float, FragmentCharge, int]]] = {}
+    for comp_dict, effective, charge, non_h in classified:
         key = (tuple(sorted((el, round(n, _OCC_DECIMALS)) for el, n in comp_dict.items())),
                charge.charge, charge.confident)
-        comp_groups.setdefault(key, []).append((comp_dict, effective, charge))
+        comp_groups.setdefault(key, []).append((comp_dict, effective, charge, non_h))
 
     # For each species compute total effective count and an "is_major" flag.
-    species: list[tuple[dict[str, float], float, bool, float, FragmentCharge]] = []
-    for _key, group in comp_groups.items():
-        total_effective = sum(eff for _cd, eff, _q in group)
-        is_major = max(eff for _cd, eff, _q in group) >= PARTIAL_OCC_THRESHOLD
+    species: list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int]] = []
+    for order, (_key, group) in enumerate(comp_groups.items()):
+        total_effective = sum(eff for _cd, eff, _q, _nh in group)
+        is_major = max(eff for _cd, eff, _q, _nh in group) >= PARTIAL_OCC_THRESHOLD
         comp_dict = group[0][0]
         atoms_per_mol = sum(comp_dict.values())
-        species.append((comp_dict, total_effective, is_major, atoms_per_mol, group[0][2]))
+        max_non_h = max(nh for _cd, _eff, _q, nh in group)
+        species.append((comp_dict, total_effective, is_major, atoms_per_mol,
+                        group[0][2], max_non_h, order))
 
     species = _merge_multiple_species(species, z)
 
-    # Sort: major species first (most abundant main molecule),
-    # then by descending atom count (heavier molecule first), then by effective count.
-    species.sort(key=lambda x: (-x[2], -x[3], -x[1]))
+    # PLATON orders the moieties of `_chemical_formula_moiety` by descending
+    # number of non-hydrogen atoms *as modelled* — every disorder part counts
+    # once and occupancies are ignored (PLA283 prints the residues in the order
+    # established by the GEN022 sort in platon_special.f).  Following that order
+    # avoids checkCIF's `042_ALERT_1_C` ("Calc. and Reported MoietyFormula
+    # Strings Differ"), which compares the moiety sequence.  Equal counts keep
+    # the order in which the species were discovered.
+    species.sort(key=lambda x: (-x[5], x[6]))
 
     entries: list[tuple[str, float, FragmentCharge, float]] = []
-    for comp_dict, effective, _is_major, atoms_per_mol, charge in species:
+    for comp_dict, effective, _is_major, atoms_per_mol, charge, _non_h, _order in species:
         formula_str = _composition_to_hill_str(comp_dict)
         if not formula_str:
             continue
