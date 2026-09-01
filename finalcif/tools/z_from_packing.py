@@ -495,6 +495,11 @@ _VALID_Z_DENOMINATORS: tuple[int, ...] = (1, 2, 3, 4, 6)
 _FORMULA_ABS_TOL: float = 0.5
 _FORMULA_REL_TOL: float = 0.01
 
+# How close a unit-cell element count has to be to a whole number before it is
+# treated as one.  Occupancies are stored with two decimals, so a genuinely
+# integral count accumulated over many sites can drift by a few hundredths.
+_INTEGRAL_COUNT_TOL: float = 0.02
+
 
 @dataclasses.dataclass(frozen=True)
 class ZResult:
@@ -779,6 +784,12 @@ def _build_bond_graph(
     each other (see :func:`_parts_may_bond`), so that alternative positions of
     the same region of the structure end up in separate components.
 
+    Only genuine covalent bonds become edges.  Two hydrogens are never bonded,
+    and every hydrogen keeps just its nearest neighbour
+    (see :func:`_prune_hydrogen_bonds`), so short intermolecular contacts —
+    hydrogen bonds and the like — cannot weld separate molecules into one
+    fragment.
+
     Fractional→Cartesian conversion is delegated to
     ``gemmi.UnitCell.orthogonalize()``, which handles all crystal systems
     correctly for any cell metric.
@@ -802,6 +813,10 @@ def _build_bond_graph(
     image_masks = [_expanded_image_mask(atom) for atom in expanded]
     occupancies = [float(atom[2]) for atom in expanded]
     is_hydrogen = [_normalize_element(atom[0]) in _HYDROGEN for atom in expanded]
+
+    # Nearest neighbour seen for each hydrogen, used by _prune_hydrogen_bonds to
+    # drop weak contacts that the covalent-radii cutoff would otherwise accept.
+    closest_to_hydrogen: dict[int, tuple[float, int]] = {}
 
     # Maximum possible bond cutoff (largest atom pair + tolerance).
     max_radius = max(radii)
@@ -877,11 +892,47 @@ def _build_bond_graph(
                         dx = xj - xi
                         dy = yj - yi
                         dz = zj - zi
-                        if dx * dx + dy * dy + dz * dz < cutoff_sq:
+                        distance_sq = dx * dx + dy * dy + dz * dz
+                        if distance_sq < cutoff_sq:
                             adj[i].add(j)
                             adj[j].add(i)
                             seen_j.add(j)
+                            if hydrogen_i:
+                                _keep_closest(closest_to_hydrogen, i, j, distance_sq)
+                            elif is_hydrogen[j]:
+                                _keep_closest(closest_to_hydrogen, j, i, distance_sq)
+    _prune_hydrogen_bonds(adj, closest_to_hydrogen)
     return adj
+
+
+def _keep_closest(closest: dict[int, tuple[float, int]],
+                  hydrogen: int, partner: int, distance_sq: float) -> None:
+    """Record *partner* when it is the closest neighbour seen so far for *hydrogen*."""
+    current = closest.get(hydrogen)
+    if current is None or distance_sq < current[0]:
+        closest[hydrogen] = (distance_sq, partner)
+
+
+def _prune_hydrogen_bonds(adj: dict[int, set[int]],
+                          closest: dict[int, tuple[float, int]]) -> None:
+    """Leave every hydrogen bonded to its nearest neighbour only.
+
+    Hydrogen forms exactly one covalent bond, but the covalent-radii criterion
+    is generous enough to also catch short intermolecular contacts: an
+    aluminate F···H–C contact at 1.53 Å falls inside the 1.62 Å cutoff and
+    welds two separate ions into one fragment, which wrecks both the moiety
+    formula and the Z derived from it (see ``02_IK_HK_186``).  The real C–H
+    bond of that hydrogen is 0.98 Å, so keeping only the shortest contact
+    removes the spurious link without touching any genuine bond.
+
+    A hydrogen bridging two atoms of the *same* molecule (as in a borane) loses
+    one edge too, but the molecule stays connected through its heavy-atom
+    bonds, so no component is affected.
+    """
+    for hydrogen, (_distance_sq, partner) in closest.items():
+        for neighbour in adj[hydrogen] - {partner}:
+            adj[neighbour].discard(hydrogen)
+        adj[hydrogen] = {partner}
 
 
 # ---------------------------------------------------------------------------
@@ -1542,6 +1593,65 @@ def _gcd_matches_formula(
     return True
 
 
+def _counts_allow_z(z: int, cell_counts: dict[str, float]) -> bool:
+    """Return ``True`` when *z* divides the unit-cell content into a sensible formula.
+
+    This is PLATON's test from ``PLA081`` (``platon_special.f``, the
+    "CHECK FOR 'CORRECTABLE' BROKEN SUM-FORMULA" block).  Dividing the cell
+    content by Z must leave a formula a chemist would write:
+
+    * An element whose unit-cell count is a whole number must stay whole after
+      the division, or become a clean half.  A formula unit may legitimately
+      contain half a molecule of something — ``0.5(C7 H8)`` gives ``C33.5`` —
+      but ``C16.75`` is not a formula, it is a symptom of a wrong Z.
+    * An element whose cell count is *not* whole is skipped entirely.  Partial
+      occupancy produces genuinely fractional contents such as ``F292.44``
+      (squeezed or disordered structures), which constrain nothing.
+
+    Hydrogen is ignored throughout, as everywhere else in this module, because
+    riding or omitted hydrogens routinely disagree without any bearing on Z.
+    """
+    if z < 1:
+        return False
+    for element, count in cell_counts.items():
+        if element == 'H':
+            continue
+        constrains_z = False
+        divides_cleanly = False
+        for multiplier in (1, 2):
+            scaled = count * multiplier
+            nearest = round(scaled)
+            if abs(scaled - nearest) > _INTEGRAL_COUNT_TOL:
+                continue
+            constrains_z = True
+            if nearest % z == 0:
+                divides_cleanly = True
+                break
+        if constrains_z and not divides_cleanly:
+            return False
+    return True
+
+
+def _adjust_z_to_counts(z: int, cell_counts: dict[str, float]) -> int:
+    """Lower *z* until the unit-cell content divides into a sensible formula.
+
+    ``_chemical_formula_sum`` cannot pin Z down on its own: the formula is
+    written as ``unit-cell content / Z``, so a refinement carried out with the
+    wrong Z stores a formula that is wrong by exactly the reciprocal factor and
+    the ratio of the two reproduces the error.  Only the *model* carries
+    independent information, which is why the candidate is tested against the
+    counted unit-cell content and reduced until it fits, exactly as PLATON
+    adjusts its own Z.
+
+    The largest value that passes is kept, so an already sensible Z is returned
+    untouched.
+    """
+    for candidate in range(z, 1, -1):
+        if _counts_allow_z(candidate, cell_counts):
+            return candidate
+    return 1
+
+
 def _z_from_formula(
         cell_counts: dict[str, float],
         formula: dict[str, float],
@@ -1552,6 +1662,9 @@ def _z_from_formula(
     element in the formula must yield the *same* positive integer Z, each
     ratio being integral within :func:`_counts_agree`; otherwise ``None`` is
     returned and the caller falls back to the bond-graph GCD.
+
+    The result is passed through :func:`_adjust_z_to_counts` so that a formula
+    stored with a wrong Z cannot impose a formula unit such as ``C16.75``.
     """
     zs: list[int] = []
     for el, n_per_fu in formula.items():
@@ -1569,7 +1682,7 @@ def _z_from_formula(
         return None
     if min(zs) != max(zs):
         return None
-    return zs[0]
+    return _adjust_z_to_counts(zs[0], cell_counts)
 
 
 def _z_sg_from_symmops(symmops: list[str]) -> int:

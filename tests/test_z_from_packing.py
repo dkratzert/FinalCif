@@ -13,6 +13,8 @@ from finalcif.tools.z_from_packing import (
     _get_components,
     _z_from_components,
     _z_from_formula,
+    _counts_allow_z,
+    _adjust_z_to_counts,
     _gcd_matches_formula,
     _build_bond_graph,
     _z_sg_from_symmops,
@@ -252,6 +254,94 @@ class TestFormulaCrossCheck:
         cell_counts = {'C': 504.0, 'Al': 6.0}
         formula = {'C': 126.0, 'Al': 2.0}
         assert _z_from_formula(cell_counts, formula) is None
+
+
+class TestZIsAdjustedUntilTheFormulaMakesSense:
+    """``_chemical_formula_sum`` alone cannot pin Z down.
+
+    SHELXL writes the formula as ``unit-cell content / Z``, so a refinement done
+    with a wrong Z stores a formula that is wrong by the reciprocal factor and
+    the ratio of the two reproduces the error exactly.  The counted unit-cell
+    content is the only independent evidence, so the candidate Z is reduced
+    until dividing by it yields a formula a chemist would write — PLATON's rule
+    from ``PLA081``.
+    """
+
+    # One molecule C30 H30 Al2 Cl3 N3 plus half a toluene per formula unit,
+    # twice in the cell: the real Z is 2 (see 05_mo_cbfk04_2_0m_4_a).
+    CELL_COUNTS = {'C': 67.0, 'H': 68.0, 'Al': 4.0, 'Cl': 6.0, 'N': 6.0}
+
+    def test_a_correct_formula_is_kept(self):
+        formula = {'C': 33.5, 'H': 34.0, 'Al': 2.0, 'Cl': 3.0, 'N': 3.0}
+        assert _z_from_formula(self.CELL_COUNTS, formula) == 2
+
+    def test_a_formula_stored_with_a_doubled_z_is_corrected(self):
+        """``C16.75`` is not a formula, so Z = 4 is rejected in favour of 2."""
+        formula = {'C': 16.75, 'H': 17.0, 'Al': 1.0, 'Cl': 1.5, 'N': 1.5}
+        assert _z_from_formula(self.CELL_COUNTS, formula) == 2
+
+    def test_a_formula_stored_with_a_quadrupled_z_is_corrected(self):
+        formula = {'C': 8.375, 'H': 8.5, 'Al': 0.5, 'Cl': 0.75, 'N': 0.75}
+        assert _z_from_formula(self.CELL_COUNTS, formula) == 2
+
+    def test_half_integer_formula_units_stay_allowed(self):
+        """A solvent on a special position gives a clean half, which is fine."""
+        assert _counts_allow_z(2, self.CELL_COUNTS)
+        assert not _counts_allow_z(4, self.CELL_COUNTS)
+
+    def test_fractional_cell_counts_never_constrain_z(self):
+        """Partial occupancy legitimately yields counts like ``F292.44``."""
+        assert _counts_allow_z(4, {'C': 504.0, 'F': 292.44, 'Al': 8.0})
+
+    def test_hydrogen_is_ignored(self):
+        assert _counts_allow_z(4, {'C': 8.0, 'H': 13.0})
+
+    def test_an_already_sensible_z_is_returned_untouched(self):
+        assert _adjust_z_to_counts(12, {'C': 432.0, 'Al': 24.0, 'Mg': 12.0}) == 12
+
+
+class TestWeakContactsAreNotBonds:
+    """A short intermolecular contact must not weld two molecules together.
+
+    Hydrogen forms exactly one covalent bond, but the covalent-radii criterion
+    also accepts close contacts: in ``02_IK_HK_186`` an aluminate F...H-C
+    contact of 1.53 A sits inside the 1.62 A F/H cutoff and fused an aluminate
+    to a magnesium cluster, which dragged Z from 12 down to 2.
+    """
+
+    CELL = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+
+    def _molecules(self, gap: float) -> list:
+        """A C-H and an F atom, the F placed *gap* Angstrom from the hydrogen."""
+        return [['C1', 'C', 0.10, 0.5, 0.5, 0, 1.0, 0.02],
+                ['H1', 'H', (0.10 + 0.98 / 20.0), 0.5, 0.5, 0, 1.0, 0.02],
+                ['F1', 'F', (0.10 + (0.98 + gap) / 20.0), 0.5, 0.5, 0, 1.0, 0.02]]
+
+    def test_a_close_contact_does_not_join_two_fragments(self):
+        """1.53 A is inside the cutoff but is a contact, not a bond."""
+        adj = _build_bond_graph(
+            _expand_to_unit_cell(self._molecules(1.53), ['x,y,z'], self.CELL), self.CELL)
+        assert adj[1] == {0}  # the hydrogen keeps only its carbon
+        assert 1 not in adj[2]  # and the fluorine is left on its own
+
+    def test_the_real_bond_of_the_hydrogen_is_kept(self):
+        adj = _build_bond_graph(
+            _expand_to_unit_cell(self._molecules(1.53), ['x,y,z'], self.CELL), self.CELL)
+        assert 1 in adj[0]
+
+    def test_a_hydrogen_binds_its_nearest_neighbour(self):
+        """With the fluorine closer than the carbon, the fluorine wins."""
+        atoms = [['C1', 'C', 0.10, 0.5, 0.5, 0, 1.0, 0.02],
+                 ['H1', 'H', 0.10 + 1.40 / 20.0, 0.5, 0.5, 0, 1.0, 0.02],
+                 ['F1', 'F', 0.10 + 2.30 / 20.0, 0.5, 0.5, 0, 1.0, 0.02]]
+        adj = _build_bond_graph(_expand_to_unit_cell(atoms, ['x,y,z'], self.CELL), self.CELL)
+        assert adj[1] == {2}
+
+    def test_the_structure_stays_in_two_pieces(self):
+        atoms = self._molecules(1.53)
+        expanded = _expand_to_unit_cell(atoms, ['x,y,z'], self.CELL)
+        adj = _build_bond_graph(expanded, self.CELL)
+        assert len(_get_components(adj, expanded)) == 2
 
 
 # ---------------------------------------------------------------------------
