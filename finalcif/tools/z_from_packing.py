@@ -65,10 +65,12 @@ type CellParameters = Sequence[float]
 # callers may still pass plain ``(element, occupancy)`` pairs.
 type AtomRecord = tuple[str, float] | tuple[str, float, tuple[tuple[str, int], ...]]
 
-# One symmetry-expanded unit-cell site.  The disorder group is optional so that
-# tests and callers may pass plain ``(element, position, occupancy)`` triples.
+# One symmetry-expanded unit-cell site.  The disorder group and the index of
+# the symmetry image that produced the site are both optional so that tests and
+# callers may pass plain ``(element, position, occupancy)`` triples.
 type ExpandedAtom = (tuple[str, tuple[float, float, float], float]
-                     | tuple[str, tuple[float, float, float], float, int])
+                     | tuple[str, tuple[float, float, float], float, int]
+                     | tuple[str, tuple[float, float, float], float, int, int])
 
 # How much to trust an estimated Z (see :attr:`ZResult.confidence`).
 type Confidence = Literal['high', 'medium', 'formula', 'low']
@@ -192,6 +194,11 @@ class _ZSource(NamedTuple):
 # as 'Fe3+', 'O1-', 'Ni0+'; this pattern strips everything after the letters.
 _ELEMENT_LETTERS_RE: re.Pattern[str] = re.compile(r'^[A-Za-z]+')
 
+# Image bitmask meaning "belongs to every symmetry image", used for ordinary
+# atoms and for expanded sites built without image information.  Such atoms are
+# never restricted by :func:`_symmetry_images_may_bond`.
+_EVERY_IMAGE: int = -1
+
 # Covalent radii sourced from finalcif.cif.atoms.element2cov (Å).
 # A small fallback covers elements absent from that table.
 DEFAULT_RADIUS: float = 1.50
@@ -273,6 +280,53 @@ def _expanded_disorder_group(atom: ExpandedAtom) -> int:
     if len(atom) > 3:
         return int(cast('tuple[str, tuple[float, float, float], float, int]', atom)[3])
     return 0
+
+
+def _expanded_image_mask(atom: ExpandedAtom) -> int:
+    """Return the bitmask of symmetry operations that generated an expanded site.
+
+    Bit *k* is set when operation *k* maps the atom's asymmetric-unit position
+    onto this site.  A site on a special position is produced by several
+    operations and therefore carries several bits, which is what lets it bond
+    into every one of those symmetry images.
+
+    Sites without the field (plain triples/quadruples built by callers and
+    tests) report :data:`_EVERY_IMAGE`, so they belong to every image and the
+    rule in :func:`_symmetry_images_may_bond` never restricts them.
+    """
+    if len(atom) > 4:
+        return int(cast('tuple[str, tuple[float, float, float], float, int, int]', atom)[4])
+    return _EVERY_IMAGE
+
+
+def _symmetry_images_may_bond(first_group: int, second_group: int,
+                              first_mask: int, second_mask: int) -> bool:
+    """Return ``False`` for a bond between two negative PARTs of disjoint symmetry images.
+
+    SHELXL ``PART -n`` marks atoms that are disordered *over* a symmetry
+    element: the symmetry operation maps the fragment onto its own alternative
+    position rather than onto a neighbouring molecule.  Bonding those images
+    would fuse the alternatives into one oversized fragment (a toluene would be
+    reported as ``C14 H16``).
+
+    PLATON applies the same rule in ``platon_special.f``: growing outward from a
+    negative-PART atom it caps the symmetry loop at the identity operation
+    (``IF (IPR(661) < 0) NSYMMAX = 1``) and skips a neighbour in another PART
+    once the operation index exceeds one.  Crucially the restriction only
+    applies when *both* atoms carry a non-zero PART: a negative-PART ligand may
+    bond to an ordered (``PART 0``) atom across any symmetry operation.  That is
+    what keeps a metal on a special position joined to all alternative positions
+    of its disordered ligands.
+
+    Comparing the *sets* of generating operations rather than a single index
+    keeps the rule correct in every space group and for atoms on special
+    positions, which belong to more than one image at once.  Two negative-PART
+    atoms bond when their sets overlap, i.e. when they occur together in at
+    least one symmetry image.
+    """
+    if first_group >= 0 or second_group >= 0:
+        return True
+    return bool(first_mask & second_mask)
 
 
 def _parts_may_bond(first: int, second: int,
@@ -574,10 +628,8 @@ def _split_disorder(atoms_fract: Iterable[AsuAtom]) -> _DisorderSplit:
     higher symmetry than the molecule can occupy (e.g. a methanol on a 2-fold
     axis, or several solvent fragments each on its own special position with
     distinct negative PART numbers).  The SHELXL manual states that bonds to
-    symmetry-generated copies of negative-PART atoms must be *excluded*.
-    Expanding them with the full space-group symmetry and then running the
-    bond graph therefore produces wrong molecular components (copies that
-    are sub-Å apart get incorrectly fused).
+    symmetry-generated copies of negative-PART atoms must be *excluded*, which
+    :func:`_symmetry_images_may_bond` enforces once the atoms are expanded.
 
     All non-negative disorder groups (0, 1, 2, 3, …) are retained as *regular*
     atoms.  Per-site occupancies of all parts always sum to ≈1, so keeping
@@ -592,10 +644,10 @@ def _split_disorder(atoms_fract: Iterable[AsuAtom]) -> _DisorderSplit:
         A :class:`_DisorderSplit` of:
 
         * *regular* — atoms with ``disorder_group >= 0`` (i.e. 0, 1, 2, …);
-          safe to expand with all symmetry operations.
+          expanded by gemmi, which deduplicates special positions.
         * *special* — atoms with ``disorder_group < 0`` (i.e. -1, -2, -3, …);
-          must **not** be symmetry-expanded.  Their moiety contribution is
-          computed directly from the ASU occupancy via :func:`_asu_components`.
+          expanded once per symmetry operation by
+          :func:`_expand_over_symmetry`, each copy tagged with its image.
     """
     regular: list[AsuAtom] = []
     special: list[AsuAtom] = []
@@ -625,7 +677,18 @@ def _expand_to_unit_cell(
     own robust engine — no arbitrary deduplication threshold is needed.
 
     The disorder group of every site is carried along so that
-    :func:`_build_bond_graph` can keep alternative disorder components apart.
+    :func:`_build_bond_graph` can keep alternative disorder components apart,
+    together with a bitmask of the symmetry images the site belongs to.  The
+    mask lets :func:`_symmetry_images_may_bond` stop a negative-PART fragment
+    from bonding to its own symmetry copy.
+
+    Ordinary atoms are expanded by gemmi, which deduplicates sites landing on
+    the same position; they are marked as belonging to every image because the
+    bonding rule never restricts them.  Atoms in a negative ``PART`` are instead
+    expanded operation by operation *without* deduplication, so each symmetry
+    image keeps its own complete copy of the disordered fragment.  Letting gemmi
+    merge them would drop atoms that sit close to the symmetry element (a methyl
+    hydrogen almost on a two-fold axis) from all but one image.
 
     Fractional coordinates are wrapped into ``[0, 1)`` afterwards.  Deposited
     coordinates frequently lie outside that range (values such as 1.063 are
@@ -635,9 +698,9 @@ def _expand_to_unit_cell(
     Wrapping puts every site into one cell, where ±1 images are sufficient.
 
     Returns:
-        List of ``(element_symbol, (fx, fy, fz), occupancy, disorder_group)``
-        tuples covering all symmetry-equivalent sites in the conventional
-        unit cell.
+        List of ``(element_symbol, (fx, fy, fz), occupancy, disorder_group,
+        image_mask)`` tuples covering all symmetry-equivalent sites in the
+        conventional unit cell.
     """
     a, b, c, alpha, beta, gamma = cell[:6]
 
@@ -651,7 +714,8 @@ def _expand_to_unit_cell(
     if sg is not None:
         ss.spacegroup = sg
 
-    for atom in filtered:
+    ordered, over_symmetry = _split_disorder(filtered)
+    for atom in ordered:
         site = gemmi.SmallStructure.Site()
         site.label = str(atom[0])
         site.type_symbol = str(atom[1])
@@ -661,16 +725,40 @@ def _expand_to_unit_cell(
         ss.sites.append(site)
 
     ss.setup_cell_images()
-    all_sites = ss.get_all_unit_cell_sites()
-
-    return [
+    expanded: list[ExpandedAtom] = [
         (s.type_symbol,
          (s.fract.x - math.floor(s.fract.x),
           s.fract.y - math.floor(s.fract.y),
           s.fract.z - math.floor(s.fract.z)),
-         s.occ, s.disorder_group)
-        for s in all_sites
+         s.occ, s.disorder_group, _EVERY_IMAGE)
+        for s in ss.get_all_unit_cell_sites()
     ]
+    expanded.extend(_expand_over_symmetry(over_symmetry, list(group_ops)))
+    return expanded
+
+
+def _expand_over_symmetry(atoms: Sequence[AsuAtom], operations: list) -> list[ExpandedAtom]:
+    """Expand negative-PART atoms once per symmetry operation, without deduplication.
+
+    Each generated site records the single operation that produced it, so
+    :func:`_symmetry_images_may_bond` can keep the alternative positions of a
+    fragment disordered over a symmetry element apart.  Sites are deliberately
+    *not* merged when two operations place them almost on top of each other:
+    those are two half-occupied alternatives, and dropping one of them would
+    lose atoms from every image but the first.
+    """
+    generated: list[ExpandedAtom] = []
+    for atom in atoms:
+        source = [float(atom[2]), float(atom[3]), float(atom[4])]
+        element = str(atom[1])
+        occupancy = float(atom[6])
+        group = _disorder_group(atom)
+        for index, operation in enumerate(operations):
+            x, y, z = operation.apply_to_xyz(source)
+            generated.append((element,
+                              (x - math.floor(x), y - math.floor(y), z - math.floor(z)),
+                              occupancy, group, 1 << index))
+    return generated
 
 
 # ---------------------------------------------------------------------------
@@ -711,6 +799,7 @@ def _build_bond_graph(
     orth = [uc.orthogonalize(gemmi.Fractional(*atom[1])) for atom in expanded]
     radii = [_get_radius(atom[0]) for atom in expanded]
     groups = [_expanded_disorder_group(atom) for atom in expanded]
+    image_masks = [_expanded_image_mask(atom) for atom in expanded]
     occupancies = [float(atom[2]) for atom in expanded]
     is_hydrogen = [_normalize_element(atom[0]) in _HYDROGEN for atom in expanded]
 
@@ -767,6 +856,9 @@ def _build_bond_graph(
                             continue
                         if not _parts_may_bond(groups[i], groups[j],
                                                occupancies[i], occupancies[j]):
+                            continue
+                        if not _symmetry_images_may_bond(groups[i], groups[j],
+                                                         image_masks[i], image_masks[j]):
                             continue
                         # Two hydrogens are never bonded to each other.
                         if is_hydrogen[i] and is_hydrogen[j]:
@@ -851,46 +943,6 @@ def _get_components(
                         queue.append(nbr)
             components.append(comp)
     return components
-
-
-def _asu_components(
-        special_atoms: Sequence[AsuAtom],
-        cell: CellParameters,
-) -> list[list[AtomRecord]]:
-    """Return connected components for negative-PART ASU atoms without symmetry expansion.
-
-    Reuses :func:`_build_bond_graph` and :func:`_get_components` on the raw
-    ASU atom list — no symmetry operations are applied — so atoms from distinct
-    symmetry copies are never placed in the same graph and cannot be incorrectly
-    fused.  Atoms from different negative PART numbers (-1, -2, -3, …) are
-    processed together; the bond graph naturally groups them into separate
-    components whenever they sit at different special positions, and into the
-    same component when they form one chemical fragment (e.g. a single solvent
-    molecule split across two negative PART labels).
-
-    The ±1-cell-image search in :func:`_build_bond_graph` correctly handles
-    O–H bonds whose donor and acceptor straddle a cell face (e.g. O at
-    z = 1.04 bonded to H at z = 0.97).
-
-    Args:
-        special_atoms: Atoms with ``disorder_group < 0`` (any negative PART —
-                       -1, -2, -3, …) from ``CifContainer.atoms_fract``
-                       (same record format).
-        cell:          Cell parameters ``(a, b, c, alpha, beta, gamma)``.
-
-    Returns:
-        List of connected components, each a list of ``(element, occupancy)``
-        pairs — identical in structure to the output of :func:`_get_components`.
-    """
-    if not special_atoms:
-        return []
-    expanded: list[ExpandedAtom] = [
-        (str(atom[1]), (float(atom[2]), float(atom[3]), float(atom[4])), float(atom[6]),
-         _disorder_group(atom))
-        for atom in special_atoms
-    ]
-    adj = _build_bond_graph(expanded, cell)
-    return _get_components(adj, expanded)
 
 
 def _z_from_components(components: list[list[AtomRecord]]) -> int:
@@ -1451,40 +1503,6 @@ def _expanded_element_counts(
     return weighted
 
 
-def _special_element_counts(special_atoms: Sequence[AsuAtom], n_symmops: int) -> dict[str, float]:
-    """Return the unit-cell element counts contributed by negative-PART atoms.
-
-    Atoms of a negative SHELXL ``PART`` are never symmetry-expanded by
-    :func:`_expand_to_unit_cell`, but they are still generated by every
-    symmetry operation; their occupancy already accounts for the sharing on the
-    special position.  Their unit-cell contribution is therefore
-    ``occupancy × n_symmops`` — the same scaling :func:`_combine_components`
-    applies when building the moiety.
-
-    Leaving them out makes the comparison with ``_chemical_formula_sum``
-    inconsistent for every structure with a solvent on a special position, so
-    the formula-based Z correction silently gives up.
-    """
-    weighted: dict[str, float] = {}
-    factor = max(1, n_symmops)
-    for atom in special_atoms:
-        key = _normalize_element(atom[1])
-        weighted[key] = weighted.get(key, 0.0) + float(atom[6]) * factor
-    return weighted
-
-
-def _unit_cell_element_counts(
-        expanded: list[ExpandedAtom],
-        special_atoms: Sequence[AsuAtom],
-        n_symmops: int,
-) -> dict[str, float]:
-    """Total occupancy-weighted unit-cell content of regular *and* special atoms."""
-    counts = _expanded_element_counts(expanded)
-    for element, count in _special_element_counts(special_atoms, n_symmops).items():
-        counts[element] = counts.get(element, 0.0) + count
-    return counts
-
-
 def _counts_agree(actual: float, expected: float) -> bool:
     """Return ``True`` when *actual* matches *expected* within the formula tolerance.
 
@@ -1609,44 +1627,6 @@ def count_z(atoms_fract: Iterable[AsuAtom], symmops: list[str], cell: CellParame
     return _count_z_with_source(atoms_fract, symmops, cell, max_atoms, formula_sum).z
 
 
-def _combine_components(
-        regular_components: list[list[AtomRecord]],
-        special_atoms: Sequence[AsuAtom],
-        n_symmops: int,
-        cell: CellParameters,
-) -> list[list[AtomRecord]]:
-    """Combine regular bond-graph components with negative-PART special-position fragments.
-
-    For each connected component found in the negative-PART ASU atoms
-    (``disorder_group < 0`` — i.e. PART -1, -2, -3, …) via
-    :func:`_asu_components`, one synthetic copy per symmetry operation is
-    appended to *regular_components*.  The regular atoms are symmetry-expanded
-    to the whole unit cell, so the special ones have to be replicated the same
-    way to end up on the same scale.  Their occupancy already accounts for any
-    sharing on a special position, which makes the effective count inside
-    :func:`_moiety_formula_impl` equal to ``max_occ × n_symmops`` — the true
-    unit-cell content of the fragment.
-
-    Example — methanol at occ = 0.5 in a Z = 4 structure with 4 symmetry
-    operations::
-
-        ASU component: [(C, 0.5), (H, 0.5), (H, 0.5), (H, 0.5), (H, 0.5), (O, 0.5)]
-        4 copies appended → effective = 4 × 0.5 = 2.0
-        ratio = 2.0 / 4 = 0.5  →  '0.5(C H4 O)'  ✓
-
-    Using the symmetry-operation count rather than *Z* matters as soon as
-    Z′ ≠ 1.  A toluene at occ = 0.5 in a Z = 2 structure with 4 symmetry
-    operations really is ``4 × 0.5 = 2`` molecules per cell, hence one per
-    formula unit, not the half a molecule that replicating *Z* times implies.
-    """
-    if not special_atoms:
-        return regular_components
-    asu_comps = _asu_components(special_atoms, cell)
-    if not asu_comps:
-        return regular_components
-    return regular_components + asu_comps * max(1, n_symmops)
-
-
 def _count_z_with_source(
         atoms_fract: Iterable[AsuAtom],
         symmops: list[str],
@@ -1667,27 +1647,18 @@ def _count_z_with_source(
     if not symmops or symmops == ['']:
         return _ZSource(1, False, '')
 
-    # Separate regular atoms (dg >= 0) from negative-PART special-position atoms
-    # (dg < 0, i.e. PART -1, -2, -3, …).  Only regular atoms are symmetry-expanded;
-    # negative-PART atoms are processed as ASU components to avoid spurious
-    # inter-copy bonds across symmetry equivalents.
-    regular, special = _split_disorder(atoms_fract)
-    if not regular and not special:
+    # Negative-PART atoms (SHELXL ``PART -n``) are expanded together with all
+    # others; :func:`_symmetry_images_may_bond` is what keeps them from bonding
+    # to their own symmetry copies, so no atom has to be held back.
+    atoms = list(atoms_fract)
+    if not atoms:
         return _ZSource(1, False, '')
 
     # Guard against unreasonably large structures (e.g. proteins, MOFs).
-    # Only regular atoms are expanded; special atoms stay in the ASU.
-    if len(regular) * len(symmops) > max_atoms:
+    if len(atoms) * len(symmops) > max_atoms:
         return _ZSource(1, False, '')
 
-    if not regular:
-        # Edge case: only negative-PART atoms (unusual).  Fall back to Z=1 and
-        # derive the moiety solely from the ASU special components.
-        asu_comps = _asu_components(special, cell)
-        moiety = moiety_formula_from_components(asu_comps * 1, 1)
-        return _ZSource(1, False, moiety)
-
-    expanded = _expand_to_unit_cell(regular, symmops, cell)
+    expanded = _expand_to_unit_cell(atoms, symmops, cell)
     if not expanded:
         return _ZSource(1, False, '')
 
@@ -1703,20 +1674,18 @@ def _count_z_with_source(
         # Optional formula-based consistency check / correction.
         parsed_formula = _parse_formula_sum(formula_sum)
         if parsed_formula:
-            cell_counts = _unit_cell_element_counts(expanded, special, len(symmops))
+            cell_counts = _expanded_element_counts(expanded)
             if not _gcd_matches_formula(z, cell_counts, parsed_formula):
                 z_from_form = _z_from_formula(cell_counts, parsed_formula)
                 if z_from_form is not None:
                     z = z_from_form
                     formula_derived = True
     except Exception:
-        moiety = moiety_formula_from_components(
-            _combine_components(components, special, len(symmops), cell), z, formula_derived=False,
-        )
+        moiety = moiety_formula_from_components(components, z, formula_derived=False)
         return _ZSource(z, formula_derived, moiety)
 
     moiety = moiety_formula_from_components(
-        _combine_components(components, special, len(symmops), cell), z,
+        components, z,
         formula_derived=formula_derived,
         formula_sum_dict=parsed_formula,
     )

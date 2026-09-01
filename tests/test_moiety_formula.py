@@ -23,9 +23,9 @@ from finalcif.tools.formal_charge import (
 )
 from finalcif.tools.sumformula import (NORMAL, SUBSCRIPT, SUPERSCRIPT, formula_parts,
                                        formula_str_to_dict, formula_to_html)
-from finalcif.tools.z_from_packing import (_build_bond_graph, _combine_components,
-                                           _expand_to_unit_cell, _parts_may_bond,
-                                           _unit_cell_element_counts, count_z_and_zprime,
+from finalcif.tools.z_from_packing import (_build_bond_graph, _expand_to_unit_cell,
+                                           _expanded_element_counts, _parts_may_bond,
+                                           _symmetry_images_may_bond, count_z_and_zprime,
                                            moiety_formula_from_components)
 
 
@@ -451,24 +451,24 @@ class TestMoietyFormulaOfRealStructures:
         assert (result.z, result.z_prime) == (2, 0.5)
         assert result.moiety_formula == 'C3, O'
 
-    def test_negative_part_fragment_is_replicated_per_symmetry_operation(self):
+    def test_negative_part_fragment_is_expanded_once_per_symmetry_operation(self):
         """The unit behind the case above, isolated from the bond graph."""
         cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+        symmops = ['x, y, z', '-x, y, -z', 'x+1/2, y+1/2, z', '-x+1/2, y+1/2, -z']
         solvent = [['O1_1', 'O', 0.3, 0.1, 0.3, -1, 0.5, 0.02]]
-        main = [('C', 1.0, ())] * 3
-        combined = _combine_components([main, main], solvent, 4, cell)
-        assert len(combined) == 6  # two regular components + four solvent copies
-        assert moiety_formula_from_components(combined, 2) == 'C3, O'
+        expanded = _expand_to_unit_cell(solvent, symmops, cell)
+        assert len(expanded) == 4  # one copy per symmetry operation, never merged
+        assert sorted(site[4] for site in expanded) == [1, 2, 4, 8]  # disjoint image bits
 
     def test_special_atoms_count_towards_the_formula_based_z_correction(self):
         """A special-position solvent must be part of the unit-cell content.
 
         Reproduces ``05_mo_cbfk04_2_0m_4_a``: in P-1 the bond graph fuses the
         molecule with its inversion image into one component, so the GCD gives
-        Z = 1.  ``_chemical_formula_sum`` can correct that, but only if the
-        negative-PART solvent is included in the unit-cell counts — otherwise
-        the per-element ratios disagree and the correction gives up, leaving
-        Z = 1 / Z' = 1/2 instead of the deposited Z = 2 / Z' = 1.
+        Z = 1.  ``_chemical_formula_sum`` corrects that, which requires the
+        negative-PART solvent to be part of the expanded unit-cell counts;
+        otherwise the per-element ratios disagree and the correction gives up,
+        leaving Z = 1 / Z' = 1/2 instead of the deposited Z = 2 / Z' = 1.
         """
         cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
         symmops = ['x, y, z', '-x, -y, -z']
@@ -483,15 +483,66 @@ class TestMoietyFormulaOfRealStructures:
         assert (result.z, result.z_prime) == (2, 1.0)
         assert result.confidence == 'formula'
 
-    def test_special_atoms_are_added_to_the_unit_cell_counts(self):
-        """``_unit_cell_element_counts`` scales negative PARTs by the symmetry count."""
+    def test_special_atoms_are_part_of_the_unit_cell_counts(self):
+        """Negative PARTs are expanded, so they show up in the element counts."""
         cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
-        regular = [['C1', 'C', 0.1, 0.1, 0.1, 0, 1.0, 0.02]]
-        special = [['O1_1', 'O', 0.4, 0.3, 0.35, -1, 0.5, 0.02]]
-        expanded = _expand_to_unit_cell(regular, ['x, y, z', '-x, -y, -z'], cell)
-        counts = _unit_cell_element_counts(expanded, special, 2)
+        atoms = [['C1', 'C', 0.1, 0.1, 0.1, 0, 1.0, 0.02],
+                 ['O1_1', 'O', 0.4, 0.3, 0.35, -1, 0.5, 0.02]]
+        expanded = _expand_to_unit_cell(atoms, ['x, y, z', '-x, -y, -z'], cell)
+        counts = _expanded_element_counts(expanded)
         assert counts['C'] == pytest.approx(2.0)
         assert counts['O'] == pytest.approx(1.0)
+
+
+class TestSymmetryImagesMayBond:
+    """A negative PART must not bond to its own symmetry copy — but may bond to PART 0.
+
+    This is PLATON's rule from ``platon_special.f``: growing from a negative-PART
+    atom the symmetry loop is capped at the identity operation, and a neighbour
+    in another PART is skipped once the operation index exceeds one.  The
+    restriction only applies when *both* atoms carry a non-zero PART.
+    """
+
+    def test_two_negative_parts_of_different_images_do_not_bond(self):
+        assert not _symmetry_images_may_bond(-1, -1, 0b0001, 0b0010)
+
+    def test_two_negative_parts_of_the_same_image_bond(self):
+        assert _symmetry_images_may_bond(-1, -1, 0b0010, 0b0010)
+
+    def test_a_negative_part_bonds_to_an_ordered_atom_across_symmetry(self):
+        """A metal on a special position keeps all alternatives of its ligands."""
+        assert _symmetry_images_may_bond(0, -1, 0b0001, 0b0010)
+        assert _symmetry_images_may_bond(-1, 0, 0b0010, 0b0001)
+
+    def test_positive_parts_are_never_restricted_by_this_rule(self):
+        assert _symmetry_images_may_bond(1, 2, 0b0001, 0b0010)
+
+    def test_a_metal_keeps_its_disordered_ligands_in_a_centred_group(self):
+        """06_IK_HK_186 in miniature, in C2/c rather than P-1.
+
+        A magnesium on an inversion centre (``PART 0``) with its ligands
+        disordered about it (``PART -1``).  The ligands must reach the metal
+        across every symmetry operation, otherwise the cluster falls apart into
+        a bare metal plus free solvent — which is what FinalCif used to report.
+        """
+        cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+        symmops = ['x,y,z', '-x,y,-z+1/2', '-x,-y,-z', 'x,-y,z+1/2',
+                   'x+1/2,y+1/2,z', '-x+1/2,y+1/2,-z+1/2',
+                   '-x+1/2,-y+1/2,-z', 'x+1/2,-y+1/2,z+1/2']
+        atoms = [['Mg1', 'Mg', 0.0, 0.0, 0.0, 0, 1.0, 0.02],
+                 ['O1_1', 'O', 0.10, 0.0, 0.0, -1, 0.5, 0.02],
+                 ['O2_1', 'O', 0.0, 0.10, 0.0, -1, 0.5, 0.02]]
+        assert count_z_and_zprime(atoms, symmops, cell).moiety_formula == 'Mg O2'
+
+    def test_a_standalone_negative_part_solvent_is_not_fused_in_a_centred_group(self):
+        """The other half of the rule, in the same eight-operation group."""
+        cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+        symmops = ['x,y,z', '-x,y,-z+1/2', '-x,-y,-z', 'x,-y,z+1/2',
+                   'x+1/2,y+1/2,z', '-x+1/2,y+1/2,-z+1/2',
+                   '-x+1/2,-y+1/2,-z', 'x+1/2,-y+1/2,z+1/2']
+        solvent = [['C1_1', 'C', 0.31, 0.13, 0.37, -1, 0.5, 0.02],
+                   ['C2_1', 'C', 0.38, 0.13, 0.37, -1, 0.5, 0.02]]
+        assert count_z_and_zprime(solvent, symmops, cell).moiety_formula == 'C2'
 
 
 class TestSymmetryFusedAggregateIsSplit:
@@ -755,8 +806,8 @@ class TestUnitCellExpansion:
         atoms = [['C1', 'C', 1.0632, -0.25, 2.5, 0, 1.0, 0.02]]
         expanded = _expand_to_unit_cell(atoms, ['x,y,z'], (10.0, 10.0, 10.0, 90.0, 90.0, 90.0))
         assert expanded
-        for _element, position, _occupancy, _group in expanded:
-            for coordinate in position:
+        for site in expanded:
+            for coordinate in site[1]:
                 assert 0.0 <= coordinate < 1.0
 
     def test_wrapping_keeps_the_atom_count(self):
