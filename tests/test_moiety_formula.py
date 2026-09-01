@@ -23,9 +23,9 @@ from finalcif.tools.formal_charge import (
 )
 from finalcif.tools.sumformula import (NORMAL, SUBSCRIPT, SUPERSCRIPT, formula_parts,
                                        formula_str_to_dict, formula_to_html)
-from finalcif.tools.z_from_packing import (_build_bond_graph, _expand_to_unit_cell,
-                                           _parts_may_bond, count_z_and_zprime,
-                                           moiety_formula_from_components)
+from finalcif.tools.z_from_packing import (_build_bond_graph, _combine_components,
+                                           _expand_to_unit_cell, _parts_may_bond,
+                                           count_z_and_zprime, moiety_formula_from_components)
 
 
 def _load(relative_path: str) -> CifContainer:
@@ -427,6 +427,37 @@ class TestMoietyFormulaOfRealStructures:
         """
         assert (self._moiety('test-data/1548072_many_atoms.cif')
                 == '4(C16 Al F36 O4), C60 H48 In4 N12')
+
+    def test_special_position_solvent_of_a_half_molecule_structure(self):
+        """A negative-PART solvent is replicated per symmetry operation, not per Z.
+
+        Reproduces ``04_mo_cb195_4`` in miniature: space group *C*2 (4 symmetry
+        operations) with the main molecule on the 2-fold axis, so Z = 2 and
+        Z′ = ½, plus a PART -1 solvent at occupancy 0.5 on a general position.
+        The four symmetry operations generate ``4 × 0.5 = 2`` solvent molecules
+        per unit cell, hence exactly one per formula unit.  Replicating the ASU
+        fragment *Z* instead of ``n_symmops`` times used to halve it to
+        ``'0.5(O)'``, a moiety that no longer added up to the unit-cell content.
+        PLATON reports the multiplier of 1 as well.
+        """
+        cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+        symmops = ['x, y, z', '-x, y, -z', 'x+1/2, y+1/2, z', '-x+1/2, y+1/2, -z']
+        # A C3 chain straddling the 2-fold at (0, y, 0); the ASU holds C0 + C1.
+        main = [['C0', 'C', 0.0, 0.5, 0.0, 0, 1.0, 0.02],
+                ['C1', 'C', 0.075, 0.5, 0.0, 0, 1.0, 0.02]]
+        solvent = [['O1_1', 'O', 0.3, 0.1, 0.3, -1, 0.5, 0.02]]
+        result = count_z_and_zprime(main + solvent, symmops, cell)
+        assert (result.z, result.z_prime) == (2, 0.5)
+        assert result.moiety_formula == 'C3, O'
+
+    def test_negative_part_fragment_is_replicated_per_symmetry_operation(self):
+        """The unit behind the case above, isolated from the bond graph."""
+        cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+        solvent = [['O1_1', 'O', 0.3, 0.1, 0.3, -1, 0.5, 0.02]]
+        main = [('C', 1.0, ())] * 3
+        combined = _combine_components([main, main], solvent, 4, cell)
+        assert len(combined) == 6  # two regular components + four solvent copies
+        assert moiety_formula_from_components(combined, 2) == 'C3, O'
 
 
 class TestMoietyOrderFollowsPlaton:

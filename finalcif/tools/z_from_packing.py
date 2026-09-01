@@ -978,7 +978,7 @@ def moiety_formula_from_components(
                 if result and ', ' in result:
                     # Multi-species moiety found — use it instead of flat formula.
                     return result
-            except Exception:  # noqa: BLE001
+            except Exception:
                 pass
         # True polymeric / single-species fallback.
         if formula_sum_dict:
@@ -990,7 +990,7 @@ def moiety_formula_from_components(
 
     try:
         return _moiety_formula_impl(components, z)
-    except Exception:  # noqa: BLE001
+    except Exception:
         return ''
 
 
@@ -1404,30 +1404,39 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
 def _combine_components(
         regular_components: list[list[AtomRecord]],
         special_atoms: list,
-        z: int,
+        n_symmops: int,
         cell: tuple[float, ...],
 ) -> list[list[AtomRecord]]:
     """Combine regular bond-graph components with negative-PART special-position fragments.
 
     For each connected component found in the negative-PART ASU atoms
     (``disorder_group < 0`` — i.e. PART -1, -2, -3, …) via
-    :func:`_asu_components`, *z* synthetic copies are appended to
-    *regular_components*.  This makes the effective count inside
-    :func:`_moiety_formula_impl` equal to ``max_occ × z``, which yields
-    the correct fractional multiplier (e.g. 0.5 for a half-occupied solvent).
+    :func:`_asu_components`, one synthetic copy per symmetry operation is
+    appended to *regular_components*.  The regular atoms are symmetry-expanded
+    to the whole unit cell, so the special ones have to be replicated the same
+    way to end up on the same scale.  Their occupancy already accounts for any
+    sharing on a special position, which makes the effective count inside
+    :func:`_moiety_formula_impl` equal to ``max_occ × n_symmops`` — the true
+    unit-cell content of the fragment.
 
-    Example — methanol at occ = 0.5 in a Z = 4 structure::
+    Example — methanol at occ = 0.5 in a Z = 4 structure with 4 symmetry
+    operations::
 
         ASU component: [(C, 0.5), (H, 0.5), (H, 0.5), (H, 0.5), (H, 0.5), (O, 0.5)]
-        z copies appended → effective = 4 × 0.5 = 2.0
+        4 copies appended → effective = 4 × 0.5 = 2.0
         ratio = 2.0 / 4 = 0.5  →  '0.5(C H4 O)'  ✓
+
+    Using the symmetry-operation count rather than *Z* matters as soon as
+    Z′ ≠ 1.  A toluene at occ = 0.5 in a Z = 2 structure with 4 symmetry
+    operations really is ``4 × 0.5 = 2`` molecules per cell, hence one per
+    formula unit, not the half a molecule that replicating *Z* times implies.
     """
     if not special_atoms:
         return regular_components
     asu_comps = _asu_components(special_atoms, cell)
     if not asu_comps:
         return regular_components
-    return regular_components + asu_comps * z
+    return regular_components + asu_comps * max(1, n_symmops)
 
 
 def _count_z_with_source(
@@ -1494,12 +1503,12 @@ def _count_z_with_source(
                     formula_derived = True
     except Exception:
         moiety = moiety_formula_from_components(
-            _combine_components(components, special, z, cell), z, formula_derived=False,
+            _combine_components(components, special, len(symmops), cell), z, formula_derived=False,
         )
         return z, formula_derived, moiety
 
     moiety = moiety_formula_from_components(
-        _combine_components(components, special, z, cell), z,
+        _combine_components(components, special, len(symmops), cell), z,
         formula_derived=formula_derived,
         formula_sum_dict=parsed_formula,
     )
