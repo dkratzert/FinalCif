@@ -18,10 +18,7 @@ Algorithm
 4. Build a bond-adjacency graph using covalent-radii distances with periodic
    boundary conditions (±1 neighbour images along each axis), using
    gemmi.UnitCell.orthogonalize() for fractional→Cartesian conversion.
-5. Count connected components via BFS → that count is Z.
-
-The fastmolwidget package is used for the unit-cell volume helper (calc_volume),
-which lets callers cross-check the geometry without importing gemmi separately.
+5. Count connected components via breadth-first search (BFS) → that count is Z.
 """
 from __future__ import annotations
 
@@ -56,25 +53,25 @@ from finalcif.tools.formal_charge import (METALS, ChargeAtom, FragmentCharge, Sp
 # ``[label, type_symbol, fract_x, fract_y, fract_z, disorder_group, occupancy, u_iso]``.
 # Typed as a Sequence because callers hand in plain lists and the fields are of
 # mixed type; use the ``_atom_*`` / ``_disorder_group`` accessors to read it.
-AsuAtom = Sequence[Any]
+type AsuAtom = Sequence[Any]
 
 # Cell parameters ``(a, b, c, alpha, beta, gamma)`` in Angstrom and degrees.
 # Not a fixed-length tuple: callers pass ``cif.cell[:6]``, whose static type is
 # ``tuple[float, ...]``.
-CellParameters = Sequence[float]
+type CellParameters = Sequence[float]
 
 # One atom of a bond-graph component.  The third field carries the atom's
 # non-metal neighbours as ``(element, degree)`` pairs and is optional so that
 # callers may still pass plain ``(element, occupancy)`` pairs.
-AtomRecord = tuple[str, float] | tuple[str, float, tuple[tuple[str, int], ...]]
+type AtomRecord = tuple[str, float] | tuple[str, float, tuple[tuple[str, int], ...]]
 
 # One symmetry-expanded unit-cell site.  The disorder group is optional so that
 # tests and callers may pass plain ``(element, position, occupancy)`` triples.
-ExpandedAtom = (tuple[str, tuple[float, float, float], float]
-                | tuple[str, tuple[float, float, float], float, int])
+type ExpandedAtom = (tuple[str, tuple[float, float, float], float]
+                     | tuple[str, tuple[float, float, float], float, int])
 
 # How much to trust an estimated Z (see :attr:`ZResult.confidence`).
-Confidence = Literal['high', 'medium', 'formula', 'low']
+type Confidence = Literal['high', 'medium', 'formula', 'low']
 
 
 # ---------------------------------------------------------------------------
@@ -791,7 +788,7 @@ def _build_bond_graph(
 # ---------------------------------------------------------------------------
 
 def _count_components(adj: dict[int, set[int]]) -> int:
-    """Count connected components of the bond graph via BFS."""
+    """Count connected components of the bond graph via breadth-first search."""
     visited: set[int] = set()
     count = 0
     for start in adj:
