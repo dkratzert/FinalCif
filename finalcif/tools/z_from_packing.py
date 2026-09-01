@@ -29,9 +29,10 @@ import dataclasses
 import math
 import re
 from collections import Counter, deque
+from collections.abc import Iterable, Sequence
 from functools import reduce
 from math import gcd
-from typing import SupportsIndex
+from typing import Any, Literal, NamedTuple, cast
 
 import gemmi
 
@@ -40,6 +41,27 @@ from finalcif.tools.chemparse import parse_formula
 from finalcif.tools.formal_charge import (METALS, ChargeAtom, FragmentCharge, SpeciesCharge,
                                           balance_charges, format_charge, parse_oxidation_state,
                                           perceive_fragment_charge)
+
+# ---------------------------------------------------------------------------
+# Atom and cell record types
+#
+# Three different atom representations flow through this module.  They stay
+# plain tuples/sequences on purpose: the bond graph is O(N**2) over up to
+# ``max_atoms`` sites, so these are the hot path and must not carry the
+# construction cost of a richer object.  The per-species aggregates further
+# down are created once per component and *are* named types.
+# ---------------------------------------------------------------------------
+
+# One asymmetric-unit atom exactly as ``CifContainer.atoms_fract`` yields it:
+# ``[label, type_symbol, fract_x, fract_y, fract_z, disorder_group, occupancy, u_iso]``.
+# Typed as a Sequence because callers hand in plain lists and the fields are of
+# mixed type; use the ``_atom_*`` / ``_disorder_group`` accessors to read it.
+AsuAtom = Sequence[Any]
+
+# Cell parameters ``(a, b, c, alpha, beta, gamma)`` in Angstrom and degrees.
+# Not a fixed-length tuple: callers pass ``cif.cell[:6]``, whose static type is
+# ``tuple[float, ...]``.
+CellParameters = Sequence[float]
 
 # One atom of a bond-graph component.  The third field carries the atom's
 # non-metal neighbours as ``(element, degree)`` pairs and is optional so that
@@ -50,6 +72,9 @@ AtomRecord = tuple[str, float] | tuple[str, float, tuple[tuple[str, int], ...]]
 # tests and callers may pass plain ``(element, position, occupancy)`` triples.
 ExpandedAtom = (tuple[str, tuple[float, float, float], float]
                 | tuple[str, tuple[float, float, float], float, int])
+
+# How much to trust an estimated Z (see :attr:`ZResult.confidence`).
+Confidence = Literal['high', 'medium', 'formula', 'low']
 
 # Regex matching the bare element letters at the start of a type_symbol string.
 # CIF _atom_site_type_symbol values often include oxidation-state suffixes such
@@ -114,10 +139,14 @@ def _atom_occupancy(atom: AtomRecord) -> float:
 
 def _atom_neighbours(atom: AtomRecord) -> tuple[tuple[str, int], ...]:
     """Return the ``(element, degree)`` pairs of a component atom's non-metal neighbours."""
-    return atom[2] if len(atom) > 2 else ()
+    if len(atom) > 2:
+        # cast() is free at runtime; a static checker cannot narrow a tuple
+        # union by len(), so the third field has to be pointed out explicitly.
+        return cast('tuple[str, float, tuple[tuple[str, int], ...]]', atom)[2]
+    return ()
 
 
-def _disorder_group(atom) -> int:
+def _disorder_group(atom: AsuAtom) -> int:
     """Return the ``_atom_site_disorder_group`` of an ASU atom record as an int.
 
     Unparseable or absent values are reported as 0 (an ordered atom).
@@ -130,7 +159,9 @@ def _disorder_group(atom) -> int:
 
 def _expanded_disorder_group(atom: ExpandedAtom) -> int:
     """Return the disorder group of an expanded site, or 0 when it carries none."""
-    return int(atom[3]) if len(atom) > 3 else 0
+    if len(atom) > 3:
+        return int(cast('tuple[str, tuple[float, float, float], float, int]', atom)[3])
+    return 0
 
 
 def _parts_may_bond(first: int, second: int,
@@ -370,7 +401,7 @@ class ZResult:
         return False
 
     @property
-    def confidence(self) -> str:
+    def confidence(self) -> Confidence:
         """A short human-readable confidence indicator.
 
         * **high**    — Z′ is a positive integer (1, 2, 3, …): the most common,
@@ -409,7 +440,7 @@ def _get_radius(element: str) -> float:
 # Step 1 - disorder filtering
 # ---------------------------------------------------------------------------
 
-def _filter_disorder(atoms_fract: list) -> list:
+def _filter_disorder(atoms_fract: Iterable[AsuAtom]) -> list[AsuAtom]:
     """Keep only ordered atoms and the primary disorder component.
 
     Rules:
@@ -420,19 +451,24 @@ def _filter_disorder(atoms_fract: list) -> list:
     Because the occupancies of all components at one site sum to 1, selecting
     only the primary component faithfully represents each site exactly once.
     """
-    kept = []
-    for atom in atoms_fract:
-        dg = atom[5]
-        try:
-            dg = int(dg)
-        except (TypeError, ValueError):
-            dg = 0
-        if dg == 0 or abs(dg) == 1:
-            kept.append(atom)
-    return kept
+    return [atom for atom in atoms_fract if abs(_disorder_group(atom)) <= 1]
 
 
-def _split_disorder(atoms_fract: list) -> tuple[list, list]:
+class _DisorderSplit(NamedTuple):
+    """ASU atoms partitioned by whether they may be symmetry-expanded.
+
+    Attributes:
+        regular: Atoms with ``disorder_group >= 0``; safe to expand with all
+                 symmetry operations.
+        special: Atoms with ``disorder_group < 0`` (SHELXL ``PART -n``); must
+                 **not** be symmetry-expanded.
+    """
+
+    regular: list[AsuAtom]
+    special: list[AsuAtom]
+
+
+def _split_disorder(atoms_fract: Iterable[AsuAtom]) -> _DisorderSplit:
     """Split ASU atoms into *regular* and *negative-PART special-position* lists.
 
     SHELXL ``PART -n`` for any negative ``n`` (``disorder_group < 0``) marks
@@ -455,7 +491,7 @@ def _split_disorder(atoms_fract: list) -> tuple[list, list]:
     :func:`_moiety_formula_impl` then collapses them to integer counts.
 
     Returns:
-        ``(regular, special)`` where:
+        A :class:`_DisorderSplit` of:
 
         * *regular* — atoms with ``disorder_group >= 0`` (i.e. 0, 1, 2, …);
           safe to expand with all symmetry operations.
@@ -463,19 +499,14 @@ def _split_disorder(atoms_fract: list) -> tuple[list, list]:
           must **not** be symmetry-expanded.  Their moiety contribution is
           computed directly from the ASU occupancy via :func:`_asu_components`.
     """
-    regular: list = []
-    special: list = []
+    regular: list[AsuAtom] = []
+    special: list[AsuAtom] = []
     for atom in atoms_fract:
-        dg = atom[5]
-        try:
-            dg = int(dg)
-        except (TypeError, ValueError):
-            dg = 0
-        if dg < 0:
+        if _disorder_group(atom) < 0:
             special.append(atom)
         else:
             regular.append(atom)
-    return regular, special
+    return _DisorderSplit(regular, special)
 
 
 # ---------------------------------------------------------------------------
@@ -483,9 +514,9 @@ def _split_disorder(atoms_fract: list) -> tuple[list, list]:
 # ---------------------------------------------------------------------------
 
 def _expand_to_unit_cell(
-        filtered: list,
+        filtered: Sequence[AsuAtom],
         symmops: list[str],
-        cell: tuple[float, ...],
+        cell: CellParameters,
 ) -> list[ExpandedAtom]:
     """Expand the filtered ASU atoms to the full unit cell using gemmi.
 
@@ -550,7 +581,7 @@ def _expand_to_unit_cell(
 
 def _build_bond_graph(
         expanded: list[ExpandedAtom],
-        cell: tuple[float, ...],
+        cell: CellParameters,
 ) -> dict[int, set[int]]:
     """Build an adjacency dict for all unit-cell atoms.
 
@@ -725,8 +756,8 @@ def _get_components(
 
 
 def _asu_components(
-        special_atoms: list,
-        cell: tuple[float, ...],
+        special_atoms: Sequence[AsuAtom],
+        cell: CellParameters,
 ) -> list[list[AtomRecord]]:
     """Return connected components for negative-PART ASU atoms without symmetry expansion.
 
@@ -755,7 +786,7 @@ def _asu_components(
     """
     if not special_atoms:
         return []
-    expanded = [
+    expanded: list[ExpandedAtom] = [
         (str(atom[1]), (float(atom[2]), float(atom[3]), float(atom[4])), float(atom[6]),
          _disorder_group(atom))
         for atom in special_atoms
@@ -764,7 +795,7 @@ def _asu_components(
     return _get_components(adj, expanded)
 
 
-def _z_from_components(components: list[list[AtomRecord]]) -> int | SupportsIndex:
+def _z_from_components(components: list[list[AtomRecord]]) -> int:
     """Derive Z as the GCD of per-species molecule counts in the unit cell.
 
     Each distinct molecular species (identified by its elemental composition)
@@ -835,7 +866,7 @@ def _z_from_components(components: list[list[AtomRecord]]) -> int | SupportsInde
             for group in species.values()
         ]
 
-    return reduce(gcd, whole_molecule_counts)
+    return int(reduce(gcd, whole_molecule_counts))
 
 
 # ---------------------------------------------------------------------------
@@ -1013,7 +1044,7 @@ def _formula_dict_to_moiety_str(formula: dict[str, float]) -> str:
         >>> _formula_dict_to_moiety_str({'C': 24.0, 'H': 16.0, 'N': 4.0, 'Zn': 1.0})
         'C24 H16 N4 Zn'
     """
-    int_counts = {el: round(n) for el, n in formula.items() if n >= 0.1}
+    int_counts = {el: float(round(n)) for el, n in formula.items() if n >= 0.1}
     if not int_counts:
         return ''
     return _composition_to_hill_str(int_counts)
@@ -1032,11 +1063,18 @@ def _charge_atoms(component: list[AtomRecord]) -> tuple[ChargeAtom, ...]:
     )
 
 
+class _ReducedComposition(NamedTuple):
+    """A moiety composition with the multiplier that goes with it."""
+
+    composition: dict[str, float]
+    ratio: float
+
+
 def _reduce_symmetry_aggregate(
         composition: dict[str, float],
         ratio: float,
         fully_occupied: bool,
-) -> tuple[dict[str, float], float]:
+) -> _ReducedComposition:
     """Split a fully occupied fragment that the bond graph fused with its own symmetry image.
 
     A molecule sitting close enough to a symmetry element for the bond graph to
@@ -1055,17 +1093,17 @@ def _reduce_symmetry_aggregate(
     rules out splitting something like ``0.5(C7 H8)`` into fractional atoms.
     """
     if not fully_occupied or ratio <= 0 or ratio >= 1:
-        return composition, ratio
+        return _ReducedComposition(composition, ratio)
     divisor = round(1 / ratio)
     if divisor < 2 or abs(ratio * divisor - 1.0) > 1e-4:
-        return composition, ratio
+        return _ReducedComposition(composition, ratio)
     reduced: dict[str, float] = {}
     for element, count in composition.items():
         share = count / divisor
         if abs(share - round(share)) > 1e-6:
-            return composition, ratio
+            return _ReducedComposition(composition, ratio)
         reduced[element] = float(round(share))
-    return reduced, 1.0
+    return _ReducedComposition(reduced, 1.0)
 
 
 def _format_moiety_token(formula_str: str, ratio: float, charge: int) -> str:
@@ -1108,10 +1146,71 @@ def _is_integral(value: float) -> bool:
     return abs(value - round(value)) < 1e-4
 
 
-def _merge_multiple_species(
-        species: list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int, bool]],
-        z: int,
-) -> list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int, bool]]:
+class _ClassifiedSpecies(NamedTuple):
+    """One bond-graph component after classification and charge perception.
+
+    Attributes:
+        composition:    Element counts identifying the chemical species.
+        effective:      How many whole molecules of that species this component
+                        represents.
+        charge:         Formal charge perceived from the fragment connectivity.
+        modelled_non_h: Non-hydrogen atoms present in the model (see
+                        :attr:`_ClassifiedComponent.modelled_non_h`).
+        fully_occupied: ``True`` when every site of the component is fully
+                        occupied, which rules out a genuine fractional
+                        multiplier (see :func:`_reduce_symmetry_aggregate`).
+    """
+
+    composition: dict[str, float]
+    effective: float
+    charge: FragmentCharge
+    modelled_non_h: int
+    fully_occupied: bool
+
+
+class _Species(NamedTuple):
+    """All components of one chemical species, collapsed into a single record.
+
+    Attributes:
+        composition:    Element counts of one molecule of the species.
+        effective:      Total number of molecules of this species in the cell.
+        is_major:       ``True`` when at least one component is (near-)fully
+                        occupied; minor disordered fragments are ``False``.
+        atoms_per_mol:  Atoms in one molecule, used for charge balancing.
+        charge:         Formal charge perceived for the species.
+        max_non_h:      Largest modelled non-hydrogen count of its components;
+                        the key PLATON sorts the moieties on.
+        order:          Discovery index, used as a stable tie-break.
+        fully_occupied: ``True`` when every component is fully occupied.
+    """
+
+    composition: dict[str, float]
+    effective: float
+    is_major: bool
+    atoms_per_mol: float
+    charge: FragmentCharge
+    max_non_h: int
+    order: int
+    fully_occupied: bool
+
+
+class _MoietyEntry(NamedTuple):
+    """One formatted moiety token before charge balancing.
+
+    Attributes:
+        formula:       Hill-ordered formula string of the moiety.
+        ratio:         Multiplier of the moiety per formula unit.
+        charge:        Perceived charge, refined by :func:`balance_charges`.
+        atoms_per_mol: Atoms in one molecule, used for charge balancing.
+    """
+
+    formula: str
+    ratio: float
+    charge: FragmentCharge
+    atoms_per_mol: float
+
+
+def _merge_multiple_species(species: list[_Species], z: int) -> list[_Species]:
     """Fold aggregate species back into the monomer they are a multiple of.
 
     A molecule that is bonded to a symmetry copy of itself shows up twice: once
@@ -1140,21 +1239,23 @@ def _merge_multiple_species(
     while True:
         for i, aggregate in enumerate(merged):
             for j, monomer in enumerate(merged):
-                if i == j or aggregate[3] <= monomer[3]:
+                if i == j or aggregate.atoms_per_mol <= monomer.atoms_per_mol:
                     continue
-                factor = _composition_multiple(aggregate[0], monomer[0])
+                factor = _composition_multiple(aggregate.composition, monomer.composition)
                 if factor is None:
                     continue
-                if _is_integral(aggregate[1] / z) and _is_integral(monomer[1] / z):
+                if _is_integral(aggregate.effective / z) and _is_integral(monomer.effective / z):
                     continue
-                total = monomer[1] + factor * aggregate[1]
+                total = monomer.effective + factor * aggregate.effective
                 if not _is_integral(total / z):
                     continue
-                merged[j] = (monomer[0], total, monomer[2] or aggregate[2],
-                             monomer[3], monomer[4],
-                             max(monomer[5], aggregate[5]),
-                             min(monomer[6], aggregate[6]),
-                             monomer[7] and aggregate[7])
+                merged[j] = monomer._replace(
+                    effective=total,
+                    is_major=monomer.is_major or aggregate.is_major,
+                    max_non_h=max(monomer.max_non_h, aggregate.max_non_h),
+                    order=min(monomer.order, aggregate.order),
+                    fully_occupied=monomer.fully_occupied and aggregate.fully_occupied,
+                )
                 del merged[i]
                 break
             else:
@@ -1195,38 +1296,46 @@ def _moiety_formula_impl(
     differs from PLATON's.  Charges are not part of that comparison — PLATON
     skips blanks and charge tokens while comparing the strings.
     """
-    # Classify components and build per-component (comp_dict, effective, charge, non_h, ordered) tuples.
-    classified: list[tuple[dict[str, float], float, FragmentCharge, int, bool]] = []
+    # Classify each component into a named record.
+    classified: list[_ClassifiedSpecies] = []
     for comp in components:
         item = _classify_component(comp)
         if item is None:
             continue
         charge = perceive_fragment_charge(_charge_atoms(comp), item.composition,
                                           weighted=not item.uniform)
-        ordered = abs(item.max_occupancy - 1.0) <= _UNIFORM_OCC_TOL
-        classified.append((item.composition, item.effective, charge, item.modelled_non_h, ordered))
+        classified.append(_ClassifiedSpecies(
+            composition=item.composition,
+            effective=item.effective,
+            charge=charge,
+            modelled_non_h=item.modelled_non_h,
+            fully_occupied=abs(item.max_occupancy - 1.0) <= _UNIFORM_OCC_TOL,
+        ))
 
     if not classified:
         return ''
 
     # Group by composition and charge (rounded for float-stable equality).
-    comp_groups: dict[tuple, list[tuple[dict[str, float], float, FragmentCharge, int, bool]]] = {}
-    for comp_dict, effective, charge, non_h, ordered in classified:
-        key = (tuple(sorted((el, round(n, _OCC_DECIMALS)) for el, n in comp_dict.items())),
-               charge.charge, charge.confident)
-        comp_groups.setdefault(key, []).append((comp_dict, effective, charge, non_h, ordered))
+    comp_groups: dict[tuple, list[_ClassifiedSpecies]] = {}
+    for item in classified:
+        key = (tuple(sorted((el, round(n, _OCC_DECIMALS)) for el, n in item.composition.items())),
+               item.charge.charge, item.charge.confident)
+        comp_groups.setdefault(key, []).append(item)
 
-    # For each species compute total effective count and an "is_major" flag.
-    species: list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int, bool]] = []
-    for order, (_key, group) in enumerate(comp_groups.items()):
-        total_effective = sum(eff for _cd, eff, _q, _nh, _o in group)
-        is_major = max(eff for _cd, eff, _q, _nh, _o in group) >= PARTIAL_OCC_THRESHOLD
-        comp_dict = group[0][0]
-        atoms_per_mol = sum(comp_dict.values())
-        max_non_h = max(nh for _cd, _eff, _q, nh, _o in group)
-        fully_occupied = all(o for _cd, _eff, _q, _nh, o in group)
-        species.append((comp_dict, total_effective, is_major, atoms_per_mol,
-                        group[0][2], max_non_h, order, fully_occupied))
+    # Collapse each group into one species with its total effective count.
+    species: list[_Species] = []
+    for order, group in enumerate(comp_groups.values()):
+        composition = group[0].composition
+        species.append(_Species(
+            composition=composition,
+            effective=sum(item.effective for item in group),
+            is_major=max(item.effective for item in group) >= PARTIAL_OCC_THRESHOLD,
+            atoms_per_mol=sum(composition.values()),
+            charge=group[0].charge,
+            max_non_h=max(item.modelled_non_h for item in group),
+            order=order,
+            fully_occupied=all(item.fully_occupied for item in group),
+        ))
 
     species = _merge_multiple_species(species, z)
 
@@ -1237,26 +1346,27 @@ def _moiety_formula_impl(
     # avoids checkCIF's `042_ALERT_1_C` ("Calc. and Reported MoietyFormula
     # Strings Differ"), which compares the moiety sequence.  Equal counts keep
     # the order in which the species were discovered.
-    species.sort(key=lambda x: (-x[5], x[6]))
+    species.sort(key=lambda item: (-item.max_non_h, item.order))
 
-    entries: list[tuple[str, float, FragmentCharge, float]] = []
-    for comp_dict, effective, _is_major, atoms_per_mol, charge, _non_h, _order, ordered in species:
-        ratio = round(effective / z, 6)
+    entries: list[_MoietyEntry] = []
+    for item in species:
+        ratio = round(item.effective / z, 6)
         if ratio <= 0:
             continue
-        comp_dict, ratio = _reduce_symmetry_aggregate(comp_dict, ratio, ordered)
-        formula_str = _composition_to_hill_str(comp_dict)
+        reduced = _reduce_symmetry_aggregate(item.composition, ratio, item.fully_occupied)
+        formula_str = _composition_to_hill_str(reduced.composition)
         if not formula_str:
             continue
-        entries.append((formula_str, ratio, charge, atoms_per_mol))
+        entries.append(_MoietyEntry(formula=formula_str, ratio=reduced.ratio,
+                                    charge=item.charge, atoms_per_mol=item.atoms_per_mol))
 
     if not entries:
         return ''
 
     balanced = balance_charges([
-        SpeciesCharge(charge=charge.charge, confident=charge.confident,
-                      ratio=ratio, atom_count=atoms)
-        for _formula, ratio, charge, atoms in entries
+        SpeciesCharge(charge=entry.charge.charge, confident=entry.charge.confident,
+                      ratio=entry.ratio, atom_count=entry.atoms_per_mol)
+        for entry in entries
     ])
     # An unresolvable imbalance means the perception is untrustworthy — reporting
     # no charge at all is preferable to reporting a wrong one.
@@ -1264,8 +1374,8 @@ def _moiety_formula_impl(
         balanced = [0] * len(entries)
 
     return ', '.join(
-        _format_moiety_token(formula_str, ratio, charge)
-        for (formula_str, ratio, _perceived, _atoms), charge in zip(entries, balanced, strict=True)
+        _format_moiety_token(entry.formula, entry.ratio, charge)
+        for entry, charge in zip(entries, balanced, strict=True)
     )
 
 
@@ -1314,7 +1424,7 @@ def _expanded_element_counts(
     return weighted
 
 
-def _special_element_counts(special_atoms: list, n_symmops: int) -> dict[str, float]:
+def _special_element_counts(special_atoms: Sequence[AsuAtom], n_symmops: int) -> dict[str, float]:
     """Return the unit-cell element counts contributed by negative-PART atoms.
 
     Atoms of a negative SHELXL ``PART`` are never symmetry-expanded by
@@ -1338,7 +1448,7 @@ def _special_element_counts(special_atoms: list, n_symmops: int) -> dict[str, fl
 
 def _unit_cell_element_counts(
         expanded: list[ExpandedAtom],
-        special_atoms: list,
+        special_atoms: Sequence[AsuAtom],
         n_symmops: int,
 ) -> dict[str, float]:
     """Total occupancy-weighted unit-cell content of regular *and* special atoms."""
@@ -1424,7 +1534,7 @@ def _z_sg_from_symmops(symmops: list[str]) -> int:
     return len(symmops)  # fallback: count all provided ops
 
 
-def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
+def count_z(atoms_fract: Iterable[AsuAtom], symmops: list[str], cell: CellParameters,
             max_atoms: int = 5000,
             formula_sum: str | None = None) -> int:
     """Determine Z by packing the unit cell and counting molecular graphs.
@@ -1469,17 +1579,14 @@ def count_z(atoms_fract, symmops: list[str], cell: tuple[float, ...],
     Returns:
         Number of formula units per unit cell (Z), at minimum 1.
     """
-    z, _formula_derived, _moiety = _count_z_with_source(
-        atoms_fract, symmops, cell, max_atoms, formula_sum
-    )
-    return z
+    return _count_z_with_source(atoms_fract, symmops, cell, max_atoms, formula_sum).z
 
 
 def _combine_components(
         regular_components: list[list[AtomRecord]],
-        special_atoms: list,
+        special_atoms: Sequence[AsuAtom],
         n_symmops: int,
-        cell: tuple[float, ...],
+        cell: CellParameters,
 ) -> list[list[AtomRecord]]:
     """Combine regular bond-graph components with negative-PART special-position fragments.
 
@@ -1513,14 +1620,30 @@ def _combine_components(
     return regular_components + asu_comps * max(1, n_symmops)
 
 
+class _ZSource(NamedTuple):
+    """Result of the internal Z estimation, before Z' is derived.
+
+    Attributes:
+        z:               Formula units per unit cell, at minimum 1.
+        formula_derived: ``True`` when ``_chemical_formula_sum`` overrode the
+                         bond-graph GCD.
+        moiety_formula:  Generated ``_chemical_formula_moiety``; empty when the
+                         structure is polymeric or generation failed.
+    """
+
+    z: int
+    formula_derived: bool
+    moiety_formula: str
+
+
 def _count_z_with_source(
-        atoms_fract: list,
+        atoms_fract: Iterable[AsuAtom],
         symmops: list[str],
-        cell: tuple[float, ...],
+        cell: CellParameters,
         max_atoms: int = 5000,
         formula_sum: str | None = None,
-) -> tuple[int, bool, str]:
-    """Internal implementation of Z estimation returning ``(z, formula_derived, moiety_formula)``.
+) -> _ZSource:
+    """Internal implementation of Z estimation; see :class:`_ZSource`.
 
     ``formula_derived`` is ``True`` when the formula-based correction overrode
     the bond-graph GCD result.  Used by :func:`count_z_and_zprime` to set the
@@ -1531,31 +1654,31 @@ def _count_z_with_source(
     when the structure is polymeric/extended or when generation fails.
     """
     if not symmops or symmops == ['']:
-        return 1, False, ''
+        return _ZSource(1, False, '')
 
     # Separate regular atoms (dg >= 0) from negative-PART special-position atoms
     # (dg < 0, i.e. PART -1, -2, -3, …).  Only regular atoms are symmetry-expanded;
     # negative-PART atoms are processed as ASU components to avoid spurious
     # inter-copy bonds across symmetry equivalents.
-    regular, special = _split_disorder(list(atoms_fract))
+    regular, special = _split_disorder(atoms_fract)
     if not regular and not special:
-        return 1, False, ''
+        return _ZSource(1, False, '')
 
     # Guard against unreasonably large structures (e.g. proteins, MOFs).
     # Only regular atoms are expanded; special atoms stay in the ASU.
     if len(regular) * len(symmops) > max_atoms:
-        return 1, False, ''
+        return _ZSource(1, False, '')
 
     if not regular:
         # Edge case: only negative-PART atoms (unusual).  Fall back to Z=1 and
         # derive the moiety solely from the ASU special components.
         asu_comps = _asu_components(special, cell)
         moiety = moiety_formula_from_components(asu_comps * 1, 1)
-        return 1, False, moiety
+        return _ZSource(1, False, moiety)
 
     expanded = _expand_to_unit_cell(regular, symmops, cell)
     if not expanded:
-        return 1, False, ''
+        return _ZSource(1, False, '')
 
     adj = _build_bond_graph(expanded, cell)
     components = _get_components(adj, expanded)
@@ -1579,20 +1702,20 @@ def _count_z_with_source(
         moiety = moiety_formula_from_components(
             _combine_components(components, special, len(symmops), cell), z, formula_derived=False,
         )
-        return z, formula_derived, moiety
+        return _ZSource(z, formula_derived, moiety)
 
     moiety = moiety_formula_from_components(
         _combine_components(components, special, len(symmops), cell), z,
         formula_derived=formula_derived,
         formula_sum_dict=parsed_formula,
     )
-    return z, formula_derived, moiety
+    return _ZSource(z, formula_derived, moiety)
 
 
 def count_z_and_zprime(
-        atoms_fract,
+        atoms_fract: Iterable[AsuAtom],
         symmops: list[str],
-        cell: tuple[float, ...],
+        cell: CellParameters,
         max_atoms: int = 5000,
         formula_sum: str | None = None,
 ) -> ZResult:
@@ -1631,10 +1754,9 @@ def count_z_and_zprime(
         A :class:`ZResult` with ``z``, ``z_prime``, ``z_sg``, ``formula_derived``,
         ``reliable``, and ``confidence`` attributes.
     """
-    z, formula_derived, moiety = _count_z_with_source(
-        atoms_fract, symmops, cell, max_atoms, formula_sum
-    )
+    source = _count_z_with_source(atoms_fract, symmops, cell, max_atoms, formula_sum)
     z_sg = _z_sg_from_symmops(symmops) if symmops and symmops != [''] else 1
-    z_prime = round(z / z_sg, 6) if z_sg > 0 else float('nan')
-    return ZResult(z=z, z_prime=z_prime, z_sg=z_sg, formula_derived=formula_derived,
-                   moiety_formula=moiety)
+    z_prime = round(source.z / z_sg, 6) if z_sg > 0 else float('nan')
+    return ZResult(z=source.z, z_prime=z_prime, z_sg=z_sg,
+                   formula_derived=source.formula_derived,
+                   moiety_formula=source.moiety_formula)

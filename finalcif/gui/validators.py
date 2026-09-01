@@ -20,7 +20,11 @@ class BaseLimits:
 
     def validate_cif_key(self, value: str):
         if '(' in value and ')' in value:
-            value, esd = value.split('(')
+            try:
+                value, esd = value.split('(')
+            except ValueError:
+                # Can't be a valid number if there is more than one '(' in the value
+                return False
             value = value.strip()
             after_esd = esd.split(')')[1]
             if after_esd:
