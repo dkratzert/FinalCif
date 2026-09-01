@@ -2,6 +2,7 @@ import re
 from typing import NamedTuple
 
 from finalcif.tools import chemparse
+from finalcif.tools.squeeze import UNKNOWN_SOLVENT_MARKER, remove_unknown_solvent
 
 # Element symbol, number, charge sign, whitespace or any other character.
 _PART_RE = re.compile(
@@ -107,23 +108,31 @@ def formula_to_html(formula: str) -> str:
     so a moiety formula such as ``'C9 H9 Br Cl N2 1+, B F4 1-'`` survives with
     its moiety separators, multipliers and charges intact.  Returns an empty
     string for missing values (``''``, ``'?'``, ``'.'``).
+
+    A trailing ``[+ solvent]`` marker of a squeezed structure is kept verbatim:
+    it is prose, not chemistry, and must not be sub- or superscripted.
     """
     text = formula.strip(" '\"")
     if not text or text in {'?', '.'}:
         return ''
+    chemistry = remove_unknown_solvent(text)
+    marker = f' {UNKNOWN_SOLVENT_MARKER}' if chemistry != text else ''
+    if not chemistry:
+        return ''
     pieces: list[str] = []
-    for part, style in formula_parts(text):
+    for part, style in formula_parts(chemistry):
         if style == SUBSCRIPT:
             pieces.append(f'<sub>{part}</sub>')
         elif style == SUPERSCRIPT:
             pieces.append(f'<sup>{part}</sup>')
         else:
             pieces.append(part)
-    return f'<html><body>{"".join(pieces)}</body></html>'
+    return f'<html><body>{"".join(pieces)}{marker}</body></html>'
 
 
 def formula_str_to_dict(sumform: str) -> dict[str, float]:
-    chemical_formula = chemparse.parse_formula(sumform.replace(" ", ""))
+    """Parse a sum formula into ``{element: count}``, ignoring a solvent marker."""
+    chemical_formula = chemparse.parse_formula(remove_unknown_solvent(sumform).replace(" ", ""))
     return chemical_formula
 
 
@@ -152,3 +161,18 @@ def sum_formula_to_html(sumform: dict[str, float | int], break_after: int = 99) 
     formula_list.append('</body></html>')
     formula = "".join(formula_list)
     return formula
+
+
+def with_solvent_marker(html: str, source_formula: str) -> str:
+    """Re-attach a ``[+ solvent]`` marker that *source_formula* carried.
+
+    :func:`sum_formula_to_html` renders a parsed element dict and therefore
+    cannot know about the marker, which is prose rather than chemistry.  This
+    puts it back, outside of any sub- or superscript.
+    """
+    if not html or remove_unknown_solvent(source_formula) == source_formula.strip(" '\""):
+        return html
+    marker = f' {UNKNOWN_SOLVENT_MARKER}'
+    if html.endswith('</body></html>'):
+        return f'{html[:-len("</body></html>")]}{marker}</body></html>'
+    return f'{html}{marker}'

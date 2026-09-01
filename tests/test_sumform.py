@@ -1,6 +1,7 @@
 import unittest
 
-from finalcif.tools.sumformula import formula_str_to_dict, sum_formula_to_html
+from finalcif.tools.sumformula import (formula_str_to_dict, formula_to_html, sum_formula_to_html,
+                                       with_solvent_marker)
 
 
 class MyTestCase(unittest.TestCase):
@@ -63,6 +64,37 @@ class TestSumformHTLM(unittest.TestCase):
         self.assertEqual(
             '<html><body>C<sub>15</sub>H<sub>23</sub>BF<sub>2</sub>N<sub>2</sub>OSi<sub>2</sub></body></html>',
             sum_formula_to_html(formula_str_to_dict('C15H23BF2N2OSi2')))
+
+
+class TestSqueezedSolventMarker(unittest.TestCase):
+    """The '[+ solvent]' marker is prose and must not be parsed as chemistry."""
+
+    SUM = 'C126 H111.89 Al2 B2 F73.11 N6 O9 P [+ solvent]'
+
+    def test_marker_is_ignored_when_parsing(self):
+        parsed = formula_str_to_dict(self.SUM)
+        self.assertEqual(126.0, parsed['C'])
+        self.assertNotIn('S', parsed)
+        self.assertNotIn('V', parsed)
+
+    def test_marker_is_appended_as_plain_text(self):
+        html = with_solvent_marker(sum_formula_to_html(formula_str_to_dict(self.SUM)), self.SUM)
+        self.assertTrue(html.startswith('<html><body>C<sub>126</sub>'))
+        self.assertTrue(html.endswith(' [+ solvent]</body></html>'))
+
+    def test_no_marker_is_added_without_one(self):
+        formula = 'C15H23BF2N2OSi2'
+        html = sum_formula_to_html(formula_str_to_dict(formula))
+        self.assertEqual(html, with_solvent_marker(html, formula))
+
+    def test_moiety_html_keeps_the_marker_unformatted(self):
+        html = formula_to_html('2(C16 Al F36 O4), 1.889(C6 H6) [+ solvent]')
+        self.assertEqual('<html><body>2(C<sub>16</sub>AlF<sub>36</sub>O<sub>4</sub>), '
+                         '1.889(C<sub>6</sub>H<sub>6</sub>) [+ solvent]</body></html>', html)
+
+    def test_moiety_html_normalises_a_wrapped_marker(self):
+        self.assertEqual('<html><body>C<sub>6</sub>H<sub>6</sub> [+ solvent]</body></html>',
+                         formula_to_html('C6 H6 [+ \nsolvent]'))
 
 
 if __name__ == '__main__':

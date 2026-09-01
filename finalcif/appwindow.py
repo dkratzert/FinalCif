@@ -92,7 +92,8 @@ from finalcif.tools.squeeze import append_unknown_solvent, has_unassigned_solven
 from finalcif.tools.z_from_packing import count_z_and_zprime, ZResult
 from finalcif.tools.spgr_format import spgrps
 from finalcif.tools.statusbar import StatusBar
-from finalcif.tools.sumformula import formula_str_to_dict, formula_to_html, sum_formula_to_html
+from finalcif.tools.sumformula import (formula_str_to_dict, formula_to_html, sum_formula_to_html,
+                                       with_solvent_marker)
 
 DEBUG = False
 app = QApplication.instance()
@@ -2142,11 +2143,12 @@ class AppWindow(QMainWindow):
             return False
 
     def fill_sum_formula_lineedit(self) -> None:
+        formula = self.cif['_chemical_formula_sum'].strip(" '")
         try:
-            self.ui.SumFormMainLineEdit.setText(sum_formula_to_html(formula_str_to_dict(
-                self.cif['_chemical_formula_sum'].strip(" '"))))
+            html = sum_formula_to_html(formula_str_to_dict(formula))
+            self.ui.SumFormMainLineEdit.setText(with_solvent_marker(html, formula))
         except Exception:
-            self.ui.SumFormMainLineEdit.setText(self.cif['_chemical_formula_sum'].strip(" '"))
+            self.ui.SumFormMainLineEdit.setText(formula)
         self.show_moiety_formula_tooltip()
 
     def show_moiety_formula_tooltip(self, formula_moiety: str = '') -> None:
