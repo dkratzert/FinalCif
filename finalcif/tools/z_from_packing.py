@@ -48,8 +48,8 @@ from finalcif.tools.formal_charge import (METALS, ChargeAtom, FragmentCharge, Sp
 # Three different atom representations flow through this module.  They stay
 # plain tuples/sequences on purpose: the bond graph is O(N**2) over up to
 # ``max_atoms`` sites, so these are the hot path and must not carry the
-# construction cost of a richer object.  The per-species aggregates further
-# down are created once per component and *are* named types.
+# construction cost of a richer object.  The aggregates below are created once
+# per component or per species and *are* named types.
 # ---------------------------------------------------------------------------
 
 # One asymmetric-unit atom exactly as ``CifContainer.atoms_fract`` yields it:
@@ -75,6 +75,120 @@ ExpandedAtom = (tuple[str, tuple[float, float, float], float]
 
 # How much to trust an estimated Z (see :attr:`ZResult.confidence`).
 Confidence = Literal['high', 'medium', 'formula', 'low']
+
+
+# ---------------------------------------------------------------------------
+# Intermediate result records
+#
+# Named counterparts of the anonymous tuples this module used to pass around.
+# NamedTuple keeps them tuple-compatible (indexing, unpacking) while giving
+# every field a name and a type.
+# ---------------------------------------------------------------------------
+
+class _DisorderSplit(NamedTuple):
+    """ASU atoms partitioned by whether they may be symmetry-expanded.
+
+    Attributes:
+        regular: Atoms with ``disorder_group >= 0``; safe to expand with all
+                 symmetry operations.
+        special: Atoms with ``disorder_group < 0`` (SHELXL ``PART -n``); must
+                 **not** be symmetry-expanded.
+    """
+
+    regular: list[AsuAtom]
+    special: list[AsuAtom]
+
+
+class _ClassifiedSpecies(NamedTuple):
+    """One bond-graph component after classification and charge perception.
+
+    Attributes:
+        composition:    Element counts identifying the chemical species.
+        effective:      How many whole molecules of that species this component
+                        represents.
+        charge:         Formal charge perceived from the fragment connectivity.
+        modelled_non_h: Non-hydrogen atoms present in the model (see
+                        :attr:`_ClassifiedComponent.modelled_non_h`).
+        fully_occupied: ``True`` when every site of the component is fully
+                        occupied, which rules out a genuine fractional
+                        multiplier (see :func:`_reduce_symmetry_aggregate`).
+    """
+
+    composition: dict[str, float]
+    effective: float
+    charge: FragmentCharge
+    modelled_non_h: int
+    fully_occupied: bool
+
+
+class _Species(NamedTuple):
+    """All components of one chemical species, collapsed into a single record.
+
+    Attributes:
+        composition:    Element counts of one molecule of the species.
+        effective:      Total number of molecules of this species in the cell.
+        is_major:       ``True`` when at least one component is (near-)fully
+                        occupied; minor disordered fragments are ``False``.
+        atoms_per_mol:  Atoms in one molecule, used for charge balancing.
+        charge:         Formal charge perceived for the species.
+        max_non_h:      Largest modelled non-hydrogen count of its components;
+                        the key PLATON sorts the moieties on.
+        order:          Discovery index, used as a stable tie-break.
+        fully_occupied: ``True`` when every component is fully occupied.
+    """
+
+    composition: dict[str, float]
+    effective: float
+    is_major: bool
+    atoms_per_mol: float
+    charge: FragmentCharge
+    max_non_h: int
+    order: int
+    fully_occupied: bool
+
+
+class _ReducedComposition(NamedTuple):
+    """A moiety composition with the multiplier that goes with it."""
+
+    composition: dict[str, float]
+    ratio: float
+
+
+class _MoietyEntry(NamedTuple):
+    """One formatted moiety token before charge balancing.
+
+    Attributes:
+        formula:       Hill-ordered formula string of the moiety.
+        ratio:         Multiplier of the moiety per formula unit.
+        charge:        Perceived charge, refined by :func:`balance_charges`.
+        atoms_per_mol: Atoms in one molecule, used for charge balancing.
+    """
+
+    formula: str
+    ratio: float
+    charge: FragmentCharge
+    atoms_per_mol: float
+
+
+class _ZSource(NamedTuple):
+    """Result of the internal Z estimation, before Z' is derived.
+
+    Attributes:
+        z:               Formula units per unit cell, at minimum 1.
+        formula_derived: ``True`` when ``_chemical_formula_sum`` overrode the
+                         bond-graph GCD.
+        moiety_formula:  Generated ``_chemical_formula_moiety``; empty when the
+                         structure is polymeric or generation failed.
+    """
+
+    z: int
+    formula_derived: bool
+    moiety_formula: str
+
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
 
 # Regex matching the bare element letters at the start of a type_symbol string.
 # CIF _atom_site_type_symbol values often include oxidation-state suffixes such
@@ -190,6 +304,7 @@ def _parts_may_bond(first: int, second: int,
     if first in (second, 0) or second == 0:
         return True
     return first_occupancy >= FULL_OCCUPANCY or second_occupancy >= FULL_OCCUPANCY
+
 
 # Decimal precision for occupancy-weighted element counts.  Two decimal places
 # is generous enough to absorb rounding errors in SHELXL .res / CIF output
@@ -452,20 +567,6 @@ def _filter_disorder(atoms_fract: Iterable[AsuAtom]) -> list[AsuAtom]:
     only the primary component faithfully represents each site exactly once.
     """
     return [atom for atom in atoms_fract if abs(_disorder_group(atom)) <= 1]
-
-
-class _DisorderSplit(NamedTuple):
-    """ASU atoms partitioned by whether they may be symmetry-expanded.
-
-    Attributes:
-        regular: Atoms with ``disorder_group >= 0``; safe to expand with all
-                 symmetry operations.
-        special: Atoms with ``disorder_group < 0`` (SHELXL ``PART -n``); must
-                 **not** be symmetry-expanded.
-    """
-
-    regular: list[AsuAtom]
-    special: list[AsuAtom]
 
 
 def _split_disorder(atoms_fract: Iterable[AsuAtom]) -> _DisorderSplit:
@@ -1063,13 +1164,6 @@ def _charge_atoms(component: list[AtomRecord]) -> tuple[ChargeAtom, ...]:
     )
 
 
-class _ReducedComposition(NamedTuple):
-    """A moiety composition with the multiplier that goes with it."""
-
-    composition: dict[str, float]
-    ratio: float
-
-
 def _reduce_symmetry_aggregate(
         composition: dict[str, float],
         ratio: float,
@@ -1144,70 +1238,6 @@ def _composition_multiple(bigger: dict[str, float], smaller: dict[str, float]) -
 def _is_integral(value: float) -> bool:
     """Return ``True`` when *value* is within rounding noise of a whole number."""
     return abs(value - round(value)) < 1e-4
-
-
-class _ClassifiedSpecies(NamedTuple):
-    """One bond-graph component after classification and charge perception.
-
-    Attributes:
-        composition:    Element counts identifying the chemical species.
-        effective:      How many whole molecules of that species this component
-                        represents.
-        charge:         Formal charge perceived from the fragment connectivity.
-        modelled_non_h: Non-hydrogen atoms present in the model (see
-                        :attr:`_ClassifiedComponent.modelled_non_h`).
-        fully_occupied: ``True`` when every site of the component is fully
-                        occupied, which rules out a genuine fractional
-                        multiplier (see :func:`_reduce_symmetry_aggregate`).
-    """
-
-    composition: dict[str, float]
-    effective: float
-    charge: FragmentCharge
-    modelled_non_h: int
-    fully_occupied: bool
-
-
-class _Species(NamedTuple):
-    """All components of one chemical species, collapsed into a single record.
-
-    Attributes:
-        composition:    Element counts of one molecule of the species.
-        effective:      Total number of molecules of this species in the cell.
-        is_major:       ``True`` when at least one component is (near-)fully
-                        occupied; minor disordered fragments are ``False``.
-        atoms_per_mol:  Atoms in one molecule, used for charge balancing.
-        charge:         Formal charge perceived for the species.
-        max_non_h:      Largest modelled non-hydrogen count of its components;
-                        the key PLATON sorts the moieties on.
-        order:          Discovery index, used as a stable tie-break.
-        fully_occupied: ``True`` when every component is fully occupied.
-    """
-
-    composition: dict[str, float]
-    effective: float
-    is_major: bool
-    atoms_per_mol: float
-    charge: FragmentCharge
-    max_non_h: int
-    order: int
-    fully_occupied: bool
-
-
-class _MoietyEntry(NamedTuple):
-    """One formatted moiety token before charge balancing.
-
-    Attributes:
-        formula:       Hill-ordered formula string of the moiety.
-        ratio:         Multiplier of the moiety per formula unit.
-        charge:        Perceived charge, refined by :func:`balance_charges`.
-        atoms_per_mol: Atoms in one molecule, used for charge balancing.
-    """
-
-    formula: str
-    ratio: float
-    charge: FragmentCharge
-    atoms_per_mol: float
 
 
 def _merge_multiple_species(species: list[_Species], z: int) -> list[_Species]:
@@ -1618,22 +1648,6 @@ def _combine_components(
     if not asu_comps:
         return regular_components
     return regular_components + asu_comps * max(1, n_symmops)
-
-
-class _ZSource(NamedTuple):
-    """Result of the internal Z estimation, before Z' is derived.
-
-    Attributes:
-        z:               Formula units per unit cell, at minimum 1.
-        formula_derived: ``True`` when ``_chemical_formula_sum`` overrode the
-                         bond-graph GCD.
-        moiety_formula:  Generated ``_chemical_formula_moiety``; empty when the
-                         structure is polymeric or generation failed.
-    """
-
-    z: int
-    formula_derived: bool
-    moiety_formula: str
 
 
 def _count_z_with_source(
