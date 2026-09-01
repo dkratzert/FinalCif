@@ -156,7 +156,7 @@ def _parts_may_bond(first: int, second: int,
     while the fluorines are spread over PARTs 1, 2 and 3, for instance.  Without
     this exception the fluorines of PARTs 2 and 3 would be torn off the carbon.
     """
-    if first == second or first == 0 or second == 0:
+    if first in (second, 0) or second == 0:
         return True
     return first_occupancy >= FULL_OCCUPANCY or second_occupancy >= FULL_OCCUPANCY
 
@@ -1032,6 +1032,42 @@ def _charge_atoms(component: list[AtomRecord]) -> tuple[ChargeAtom, ...]:
     )
 
 
+def _reduce_symmetry_aggregate(
+        composition: dict[str, float],
+        ratio: float,
+        fully_occupied: bool,
+) -> tuple[dict[str, float], float]:
+    """Split a fully occupied fragment that the bond graph fused with its own symmetry image.
+
+    A molecule sitting close enough to a symmetry element for the bond graph to
+    join it to its own image shows up as a single component of ``n`` molecules
+    with a multiplier of ``1/n`` — for example ``'0.5(C60 H60 Al4 Cl6 N6)'``
+    instead of ``'C30 H30 Al2 Cl3 N3'``.  Both express the same unit-cell
+    content, but only the second names the molecule that actually exists.
+
+    The give-away is the occupancy: a *fully occupied* molecule cannot be
+    present in a fractional amount, so a ratio of ``1/n`` on an ordered
+    fragment can only come from the fusion.  A genuinely half-occupied solvent
+    (``'0.5(C7 H8)'``) or a molecule refined at partial occupancy therefore
+    keeps its multiplier untouched.
+
+    The composition additionally has to divide by ``n`` into whole atoms, which
+    rules out splitting something like ``0.5(C7 H8)`` into fractional atoms.
+    """
+    if not fully_occupied or ratio <= 0 or ratio >= 1:
+        return composition, ratio
+    divisor = round(1 / ratio)
+    if divisor < 2 or abs(ratio * divisor - 1.0) > 1e-4:
+        return composition, ratio
+    reduced: dict[str, float] = {}
+    for element, count in composition.items():
+        share = count / divisor
+        if abs(share - round(share)) > 1e-6:
+            return composition, ratio
+        reduced[element] = float(round(share))
+    return reduced, 1.0
+
+
 def _format_moiety_token(formula_str: str, ratio: float, charge: int) -> str:
     """Format one moiety following the IUCr ``_chemical_formula_moiety`` rules.
 
@@ -1073,9 +1109,9 @@ def _is_integral(value: float) -> bool:
 
 
 def _merge_multiple_species(
-        species: list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int]],
+        species: list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int, bool]],
         z: int,
-) -> list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int]]:
+) -> list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int, bool]]:
     """Fold aggregate species back into the monomer they are a multiple of.
 
     A molecule that is bonded to a symmetry copy of itself shows up twice: once
@@ -1117,7 +1153,8 @@ def _merge_multiple_species(
                 merged[j] = (monomer[0], total, monomer[2] or aggregate[2],
                              monomer[3], monomer[4],
                              max(monomer[5], aggregate[5]),
-                             min(monomer[6], aggregate[6]))
+                             min(monomer[6], aggregate[6]),
+                             monomer[7] and aggregate[7])
                 del merged[i]
                 break
             else:
@@ -1158,36 +1195,38 @@ def _moiety_formula_impl(
     differs from PLATON's.  Charges are not part of that comparison — PLATON
     skips blanks and charge tokens while comparing the strings.
     """
-    # Classify components and build per-component (comp_dict, effective, charge, non_h) tuples.
-    classified: list[tuple[dict[str, float], float, FragmentCharge, int]] = []
+    # Classify components and build per-component (comp_dict, effective, charge, non_h, ordered) tuples.
+    classified: list[tuple[dict[str, float], float, FragmentCharge, int, bool]] = []
     for comp in components:
         item = _classify_component(comp)
         if item is None:
             continue
         charge = perceive_fragment_charge(_charge_atoms(comp), item.composition,
                                           weighted=not item.uniform)
-        classified.append((item.composition, item.effective, charge, item.modelled_non_h))
+        ordered = abs(item.max_occupancy - 1.0) <= _UNIFORM_OCC_TOL
+        classified.append((item.composition, item.effective, charge, item.modelled_non_h, ordered))
 
     if not classified:
         return ''
 
     # Group by composition and charge (rounded for float-stable equality).
-    comp_groups: dict[tuple, list[tuple[dict[str, float], float, FragmentCharge, int]]] = {}
-    for comp_dict, effective, charge, non_h in classified:
+    comp_groups: dict[tuple, list[tuple[dict[str, float], float, FragmentCharge, int, bool]]] = {}
+    for comp_dict, effective, charge, non_h, ordered in classified:
         key = (tuple(sorted((el, round(n, _OCC_DECIMALS)) for el, n in comp_dict.items())),
                charge.charge, charge.confident)
-        comp_groups.setdefault(key, []).append((comp_dict, effective, charge, non_h))
+        comp_groups.setdefault(key, []).append((comp_dict, effective, charge, non_h, ordered))
 
     # For each species compute total effective count and an "is_major" flag.
-    species: list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int]] = []
+    species: list[tuple[dict[str, float], float, bool, float, FragmentCharge, int, int, bool]] = []
     for order, (_key, group) in enumerate(comp_groups.items()):
-        total_effective = sum(eff for _cd, eff, _q, _nh in group)
-        is_major = max(eff for _cd, eff, _q, _nh in group) >= PARTIAL_OCC_THRESHOLD
+        total_effective = sum(eff for _cd, eff, _q, _nh, _o in group)
+        is_major = max(eff for _cd, eff, _q, _nh, _o in group) >= PARTIAL_OCC_THRESHOLD
         comp_dict = group[0][0]
         atoms_per_mol = sum(comp_dict.values())
-        max_non_h = max(nh for _cd, _eff, _q, nh in group)
+        max_non_h = max(nh for _cd, _eff, _q, nh, _o in group)
+        fully_occupied = all(o for _cd, _eff, _q, _nh, o in group)
         species.append((comp_dict, total_effective, is_major, atoms_per_mol,
-                        group[0][2], max_non_h, order))
+                        group[0][2], max_non_h, order, fully_occupied))
 
     species = _merge_multiple_species(species, z)
 
@@ -1201,12 +1240,13 @@ def _moiety_formula_impl(
     species.sort(key=lambda x: (-x[5], x[6]))
 
     entries: list[tuple[str, float, FragmentCharge, float]] = []
-    for comp_dict, effective, _is_major, atoms_per_mol, charge, _non_h, _order in species:
-        formula_str = _composition_to_hill_str(comp_dict)
-        if not formula_str:
-            continue
+    for comp_dict, effective, _is_major, atoms_per_mol, charge, _non_h, _order, ordered in species:
         ratio = round(effective / z, 6)
         if ratio <= 0:
+            continue
+        comp_dict, ratio = _reduce_symmetry_aggregate(comp_dict, ratio, ordered)
+        formula_str = _composition_to_hill_str(comp_dict)
+        if not formula_str:
             continue
         entries.append((formula_str, ratio, charge, atoms_per_mol))
 
@@ -1272,6 +1312,40 @@ def _expanded_element_counts(
         key = _normalize_element(atom[0])
         weighted[key] = weighted.get(key, 0.0) + float(atom[2])
     return weighted
+
+
+def _special_element_counts(special_atoms: list, n_symmops: int) -> dict[str, float]:
+    """Return the unit-cell element counts contributed by negative-PART atoms.
+
+    Atoms of a negative SHELXL ``PART`` are never symmetry-expanded by
+    :func:`_expand_to_unit_cell`, but they are still generated by every
+    symmetry operation; their occupancy already accounts for the sharing on the
+    special position.  Their unit-cell contribution is therefore
+    ``occupancy × n_symmops`` — the same scaling :func:`_combine_components`
+    applies when building the moiety.
+
+    Leaving them out makes the comparison with ``_chemical_formula_sum``
+    inconsistent for every structure with a solvent on a special position, so
+    the formula-based Z correction silently gives up.
+    """
+    weighted: dict[str, float] = {}
+    factor = max(1, n_symmops)
+    for atom in special_atoms:
+        key = _normalize_element(atom[1])
+        weighted[key] = weighted.get(key, 0.0) + float(atom[6]) * factor
+    return weighted
+
+
+def _unit_cell_element_counts(
+        expanded: list[ExpandedAtom],
+        special_atoms: list,
+        n_symmops: int,
+) -> dict[str, float]:
+    """Total occupancy-weighted unit-cell content of regular *and* special atoms."""
+    counts = _expanded_element_counts(expanded)
+    for element, count in _special_element_counts(special_atoms, n_symmops).items():
+        counts[element] = counts.get(element, 0.0) + count
+    return counts
 
 
 def _counts_agree(actual: float, expected: float) -> bool:
@@ -1495,7 +1569,7 @@ def _count_z_with_source(
         # Optional formula-based consistency check / correction.
         parsed_formula = _parse_formula_sum(formula_sum)
         if parsed_formula:
-            cell_counts = _expanded_element_counts(expanded)
+            cell_counts = _unit_cell_element_counts(expanded, special, len(symmops))
             if not _gcd_matches_formula(z, cell_counts, parsed_formula):
                 z_from_form = _z_from_formula(cell_counts, parsed_formula)
                 if z_from_form is not None:

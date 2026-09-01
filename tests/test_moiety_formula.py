@@ -25,7 +25,8 @@ from finalcif.tools.sumformula import (NORMAL, SUBSCRIPT, SUPERSCRIPT, formula_p
                                        formula_str_to_dict, formula_to_html)
 from finalcif.tools.z_from_packing import (_build_bond_graph, _combine_components,
                                            _expand_to_unit_cell, _parts_may_bond,
-                                           count_z_and_zprime, moiety_formula_from_components)
+                                           _unit_cell_element_counts, count_z_and_zprime,
+                                           moiety_formula_from_components)
 
 
 def _load(relative_path: str) -> CifContainer:
@@ -458,6 +459,74 @@ class TestMoietyFormulaOfRealStructures:
         combined = _combine_components([main, main], solvent, 4, cell)
         assert len(combined) == 6  # two regular components + four solvent copies
         assert moiety_formula_from_components(combined, 2) == 'C3, O'
+
+    def test_special_atoms_count_towards_the_formula_based_z_correction(self):
+        """A special-position solvent must be part of the unit-cell content.
+
+        Reproduces ``05_mo_cbfk04_2_0m_4_a``: in P-1 the bond graph fuses the
+        molecule with its inversion image into one component, so the GCD gives
+        Z = 1.  ``_chemical_formula_sum`` can correct that, but only if the
+        negative-PART solvent is included in the unit-cell counts — otherwise
+        the per-element ratios disagree and the correction gives up, leaving
+        Z = 1 / Z' = 1/2 instead of the deposited Z = 2 / Z' = 1.
+        """
+        cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+        symmops = ['x, y, z', '-x, -y, -z']
+        # Two carbons bridged across the inversion centre at the origin, so the
+        # expansion yields a single fused C4 component instead of two C2 units.
+        main = [['C1', 'C', 0.03, 0.0, 0.0, 0, 1.0, 0.02],
+                ['C2', 'C', 0.105, 0.0, 0.0, 0, 1.0, 0.02]]
+        solvent = [['O1_1', 'O', 0.4, 0.3, 0.35, -1, 0.5, 0.02]]
+        atoms = main + solvent
+        # Cell content is C4 + O (2 x 0.5), so a formula unit is C2 O0.5.
+        result = count_z_and_zprime(atoms, symmops, cell, formula_sum='C2 O0.5')
+        assert (result.z, result.z_prime) == (2, 1.0)
+        assert result.confidence == 'formula'
+
+    def test_special_atoms_are_added_to_the_unit_cell_counts(self):
+        """``_unit_cell_element_counts`` scales negative PARTs by the symmetry count."""
+        cell = (20.0, 20.0, 20.0, 90.0, 90.0, 90.0)
+        regular = [['C1', 'C', 0.1, 0.1, 0.1, 0, 1.0, 0.02]]
+        special = [['O1_1', 'O', 0.4, 0.3, 0.35, -1, 0.5, 0.02]]
+        expanded = _expand_to_unit_cell(regular, ['x, y, z', '-x, -y, -z'], cell)
+        counts = _unit_cell_element_counts(expanded, special, 2)
+        assert counts['C'] == pytest.approx(2.0)
+        assert counts['O'] == pytest.approx(1.0)
+
+
+class TestSymmetryFusedAggregateIsSplit:
+    """``0.5(ordered dimer)`` names a molecule that does not exist.
+
+    A molecule close enough to a symmetry element for the bond graph to join it
+    to its own image becomes one component of n molecules with multiplier 1/n.
+    A *fully occupied* molecule cannot be present in a fractional amount, so
+    such a token is always a fusion artefact and is split back into the
+    monomer.  Partially occupied fragments keep their multiplier.
+    """
+
+    def test_ordered_dimer_is_reported_as_the_monomer(self):
+        dimer = [('C', 1.0, ())] * 60 + [('H', 1.0, ())] * 60 + [('Al', 1.0, ())] * 4 \
+                + [('Cl', 1.0, ())] * 6 + [('N', 1.0, ())] * 6
+        assert moiety_formula_from_components([dimer], z=2) == 'C30 H30 Al2 Cl3 N3'
+
+    def test_half_occupied_solvent_keeps_its_multiplier(self):
+        """occ = 0.5 really is half a molecule per formula unit."""
+        toluene = [('C', 0.5, ())] * 7 + [('H', 0.5, ())] * 8
+        main = [('C', 1.0, ())] * 10
+        assert moiety_formula_from_components([main, main, toluene], z=2) == 'C10, 0.25(C7 H8)'
+
+    def test_an_ordered_fragment_that_does_not_divide_is_kept(self):
+        """C7 H8 cannot be split into two whole molecules."""
+        toluene = [('C', 1.0, ())] * 7 + [('H', 1.0, ())] * 8
+        assert moiety_formula_from_components([toluene], z=2) == '0.5(C7 H8)'
+
+    def test_ordered_trimer_is_split_into_three(self):
+        trimer = [('C', 1.0, ())] * 30 + [('N', 1.0, ())] * 3
+        assert moiety_formula_from_components([trimer], z=3) == 'C10 N'
+
+    def test_whole_multipliers_are_untouched(self):
+        molecule = [('C', 1.0, ())] * 10
+        assert moiety_formula_from_components([molecule, molecule], z=1) == '2(C10)'
 
 
 class TestMoietyOrderFollowsPlaton:
