@@ -147,9 +147,12 @@ def build_details_text(void_rows: list[dict], method: Literal['squeeze', 'smtbx'
     return '\n'.join(sentences)
 
 
-# Marker appended to a moiety formula when solvent was removed from the model
+# Marker appended to a formula when solvent was removed from the model
 # (PLATON SQUEEZE / Olex2-SMTBX masks) without being assigned a formula.
-UNKNOWN_SOLVENT_MARKER: str = '+[solvent]'
+# The exact spelling matters: PLATON writes ' [+ solvent]' and truncates a
+# reported formula at the first ' [' before comparing it with its own value,
+# so any other spelling would raise checkCIF's 041/042 alerts.
+UNKNOWN_SOLVENT_MARKER: str = '[+ solvent]'
 
 # ``_*_void_content`` tags of the two supported solvent-masking programs.
 VOID_CONTENT_TAGS: tuple[str, ...] = (
@@ -158,6 +161,13 @@ VOID_CONTENT_TAGS: tuple[str, ...] = (
 )
 
 _EMPTY_VALUES: frozenset[str] = frozenset({'', '?', '.'})
+
+# Matches the marker no matter how CIF line wrapping distributed the whitespace
+# inside it: a long formula is folded at 80 characters, which regularly splits
+# '[+ solvent]' into '[+\nsolvent]'.  Also tolerates the older '+[solvent]'
+# spelling so that files written by earlier FinalCif versions are repaired.
+_SOLVENT_MARKER_RE = re.compile(r'\s*(?:\[\s*\+\s*solvent\s*\]|\+\s*\[\s*solvent\s*\])',
+                                re.IGNORECASE)
 
 
 def has_unassigned_solvent(cif: CifContainer) -> bool:
@@ -183,15 +193,27 @@ def has_unassigned_solvent(cif: CifContainer) -> bool:
     return found_loop
 
 
-def append_unknown_solvent(moiety_formula: str) -> str:
-    """Append :data:`UNKNOWN_SOLVENT_MARKER` to *moiety_formula*.
+def remove_unknown_solvent(formula: str) -> str:
+    """Strip every :data:`UNKNOWN_SOLVENT_MARKER` from *formula*.
 
-    Returns the formula unchanged when it is empty or already carries the
-    marker, so the function can be applied repeatedly.
+    Recognises the marker across a CIF line break and in the legacy
+    ``'+[solvent]'`` spelling.
     """
-    formula = moiety_formula.strip()
-    if not formula or formula in _EMPTY_VALUES:
-        return moiety_formula
-    if UNKNOWN_SOLVENT_MARKER in formula:
+    return _SOLVENT_MARKER_RE.sub('', formula).strip()
+
+
+def append_unknown_solvent(formula: str) -> str:
+    """Append :data:`UNKNOWN_SOLVENT_MARKER` to a sum or moiety *formula*.
+
+    Any marker already present is removed first, so the result carries exactly
+    one marker no matter how often the function is applied and no matter how
+    CIF line wrapping mangled the whitespace of a previous one.  Empty formulas
+    are returned unchanged.
+    """
+    stripped = formula.strip()
+    if not stripped or stripped in _EMPTY_VALUES:
         return formula
-    return f'{formula} {UNKNOWN_SOLVENT_MARKER}'
+    without_marker = remove_unknown_solvent(stripped)
+    if not without_marker or without_marker in _EMPTY_VALUES:
+        return formula
+    return f'{without_marker} {UNKNOWN_SOLVENT_MARKER}'

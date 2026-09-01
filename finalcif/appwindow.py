@@ -1520,7 +1520,7 @@ class AppWindow(QMainWindow):
         self.show_moiety_formula_tooltip(moiety if moiety not in ['', '?'] else formula_moiety)
 
     def _with_squeezed_solvent(self, formula_moiety: str) -> str:
-        """Mark a generated moiety formula with ``+[solvent]`` for squeezed structures.
+        """Mark a generated moiety formula with ``[+ solvent]`` for squeezed structures.
 
         The unmodelled solvent of a PLATON SQUEEZE / Olex2-SMTBX structure is
         missing from the atom model, so the moiety derived from the bond graph
@@ -1532,6 +1532,36 @@ class AppWindow(QMainWindow):
         except Exception:
             pass
         return formula_moiety
+
+    def mark_squeezed_solvent_in_formulas(self) -> None:
+        """Append ``[+ solvent]`` to the sum and moiety formula of a squeezed structure.
+
+        PLATON marks both ``_chemical_formula_sum`` and
+        ``_chemical_formula_moiety`` this way whenever solvent was removed by
+        SQUEEZE or an Olex2/SMTBX mask, because the formulas then describe less
+        than the real content of the unit cell.  Nothing is marked when the void
+        content was assigned a formula, or for multi-CIF files.
+        """
+        try:
+            if self.cif.is_multi_cif or not has_unassigned_solvent(self.cif):
+                return
+        except Exception:
+            return
+        for key in ('_chemical_formula_sum', '_chemical_formula_moiety'):
+            self._append_solvent_marker_to(key)
+
+    def _append_solvent_marker_to(self, key: str) -> None:
+        """Write *key* back with the unknown-solvent marker unless it is empty.
+
+        ``append_unknown_solvent`` normalises a marker that a previous save
+        wrapped across two CIF lines, so the comparison has to be made against
+        the normalised value to avoid writing the row over and over.
+        """
+        current = (self.ui.cif_main_table.getTextFromKey(key=key, col=Column.EDIT)
+                   or self.ui.cif_main_table.getTextFromKey(key=key, col=Column.CIF))
+        marked = append_unknown_solvent(current)
+        if marked and marked != current.strip():
+            self.ui.cif_main_table.setText(key=key, txt=marked, column=Column.EDIT)
 
     def append_to_ciflog_without_newline(self, text: str = '') -> None:
         self.ui.CheckCifLogPlainTextEdit.moveCursor(QtGui.QTextCursor.MoveOperation.End)
@@ -2073,6 +2103,7 @@ class AppWindow(QMainWindow):
             self.enable_buttons()
             self.fill_space_group_lineedit()
             self.fill_sum_formula_lineedit()
+            self.mark_squeezed_solvent_in_formulas()
             self.ui.CCDCNumLineEdit.setText(self.cif['_database_code_depnum_ccdc_archive'])
             self.ui.CheckcifPlaintextEdit.clear()
             self.ui.TemplatesStackedWidget.setCurrentIndex(0)

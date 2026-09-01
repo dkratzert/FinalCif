@@ -15,7 +15,7 @@ from qtpy.QtWidgets import QApplication
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.custom_classes import Column
 from finalcif.tools.squeeze import (append_unknown_solvent, build_details_text, electrons_from_formula,
-                                    has_unassigned_solvent)
+                                    has_unassigned_solvent, remove_unknown_solvent)
 from tests.helpers import AppWindowTestCase
 
 app = QApplication.instance()
@@ -472,12 +472,33 @@ class TestUnassignedSolvent(unittest.TestCase):
         self.assertFalse(has_unassigned_solvent(cif))
 
     def test_marker_is_appended(self):
-        self.assertEqual('C6 H6, 2(H2 O) +[solvent]',
+        self.assertEqual('C6 H6, 2(H2 O) [+ solvent]',
                          append_unknown_solvent('C6 H6, 2(H2 O)'))
+
+    def test_sum_formula_gets_the_same_marker(self):
+        self.assertEqual('C126 H111.89 Al2 B2 F73.11 N6 O9 P [+ solvent]',
+                         append_unknown_solvent('C126 H111.89 Al2 B2 F73.11 N6 O9 P'))
 
     def test_marker_is_added_only_once(self):
         once = append_unknown_solvent('C6 H6')
         self.assertEqual(once, append_unknown_solvent(once))
+
+    def test_marker_wrapped_across_cif_lines_is_not_duplicated(self):
+        """A long formula is folded at 80 characters, splitting the marker."""
+        wrapped = ('2(C16 Al F36 O4 1-), C76 H95 B2 N6 O P 2+, '
+                   '1.111(C6 H5 F), 1.889(C6 H6) [+ \nsolvent]')
+        result = append_unknown_solvent(wrapped)
+        self.assertEqual(1, result.count('[+ solvent]'))
+        self.assertEqual('2(C16 Al F36 O4 1-), C76 H95 B2 N6 O P 2+, '
+                         '1.111(C6 H5 F), 1.889(C6 H6) [+ solvent]', result)
+
+    def test_legacy_marker_spelling_is_replaced(self):
+        self.assertEqual('C6 H6 [+ solvent]', append_unknown_solvent('C6 H6 +[solvent]'))
+
+    def test_marker_can_be_removed(self):
+        self.assertEqual('C6 H6', remove_unknown_solvent('C6 H6 [+ solvent]'))
+        self.assertEqual('C6 H6', remove_unknown_solvent('C6 H6 [+ \nsolvent]'))
+        self.assertEqual('C6 H6', remove_unknown_solvent('C6 H6'))
 
     def test_empty_formula_stays_empty(self):
         self.assertEqual('', append_unknown_solvent(''))
@@ -561,7 +582,46 @@ class TestAppWindowSqueezedSolventMarker(AppWindowTestCase):
 
     def test_marker_added_for_unassigned_squeeze_void(self):
         self._add_empty_squeeze_loop()
-        self.assertEqual('C6 H6 +[solvent]', self.app._with_squeezed_solvent('C6 H6'))
+        self.assertEqual('C6 H6 [+ solvent]', self.app._with_squeezed_solvent('C6 H6'))
+
+    def test_sum_and_moiety_formula_are_marked(self):
+        table = self.app.ui.cif_main_table
+        table.setText(key='_chemical_formula_moiety', txt='C38 H38 O12', column=Column.EDIT)
+        self._add_empty_squeeze_loop()
+        self.app.mark_squeezed_solvent_in_formulas()
+        self.assertIn('[+ solvent]',
+                      table.getTextFromKey(key='_chemical_formula_sum', col=Column.EDIT))
+        self.assertEqual('C38 H38 O12 [+ solvent]',
+                         table.getTextFromKey(key='_chemical_formula_moiety', col=Column.EDIT))
+
+    def test_formulas_are_untouched_without_squeezed_solvent(self):
+        table = self.app.ui.cif_main_table
+        self.app.mark_squeezed_solvent_in_formulas()
+        self.assertEqual('', table.getTextFromKey(key='_chemical_formula_sum', col=Column.EDIT))
+
+    def test_marking_twice_adds_one_marker(self):
+        table = self.app.ui.cif_main_table
+        self._add_empty_squeeze_loop()
+        self.app.mark_squeezed_solvent_in_formulas()
+        self.app.mark_squeezed_solvent_in_formulas()
+        sum_formula = table.getTextFromKey(key='_chemical_formula_sum', col=Column.EDIT)
+        self.assertEqual(1, sum_formula.count('[+ solvent]'))
+
+    def test_wrapped_marker_from_a_previous_save_is_not_duplicated(self):
+        """Reopening a saved file must not add a second marker.
+
+        Saving folds a long formula at 80 characters, which splits the marker
+        across two lines; the table then holds '[+ \\nsolvent]'.
+        """
+        table = self.app.ui.cif_main_table
+        table.setText(key='_chemical_formula_moiety',
+                      txt='2(C16 Al F36 O4), C76 H95 B2 N6 O P, 1.889(C6 H6) [+ \nsolvent]',
+                      column=Column.EDIT)
+        self._add_empty_squeeze_loop()
+        self.app.mark_squeezed_solvent_in_formulas()
+        moiety = table.getTextFromKey(key='_chemical_formula_moiety', col=Column.EDIT)
+        self.assertEqual(1, moiety.count('solvent]'))
+        self.assertEqual('2(C16 Al F36 O4), C76 H95 B2 N6 O P, 1.889(C6 H6) [+ solvent]', moiety)
 
 
 if __name__ == '__main__':
