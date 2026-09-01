@@ -847,6 +847,12 @@ def _build_bond_graph(
         gx = math.floor(xi / cell_size)
         gy = math.floor(yi / cell_size)
         gz = math.floor(zi / cell_size)
+        # Hoisted out of the neighbour loops: these are re-read for every
+        # candidate pair, and the innermost loop runs millions of times.
+        group_i = groups[i]
+        occupancy_i = occupancies[i]
+        mask_i = image_masks[i]
+        hydrogen_i = is_hydrogen[i]
         seen_j: set[int] = set()
         for dgx in (-1, 0, 1):
             for dgy in (-1, 0, 1):
@@ -854,14 +860,17 @@ def _build_bond_graph(
                     for j, xj, yj, zj in grid_ext.get((gx + dgx, gy + dgy, gz + dgz), []):
                         if j <= i or j in seen_j:
                             continue
-                        if not _parts_may_bond(groups[i], groups[j],
-                                               occupancies[i], occupancies[j]):
-                            continue
-                        if not _symmetry_images_may_bond(groups[i], groups[j],
-                                                         image_masks[i], image_masks[j]):
-                            continue
                         # Two hydrogens are never bonded to each other.
-                        if is_hydrogen[i] and is_hydrogen[j]:
+                        if hydrogen_i and is_hydrogen[j]:
+                            continue
+                        group_j = groups[j]
+                        if not _parts_may_bond(group_i, group_j,
+                                               occupancy_i, occupancies[j]):
+                            continue
+                        # Inlined _symmetry_images_may_bond: a function call per
+                        # candidate pair costs more than the whole rule, and the
+                        # first comparison rules it out for every ordered atom.
+                        if group_i < 0 and group_j < 0 and not (mask_i & image_masks[j]):
                             continue
                         rj = radii[j]
                         cutoff_sq = (ri + rj + BOND_TOLERANCE) ** 2
