@@ -1,5 +1,8 @@
 FinalCif recent changes
 -----------------------
+* v175 The calculated moiety formula now handles fragments disordered over a symmetry element. Moieties are
+       listed in PLATON's order, which avoids checkCIF alert 042. Structures with squeezed but unassigned
+       solvent now get PLATON's '[+ solvent]' marker on both the sum and the moiety formula.
 * v174 The Rint of twinned (HKLF 5) data is now calculated from the singly indexed reflections of the major
         domain, merged with the symmetry of the structure. The Rint of the 'PART 3' section of a TWINABS file is
         no longer used for such data, because it is a residual of the twin fraction refinement of TWINABS and not
