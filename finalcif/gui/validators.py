@@ -147,6 +147,15 @@ class Textlimits:
         return False
 
 
+class AnyTextLimits:
+    def __init__(self, help_text: str | None = None):
+        self.valid = self.validate_cif_key
+        self.help_text = help_text or 'Any text is allowed.'
+
+    def validate_cif_key(self, value: str) -> bool:
+        return True
+
+
 validators: dict[str, BaseLimits] = {
     '_database_code_depnum_ccdc_archive'   : Integerlimits(lower=0, upper=inf),
     '_cell_measurement_reflns_used'        : Integerlimits(lower=0, upper=inf),
@@ -279,7 +288,7 @@ validators: dict[str, BaseLimits] = {
                                                                  'DGRS']),
     '_atom_site_refinement_flags_adp'      : Textlimits(options=['None', 'T', 'U', 'TU']),
     '_atom_site_refinement_flags_occupancy': Textlimits(options=['None', 'P']),
-    '_atom_site_disorder_assembly'         : Textlimits(options=['A', 'B', 'S']),
+    '_atom_site_disorder_assembly'         : AnyTextLimits(),
     '_atom_site_aniso_U_11'                : Floatlimits(),
     '_atom_site_aniso_U_22'                : Floatlimits(),
     '_atom_site_aniso_U_33'                : Floatlimits(),
