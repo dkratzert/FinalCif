@@ -1311,15 +1311,15 @@ class AppWindow(QMainWindow):
                 self.validation_response_forms_list.append(vrf)
                 table.place_vrf_widget(insert_pos, vrf)
 
-        if html_entries:
-            n = len(html_entries)
-            form_noun = 'form' if n == 1 else 'forms'
-            self.ui.CheckCifLogPlainTextEdit.appendHtml(
-                f'<br><b>{n} validation response forms {form_noun} added to the main table.</b>')
-        else:
-            levels = 'A, B or C' if self.ui.explainCandGAlertsCheckBox.isChecked() else 'A or B'
-            self.ui.CheckCifLogPlainTextEdit.appendHtml(
-                f'<br><b>No level {levels} alerts require a response.</b>')
+        self.ui.CheckCifLogPlainTextEdit.appendHtml(self._vrf_summary_message(len(html_entries)))
+
+    def _vrf_summary_message(self, count: int) -> str:
+        """Return the log message summarizing how many VRFs a CheckCIF run produced."""
+        if count:
+            form_noun = 'form' if count == 1 else 'forms'
+            return f'<br><b>{count} validation response {form_noun} added to the main table.</b>'
+        levels = 'A, B or C' if self.ui.explainCAlertsCheckBox.isChecked() else 'A or B'
+        return f'<br><b>No level {levels} alerts require a response.</b>'
 
     def _vrf_insert_position(self) -> int:
         """Return the row index just after the last existing ``_vrf_*`` row in the main table.
