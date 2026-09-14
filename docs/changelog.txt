@@ -1,5 +1,8 @@
 FinalCif recent changes
 -----------------------
+* v177 The solvent content of SQUEEZE and Olex2/SMTBX masked voids can now be entered by name: typing
+       'thf', 'toluene' or '2 h2o' fills in the corresponding formula, e.g. '2(H2O)'.
+       .HKL/.RES file extraction was fixed.
 * v176 Fixed a crash at the end of an online CheckCIF run when the report contained no alerts that need a
        validation response form. The number of added response forms is now also reported correctly.
 * v175 The calculated moiety formula now handles fragments disordered over a symmetry element. Moieties are
