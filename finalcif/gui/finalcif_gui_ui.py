@@ -2881,7 +2881,7 @@ class Ui_FinalCifWindow(object):
         self.CancelPropertiesButton.setText(QCoreApplication.translate("FinalCifWindow", u"Cancel", None))
         self.ExportPropertyButton.setText(QCoreApplication.translate("FinalCifWindow", u"Export", None))
         self.BackFromLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Back to CIF Table", None))
-        self.add_squeeze_pushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add Squeeze Info", None))
+        self.add_squeeze_pushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add/Edit Squeeze Info", None))
         self.deleteLoopButton.setText(QCoreApplication.translate("FinalCifWindow", u"Delete Loop", None))
         self.newLoopPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Add New Loop", None))
         self.revertLoopsPushButton.setText(QCoreApplication.translate("FinalCifWindow", u"Revert Changes", None))
