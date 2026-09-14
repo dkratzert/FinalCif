@@ -261,6 +261,22 @@ class TestSqueezeSolventDialog(unittest.TestCase):
         self.assertIn('CH2Cl2', details)
         self.assertIn('SQUEEZE', details)
 
+    def test_existing_details_shown_as_utf8(self):
+        """CIF markup in an existing details value must be shown as unquoted utf-8."""
+        self.cif.set_pair_delimited('_platon_squeeze_details',
+                                    'The H2O molecule in a void of 13 \u212b\u00b3 was treated by SQUEEZE.')
+        dlg = self._make_dialog()
+        text = dlg.details_edit.toPlainText()
+        self.assertIn('13 \u212b\u00b3', text)
+        self.assertNotIn(r'\%A', text)
+        self.assertNotIn('^3^', text)
+
+    def test_utf8_details_are_re_encoded_on_accept(self):
+        dlg = self._make_dialog()
+        dlg.details_edit.setPlainText('A void of 13 \u212b\u00b3 was treated by SQUEEZE.')
+        dlg._on_accept()
+        self.assertIn(r'13 \%A^3^', self.cif.block.find_value('_platon_squeeze_details'))
+
     def test_details_key_property(self):
         dlg = self._make_dialog()
         self.assertEqual('_platon_squeeze_details', dlg.details_key)

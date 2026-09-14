@@ -24,7 +24,7 @@ from qtpy.QtWidgets import (
 )
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.cif.text import quote
+from finalcif.cif.text import quote, retranslate_delimiter
 from finalcif.tools.squeeze import build_details_text, electrons_from_formula
 
 
@@ -242,7 +242,7 @@ class SqueezeSolventDialog(QDialog):
         existing_details = self.cif[self._cfg['details_key']]
         if existing_details:
             self._details_user_modified = True
-            self.details_edit.setPlainText(existing_details)
+            self.details_edit.setPlainText(retranslate_delimiter(existing_details))
         self.details_edit.textChanged.connect(self._on_details_text_changed)
 
         # button box
