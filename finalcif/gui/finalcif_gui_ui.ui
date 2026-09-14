@@ -2861,7 +2861,7 @@ The data source will be ignored until next program restart.</string>
               <item row="0" column="2">
                <widget class="QPushButton" name="add_squeeze_pushButton">
                 <property name="text">
-                 <string>Add Squeeze Info</string>
+                 <string>Add/Edit Squeeze Info</string>
                 </property>
                </widget>
               </item>
