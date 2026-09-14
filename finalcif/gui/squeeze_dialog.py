@@ -18,7 +18,7 @@ from pathlib import Path
 from qtpy import QtCore, compat
 from qtpy.QtGui import QColor
 from qtpy.QtWidgets import (
-    QCompleter, QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QMessageBox,
+    QAbstractItemView, QCompleter, QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QMessageBox,
     QPlainTextEdit, QPushButton, QSizePolicy, QStyledItemDelegate, QTableWidget, QTableWidgetItem,
     QVBoxLayout, QWidget, QApplication
 )
@@ -79,7 +79,7 @@ _MODE_CONFIG: dict[SqueezeMode, dict] = {
         'details_key'         : '_platon_squeeze_details',
         'title'               : 'PLATON SQUEEZE \u2013 Assign Solvent Content',
         'info'                : ('PLATON/SQUEEZE was used. '
-                                 'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>. '
+                                 'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.\n'
                                  'Common solvent names like <tt>2 thf</tt> or <tt>toluene</tt> are '
                                  'converted to their formula.'),
         'details_label'       : 'SQUEEZE details (<i>_platon_squeeze_details</i>):',
@@ -94,7 +94,7 @@ _MODE_CONFIG: dict[SqueezeMode, dict] = {
         'details_key'         : '_smtbx_masks_special_details',
         'title'               : 'Olex2/SMTBX Masks \u2013 Assign Solvent Content',
         'info'                : ('Olex2/SMTBX solvent masks were used. '
-                                 'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>. '
+                                 'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.\n'
                                  'Common solvent names like <tt>2 thf</tt> or <tt>toluene</tt> are '
                                  'converted to their formula.'),
         'details_label'       : 'Masks details (<i>_smtbx_masks_special_details</i>):',
@@ -230,6 +230,13 @@ class SqueezeSolventDialog(QDialog):
         self.table.setColumnWidth(_COL_FORMULA, 160)
         self.table.setColumnWidth(_COL_ELEC_CALC, 85)
         self.table.verticalHeader().setVisible(False)
+        self.table.setEditTriggers(
+            QAbstractItemView.EditTrigger.CurrentChanged
+            | QAbstractItemView.EditTrigger.SelectedClicked
+            | QAbstractItemView.EditTrigger.DoubleClicked
+            | QAbstractItemView.EditTrigger.AnyKeyPressed
+            | QAbstractItemView.EditTrigger.EditKeyPressed
+        )
         self._solvent_delegate = SolventNameDelegate(self.table)
         self.table.setItemDelegateForColumn(_COL_FORMULA, self._solvent_delegate)
         self.table.itemChanged.connect(self._on_formula_changed)
