@@ -34,10 +34,7 @@ class HKL:
 
     @property
     def hkl_as_cif(self) -> str:
-        if version.parse(gemmi.__version__) < version.parse('0.5.1'):
-            return self._doc.as_string(style=Style.Simple)
-        else:
-            return self._doc.as_string(options=gemmi.cif.WriteOptions(Style.Simple))
+        return self._doc.as_string(options=gemmi.cif.WriteOptions(Style.Simple))
 
     def _add_hkl_as_loop(self) -> None:
         """
