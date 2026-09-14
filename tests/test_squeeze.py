@@ -253,6 +253,26 @@ class TestSqueezeSolventDialog(unittest.TestCase):
         self.assertEqual('CH2Cl2', contents[0])
         self.assertEqual('3(H2O)', contents[1])
 
+    def test_solvent_name_is_converted_to_formula(self):
+        dlg = self._make_dialog()
+        dlg.table.item(0, 3).setText('2 thf')
+        self.assertEqual('2(C4H8O)', dlg.formula_for_row(0))
+        self.assertIn('2(C4H8O)', dlg.details_edit.toPlainText())
+        dlg._on_accept()
+        contents = self.cif.get_loop_column('_platon_squeeze_void_content')
+        self.assertEqual('2(C4H8O)', contents[0])
+
+    def test_solvent_name_electron_count(self):
+        dlg = self._make_dialog()
+        dlg.table.item(0, 3).setText('toluene')
+        self.assertEqual('50', dlg.table.item(0, 4).text())
+
+    def test_fill_down_resolves_solvent_name(self):
+        dlg = self._make_dialog()
+        dlg.table.item(0, 3).setText('water')
+        dlg._fill_down()
+        self.assertEqual('H2O', dlg.formula_for_row(1))
+
     def test_accept_writes_details_to_cif(self):
         dlg = self._make_dialog()
         dlg.table.item(0, 3).setText('CH2Cl2')

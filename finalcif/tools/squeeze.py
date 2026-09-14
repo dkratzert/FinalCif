@@ -15,12 +15,49 @@ from typing import Literal, TYPE_CHECKING
 
 from finalcif.cif.atoms import element2num
 from finalcif.tools.chemparse import parse_formula, ChemparseError
+from finalcif.tools.solvents import resolve_solvent
 
 if TYPE_CHECKING:
     from finalcif.cif.cif_file_io import CifContainer
 
 # Atomic numbers (= electron count for neutral atoms) for elements common in crystallography.
 ATOMIC_NUMBERS: dict[str, int] = element2num
+
+# Splits an optional leading multiplier from the rest, e.g. '2(thf)' or '2 thf'.
+_MULTIPLIER_RE = re.compile(r'^(\d+(?:\.\d+)?)\s*(.*)$', re.DOTALL)
+
+
+def resolve_formula(text: str) -> str:
+    """Translate a solvent name into its sum formula.
+
+    Accepts an optional leading multiplier, so ``'thf'``, ``'2 thf'`` and
+    ``'2(thf)'`` all resolve.  Text that does not name a known solvent is
+    returned unchanged, which keeps ordinary formulae such as ``'2(H2O)'``
+    working.
+
+    Args:
+        text: User input, e.g. ``'2 toluene'``.
+
+    Returns:
+        A formula string such as ``'2(C7H8)'``, or *text* unchanged.
+    """
+    stripped = text.strip()
+    if not stripped:
+        return text
+    multiplier = ''
+    remainder = stripped
+    match = _MULTIPLIER_RE.match(stripped)
+    if match:
+        multiplier, remainder = match.group(1), match.group(2).strip()
+    remainder = remainder.strip()
+    if remainder.startswith('(') and remainder.endswith(')'):
+        remainder = remainder[1:-1].strip()
+    formula = resolve_solvent(remainder)
+    if formula is None:
+        return stripped
+    if not multiplier or float(multiplier) == 1:
+        return formula
+    return f'{multiplier}({formula})'
 
 
 def _normalize_squeeze_formula(formula_str: str) -> str:
@@ -80,11 +117,12 @@ def electrons_from_formula(formula_str: str) -> int:
     """
     Returns the total electron count for a chemical formula string.
 
-    Supports standard crystallographic formulae such as 'C4H8O', '2(H2O)', 'CHCl3'.
+    Supports standard crystallographic formulae such as 'C4H8O', '2(H2O)', 'CHCl3'
+    as well as common solvent names like 'thf' or '2 toluene'.
     Unknown elements contribute 0 electrons.  Returns 0 for empty / placeholder strings.
 
     Args:
-        formula_str: Chemical formula, e.g. '2(C4H8O)' or 'H2O'.
+        formula_str: Chemical formula, e.g. '2(C4H8O)', 'H2O' or '2 thf'.
 
     Returns:
         Integer electron count, or 0 when the formula cannot be parsed.
@@ -92,7 +130,7 @@ def electrons_from_formula(formula_str: str) -> int:
     if not formula_str or formula_str.strip() in ('?', '.', ''):
         return 0
     try:
-        normalised = _normalize_squeeze_formula(formula_str.strip())
+        normalised = _normalize_squeeze_formula(resolve_formula(formula_str))
         atom_dict = parse_formula(normalised)
         return round(sum(ATOMIC_NUMBERS.get(el, 0) * count for el, count in atom_dict.items()))
     except ChemparseError:

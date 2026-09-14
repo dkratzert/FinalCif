@@ -18,14 +18,15 @@ from pathlib import Path
 from qtpy import QtCore, compat
 from qtpy.QtGui import QColor
 from qtpy.QtWidgets import (
-    QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QMessageBox,
-    QPlainTextEdit, QPushButton, QSizePolicy, QTableWidget, QTableWidgetItem,
+    QCompleter, QDialog, QDialogButtonBox, QHBoxLayout, QLabel, QLineEdit, QMessageBox,
+    QPlainTextEdit, QPushButton, QSizePolicy, QStyledItemDelegate, QTableWidget, QTableWidgetItem,
     QVBoxLayout, QWidget, QApplication
 )
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import quote, retranslate_delimiter
-from finalcif.tools.squeeze import build_details_text, electrons_from_formula
+from finalcif.tools.solvents import solvent_names
+from finalcif.tools.squeeze import build_details_text, electrons_from_formula, resolve_formula
 
 
 class SqueezeMode(Enum):
@@ -78,7 +79,9 @@ _MODE_CONFIG: dict[SqueezeMode, dict] = {
         'details_key'         : '_platon_squeeze_details',
         'title'               : 'PLATON SQUEEZE \u2013 Assign Solvent Content',
         'info'                : ('PLATON/SQUEEZE was used. '
-                                 'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'),
+                                 'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>. '
+                                 'Common solvent names like <tt>2 thf</tt> or <tt>toluene</tt> are '
+                                 'converted to their formula.'),
         'details_label'       : 'SQUEEZE details (<i>_platon_squeeze_details</i>):',
         'electrons_col_header': 'Electrons\n(PLATON)',
     },
@@ -91,7 +94,9 @@ _MODE_CONFIG: dict[SqueezeMode, dict] = {
         'details_key'         : '_smtbx_masks_special_details',
         'title'               : 'Olex2/SMTBX Masks \u2013 Assign Solvent Content',
         'info'                : ('Olex2/SMTBX solvent masks were used. '
-                                 'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>.'),
+                                 'Assign the solvent formula per void <b>per unit cell</b>, e.g. <tt>2(H2O)</tt>. '
+                                 'Common solvent names like <tt>2 thf</tt> or <tt>toluene</tt> are '
+                                 'converted to their formula.'),
         'details_label'       : 'Masks details (<i>_smtbx_masks_special_details</i>):',
         'electrons_col_header': 'Electrons\n(Masks)',
     },
@@ -100,6 +105,19 @@ _MODE_CONFIG: dict[SqueezeMode, dict] = {
 _COLOR_OK = QColor(200, 255, 200)  # light green
 _COLOR_WARN = QColor(255, 200, 200)  # light red
 _COLOR_NEUTRAL = QColor(255, 255, 255)  # white
+
+
+class SolventNameDelegate(QStyledItemDelegate):
+    """Line edit delegate that autocompletes common solvent names."""
+
+    def createEditor(self, parent: QWidget, option, index) -> QWidget:
+        editor = QLineEdit(parent)
+        completer = QCompleter(solvent_names(), editor)
+        completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+        completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+        completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        editor.setCompleter(completer)
+        return editor
 
 
 class SqueezeSolventDialog(QDialog):
@@ -212,6 +230,8 @@ class SqueezeSolventDialog(QDialog):
         self.table.setColumnWidth(_COL_FORMULA, 160)
         self.table.setColumnWidth(_COL_ELEC_CALC, 85)
         self.table.verticalHeader().setVisible(False)
+        self._solvent_delegate = SolventNameDelegate(self.table)
+        self.table.setItemDelegateForColumn(_COL_FORMULA, self._solvent_delegate)
         self.table.itemChanged.connect(self._on_formula_changed)
         layout.addWidget(self.table)
 
@@ -408,8 +428,24 @@ class SqueezeSolventDialog(QDialog):
     def _on_formula_changed(self, item: QTableWidgetItem) -> None:
         if item.column() != _COL_FORMULA:
             return
+        self._resolve_item_formula(item)
         self._update_row_calculations(item.row())
         self._regenerate_details()
+
+    @staticmethod
+    def _resolve_item_formula(item: QTableWidgetItem) -> None:
+        """Replace a solvent name in *item* by its sum formula."""
+        text = item.text()
+        resolved = resolve_formula(text)
+        if resolved == text:
+            return
+        table = item.tableWidget()
+        blocked = table.signalsBlocked() if table else True
+        if table:
+            table.blockSignals(True)
+        item.setText(resolved)
+        if table:
+            table.blockSignals(blocked)
 
     def _update_row_calculations(self, row_idx: int) -> None:
         """Recalculate Electrons (calc.) and Δ for a given row."""
@@ -458,6 +494,7 @@ class SqueezeSolventDialog(QDialog):
             item = self.table.item(row_idx, _COL_FORMULA)
             if item:
                 item.setText(formula)
+                self._resolve_item_formula(item)
             self._update_row_calculations(row_idx)
         self.table.blockSignals(False)
         self._regenerate_details()
@@ -475,7 +512,7 @@ class SqueezeSolventDialog(QDialog):
                 'nr'              : row_idx + 1,
                 'volume'          : vol_item.text() if vol_item else '?',
                 'electrons_platon': elec_item.text() if elec_item else '?',
-                'formula'         : formula_item.text() if formula_item else '',
+                'formula'         : resolve_formula(formula_item.text()) if formula_item else '',
             })
         text = build_details_text(void_rows, method=self._loop_mode.value)
         # Block textChanged so our programmatic update doesn't set _details_user_modified
@@ -513,7 +550,7 @@ class SqueezeSolventDialog(QDialog):
         new_formulae: list[str] = []
         for row_idx in range(n_rows):
             item = self.table.item(row_idx, _COL_FORMULA)
-            formula = item.text().strip() if item else '?'
+            formula = resolve_formula(item.text()).strip() if item else '?'
             new_formulae.append(quote(formula) if formula else '?')
 
         # Reconstruct column data with the updated content column
