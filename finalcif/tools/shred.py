@@ -67,8 +67,9 @@ class ShredCIF:
         for line in hkl_data.splitlines(keepends=False):
             if line.startswith(')'):
                 line = ';' + line[1:]
-            lines.append(line)
-        return '\n'.join(lines).lstrip('\n')
+            if line.strip():
+                lines.append(line)
+        return '\n'.join(lines).lstrip('\n\r')
 
     def _show_info(self, resname: Path, hklname: Path, resdata: str | None, hkldata: str | None) -> None:
         if resdata and not hkldata:
