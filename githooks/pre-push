@@ -1,0 +1,76 @@
+#!/bin/sh
+#
+# pre-push hook: reject pushing version tags (e.g. "version-177") whose
+# numeric version is newer than the VERSION defined in finalcif/__init__.py
+# at the commit the tag points to.
+#
+# Git has no client-side hook that fires on local `git tag` creation, so
+# this is enforced at push time instead, which is the last point before
+# the tag becomes visible to others.
+#
+# Install (once per clone):
+#   git config core.hooksPath githooks
+#
+# Tag names are expected to look like "version-NNN" (matching VERSION = NN).
+# Tags that don't match this pattern are ignored by this check.
+
+VERSION_FILE="finalcif/__init__.py"
+z40="0000000000000000000000000000000000000000"
+
+reject=0
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+    case "$local_ref" in
+        refs/tags/*) ;;
+        *) continue ;;
+    esac
+
+    # Tag deletion (local_sha is all zeros) - nothing to check.
+    if [ "$local_sha" = "$z40" ]; then
+        continue
+    fi
+
+    tag_name=${local_ref#refs/tags/}
+
+    # Only enforce the check for tags named like "version-<number>".
+    case "$tag_name" in
+        version-[0-9]*)
+            tag_version=${tag_name#version-}
+            case "$tag_version" in
+                *[!0-9]*) continue ;;  # not purely numeric, skip
+            esac
+            ;;
+        *) continue ;;
+    esac
+
+    # Resolve to the commit the tag points at (handles annotated tags).
+    commit_sha=$(git rev-list -n 1 "$local_sha" 2>/dev/null)
+    if [ -z "$commit_sha" ]; then
+        commit_sha="$local_sha"
+    fi
+
+    file_content=$(git show "$commit_sha:$VERSION_FILE" 2>/dev/null)
+    if [ -z "$file_content" ]; then
+        echo "pre-push: warning: could not read $VERSION_FILE at $commit_sha for tag $tag_name; skipping check" >&2
+        continue
+    fi
+
+    file_version=$(printf '%s\n' "$file_content" | sed -n "s/^VERSION *= *\\([0-9]\\+\\).*/\\1/p" | head -n 1)
+    if [ -z "$file_version" ]; then
+        echo "pre-push: warning: could not parse VERSION from $VERSION_FILE at $commit_sha; skipping check" >&2
+        continue
+    fi
+
+    if [ "$tag_version" -gt "$file_version" ]; then
+        echo "pre-push: rejected: tag '$tag_name' (version $tag_version) is newer than" >&2
+        echo "          VERSION = $file_version in $VERSION_FILE at commit $commit_sha." >&2
+        echo "          Update $VERSION_FILE to $tag_version before tagging/pushing." >&2
+        reject=1
+    fi
+done
+
+if [ "$reject" -eq 1 ]; then
+    exit 1
+fi
+
+exit 0
