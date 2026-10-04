@@ -45,7 +45,7 @@ dependencies = [
     "QtPy",
     "numpy==2.4.6",
     "requests",
-    "urllib3==2.7.0",
+    "urllib3==2.8.0",
     "docxtpl[subdoc]>=0.20.2",
     "shelxfile>=24",
     "fastmolwidget>=1.2.0",  # needs set_model_source/ResidualDensityControls and the web submodule
