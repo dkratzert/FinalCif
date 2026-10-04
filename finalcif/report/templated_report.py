@@ -780,10 +780,25 @@ class Formatter(abc.ABC):
                      for label, u11, u22, u33, u23, u13, u12 in cif.displacement_parameters())
 
     def get_completeness(self, cif: CifContainer) -> str:
+        """
+        The standard CIF values used to report the completeness are
+        _diffrn_measured_fraction_theta_max and _diffrn_measured_fraction_theta_full.
+
+        How they differ
+        _diffrn_measured_fraction_theta_full:
+            Reports the fraction of independent reflections measured up to a standardized
+            "full" resolution limit (e.g., theta = 25.2° for Mo-K⍺
+            or 67.5° for Cu-K⍺). This is the metric most rigorously checked for publication.
+
+        _diffrn_measured_fraction_theta_max:
+            Reports the fraction of independent reflections measured up to the absolute highest
+            angle collected in that specific experiment, even if it exceeds or falls short of
+            the standard resolution limit.
+        """
         try:
-            completeness = f"{float(cif['_diffrn_measured_fraction_theta_max']) * 100:.1f}"
+            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}"
         except ValueError:
-            completeness = cif['_diffrn_measured_fraction_theta_max']
+            completeness = cif['_diffrn_measured_fraction_theta_full']
         return completeness
 
     def format_experiment_table(self, cif: CifContainer):

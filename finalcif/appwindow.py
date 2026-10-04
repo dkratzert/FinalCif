@@ -2298,7 +2298,7 @@ class AppWindow(QMainWindow):
         self.ui.thetaFullLineEdit.setText(self.cif['_diffrn_reflns_theta_full'])
         self.ui.dLineEdit.setText(f"{d:5.3f}")
         try:
-            compl = float(self.cif['_diffrn_measured_fraction_theta_max']) * 100
+            compl = float(self.cif['_diffrn_measured_fraction_theta_full']) * 100
             if not compl:
                 compl = 0.0
         except (TypeError, ValueError):

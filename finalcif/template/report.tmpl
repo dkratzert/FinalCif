@@ -250,8 +250,8 @@
                 </td>
             </tr>
             <tr>
-                <td>Completeness{% if cif._diffrn_reflns_theta_max %} to
-                    θ = {{ cif._diffrn_reflns_theta_max|float_num(2) }}°
+                <td>Completeness{% if theta_full %} to
+                    θ = {{ theta_full }}°
                 {% endif %}
                 </td>
                 <td>{{ completeness }}%</td>
