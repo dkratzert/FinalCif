@@ -1,6 +1,7 @@
 from types import SimpleNamespace
 from unittest.mock import Mock, call, patch
 
+import gemmi
 import pytest
 
 from finalcif.tools.options import Options
@@ -77,23 +78,37 @@ def test_docx_report_stops_after_render_failure(report_window: Mock, results: li
     report_window.zip_report.assert_not_called()
 
 
-def test_bundled_multitable_template(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+@pytest.mark.parametrize('block_count', [2, 3, 4, 6, 7])
+def test_bundled_multitable_template(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, block_count: int):
     monkeypatch.setattr('finalcif.report.templated_report.show_general_warning',
                         lambda **kwargs: pytest.fail(str(kwargs)))
-    cif = CifContainer(test_data / '1000007-multi.cif')
-    cif.load_block_by_name('p21c')
+    source = gemmi.cif.read_file(str(test_data / '1000007-multi.cif'))
+    data = gemmi.cif.Document()
+    for index in range(block_count):
+        block = data.add_copied_block(source[index % len(source)])
+        block.name = f'structure_{index + 1}'
+    input_file = tmp_path / 'structures.cif'
+    data.write_file(str(input_file))
+    cif = CifContainer(input_file)
     block_names = [block.name for block in cif.doc]
+    cif.load_block_by_name(block_names[1])
     report = TemplatedReport(format=ReportFormat.RICHTEXT, options=Options(), cif=cif)
     output = tmp_path / 'multitable.docx'
     assert report.make_templated_docx_report(
         str(output), application_path / 'template' / 'template_for_multitable.docx')
 
     document = Document(output)
-    assert len(document.tables) == 1
-    table = document.tables[0]
-    assert len(table.columns) == len(block_names) + 1
-    assert [cell.text for cell in table.rows[0].cells] == ['', *block_names]
-    assert cif.block.name == 'p21c'
+    groups = [block_names[index:index + 3] for index in range(0, block_count, 3)]
+    assert len(document.tables) == len(groups)
+    for table, names in zip(document.tables, groups, strict=True):
+        assert len(table.columns) == len(names) + 1
+        assert [cell.text for cell in table.rows[0].cells] == ['', *names]
+        assert len(table.rows) == 35
+    assert len(document.element.xpath('.//w:br[@w:type="page"]')) == len(groups) - 1
+    content = [element for element in document.element.body
+               if element.tag.endswith('}tbl') or element.xpath('.//w:br[@w:type="page"]')]
+    assert [element.tag.rsplit('}', 1)[-1] for element in content] == ['tbl', 'p'] * (len(groups) - 1) + ['tbl']
+    assert cif.block.name == block_names[1]
     assert [block.name for block in cif.doc] == block_names
 
 
@@ -422,4 +437,3 @@ C1   H1   1.000  dfgfdg  ?
         """Regression: a garbled symmetry code must not raise ValueError."""
         ba = BondsAndAngles(self.cif, without_h=False)
         self.assertIsNotNone(ba)
-
