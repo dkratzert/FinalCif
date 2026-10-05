@@ -39,7 +39,7 @@ the following columns:
 * **Solvent formula (per unit cell)** – Editable field where the user enters the chemical
   formula of the disordered solvent *per unit cell*, e.g. ``2(H2O)`` or ``C4H8O``.
 * **Electrons (calc.)** – Electron count calculated from the entered formula.
-* **Δ electrons** – Difference between the calculated and reported electron counts.
+* **Delta electrons** – Difference between the calculated and reported electron counts.
   A green background indicates a reasonable match (|Δ| ≤ 5 electrons); red signals a
   larger discrepancy that warrants review.
 

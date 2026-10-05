@@ -22,7 +22,7 @@ Each subsequent table starts on a new page.
 
 
 Paginated Multi-CIF Reports
---------------------------
+---------------------------
 Open a multi-CIF, select the default report template or another DOCX template in the report options,
 and click **Make Tables**. FinalCif creates the normal report and the additional
 ``[filename]-multitable.docx`` beside the CIF, then opens both documents.
@@ -345,7 +345,7 @@ For example, the chemical formula of the block 'compound1' of a multi-CIF is:
 .. _multicif-template-pagination:
 
 Pagination in a DOCX Template
-----------------------------
+-----------------------------
 The bundled multi-CIF template uses the existing ``blocklist`` context; no additional
 Python context variable is required. Its outer loop groups the block contexts using
 Jinja's ``batch`` filter:
