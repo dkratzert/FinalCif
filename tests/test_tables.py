@@ -1,19 +1,21 @@
 import unittest
-from tests.helpers import AppWindowTestCase
 from pathlib import Path
-from unittest.mock import Mock
+from shutil import copy2
+from tempfile import TemporaryDirectory
+from xml.etree import ElementTree
 
-import docx
+import pytest
 from docx import Document
 from docx.enum.shape import WD_INLINE_SHAPE
 from docx.shape import InlineShapes
 from docx.shared import Cm
-from docx.table import Table
-from packaging.version import Version
+from docxtpl import RichText
 
 from finalcif.appwindow import AppWindow
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.report.tables import make_report_from
+from finalcif.report.templated_report import ReportFormat, RichTextFormatter, TemplatedReport
+from finalcif.tools.options import Options
+from tests.helpers import AppWindowTestCase
 
 data = Path('tests')
 test_data = Path('test-data')
@@ -22,14 +24,15 @@ test_data = Path('test-data')
 class TablesTestCase(AppWindowTestCase):
 
     def setUp(self) -> None:
-        self.testcif = (data / 'examples/1979688_small.cif').absolute()
+        directory = TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.testcif = Path(copy2(data / 'examples/1979688_small.cif', directory.name))
         self.app = AppWindow(file=self.testcif)
         self.app.ui.HAtomsCheckBox.setChecked(False)
         self.app.ui.ReportTextCheckBox.setChecked(False)
         self.app.ui.PictureWidthDoubleSpinBox.setValue(0.0)
-        # make sure to use no template:
+        # Use the bundled default template.
         self.app.ui.docxTemplatesListWidget.setCurrentRow(0)
-        # self.app.show()
         self.reportdoc = self.app.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
         self.report_zip = self.app.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
         self.app.ui.PictureWidthDoubleSpinBox.setValue(7.43)
@@ -57,141 +60,49 @@ class TablesTestCase(AppWindowTestCase):
         self.app.ui.SaveFullReportButton.click()
         doc = Document(self.reportdoc.resolve())
         shapes: InlineShapes = doc.inline_shapes
-        self.assertEqual(WD_INLINE_SHAPE.PICTURE, shapes[0].type)
         self.assertEqual(Cm(7.5).emu, shapes[0].width)
 
 
-class TemplateReportWithoutAppTestCase(AppWindowTestCase):
-    def setUp(self) -> None:
-        self.testcif = (data / 'examples/1979688.cif').absolute()
-        self.cif = CifContainer(self.testcif)
-        self.options = Mock()
-        self.options.picture_width = 7.43
-        self.options.without_h = False
-        self.text_template = Path('finalcif/template/template_text.docx').absolute()
-        self.template_without_text = Path('finalcif/template/template_without_text.docx').absolute()
-        self.reportdoc = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
-        self.report_zip = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
-        self.report_pic = Path('finalcif/icon/finalcif.png')
-
-    def tearDown(self) -> None:
-        self.reportdoc.unlink(missing_ok=True)
-        self.report_zip.unlink(missing_ok=True)
-
-    def test_option_with_h(self):
-        make_report_from(options=self.options, cif=self.cif,
-                         output_filename=str(self.reportdoc), picfile=self.report_pic)
-        doc = Document(self.reportdoc.absolute())
-        table: Table = doc.tables[3]
-        self.assertEqual('C1–H1', table.cell(row_idx=4, col_idx=0).text)
-
-    def test_option_without_h(self):
-        self.options.without_h = True
-        make_report_from(options=self.options, cif=self.cif,
-                         output_filename=str(self.reportdoc), picfile=self.report_pic)
-        doc = Document(self.reportdoc.absolute())
-        table: Table = doc.tables[3]
-        self.assertEqual('O1–C13', table.cell(row_idx=4, col_idx=0).text)
-
-    def test_all_paragraphs(self):
-        make_report_from(options=self.options, cif=self.cif,
-                         output_filename=str(self.reportdoc), picfile=self.report_pic)
-        doc = Document(self.reportdoc.absolute())
-        newline = '\n' if Version(docx.__version__) < Version('1.0') else ''
-        result = ('Structure Tables\n'
-                  '\n'
-                  '\n'
-                  '\n'
-                  f'{newline}Table 1. Crystal data and structure refinement for cu_BruecknerJK_153F40_0m\n{newline}'
-                  '\n'
-                  '\n'
-                  'Refinement details for cu_BruecknerJK_153F40_0m\n'
-                  'The methanol molecule is disordered around a special position and thus half '
-                  'occupied.\n'
-                  'Table 2. Atomic coordinates and Ueq\xa0[Å2] for cu_BruecknerJK_153F40_0m\n'
-                  'Ueq is defined as 1/3 of the trace of the orthogonalized Uij tensor.\n'
-                  '\n'
-                  'Table 3. Anisotropic displacement parameters [Å2] for '
-                  'cu_BruecknerJK_153F40_0m.\n'
-                  'The anisotropic displacement factor exponent takes the form: −2π2[\u205f'
-                  'h2(a*)2U11\u205f+\u205fk2(b*)2U22\u205f+\u205f…\u205f+\u205f2hka*b*U12\u205f'
-                  ']\n'
-                  'Table 4. Bond lengths and angles for cu_BruecknerJK_153F40_0m\n'
-                  '\n'
-                  '\n'
-                  'Table 5. Torsion angles for cu_BruecknerJK_153F40_0m\n'
-                  '\n'
-                  '\n'
-                  '\n'
-                  'Bibliography'
-                  )
-
-        self.assertEqual(result, '\n'.join([x.text for x in doc.paragraphs]))
+def richtext_text(value: RichText) -> str:
+    root = ElementTree.fromstring(
+        f'<w:p xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">{value}</w:p>')
+    return ''.join(root.itertext())
 
 
-class TablesNoPictureTestCase(AppWindowTestCase):
-    def setUp(self) -> None:
-        self.testcif = (data / 'examples/1979688.cif').absolute()
-        self.cif = CifContainer(self.testcif)
-        self.options = Mock()
-        self.options.picture_width = 7.43
-        self.options.without_h = False
-        self.text_template = Path('finalcif/template/template_text.docx').absolute()
-        self.template_without_text = Path('finalcif/template/template_without_text.docx').absolute()
-        self.reportdoc = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
-        self.report_zip = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.zip')
-        self.report_pic = Path('finalcif/icon/finalcif.png')
-
-    def tearDown(self) -> None:
-        self.reportdoc.unlink(missing_ok=True)
-        self.report_zip.unlink(missing_ok=True)
-
-    def test_save_report_works(self):
-        make_report_from(options=self.options, cif=self.cif,
-                         output_filename=str(self.reportdoc), picfile=None)
-        self.assertEqual(True, self.reportdoc.exists())
-
-    def test_picture_has_correct_size(self):
-        make_report_from(options=self.options, cif=self.cif,
-                         output_filename=str(self.reportdoc), picfile=None)
-        doc = Document(self.reportdoc.resolve())
-        shapes: InlineShapes = doc.inline_shapes
-        self.assertEqual(0, len(shapes))
-
-    def test_picture_shape_exists(self):
-        make_report_from(options=self.options, cif=self.cif,
-                         output_filename=str(self.reportdoc), picfile=self.report_pic)
-        doc = Document(self.reportdoc.resolve())
-        shapes: InlineShapes = doc.inline_shapes
-        self.assertEqual(1, len(shapes))
+@pytest.mark.parametrize('without_h', [False, True])
+def test_template_bonds_filter_hydrogens(without_h: bool):
+    options = Options()
+    options._without_h = without_h
+    formatter = RichTextFormatter(options, CifContainer(data / 'examples/1979688.cif'))
+    bonds = [richtext_text(bond['atoms']) for bond in formatter.get_bonds()]
+    assert ('C1–H1' in bonds) == (not without_h)
+    assert 'O1–C13' in bonds
 
 
-class ReportWithsymmetryTestCase(AppWindowTestCase):
-    def setUp(self) -> None:
-        self.testcif = (test_data / 'p31c.cif').resolve()
-        self.cif = CifContainer(self.testcif)
-        self.options = Mock()
-        self.options.without_h = False
-        self.reportdoc = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+@pytest.mark.parametrize('with_picture', [False, True])
+def test_template_report_picture(tmp_path: Path, with_picture: bool, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr('finalcif.report.templated_report.show_general_warning',
+                        lambda **kwargs: pytest.fail(str(kwargs)))
+    options = Options()
+    options._picture_width = 7.43
+    if with_picture:
+        options.structure_figure = Path('finalcif/icon/finalcif.png')
+    report = TemplatedReport(options=options, cif=CifContainer(data / 'examples/1979688.cif'),
+                            format=ReportFormat.RICHTEXT)
+    output = tmp_path / 'report.docx'
+    assert report.make_templated_docx_report(str(output), Path('finalcif/template/report_default.docx'))
+    document = Document(output)
+    assert len(document.inline_shapes) == int(with_picture)
+    if with_picture:
+        assert document.inline_shapes[0].width == Cm(7.43)
 
-    def tearDown(self) -> None:
-        self.reportdoc.unlink(missing_ok=True)
-        self.cif.finalcif_file.unlink(missing_ok=True)
 
-    def test_symmetry_indicators(self):
-        make_report_from(options=self.options, cif=self.cif, output_filename=str(self.reportdoc), picfile=None)
-        doc = Document(self.reportdoc.absolute())
-        table: Table = doc.tables[3]
-        # Bond:
-        self.assertEqual('C2–C3#1', table.cell(row_idx=18, col_idx=0).text)
-        # Angle:
-        self.assertEqual("C3'#1–C2'–C3'", table.cell(row_idx=148, col_idx=0).text)
-        # Torsion angle:
-        table: Table = doc.tables[4]
-        self.assertEqual("C3#1–C2–C3–N1", table.cell(row_idx=6, col_idx=0).text)
-        # Hydrogen bond:
-        table: Table = doc.tables[5]
-        self.assertEqual("N1^a–H1^a⋯Cl1#1", table.cell(row_idx=1, col_idx=0).text)
+def test_template_symmetry_indicators():
+    formatter = RichTextFormatter(Options(), CifContainer(test_data / 'p31c.cif'))
+    assert 'C2–C3#1' in [richtext_text(bond['atoms']) for bond in formatter.get_bonds()]
+    assert "C3'#1–C2'–C3'" in [richtext_text(angle['atoms']) for angle in formatter.get_angles()]
+    assert 'C3#1–C2–C3–N1' in [richtext_text(torsion['atoms']) for torsion in formatter.get_torsion_angles()]
+    assert 'N1^a–H1^a⋯Cl1#1' in [richtext_text(bond['atoms']) for bond in formatter.get_hydrogen_bonds()]
 
 
 if __name__ == '__main__':

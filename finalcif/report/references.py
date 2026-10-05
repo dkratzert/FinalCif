@@ -5,10 +5,6 @@
 #  and you think this stuff is worth it, you can buy me a beer in return.
 #  Dr. Daniel Kratzert
 #  ----------------------------------------------------------------------------
-from contextlib import suppress
-from typing import Union
-
-from docx.text.paragraph import Paragraph
 from docxtpl import RichText
 
 from finalcif import VERSION
@@ -43,89 +39,6 @@ Missing: d*trek
 """
 
 
-class ReferenceList:
-    """
-    This reference list holds a list of all used references. During each self.append(Reference()), a new reference is
-    appended to the list. 
-    At the end of the document, a numbered list of references can be generated with self.make_make_literature_list().
-    """
-
-    def __init__(self, paragraph: Paragraph):
-        self.paragraph = paragraph
-        self._references = []
-
-    def append(self, ref: Union[list['Reference'], tuple['Reference'], 'Reference']) -> None:
-        """Adds a superscript list of reference numbers in brackets to the document."""
-        if isinstance(ref, list | tuple):
-            if not ref:
-                return None
-            self._append_list(ref)
-        else:
-            if ref not in self._references:
-                self._references.append(ref)
-            self.paragraph.add_run(f'[{self._references.index(ref) + 1}]').font.superscript = True
-        # better not here:
-        # self.paragraph.add_run(' ')
-
-    def _append_list(self, reflist: list) -> None:
-        reflst_long = []
-        self.paragraph.add_run('[').font.superscript = True
-        reflist = [x for x in reflist if x]
-        for n, ref in enumerate(reflist):
-            if ref not in self._references:
-                self._references.append(ref)
-            refnum = self._references.index(ref) + 1
-            reflst_long.append(refnum)
-        reftxt = self.get_sequence(reflst_long)
-        self.paragraph.add_run(reftxt).font.superscript = True
-        self.paragraph.add_run(']').font.superscript = True
-
-    @staticmethod
-    def get_sequence(stringlist: list[int]) -> str:
-        """
-        Converts a list of numbers into a string of numbers where recurring sequences
-        are described with a range.
-
-        >>> ReferenceList.get_sequence([1, 3, 4, 5, 6, 8, 11])
-        '1,3-6,8,11'
-        """
-        folg = []
-        start = 0
-        for n, val in enumerate(stringlist):
-            val = int(val)
-            nextval = 0
-            with suppress(IndexError):
-                nextval = int(stringlist[n + 1])
-            nextnext = 0
-            with suppress(IndexError):
-                nextnext = int(stringlist[n + 2])
-            # a sequence starts:
-            if nextnext == val + 2 and not start:
-                start = val
-            # in a sequence and next value is not +1 -> squence ends with val:
-            if start and nextval != val + 1:
-                folg.append(f'{start}-{val}')
-                start = 0
-                continue
-            # everything outside a sequence:
-            if not start:
-                folg.append(val)
-        return ','.join([str(x) for x in folg])
-
-    def make_literature_list(self, document):
-        if len(self._references) < 10:
-            template = 'references_ni'
-        else:
-            template = 'references'
-        for num, ref in enumerate(self._references, 1):
-            paragraph_reflist = document.add_paragraph('', template)
-            paragraph_reflist.add_run(f'[{num!s}] \t')
-            ref.add_reference(paragraph_reflist)
-
-    def __repr__(self):
-        return '\n'.join([f'[{num}] {x}' for num, x in enumerate(self._references)])
-
-
 class Reference:
     def __init__(self):
         self.authors = ''
@@ -136,31 +49,6 @@ class Reference:
         self.doi = ''
         self.program = ''
         self.count = 0
-
-    def add_reference(self, p: Paragraph) -> None:
-        if self.authors:
-            p.add_run(self.authors)
-            p.add_run(', ')
-        if self.journal:
-            p.add_run(self.journal).italic = True
-            if not self.journal.endswith('.'):
-                p.add_run(', ')
-            else:
-                p.add_run(' ')
-        if self.year:
-            p.add_run(self.year).bold = True
-            p.add_run(', ')
-        if self.volume:
-            p.add_run(self.volume).italic = True
-            p.add_run(', ')
-        if self.pages:
-            p.add_run(self.pages)
-            if self.doi:
-                p.add_run(', ')
-        if self.doi:
-            p.add_run(self.doi)
-        if any([self.journal, self.pages, self.year, self.volume, self.doi]):
-            p.add_run('.')
 
     @property
     def richtext(self) -> RichText:
@@ -589,8 +477,3 @@ class CrysalisProReference(Reference):
         self.journal = version
         self.year = year
         self.pages = pages
-
-
-if __name__ == '__main__':
-    r = ReferenceList.get_sequence([1, 2, 3, 6])
-    print(r)

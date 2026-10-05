@@ -1,4 +1,5 @@
-from unittest.mock import Mock
+from types import SimpleNamespace
+from unittest.mock import Mock, call, patch
 
 import pytest
 
@@ -15,11 +16,85 @@ from docx.shared import Cm
 from docx.table import Table
 
 from finalcif.appwindow import AppWindow
+from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.templated_report import TemplatedReport, ReportFormat, Hydrogens, get_card, BondsAndAngles
 
 data = Path('tests')
 test_data = Path('test-data')
+
+
+@pytest.fixture
+def report_window(tmp_path: Path) -> Mock:
+    window = Mock()
+    window.ui.datanameComboBox.currentIndex.return_value = 0
+    window.cif.doc = [SimpleNamespace(name='first'), SimpleNamespace(name='second')]
+    window.cif.is_multi_cif = True
+    window.cif.finalcif_file = tmp_path / 'structure-finalcif.cif'
+    window.cif.finalcif_file_prefixed.side_effect = [
+        tmp_path / 'report_structure-finalcif.docx',
+        tmp_path / 'structure-multitable.docx',
+    ]
+    window.save_current_cif_file.return_value = True
+    window.get_checked_templates_list_text.return_value = str(tmp_path / 'selected.docx')
+    window.options = Options()
+    window.report_picture_path = None
+    window.running_inside_unit_test = False
+    return window
+
+
+@pytest.mark.parametrize('is_multi', [False, True])
+def test_docx_report_template_routing(report_window: Mock, tmp_path: Path, is_multi: bool):
+    report_window.cif.is_multi_cif = is_multi
+    primary = tmp_path / 'report_structure-finalcif.docx'
+    multitable = tmp_path / 'structure-multitable.docx'
+    with patch('finalcif.report.templated_report.TemplatedReport', autospec=True) as report_class:
+        renderer = report_class.return_value
+        renderer.make_templated_docx_report.return_value = True
+        AppWindow.make_report_tables(report_window)
+
+    report_class.assert_called_once_with(
+        format=ReportFormat.RICHTEXT, options=report_window.options, cif=report_window.cif)
+    expected_calls = [call(output_filename=str(primary), template_path=tmp_path / 'selected.docx')]
+    if is_multi:
+        expected_calls.append(call(
+            output_filename=str(multitable),
+            template_path=application_path / 'template' / 'template_for_multitable.docx'))
+    assert renderer.make_templated_docx_report.call_args_list == expected_calls
+    report_window.open_report_document.assert_called_once_with(primary, multitable)
+    report_window.zip_report.assert_called_once_with(primary)
+
+
+@pytest.mark.parametrize('results', [[False], [True, False]])
+def test_docx_report_stops_after_render_failure(report_window: Mock, results: list[bool]):
+    with patch('finalcif.report.templated_report.TemplatedReport', autospec=True) as report_class:
+        renderer = report_class.return_value
+        renderer.make_templated_docx_report.side_effect = results
+        AppWindow.make_report_tables(report_window)
+
+    assert renderer.make_templated_docx_report.call_count == len(results)
+    report_window.open_report_document.assert_not_called()
+    report_window.zip_report.assert_not_called()
+
+
+def test_bundled_multitable_template(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr('finalcif.report.templated_report.show_general_warning',
+                        lambda **kwargs: pytest.fail(str(kwargs)))
+    cif = CifContainer(test_data / '1000007-multi.cif')
+    cif.load_block_by_name('p21c')
+    block_names = [block.name for block in cif.doc]
+    report = TemplatedReport(format=ReportFormat.RICHTEXT, options=Options(), cif=cif)
+    output = tmp_path / 'multitable.docx'
+    assert report.make_templated_docx_report(
+        str(output), application_path / 'template' / 'template_for_multitable.docx')
+
+    document = Document(output)
+    assert len(document.tables) == 1
+    table = document.tables[0]
+    assert len(table.columns) == len(block_names) + 1
+    assert [cell.text for cell in table.rows[0].cells] == ['', *block_names]
+    assert cif.block.name == 'p21c'
+    assert [block.name for block in cif.doc] == block_names
 
 
 # noinspection PyMissingTypeHints
@@ -347,5 +422,4 @@ C1   H1   1.000  dfgfdg  ?
         """Regression: a garbled symmetry code must not raise ValueError."""
         ba = BondsAndAngles(self.cif, without_h=False)
         self.assertIsNotNone(ba)
-
 

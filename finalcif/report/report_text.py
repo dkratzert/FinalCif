@@ -1,18 +1,14 @@
 import os
 
 import gemmi
-from docx import Document
 from docx.oxml.xmlchemy import BaseOxmlElement
-from docx.text.paragraph import Paragraph
-from docx.text.run import Run
 from lxml import etree
 from lxml.etree import XSLTAccessControl
 
 from finalcif.app_path import application_path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import retranslate_delimiter, string_to_utf8
-from finalcif.report import references
-from finalcif.tools.misc import (protected_space, angstrom, remove_line_endings)
+from finalcif.tools.misc import angstrom, remove_line_endings
 
 
 def math_to_word(eq: str) -> BaseOxmlElement:
@@ -57,41 +53,6 @@ def _get_cooling_device(cif: CifContainer) -> str:
         return ''
 
 
-class FormatMixin:
-
-    def bold(self, run: Run):
-        r = run.bold = True
-        return r
-
-
-class SpaceChar:
-    def __init__(self, paragraph: Paragraph):
-        self.p = paragraph
-
-    def regular(self) -> None:
-        self.p.add_run(' ')
-
-    def protected(self):
-        self.p.add_run(protected_space)
-
-
-class RefinementDetails:
-    def __init__(self, cif: CifContainer, document: Document):
-        ph = document.add_paragraph(style='Heading 2')
-        ph.add_run(text=fr"Refinement details for {cif.block.name}")
-        p = document.add_paragraph()
-        try:
-            p.style = document.styles['fliesstext']
-        except KeyError:
-            print('DBG> Text style not found')
-        text = ' '.join(cif['_refine_special_details'].splitlines(keepends=False))
-        if cif['_olex2_refine_details']:
-            text += ' '.join(cif['_olex2_refine_details'].splitlines(keepends=False))
-        # Replacing semicolon, because it can damage the CIF:
-        text = text.replace(';', '.')
-        p.add_run(string_to_utf8(text).strip())
-
-
 def get_inf_article(next_word: str) -> str:
     if not next_word:
         return 'a'
@@ -133,13 +94,3 @@ def format_radiation(radiation_type: str) -> list:
         return radtype
     else:
         return radtype
-
-
-def make_report_text(cif, document: Document) -> references.ReferenceList:
-    paragr = document.add_paragraph()
-    try:
-        paragr.style = document.styles['fliesstext']
-    except KeyError:
-        print('DBG> Text style not found')
-    ref = references.ReferenceList(paragr)
-    return ref

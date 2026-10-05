@@ -21,7 +21,6 @@ from math import sin, radians
 from pathlib import Path, WindowsPath
 from typing import cast, TYPE_CHECKING
 
-
 if TYPE_CHECKING:
     from finalcif.cif.checkcif.checkcif import MyHTMLParser
 
@@ -1625,7 +1624,6 @@ class AppWindow(QMainWindow):
         """
         Generates a report document.
         """
-        from finalcif.report.tables import make_multi_tables
         from finalcif.report.templated_report import ReportFormat, TemplatedReport
         from docx.image.exceptions import UnrecognizedImageError
         current_block = self.ui.datanameComboBox.currentIndex()
@@ -1653,8 +1651,9 @@ class AppWindow(QMainWindow):
                 t = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
                 ok = t.make_templated_docx_report(output_filename=str(report_filename),
                                                   template_path=Path(self.get_checked_templates_list_text()))
-                if self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
-                    make_multi_tables(cif=self.cif, output_filename=str(multi_table_document))
+                if ok and self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
+                    ok = t.make_templated_docx_report(output_filename=str(multi_table_document),
+                                                      template_path=application_path / 'template' / 'template_for_multitable.docx')
             elif template_path.suffix in ('.html', '.tmpl'):
                 t = TemplatedReport(format=ReportFormat.HTML, options=self.options, cif=self.cif)
                 report_filename = report_filename.with_suffix('.html')
@@ -1687,7 +1686,7 @@ class AppWindow(QMainWindow):
             if DEBUG:
                 print('dbg> Unrecognized image error')
                 raise
-            show_general_warning(self,'The report contains an unrecognized image format.')
+            show_general_warning(self, 'The report contains an unrecognized image format.')
             return None
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
