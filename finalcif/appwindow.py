@@ -2295,16 +2295,18 @@ class AppWindow(QMainWindow):
             d = 0.0
         self.ui.numRestraintsLineEdit.setText(self.cif['_refine_ls_number_restraints'])
         self.ui.thetaMaxLineEdit.setText(thetamax)
-        self.ui.thetaFullLineEdit.setText(self.cif['_diffrn_reflns_theta_full'])
+        theta_full = self.cif['_diffrn_reflns_theta_full']
+        self.ui.thetaFullLineEdit.setText(theta_full)
         self.ui.dLineEdit.setText(f"{d:5.3f}")
         try:
-            compl = float(self.cif['_diffrn_measured_fraction_theta_full']) * 100
+            fraction = self.cif['_diffrn_measured_fraction_theta_full']
+            compl = float(fraction) * 100
             if not compl:
                 compl = 0.0
         except (TypeError, ValueError):
             compl = 0.0
         try:
-            self.ui.completeLineEdit.setText(f"{compl:<5.1f}")
+            self.ui.completeLineEdit.setText(f"{compl:<5.1f} (at {theta_full}°)")
         except ValueError:
             pass
         self.ui.wavelengthLineEdit.setText(f"{wavelen}")

@@ -13,7 +13,7 @@ from collections.abc import Callable
 from contextlib import suppress
 from math import sin, radians
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from qtpy.QtWidgets import QApplication
 
@@ -725,7 +725,7 @@ class Formatter(abc.ABC):
         if 'OLEX' in refined.upper():
             self.literature['refinement'] = ref.Olex2Reference()
         if ('NOSPHERA2' in refined.upper() or 'NOSPHERA2' in cif['_refine_special_details'].upper() or
-            'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
+                'NOSPHERAT2' in cif['_olex2_refine_details'].upper()):
             self.literature['refinement'] = ref.Nosphera2Reference()
         return string_to_utf8(refined.split('(')[0]).strip()
 
@@ -779,26 +779,28 @@ class Formatter(abc.ABC):
                                   U23=u23.replace('-', minus_sign))
                      for label, u11, u22, u33, u23, u13, u12 in cif.displacement_parameters())
 
-    def get_completeness(self, cif: CifContainer) -> str:
+    def get_completeness(self, cif: CifContainer, theta_limit: Literal['full', 'max'] = 'full') -> str:
         """
+        Completeness in % for the given theta limit ('full' or 'max').
         The standard CIF values used to report the completeness are
         _diffrn_measured_fraction_theta_max and _diffrn_measured_fraction_theta_full.
 
         How they differ
         _diffrn_measured_fraction_theta_full:
-            Reports the fraction of independent reflections measured up to a standardized
-            "full" resolution limit (e.g., theta = 25.2° for Mo-K⍺
-            or 67.5° for Cu-K⍺). This is the metric most rigorously checked for publication.
+        Reports the fraction of independent reflections measured up to a standardized
+        "full" resolution limit (e.g., theta = 25.2° for Mo-K⍺
+        or 67.5° for Cu-K⍺). This is the metric most rigorously checked for publication.
 
         _diffrn_measured_fraction_theta_max:
-            Reports the fraction of independent reflections measured up to the absolute highest
-            angle collected in that specific experiment, even if it exceeds or falls short of
-            the standard resolution limit.
+        Reports the fraction of independent reflections measured up to the absolute highest
+        angle collected in that specific experiment, even if it exceeds or falls short of
+        the standard resolution limit.
         """
+        fraction = cif[f'_diffrn_measured_fraction_theta_{theta_limit}']
         try:
-            completeness = f"{float(cif['_diffrn_measured_fraction_theta_full']) * 100:.1f}"
+            completeness = f"{float(fraction) * 100:.1f}"
         except ValueError:
-            completeness = cif['_diffrn_measured_fraction_theta_full']
+            completeness = fraction
         return completeness
 
     def format_experiment_table(self, cif: CifContainer):
@@ -1195,7 +1197,6 @@ class TemplatedReport:
             show_general_warning(parent=None, window_title='Warning', warn_text='Document generation failed',
                                  info_text=str(e))
             print(e)
-            raise
             return False
 
     def make_templated_html_report(self,
@@ -1313,10 +1314,10 @@ class TemplatedReport:
                    'space_group'            : self.text_formatter.space_group_formatted(cif, tpl_doc),
                    'structure_figure'       : self.text_formatter.make_picture(options,
                                                                                options.structure_figure, tpl_doc) if (
-                       options and options.report_text) else '',
+                           options and options.report_text) else '',
                    'crystal_video'          : self.text_formatter.make_picture(options,
                                                                                options.video_image, tpl_doc) if (
-                       options and options.report_text) else '',
+                           options and options.report_text) else '',
                    '3d_structure'           : self.text_formatter.make_3d(cif, options) if options else '',
                    'crystallization_method' : self.text_formatter.get_crystallization_method(cif),
                    'sum_formula'            : self.text_formatter.format_sum_formula(
@@ -1347,8 +1348,11 @@ class TemplatedReport:
                    'indepentent_refl'       : this_or_quest(cif['_reflns_number_total']),
                    'r_int'                  : this_or_quest(cif['_diffrn_reflns_av_R_equivalents']),
                    'r_sigma'                : this_or_quest(cif['_diffrn_reflns_av_unetI/netI']),
-                   'completeness'           : self.text_formatter.get_completeness(cif),
+                   'completeness'           : self.text_formatter.get_completeness(cif, 'full'),
+                   'completeness_theta_full': self.text_formatter.get_completeness(cif, 'full'),
+                   'completeness_theta_max' : self.text_formatter.get_completeness(cif, 'max'),
                    'theta_full'             : cif['_diffrn_reflns_theta_full'],
+                   'theta_max'              : cif['_diffrn_reflns_theta_max'],
                    'resolution_angstrom'    : self.text_formatter.get_angstrom_resolution(cif),
                    'redundancy'             : self.text_formatter.get_redundancy(cif),
                    'data'                   : this_or_quest(cif['_refine_ls_number_reflns']),
@@ -1490,15 +1494,15 @@ if __name__ == '__main__':
 
     import subprocess
 
-    report_type = ReportFormat.LATEX
+    report_type = ReportFormat.HTML
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
-    testcif = Path(data / r'..\test-data\4060314.cif').absolute()
+    # testcif = Path(data / r'..\test-data\4060314.cif').absolute()
 
     # testcif = Path(r'test-data/p31c.cif').absolute()
-    #testcif = Path(r'test-data/p31c.cif').absolute()
-    #testcif = Path(r"D:\Downloads\9008564.cif").absolute()
+    # testcif = Path(r'test-data/p31c.cif').absolute()
+    # testcif = Path(r"D:\Downloads\9008564.cif").absolute()
     cif = CifContainer(testcif)
 
     pic = pathlib.Path("screenshots/finalcif_checkcif.png")

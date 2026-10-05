@@ -251,10 +251,15 @@
             </tr>
             <tr>
                 <td>Completeness{% if theta_full %} to
-                    θ = {{ theta_full }}°
-                {% endif %}
+                    θ = {{ theta_full|float_num(2) }}°{% endif %}
                 </td>
-                <td>{{ completeness }}%</td>
+                <td>{{ completeness_theta_full }}%</td>
+            </tr>
+            <tr>
+                <td>Completeness{% if theta_max %} to
+                    θ = {{ theta_max|float_num(2) }}°{% endif %}
+                </td>
+                <td>{{ completeness_theta_max }}%</td>
             </tr>
             <tr>
                 <td>Data / Restraints / Parameters</td>
