@@ -40,8 +40,8 @@ the following columns:
   formula of the disordered solvent *per unit cell*, e.g. ``2(H2O)`` or ``C4H8O``.
 * **Electrons (calc.)** – Electron count calculated from the entered formula.
 * **Delta electrons** – Difference between the calculated and reported electron counts.
-  A green background indicates a reasonable match (|Δ| ≤ 5 electrons); red signals a
-  larger discrepancy that warrants review.
+  A green background indicates a reasonable match (absolute difference ≤ 5 electrons);
+  red signals a larger discrepancy that warrants review.
 
 
 Entering Solvent Formulae
