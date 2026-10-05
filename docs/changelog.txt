@@ -1,5 +1,9 @@
 FinalCif recent changes
 -----------------------
+* v178 Both completeness values (to theta_full and overall) are now shown everywhere, and a bug that used
+       the wrong theta_max in the completeness calculation was fixed. DOCX report templates built for
+       multiple CIF blocks are now auto-detected, so the redundant extra multitable report is no longer
+       generated, opened, or archived when such a template is used.
 * v177 The solvent content of SQUEEZE and Olex2/SMTBX masked voids can now be entered by name: typing
        'thf', 'toluene' or '2 h2o' fills in the corresponding formula, e.g. '2(H2O)'.
        .HKL/.RES file extraction was fixed.
