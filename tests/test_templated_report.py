@@ -1,5 +1,7 @@
 from types import SimpleNamespace
 from unittest.mock import Mock, call, patch
+from zipfile import ZipFile
+from shutil import copy2
 
 import gemmi
 import pytest
@@ -45,25 +47,28 @@ def report_window(tmp_path: Path) -> Mock:
 
 
 @pytest.mark.parametrize('is_multi', [False, True])
-def test_docx_report_template_routing(report_window: Mock, tmp_path: Path, is_multi: bool):
+@pytest.mark.parametrize('multi_template', [False, True])
+def test_docx_report_template_routing(report_window: Mock, tmp_path: Path, is_multi: bool, multi_template: bool):
     report_window.cif.is_multi_cif = is_multi
     primary = tmp_path / 'report_structure-finalcif.docx'
     multitable = tmp_path / 'structure-multitable.docx'
     with patch('finalcif.report.templated_report.TemplatedReport', autospec=True) as report_class:
         renderer = report_class.return_value
         renderer.make_templated_docx_report.return_value = True
+        renderer.is_multi_cif_template = multi_template
         AppWindow.make_report_tables(report_window)
 
     report_class.assert_called_once_with(
         format=ReportFormat.RICHTEXT, options=report_window.options, cif=report_window.cif)
     expected_calls = [call(output_filename=str(primary), template_path=tmp_path / 'selected.docx')]
-    if is_multi:
+    extra_report = multitable if is_multi and not multi_template else None
+    if extra_report is not None:
         expected_calls.append(call(
             output_filename=str(multitable),
             template_path=application_path / 'template' / 'template_for_multitable.docx'))
     assert renderer.make_templated_docx_report.call_args_list == expected_calls
-    report_window.open_report_document.assert_called_once_with(primary, multitable)
-    report_window.zip_report.assert_called_once_with(primary)
+    report_window.open_report_document.assert_called_once_with(primary, extra_report)
+    report_window.zip_report.assert_called_once_with(primary, extra_report)
 
 
 @pytest.mark.parametrize('results', [[False], [True, False]])
@@ -71,6 +76,7 @@ def test_docx_report_stops_after_render_failure(report_window: Mock, results: li
     with patch('finalcif.report.templated_report.TemplatedReport', autospec=True) as report_class:
         renderer = report_class.return_value
         renderer.make_templated_docx_report.side_effect = results
+        renderer.is_multi_cif_template = False
         AppWindow.make_report_tables(report_window)
 
     assert renderer.make_templated_docx_report.call_count == len(results)
@@ -96,6 +102,7 @@ def test_bundled_multitable_template(tmp_path: Path, monkeypatch: pytest.MonkeyP
     output = tmp_path / 'multitable.docx'
     assert report.make_templated_docx_report(
         str(output), application_path / 'template' / 'template_for_multitable.docx')
+    assert report.is_multi_cif_template
 
     document = Document(output)
     groups = [block_names[index:index + 3] for index in range(0, block_count, 3)]
@@ -110,6 +117,110 @@ def test_bundled_multitable_template(tmp_path: Path, monkeypatch: pytest.MonkeyP
     assert [element.tag.rsplit('}', 1)[-1] for element in content] == ['tbl', 'p'] * (len(groups) - 1) + ['tbl']
     assert cif.block.name == block_names[1]
     assert [block.name for block in cif.doc] == block_names
+
+
+@pytest.mark.parametrize(('text', 'expected'), [
+    ('{{ blocklist|length }}', True),
+    ("{{ block['p21c'].name }}", True),
+    ('{{ block.p21c.name }}', True),
+    ('{% for item in blocklist %}{{ item.name }}{% endfor %}', True),
+    ('blocklist and block', False),
+    ("{{ 'blocklist' }} {# block.p21c #}", False),
+    ('{% raw %}{{ blocklist }}{% endraw %}', False),
+    ('{% for block in [1, 2] %}{{ block }}{% endfor %}', False),
+    ('{{ cif._cell_length_a|to_pm }}', False),
+])
+def test_multi_cif_template_detection(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, text: str, expected: bool):
+    monkeypatch.setattr('finalcif.report.templated_report.show_general_warning',
+                        lambda **kwargs: pytest.fail(str(kwargs)))
+    template = Document()
+    paragraph = template.add_paragraph()
+    for index in range(0, len(text), 3):
+        paragraph.add_run(text[index:index + 3])
+    template_path = tmp_path / 'template.docx'
+    template.save(template_path)
+    report = TemplatedReport(format=ReportFormat.RICHTEXT, options=Options(),
+                            cif=CifContainer(test_data / '1000007-multi.cif'))
+    assert report.make_templated_docx_report(str(tmp_path / 'report.docx'), template_path)
+    assert report.is_multi_cif_template is expected
+
+
+@pytest.mark.parametrize('part', ['header', 'footer'])
+def test_multi_cif_template_detection_in_header_footer(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, part: str):
+    monkeypatch.setattr('finalcif.report.templated_report.show_general_warning',
+                        lambda **kwargs: pytest.fail(str(kwargs)))
+    template = Document()
+    getattr(template.sections[0], part).paragraphs[0].text = "{{ block['p21c'].name }}"
+    template_path = tmp_path / 'template.docx'
+    template.save(template_path)
+    report = TemplatedReport(format=ReportFormat.RICHTEXT, options=Options(),
+                            cif=CifContainer(test_data / '1000007-multi.cif'))
+    assert report.make_templated_docx_report(str(tmp_path / 'report.docx'), template_path)
+    assert report.is_multi_cif_template
+
+
+@pytest.mark.parametrize('text', [
+    '{% for item in blocklist %}{{ item.name }} {% endfor %}',
+    "{{ block['p21c'].name }}",
+])
+def test_selected_multi_cif_template_skips_extra_report(
+        report_window: Mock, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, text: str):
+    monkeypatch.setattr('finalcif.report.templated_report.show_general_warning',
+                        lambda **kwargs: pytest.fail(str(kwargs)))
+    input_file = Path(copy2(test_data / '1000007-multi.cif', tmp_path / 'structures.cif'))
+    report_window.cif = CifContainer(input_file)
+    template = Document()
+    template.add_paragraph(text)
+    template.save(tmp_path / 'selected.docx')
+    stale = report_window.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
+    stale.write_bytes(b'Previous multitable report')
+
+    AppWindow.make_report_tables(report_window)
+
+    primary = report_window.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
+    document = Document(primary)
+    assert 'p21c' in document.paragraphs[0].text
+    assert stale.read_bytes() == b'Previous multitable report'
+    report_window.open_report_document.assert_called_once_with(primary, None)
+    report_window.zip_report.assert_called_once_with(primary, None)
+
+
+def test_invalid_template_detection_reports_failure(tmp_path: Path):
+    template = Document()
+    template.add_paragraph('{% for item in blocklist %}')
+    template_path = tmp_path / 'template.docx'
+    template.save(template_path)
+    report = TemplatedReport(format=ReportFormat.RICHTEXT, options=Options(),
+                            cif=CifContainer(test_data / '1000007-multi.cif'))
+    output = tmp_path / 'report.docx'
+    with patch('finalcif.report.templated_report.show_general_warning') as warning:
+        assert not report.make_templated_docx_report(str(output), template_path)
+    warning.assert_called_once()
+    assert not output.exists()
+
+
+@pytest.mark.parametrize('include_multitable', [False, True])
+def test_report_outputs_exclude_stale_multitable(tmp_path: Path, include_multitable: bool):
+    primary = tmp_path / 'report.docx'
+    multitable = tmp_path / 'structure-multitable.docx'
+    cif_file = tmp_path / 'structure.cif'
+    primary.touch()
+    multitable.touch()
+    cif_file.touch()
+    window = Mock()
+    window.cif.is_multi_cif = True
+    window.cif.finalcif_file = cif_file
+    window.cif.finalcif_file_prefixed.return_value = tmp_path / 'checkcif.pdf'
+    extra_report = multitable if include_multitable else None
+    with patch('finalcif.appwindow.open_file') as open_file:
+        AppWindow.open_report_document(window, primary, extra_report)
+    expected = [call(multitable), call(primary)] if include_multitable else [call(primary)]
+    assert open_file.call_args_list == expected
+    AppWindow.zip_report(window, primary, extra_report)
+    with ZipFile(cif_file.with_suffix('.zip')) as archive:
+        assert set(archive.namelist()) == (
+            {primary.name, cif_file.name, multitable.name} if include_multitable else {primary.name, cif_file.name})
+    assert multitable.exists()
 
 
 # noinspection PyMissingTypeHints

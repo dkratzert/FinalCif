@@ -1636,7 +1636,7 @@ class AppWindow(QMainWindow):
             return None
         self.load_cif_file(self.cif.finalcif_file, block=current_block, load_changes=False)
         report_filename = self.cif.finalcif_file_prefixed(prefix='report_', suffix='-finalcif.docx')
-        multi_table_document = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
+        multi_table_document: Path | None = None
         self.cif.picometer = self.options.use_picometers
         # The picture after the header:
         if self.report_picture_path:
@@ -1650,8 +1650,10 @@ class AppWindow(QMainWindow):
             if template_path.suffix in ('.docx',):
                 t = TemplatedReport(format=ReportFormat.RICHTEXT, options=self.options, cif=self.cif)
                 ok = t.make_templated_docx_report(output_filename=str(report_filename),
-                                                  template_path=Path(self.get_checked_templates_list_text()))
-                if ok and self.cif.is_multi_cif and self.cif.doc[0].name != 'global':
+                                                  template_path=template_path)
+                if (ok and self.cif.is_multi_cif and self.cif.doc[0].name != 'global'
+                        and not t.is_multi_cif_template):
+                    multi_table_document = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
                     ok = t.make_templated_docx_report(output_filename=str(multi_table_document),
                                                       template_path=application_path / 'template' / 'template_for_multitable.docx')
             elif template_path.suffix in ('.html', '.tmpl'):
@@ -1691,11 +1693,11 @@ class AppWindow(QMainWindow):
         if not self.running_inside_unit_test:
             self.open_report_document(report_filename, multi_table_document)
             # Save report and other files to a zip file:
-            self.zip_report(report_filename)
+            self.zip_report(report_filename, multi_table_document)
             return None
         return None
 
-    def zip_report(self, report_filename: Path) -> None:
+    def zip_report(self, report_filename: Path, multi_table_document: Path | None = None) -> None:
         from finalcif.report.archive_report import ArchiveReport
         zipfile = self.cif.finalcif_file.with_suffix('.zip')
         if zipfile.exists():
@@ -1710,16 +1712,16 @@ class AppWindow(QMainWindow):
         with suppress(Exception):
             pdfname = self.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.pdf')
             arc.zip.write(filename=pdfname, arcname=pdfname.name)
-        with suppress(Exception):
-            multitable = self.cif.finalcif_file_prefixed(prefix='', suffix='-multitable.docx')
-            arc.zip.write(filename=multitable, arcname=multitable.name)
+        if multi_table_document is not None:
+            with suppress(Exception):
+                arc.zip.write(filename=multi_table_document, arcname=multi_table_document.name)
         with suppress(Exception):
             prp_list = self.cif.finalcif_file.parent.glob('*.prp')
             sorted_prp = sorted(prp_list, key=lambda x: x.stat().st_mtime)
             arc.zip.write(filename=sorted_prp[-1], arcname=sorted_prp[-1].name)
 
-    def open_report_document(self, report_filename: Path, multi_table_document: Path) -> None:
-        if self.cif.is_multi_cif:
+    def open_report_document(self, report_filename: Path, multi_table_document: Path | None = None) -> None:
+        if multi_table_document is not None:
             open_file(multi_table_document)
         open_file(report_filename)
 

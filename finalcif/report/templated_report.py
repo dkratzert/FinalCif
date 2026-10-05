@@ -1139,6 +1139,7 @@ class TemplatedReport:
         self.options = options
         self.text_formatter = text_factory(options, cif)[self.format]
         self.references = {}
+        self.is_multi_cif_template = False
 
     def count_reference(self, ref):
         if self.references:
@@ -1184,6 +1185,8 @@ class TemplatedReport:
         # plain text full reference:
         jinja_env.filters['ref_txt'] = self.reference_text
         try:
+            variables = tpl_doc.get_undeclared_template_variables(jinja_env=jinja_env)
+            self.is_multi_cif_template = bool({'blocklist', 'block'} & variables)
             tpl_doc.render(context, jinja_env=jinja_env, autoescape=True)
             tpl_doc.save(output_filename)
             return True

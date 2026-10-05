@@ -12,7 +12,7 @@ listed in the report text.
 
    A report document example.
 
-With a multi-CIF opened, generating a DOCX report also writes
+With a multi-CIF opened, generating a DOCX report from a single-CIF template also writes
 ``[filename]-multitable.docx`` with comparison tables containing up to three CIF blocks each.
 Each subsequent table starts on a new page.
 
@@ -29,6 +29,14 @@ and click **Make Tables**. FinalCif creates the normal report and the additional
 The additional report always uses the built-in multitable report;
 there is no need to select a separate one. It is not generated for HTML or LaTeX reports,
 or when the first CIF block is named ``global``.
+
+If the selected DOCX template already uses the multi-CIF context variables ``blocklist``
+or ``block`` (for example, ``{{ block['compound1'].name }}``), FinalCif generates only
+the selected report and skips the additional built-in multitable report.
+Detection uses Jinja context references, including those in headers and footers;
+plain text, comments, and locally defined loop variables do not trigger it.
+Any ``[filename]-multitable.docx`` left from an earlier run is left untouched, but is
+not opened or included in the new report archive.
 
 The template groups the blocks in their CIF order, with up to three structures per page.
 Pagination is defined in the DOCX template and can be changed in custom-made templates. See
