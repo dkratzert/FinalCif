@@ -12,12 +12,27 @@ listed in the report text.
 
    A report document example.
 
-With a multi-CIF opened, also a report document where the values of all data\_ blocks are together in one table
-is written to [filename]-multitable.docx.
+With a multi-CIF opened, generating a DOCX report also writes
+``[filename]-multitable.docx`` with comparison tables containing up to three CIF blocks each.
+Each subsequent table starts on a new page.
 
 .. figure:: pics/multitable.png
 
    A report document from a multi-CIF.
+
+
+Paginated Multi-CIF Reports
+--------------------------
+Open a multi-CIF, select the default report template or another DOCX template in the report options,
+and click **Make Tables**. FinalCif creates the normal report and the additional
+``[filename]-multitable.docx`` beside the CIF, then opens both documents.
+The additional report always uses the built-in multitable report;
+there is no need to select a separate one. It is not generated for HTML or LaTeX reports,
+or when the first CIF block is named ``global``.
+
+The template groups the blocks in their CIF order, with up to three structures per page.
+Pagination is defined in the DOCX template and can be changed in custom-made templates. See
+:ref:`multicif-template-pagination` below.
 
 
 CCDC Number
@@ -146,8 +161,9 @@ Data Available for the Report
     'cif'                   : Gives you access to the full CIF information, use it like
                               {{ cif._exptl_crystal_density_diffrn }} or the variables in the next table.
     'name'                  : Name of the current CIF block.
-    'block'                 : The context of all CIF blocks of a multi-CIF usable as attribute, e.g. block.name.foo or block['name'].foo
-    'blocklist'             : A list of all CIF blocks of a multi-CIF usable for iteration over blocks.
+    'block'                 : DOCX multi-CIF contexts keyed by block name, e.g. block['compound1'].name
+                              or block['compound1'].cif._chemical_formula_sum.
+    'blocklist'             : DOCX multi-CIF contexts in CIF block order, for iteration over blocks.
     'atomic_coordinates'    : The atomic coordinates as ('label', 'type', 'x', 'y', 'z', 'u_eq', 'part', 'occ') for each atom.
     'displacement_parameters': The atomic displacement parameters as ('label', 'U11', 'U22', 'U33',
                                'U23', 'U13', 'U12') for each atom.
@@ -192,8 +208,11 @@ Data Available for the Report
     'independent_refl'      : The number of independent reflections.
     'r_int'                 : The R_int of the data.
     'r_sigma'               : The R_sigma of the data.
-    'completeness'          : The completeness of the data.
-    'theta_full'            : The resolution of the dataset in degree theta.
+    'completeness'          : Backwards-compatible alias for completeness_theta_full.
+    'completeness_theta_full': Completeness (%) from '_diffrn_measured_fraction_theta_full'.
+    'completeness_theta_max' : Completeness (%) from '_diffrn_measured_fraction_theta_max'.
+    'theta_full'            : The full-completeness limit in degrees theta, from '_diffrn_reflns_theta_full'.
+    'theta_max'             : The maximum measured angle in degrees theta, from '_diffrn_reflns_theta_max'.
     'data'                  : the value of '_refine_ls_number_reflns'.
     'restraints'            : The value of '_refine_ls_number_restraints'.
     'parameters'            : The value of '_refine_ls_number_parameters'.
@@ -222,6 +241,21 @@ Data Available for the Report
     'references'            : A list of references used in the document. Each reference can be accessed by its number, where
                               it can be accessed as html, richtext or text.
 
+
+The two completeness values are formatted as percentages with one decimal place when numeric
+(for example, a CIF fraction of ``0.987`` becomes ``98.7``). Missing or nonnumeric values
+are passed through unchanged. Existing templates using ``completeness`` continue to report
+the value at ``theta_full``. To show both values and their corresponding limits:
+
+.. code-block:: jinja
+
+    {{ completeness_theta_full }}% (theta = {{ theta_full }} degrees) /
+    {{ completeness_theta_max }}% (theta = {{ theta_max }} degrees)
+
+These values are also available in each multi-CIF block context. Within a block loop, use
+``block.completeness_theta_full``, ``block.theta_full``, ``block.completeness_theta_max``,
+and ``block.theta_max`` so that each column uses its own structure's values.
+Unqualified variables such as ``theta_full`` refer to the currently selected CIF block.
 
 
 **Other useful information in the 'cif' variable:**
@@ -297,7 +331,41 @@ For example, the chemical formula of the block 'compound1' of a multi-CIF is:
 
 .. code-block:: jinja
 
-    {{ block['compound1']._chemical_formula_sum }}
+    {{ block['compound1'].cif._chemical_formula_sum }}
+
+
+.. _multicif-template-pagination:
+
+Pagination in a DOCX Template
+----------------------------
+The bundled multi-CIF template uses the existing ``blocklist`` context; no additional
+Python context variable is required. Its outer loop groups the block contexts using
+Jinja's ``batch`` filter:
+
+.. code-block:: jinja
+
+    {%p for page in blocklist|batch(3) %}
+    [Word table]
+    {%p if not loop.last %}
+    [Word page break]
+    {%p endif %}
+    {%p endfor %}
+
+Each ``{%p ... %}`` tag must occupy its own paragraph outside the table.
+The bracketed lines above are explanatory placeholders: keep the actual Word table and
+insert a real Word page break (Ctrl+Enter) in a separate paragraph, not the text
+``[Word page break]``. The condition prevents a page break after the last group.
+
+Inside the table, each row keeps its description cell and repeats the data column with
+``{%tc for block in page %}`` and ``{%tc endfor %}``, each in a separate control column
+around the data column. For example, the header data cell contains ``{{ block.name }}``.
+Use ``page`` instead of ``blocklist`` in every column loop so that each table contains
+only the current group.
+
+Here ``page`` and ``block`` are local loop variables, not new report context entries.
+Changing ``batch(3)`` changes the maximum number of structures per table; adjust the
+Word column widths and page layout as necessary. Word may still split a tall table
+across pages depending on its content and formatting.
 
 
 Further information how to make templates for MS Office or OpenOffice:
