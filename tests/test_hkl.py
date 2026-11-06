@@ -1,8 +1,10 @@
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest import TestCase
+from unittest.mock import patch
 
 from finalcif.cif.cif_file_io import CifContainer
-from finalcif.cif.hkl import calculate_rint, reference_domain
+from finalcif.cif.hkl import HKL, Limit, calculate_rint, reference_domain
 
 data = Path('tests')
 
@@ -48,6 +50,77 @@ _refln_scale_group_code
 
     def test_hkl2_as_cif_last_lines(self):
         self.assertEqual(self.last_result, self.cif1.hkl_as_cif[-250:])
+
+
+class TestHKLParsing(TestCase):
+    reflections = '   1  -2   3   10.00    1.00\n  -4   5  -6   20.00    2.00\n'
+    footer = "_computing_structure_solution 'SHELXT 2014/4 (Sheldrick, 2014)'\n"
+    limits = Limit(h_max=1, h_min=-4, k_max=5, k_min=-2, l_max=3, l_min=-6)
+
+    def test_footer_without_zero_reflection_is_not_added_to_loop(self):
+        hkl = HKL(self.reflections + '\n' + self.footer, 'test')
+        loop = hkl.block.find_loop('_refln_index_h').get_loop()
+        self.assertEqual(2, loop.length())
+        self.assertEqual(5, loop.width())
+        self.assertNotIn('_computing_structure_solution', hkl.hkl_as_cif)
+        self.assertEqual(self.limits, hkl.get_hkl_min_max())
+
+    def test_single_reflection_defines_loop_width_not_footer(self):
+        hkl = HKL(self.reflections.splitlines()[0] + '\n' + self.footer.rstrip() + ' extra\n', 'test')
+        loop = hkl.block.find_loop('_refln_index_h').get_loop()
+        self.assertEqual(5, loop.width())
+        self.assertEqual(1, loop.length())
+
+    def test_hklf3_keeps_amplitude_columns(self):
+        hkl = HKL(self.reflections + self.footer, 'test', hklf_type=3)
+        self.assertEqual(['10.00', '20.00'], list(hkl.block.find_loop('_refln_F_meas')))
+        self.assertEqual(['1.00', '2.00'], list(hkl.block.find_loop('_refln_F_sigma')))
+        self.assertEqual(self.limits, hkl.get_hkl_min_max())
+
+    def test_six_column_reflections_keep_batch_numbers(self):
+        reflections = ''.join(line + '   2\n' for line in self.reflections.splitlines())
+        hkl = HKL(reflections + self.footer, 'test')
+        self.assertEqual(['2', '2'], list(hkl.block.find_loop('_refln_scale_group_code')))
+        self.assertEqual(self.limits, hkl.get_hkl_min_max())
+
+    def test_zero_reflection_with_extra_batch_stops_before_footer(self):
+        hkl = HKL(self.reflections + '   0   0   0    0.00    0.00   0\n'
+                  + self.footer + '  99  99  99   99.00    1.00\n', 'test')
+        self.assertEqual(3, hkl.block.find_loop('_refln_index_h').get_loop().length())
+        self.assertEqual(self.limits, hkl.get_hkl_min_max())
+
+    def test_empty_lines_before_first_reflection_are_skipped(self):
+        hkl = HKL('\n  \n' + self.reflections + self.footer, 'test')
+        self.assertEqual(2, hkl.block.find_loop('_refln_index_h').get_loop().length())
+        self.assertEqual(self.limits, hkl.get_hkl_min_max())
+
+    def test_invalid_reflection_ends_hkl_data(self):
+        for invalid in ('bad 1 2 10.00 1.00', '1 bad 2 10.00 1.00', '1 2 bad 10.00 1.00',
+                        '1 2 3 bad 1.00', '1 2 3 10.00 bad', '1 2'):
+            with self.subTest(invalid=invalid):
+                with patch('builtins.print') as warning:
+                    hkl = HKL(self.reflections + invalid + '\n   7   8   9   10.00    1.00\n', 'test')
+                warning.assert_called_once()
+                self.assertIn('HKL data ends at invalid line 3:', warning.call_args.args[0])
+                self.assertEqual(2, hkl.block.find_loop('_refln_index_h').get_loop().length())
+                self.assertEqual(self.limits, hkl.get_hkl_min_max())
+
+    def test_missing_reflections_raise_explicit_error(self):
+        for content in ('', '\n', self.footer):
+            with self.subTest(content=content):
+                with self.assertRaisesRegex(ValueError, 'No valid HKL reflections found'):
+                    HKL(content, 'test')
+
+    def test_loading_cif_with_hkl_footer_calculates_limits(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / 'hkl_footer.cif'
+            path.write_text('data_test\n_shelx_hkl_file\n;\n' + self.reflections + self.footer + ';\n',
+                            encoding='ascii', newline='\n')
+            cif = CifContainer(path)
+            for field, value in self.limits._asdict().items():
+                self.assertEqual(str(value), cif['_diffrn_reflns_limit_' + field])
+            self.assertEqual((self.reflections + self.footer).strip(), cif.hkl_file.strip())
+            self.assertNotIn('_computing_structure_solution', cif.hkl_as_cif)
 
 
 class TestRintCalculation(TestCase):

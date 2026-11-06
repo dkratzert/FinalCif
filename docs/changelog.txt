@@ -1,5 +1,6 @@
 FinalCif recent changes
 -----------------------
+* v179 Fixed a crash when embedded HKL data ends with metadata instead of a 0 0 0 terminator.
 * v178 Both completeness values (to theta_full and overall) are now shown everywhere, and a bug that used
        the wrong theta_max in the completeness calculation was fixed. DOCX report templates built for
        multiple CIF blocks are now auto-detected, so the redundant extra multitable report is no longer

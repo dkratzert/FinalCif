@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from collections import namedtuple
 from collections.abc import Sequence
 from pathlib import Path
@@ -40,44 +39,35 @@ class HKL:
         """
         Adds the hkl data from a SHELX hkl file as local loop.
         """
-        hkl_width = self._get_hkl_width()
         loop_header = ['index_h',
                        'index_k',
                        'index_l',
                        'F_squared_meas' if self.hklf_type != 3 else 'F_meas',
                        'F_squared_sigma' if self.hklf_type != 3 else 'F_sigma',
                        'scale_group_code']
-        loop: Loop = self.block.init_loop('_refln_', self._trim_header_to_hkl_width(loop_header))
-        zero_reflection_pattern = re.compile(r'^\s+0\s+0\s+0\s+0.*')
-        for line in self._hkl_file.splitlines(keepends=False):
-            splitline = line.split()
-            if not splitline:
+        loop: Loop | None = None
+        width = 0
+        for line_number, line in enumerate(self._hkl_file.splitlines(keepends=False), start=1):
+            row = line.split()
+            if not row:
                 continue
-            # Do not use data after the 0 0 0 reflection
-            if zero_reflection_pattern.match(line):
-                # Need to truncate, because some programs add the scale group even if
-                # there is no scale group in other reflections
-                loop.add_row(splitline[:hkl_width])
+            # Without a 0 0 0 terminator, embedded HKL data may end with CIF metadata:
+            if not _is_reflection(row) or len(row) < width:
+                print(f'HKL data ends at invalid line {line_number}: {line}')
                 break
-            try:
-                loop.add_row(splitline[:len(loop_header)])
-            # RuntimeError ist from gemmi.cif.add_row:
-            except (IndexError, RuntimeError):
-                continue
+            if loop is None:
+                loop = self.block.init_loop('_refln_', loop_header[:len(row)])
+                width = loop.width()
+            # Truncate, because some programs add a batch number only to the terminating reflection:
+            loop.add_row(row[:width])
+            if _is_zero_reflection(row):
+                # Data after the 0 0 0 reflection is not part of the hkl file.
+                break
+        if loop is None:
+            raise ValueError('No valid HKL reflections found.')
 
     def __repr__(self) -> str:
         return self.hkl_as_cif[:250]
-
-    def _trim_header_to_hkl_width(self, loop_header: list[str]) -> list[str]:
-        hkl_with = self._get_hkl_width()
-        trimmed_header = loop_header[:hkl_with]
-        return trimmed_header
-
-    def _get_hkl_width(self) -> int:
-        first_lines = self._hkl_file[:150].strip().splitlines(keepends=False)
-        if len(first_lines) > 1:
-            return len(first_lines[1].split())
-        return len(first_lines[0].split())
 
     def get_hkl_min_max(self) -> Limit:
         hkl: gemmi.ReflnBlock = gemmi.hkl_cif_as_refln_block(self.block)
@@ -85,6 +75,19 @@ class HKL:
         h_max, k_max, l_max = np.max(miller, axis=0)
         h_min, k_min, l_min = np.min(miller, axis=0)
         return Limit(h_max=h_max, h_min=h_min, k_max=k_max, k_min=k_min, l_max=l_max, l_min=l_min)
+
+
+def _is_reflection(row: list[str]) -> bool:
+    """Whether a split hkl line starts with three integer indices, the intensity and its sigma."""
+    try:
+        int(row[0]), int(row[1]), int(row[2]), float(row[3]), float(row[4])
+    except (ValueError, IndexError):
+        return False
+    return True
+
+
+def _is_zero_reflection(row: list[str]) -> bool:
+    return not (int(row[0]) or int(row[1]) or int(row[2]))
 
 
 def calculate_rint(hkl_file: str, space_group: str, *, cell: Sequence[float] | None = None,
