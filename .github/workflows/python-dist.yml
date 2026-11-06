@@ -22,9 +22,9 @@ jobs:
       - name: Validate tag matches project version
         shell: bash
         run: |
-          tag="${GITHUB_REF_NAME}"
+          tag="${GITHUB_REF_NAME,,}"
           if [[ ! "$tag" =~ ^version-[0-9]+$ ]]; then
-            echo "Tag '$tag' does not match required pattern version-N"
+            echo "Tag '${GITHUB_REF_NAME}' does not match required pattern version-N (case insensitive)"
             exit 1
           fi
 
