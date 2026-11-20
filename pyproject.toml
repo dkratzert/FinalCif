@@ -41,18 +41,18 @@ dependencies = [
     "pybind11>=3",
     "python-docx",
     "packaging==26.3",
-    "QtAwesome",
-    "QtPy",
-    "numpy==2.4.6",
+    "qtawesome==1.4.2",
+    "qtpy==2.4.3",
+    "numpy==2.5.5",
     "requests",
     "urllib3==2.8.0",
-    "docxtpl[subdoc]>=0.20.2",
+    "docxtpl[subdoc]==0.20.2",
     "shelxfile>=24",
     "fastmolwidget>=1.2.0",  # needs set_model_source/ResidualDensityControls and the web submodule
     "pyenchant",
     "charset-normalizer",
     "pyside6-essentials",
-    "docxcompose>=2.2.0",
+    "docxcompose==2.2.0",
 ]
 
 [dependency-groups]
