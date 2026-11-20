@@ -2,7 +2,7 @@
 
 REM Execute me from the main directory
 
-set PYTHON_VERSION=3.14.6
+set PYTHON_VERSION=3.15.2
 
 REM Check if uv is available, install if missing
 where uv >NUL 2>&1
