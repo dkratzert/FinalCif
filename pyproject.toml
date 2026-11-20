@@ -71,7 +71,13 @@ doc = [
 ]
 
 [tool.uv]
-exclude-newer = "2 days"
+#exclude-newer = "2 days"
+# gemmi 0.7.5 has no cp315 wheel; its CMake needs nanobind 2.x but its build-requires allow 3.x
+build-constraint-dependencies = ["nanobind<3"]
+
+[tool.uv.config-settings-package]
+# MSVC only accepts #warning (used by gemmi's bundled zlib) in C23 mode (/std:clatest)
+gemmi = { "cmake.define.CMAKE_C_STANDARD" = "23" }
 
 [project.urls]
 "Homepage" = "https://dkratzert.de/finalcif.html"
