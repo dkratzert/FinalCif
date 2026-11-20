@@ -1,5 +1,8 @@
 FinalCif recent changes
 -----------------------
+* v180 Fixed a crash when a contact author was added to a CIF that already contains the contact author
+       items as single key/value pairs. Online CheckCIF now shows the reason when the server rejects a
+       request, instead of failing silently.
 * v179 Fixed a crash when embedded HKL data ends with metadata instead of a 0 0 0 terminator.
 * v178 Both completeness values (to theta_full and overall) are now shown everywhere, and a bug that used
        the wrong theta_max in the completeness calculation was fixed. DOCX report templates built for
