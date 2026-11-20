@@ -13,6 +13,7 @@ import sys
 import time
 from collections.abc import Callable
 from contextlib import suppress
+from html import escape
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urljoin
@@ -22,6 +23,7 @@ from qtpy.QtCore import QThread, Signal
 from requests import Response
 from requests.exceptions import MissingSchema
 
+from finalcif import VERSION
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.vrf_entry import VRFEntry
 from finalcif.gui.dialogs import show_general_warning
@@ -35,6 +37,10 @@ SUBMIT_WITHOUT_HKL_NAME = 'Qsubmitnow'
 #: Maximum difference in seconds between the modification time of a CIF file and a
 #: structure factor file in order to regard them as belonging together.
 MAX_FCF_TIME_DIFFERENCE = 3600.0
+#: Maximum number of characters of a server error page shown to the user.
+MAX_ERROR_TEXT_LENGTH = 600
+#: Identifies FinalCif honestly to the CheckCIF server.
+REQUEST_HEADERS = {'User-Agent': f'FinalCif/{VERSION} ({sys.platform}; +https://dkratzert.de/finalcif.html)'}
 
 
 class HtmlForm:
@@ -162,7 +168,8 @@ def find_matching_fcf_file(cif_file: Path,
 
 
 def _post_form(form: HtmlForm, base_url: str, files: dict | None = None) -> str:
-    response = requests.post(form.url(base_url), data=form.payload, files=files, timeout=900)
+    response = requests.post(form.url(base_url), data=form.payload, files=files, headers=REQUEST_HEADERS,
+                             timeout=900)
     response.raise_for_status()
     return response.text
 
@@ -267,10 +274,10 @@ class CheckCif(QThread):
         t1 = time.perf_counter()
         self.progress.emit('Report request sent. Please wait...')
         req = self._do_the_server_request(headers, temp_cif)
-        if req:
+        if req is not None:
             self.progress.emit('request finished')
             if req.status_code != 200:
-                self.failed.emit(f'Request failed with code: {req.status_code!s}')
+                self.failed.emit(server_error_message(req))
             else:
                 t2 = time.perf_counter()
                 time.sleep(0.1)
@@ -286,7 +293,8 @@ class CheckCif(QThread):
     def _do_the_server_request(self, headers: dict, temp_cif: bytes) -> Response | None:
         req = None
         try:
-            req = requests.post(self.checkcif_url, files={'file': temp_cif}, data=headers, timeout=900)
+            req = requests.post(self.checkcif_url, files={'file': temp_cif}, data=headers,
+                                headers=REQUEST_HEADERS, timeout=900)
         except requests.exceptions.ReadTimeout:
             message = r"Checkcif server took too long. Try it at 'https://checkcif.iucr.org' directly."
             self.failed.emit(message)
@@ -297,6 +305,8 @@ class CheckCif(QThread):
             message = "The checkcif server is not reachable. Is your network connection working?<br>" \
                       "The server URL might also have changed..."
             self.failed.emit(message)
+        except requests.exceptions.RequestException as e:
+            self.failed.emit(f'CheckCIF request failed: {escape(str(e))}')
         return req
 
     def _open_pdf_result(self) -> None:
@@ -339,6 +349,40 @@ def fix_iucr_urls(content: str):
     return re.sub(r'\s+src\s*=\s*"//', ' src="https://', href)
 
 
+class _PageTextParser(HTMLParser):
+    """Collects the visible text of an HTML page."""
+    _invisible_tags = frozenset({'script', 'style', 'title'})
+
+    def __init__(self, html: str) -> None:
+        super().__init__()
+        self._parts: list[str] = []
+        self._invisible_depth = 0
+        self.feed(html)
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in self._invisible_tags:
+            self._invisible_depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in self._invisible_tags and self._invisible_depth:
+            self._invisible_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if not self._invisible_depth and data.strip():
+            self._parts.append(' '.join(data.split()))
+
+    @property
+    def text(self) -> str:
+        return ' '.join(self._parts)
+
+
+def server_error_message(response: Response) -> str:
+    """HTML message for a failed CheckCIF request including the explanation of the server."""
+    message = f'CheckCIF server answered with HTTP {response.status_code} {response.reason or ""}'.rstrip()
+    text = _PageTextParser(response.text).text[:MAX_ERROR_TEXT_LENGTH]
+    return f'{message}:<br>{escape(text)}' if text else f'{message}.'
+
+
 class MyHTMLParser(HTMLParser):
     def __init__(self, data):
         self.pdf_link = ''
@@ -350,7 +394,7 @@ class MyHTMLParser(HTMLParser):
         self.feed(data)
 
     def get_pdf(self) -> bytes | None:
-        return requests.get(self.pdf_link, timeout=10).content
+        return requests.get(self.pdf_link, headers=REQUEST_HEADERS, timeout=10).content
 
     def handle_starttag(self, tag: str, attrs: str) -> None:
         # if tag and tag not in ('font', 'div', 'link', 'meta', 'html', 'table', 'td') and attrs:
@@ -372,7 +416,7 @@ class MyHTMLParser(HTMLParser):
 
     def save_image(self, image_file: Path) -> None:
         try:
-            image = requests.get(self.imageurl, timeout=10).content
+            image = requests.get(self.imageurl, headers=REQUEST_HEADERS, timeout=10).content
         except MissingSchema:
             print('debug: Got no image from checkcif server.')
             image = b''
@@ -381,7 +425,8 @@ class MyHTMLParser(HTMLParser):
 
     def get_ckf(self) -> str:
         try:
-            return requests.get(self.structure_factor_report, timeout=10).content.decode('latin1', 'ignore')
+            return requests.get(self.structure_factor_report, headers=REQUEST_HEADERS,
+                                timeout=10).content.decode('latin1', 'ignore')
         except MissingSchema:
             return ''
 

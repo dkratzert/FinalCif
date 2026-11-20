@@ -7,6 +7,7 @@ from __future__ import annotations
 #   and you think this stuff is worth it, you can buy me a beer in return.
 #   ----------------------------------------------------------------------------
 import re
+from bisect import bisect
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -15,15 +16,15 @@ from typing import TYPE_CHECKING
 import gemmi.cif
 from qtpy import QtCore
 from qtpy.QtWidgets import QListWidgetItem, QMenu
-from gemmi.cif import Loop, as_string
+from gemmi.cif import as_string
 
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.cif.text import utf8_to_str, quote, retranslate_delimiter, string_to_utf8
 from finalcif.equip_property.tools import read_document_from_cif_file
+from finalcif.gui.custom_classes import Column
 from finalcif.gui.dialogs import cif_file_save_dialog, show_general_warning, cif_file_open_dialog
 from finalcif.gui.finalcif_gui_ui import Ui_FinalCifWindow
 from finalcif.gui.timers import single_shot
-from finalcif.tools.misc import grouper
 from finalcif.tools.settings import FinalCifSettings
 
 if TYPE_CHECKING:
@@ -151,24 +152,43 @@ class AuthorLoops:
 
     def save_author_to_loop(self) -> None:
         author = self.get_author_info()
-        row = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id, author.footnote]
         author_loop_tags = self.get_author_loop(author)
+        row = [author.name, author.address, author.email, author.phone, author.orcid, author.iucr_id,
+               author.footnote][:len(author_loop_tags)]
         table: gemmi.cif.Table = self.cif.block.find(author_loop_tags)
-        if table.width():
-            gemmi_loop: Loop = table.loop
-            if tuple(row) in list(grouper(gemmi_loop.values, gemmi_loop.width())):
+        if author.contact_author and self._any_key_is_pair(author_loop_tags):
+            # Contact author items are not loopable in coreCIF, so the existing pairs get overwritten:
+            self._set_main_table_values(author_loop_tags, row)
+            self.app.status_bar.show_message('Contact author was set in the main table.', 15)
+        elif table.width():
+            if tuple(row) in [tuple(table_row) for table_row in table]:
                 self.app.status_bar.show_message('This author already exists.', 15)
-                print('dbg> Author already exists.')
                 return
-        else:
-            gemmi_loop = self.cif.init_loop(author_loop_tags)
-        table = self.cif.block.find(author_loop_tags)
-        if gemmi_loop.width() < len(row):
-            row = row[:gemmi_loop.width()]
-        if row not in table:
+            table.ensure_loop()
             table.append_row(row)
+            self._remove_keys_from_main_table(author_loop_tags)
+        else:
+            self.cif.init_loop(author_loop_tags).add_row(row)
         self.app.ui.loops_page.make_loops_tables()
         self.show_authors_list()
+
+    def _any_key_is_pair(self, keys: list[str]) -> bool:
+        return any(self.cif.block.find_pair(key) for key in keys)
+
+    def _set_main_table_values(self, keys: list[str], values: list[str]) -> None:
+        main_table = self.app.ui.cif_main_table
+        for key, value in zip(keys, values, strict=True):
+            if not main_table.has_key(key):
+                self.app.add_row(key, '?', position=bisect(main_table.model().vheaderitems, key))
+            text = retranslate_delimiter(as_string(value)) or '?'
+            main_table.setText(key=key, column=Column.EDIT, txt=text)
+
+    def _remove_keys_from_main_table(self, keys: list[str]) -> None:
+        """Removes rows of keys that were converted from pairs into a loop."""
+        main_table = self.app.ui.cif_main_table
+        for key in keys:
+            if main_table.has_key(key):
+                main_table.delete_row(main_table.row_from_key(key))
 
     def get_author_info(self) -> Author:
         if self.ui.authorEditTabWidget.currentWidget().objectName() == 'page_publication':

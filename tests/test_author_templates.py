@@ -2,10 +2,13 @@ import json
 import unittest
 from tests.helpers import AppWindowTestCase
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
+
+from gemmi.cif import as_string
 
 from finalcif.appwindow import AppWindow
 from finalcif.equip_property.author_loop_templates import AuthorLoops, Author, AuthorType
+from finalcif.gui.custom_classes import Column
 
 data = Path('tests')
 
@@ -183,6 +186,49 @@ class MyTestCase(AppWindowTestCase):
         self.assertEqual("''", self.app.authors.get_author_info().email)
         self.assertEqual(False, self.app.authors.get_author_info().contact_author)
         self._delete_test_author('Author Two')
+
+    def _main_table_edit_text(self, key: str) -> str:
+        return self.app.ui.cif_main_table.getTextFromKey(key, Column.EDIT)
+
+    def test_add_contact_author_overwrites_existing_pairs(self):
+        self.assertIsNone(self.app.cif.block.find(['_audit_contact_author_name']).loop)
+        self.app.ui.authorEditTabWidget.setCurrentIndex(1)
+        self.app.ui.FullNameLineEdit_cif.setText('Chapman, Christopher M.')
+        self.app.ui.EMailLineEdit_cif.setText('foo@bar.edu')
+        self.app.ui.ContactAuthorCheckBox_cif.setChecked(True)
+        self.app.authors.save_author_to_loop()
+        self.assertIsNone(self.app.cif.block.find(['_audit_contact_author_name']).loop)
+        self.assertEqual('Chapman, Christopher M.', self._main_table_edit_text('_audit_contact_author_name'))
+        self.assertEqual('foo@bar.edu', self._main_table_edit_text('_audit_contact_author_email'))
+        self.assertEqual('?', self._main_table_edit_text('_audit_contact_author_phone'))
+        with patch.object(type(self.app.options), 'track_changes', new_callable=PropertyMock, return_value=False):
+            self.app.store_data_from_table_rows()
+        self.assertEqual('Chapman, Christopher M.', self.app.cif['_audit_contact_author_name'])
+
+    def test_add_author_converts_existing_pairs_to_loop(self):
+        block = self.app.cif.block
+        block.find(['_audit_author_name', '_audit_author_address']).erase()
+        block.set_pair('_audit_author_name', "'Solo Author'")
+        block.set_pair('_audit_author_address', 'Somewhere')
+        self.app.add_row('_audit_author_name', 'Solo Author')
+        self.app.ui.authorEditTabWidget.setCurrentIndex(1)
+        self.app.ui.ContactAuthorCheckBox_cif.setChecked(False)
+        self.app.ui.FullNameLineEdit_cif.setText('Second Author')
+        self.app.ui.AddressTextedit_cif.setText('Elsewhere')
+        self.app.authors.save_author_to_loop()
+        self.assertIsNotNone(block.find(['_audit_author_name']).loop)
+        self.assertEqual(['Solo Author', 'Second Author'],
+                         [as_string(x) for x in block.find_loop('_audit_author_name')])
+        self.assertFalse(self.app.ui.cif_main_table.has_key('_audit_author_name'))
+
+    def test_add_same_author_twice_adds_one_row(self):
+        self.app.ui.authorEditTabWidget.setCurrentIndex(1)
+        self.app.ui.ContactAuthorCheckBox_cif.setChecked(False)
+        self.app.ui.FullNameLineEdit_cif.setText('Second Author')
+        self.app.authors.save_author_to_loop()
+        rows_after_first = len(self.app.cif.block.find_loop('_audit_author_name'))
+        self.app.authors.save_author_to_loop()
+        self.assertEqual(rows_after_first, len(self.app.cif.block.find_loop('_audit_author_name')))
 
 
 class UniqueAuthorNameTestCase(unittest.TestCase):

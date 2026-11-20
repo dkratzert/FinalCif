@@ -1187,6 +1187,9 @@ class AppWindow(QMainWindow):
     def _checkcif_failed(self, txt: str) -> None:
         self.ui.CheckCifLogPlainTextEdit.appendHtml(f'<b>{txt}</b>')
 
+    def _log_checkcif_not_finished(self) -> None:
+        self._checkcif_failed('CheckCIF failed to finish. Please try it at https://checkcif.iucr.org/ instead.')
+
     def _log_checkcif(self, txt: str) -> None:
         self.ui.CheckCifLogPlainTextEdit.appendPlainText(txt)
         app.processEvents()
@@ -1251,8 +1254,7 @@ class AppWindow(QMainWindow):
             parser = MyHTMLParser(self.htmlfile.read_text())
         except FileNotFoundError:
             # happens if checkcif fails, e.g. takes too much time.
-            self.ui.CheckCifLogPlainTextEdit.appendHtml('<b>CheckCIF failed to finish. '
-                                                        'Please try it at https://checkcif.iucr.org/ instead.</b>')
+            self._log_checkcif_not_finished()
             return
 
         self.checkcif_browser = CheckCifBrowser(parent=self, checkdef=self.checkdef)
@@ -1408,6 +1410,10 @@ class AppWindow(QMainWindow):
         if self.pdf_htmlfile is None:
             return
         self._resolve_structure_factor_upload(self.pdf_htmlfile)
+        if not self.pdf_htmlfile.exists():
+            self._log_checkcif_not_finished()
+            self.pdf_htmlfile = None
+            return
         self.ckf.show_pdf_report()
         self.ui.CheckCifLogPlainTextEdit.appendPlainText('PDF Checkcif report finished.')
         with suppress(OSError):
