@@ -29,10 +29,10 @@ def get_file_to_parse(fileobj: Path | None = None, name_pattern: str = '', base_
     :param base_directory: The directory where to find files.
     :return: a Path object
 
-    >>> get_file_to_parse(base_directory=Path('test-data'), name_pattern='*_0*m._ls')
-    PosixPath('test-data/DK_Zucker2_0m._ls')
-    >>> get_file_to_parse(fileobj=Path('test-data/TB_fs20_v1_0m._ls'))
-    PosixPath('test-data/TB_fs20_v1_0m._ls')
+    >>> get_file_to_parse(base_directory=Path('tests/examples'), name_pattern='*_0*m._ls')
+    PosixPath('tests/examples/DK_Zucker2_0m._ls')
+    >>> get_file_to_parse(fileobj=Path('tests/examples/TB_fs20_v1_0m._ls'))
+    PosixPath('tests/examples/TB_fs20_v1_0m._ls')
     """
     if fileobj and fileobj.is_file():
         return fileobj

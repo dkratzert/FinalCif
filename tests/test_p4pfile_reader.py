@@ -10,7 +10,8 @@ from finalcif.datafiles.p4p_reader import P4PFile
 
 from pathlib import Path
 
-test_data = Path('./test-data')
+data = Path('tests')
+test_data = data / 'examples'
 
 class TestBrukerFrame(unittest.TestCase):
 

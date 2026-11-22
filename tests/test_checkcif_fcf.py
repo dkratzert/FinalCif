@@ -7,7 +7,9 @@ import pytest
 from finalcif.cif.checkcif.checkcif import (CheckCifFormParser, find_matching_fcf_file,
                                             needs_structure_factor_upload)
 
-FCF_REQUEST_HTML = Path('tests/fixtures/checkcif_fcf_request.html').read_text()
+data = Path('tests')
+
+FCF_REQUEST_HTML = (data / 'fixtures/checkcif_fcf_request.html').read_text()
 
 
 @pytest.fixture

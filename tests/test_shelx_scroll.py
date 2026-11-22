@@ -17,9 +17,12 @@ from qtpy.QtWidgets import QApplication, QPlainTextEdit
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.gui.shelx_navigation import find_shelx_line_for_atom, scroll_and_highlight_shelx_atom
 
+data = Path('tests')
+
+
 app = QApplication.instance() or QApplication([])
 
-P21C = Path("test-data/p21c.cif")
+P21C = data / 'examples/p21c.cif'
 
 
 def _make_text_edit(cif: CifContainer) -> QPlainTextEdit:

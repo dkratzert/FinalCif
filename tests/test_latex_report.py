@@ -26,15 +26,17 @@ from finalcif.report.templated_report import (
 from finalcif.tools.misc import minus_sign
 from finalcif.tools.options import Options
 
+data = Path('tests')
+
+
 # Paths used throughout the tests
-TESTS_DIR = Path('tests')
-TEST_DATA_DIR = Path('test-data')
+TEST_DATA_DIR = data / 'examples'
 TEMPLATE_DIR = Path('finalcif/template')
 
 # A CIF that has: atoms, ADPs, bonds and angles, and symmetry-generated atoms.
 CIF_WITH_BONDS_AND_SYMM = TEST_DATA_DIR / 'sad-final.cif'
 # A simple CIF with bonds but no special symmetry codes in bonds.
-CIF_WITH_BONDS = TESTS_DIR / 'examples/1979688.cif'
+CIF_WITH_BONDS = TEST_DATA_DIR / '1979688.cif'
 # A CIF with a single atom and no bonds (exercises empty-table branches).
 CIF_DIAMOND = TEST_DATA_DIR / 'diamond/9008564.cif'
 

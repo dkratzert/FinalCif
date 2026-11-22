@@ -154,4 +154,4 @@ class SaintListFile:
 if __name__ == "__main__":
     for name in ('TB_fs20_v1_0m._ls', 'test766_0m._ls', 'DK_Zucker2_0m._ls', 'DK_ML766_twin._ls'):
         print('#####')
-        print(SaintListFile('*._ls', file_to_parse=Path('test-data') / name))
+        print(SaintListFile('*._ls', file_to_parse=Path('tests/examples') / name))

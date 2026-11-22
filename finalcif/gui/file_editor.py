@@ -349,7 +349,7 @@ if __name__ == '__main__':
     font = QtGui.QFontDatabase.systemFont(QtGui.QFontDatabase.SystemFont.FixedFont)
     codeEditor.setFont(font)
     options = gemmi.cif.WriteOptions(gemmi.cif.Style(gemmi.cif.Style.Indent35))
-    ciftext = gemmi.cif.read('test-data/DK_Zucker2_0m.cif').sole_block().as_string(options)
+    ciftext = gemmi.cif.read('tests/examples/DK_Zucker2_0m.cif').sole_block().as_string(options)
     codeEditor.set_cif_text(ciftext)
     codeEditor.show()
     sys.exit(app.exec())

@@ -20,5 +20,5 @@ class ArchiveReport:
 
 if __name__ == '__main__':
     z = ArchiveReport('./test.zip')
-    z.zip.write('test-data/report_DK_zucker2_0m-finalcif.docx')
+    z.zip.write('tests/examples/report_DK_zucker2_0m-finalcif.docx')
     z.zip.close()

@@ -18,7 +18,10 @@ from finalcif.tools.mol_file_writer import (
 )
 from finalcif.tools.options import Options
 
-TEST_DATA_DIR = Path('test-data')
+data = Path('tests')
+
+
+TEST_DATA_DIR = data / 'examples'
 CIF_FILE = TEST_DATA_DIR / 'p21c.cif'
 
 

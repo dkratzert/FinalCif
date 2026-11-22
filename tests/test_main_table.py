@@ -71,7 +71,7 @@ class TestMainTableFieldBehavior(AppWindowTestCase):
         self.assertEqual('', self.cell_text('_atom_sites_solution_hydrogens', Column.EDIT))
 
     def test_load_equipment(self):
-        self.app.equipment.import_equipment_from_file(str(data.parent / 'test-data/Crystallographer_Details.cif'))
+        self.app.equipment.import_equipment_from_file(str(data / 'examples/Crystallographer_Details.cif'))
         # make sure contact author is selected
         self.equipment_click('Crystallographer Details')
         # It is important here, that the first column has 'dkratzert@gmx.de' in it:
@@ -94,12 +94,12 @@ class TestMainTableFieldBehavior(AppWindowTestCase):
     def test_multicif(self):
         self.assertEqual(False, self.app.cif.is_multi_cif)
         self.assertEqual(1, len(self.app.cif.doc))
-        self.app.append_cif(data.parent / 'test-data/1000006.cif')
+        self.app.append_cif(data / 'examples/1000006.cif')
         self.assertEqual(True, self.app.cif.is_multi_cif)
         self.assertEqual(2, len(self.app.cif.doc))
 
     def test_pasted_existing_cif_path_opens_file(self):
-        target_cif = (data.parent / 'test-data/1000006.cif').resolve()
+        target_cif = (data / 'examples/1000006.cif').resolve()
         line_edit = self.app.ui.SelectCif_LineEdit
         line_edit.clear()
         line_edit.setFocus()
@@ -111,7 +111,7 @@ class TestMainTableFieldBehavior(AppWindowTestCase):
         mock_load.assert_called_once_with(target_cif)
 
     def test_return_pressed_existing_cif_path_opens_file_without_cod_lookup(self):
-        target_cif = (data.parent / 'test-data/1000006.cif').resolve()
+        target_cif = (data / 'examples/1000006.cif').resolve()
         self.app.ui.SelectCif_LineEdit.setText(str(target_cif))
 
         with patch.object(self.app, 'load_cif_file') as mock_load, patch('finalcif.appwindow.requests.get') as mock_get:
@@ -180,7 +180,7 @@ class TestMainTableRowHeights(AppWindowTestCase):
     def test_row_height_after_equipment_load(self):
         """After loading equipment data the row should still have a reasonable height."""
         self.app.equipment.import_equipment_from_file(
-            str(data.parent / 'test-data/Crystallographer_Details.cif'))
+            str(data / 'examples/Crystallographer_Details.cif'))
         self.app.ui.EquipmentTemplatesStackedWidget.setCurrentIndex(0)
         item = self.app.ui.EquipmentTemplatesListWidget.findItems(
             'Crystallographer Details', Qt.MatchStartsWith)[0]

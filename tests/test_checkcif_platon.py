@@ -9,24 +9,27 @@ from finalcif import VERSION
 from finalcif.appwindow import AppWindow
 from tests.helpers import get_platon_exe
 
+data = Path('tests')
+
+
 filenames = (
-    'tests/examples/checkcif-1979688-finalcif.html',
-    'tests/examples/1979688-finalcif.chk',
-    'tests/examples/1979688-finalcif.ckf',
-    'tests/examples/1979688-finalcif.vrf',
-    'tests/examples/1979688-finalcif.cif',
-    'tests/examples/1979688-finalcif.gif',
-    'tests/examples/1979688-finalcif.fcf',
-    'tests/examples/1979688.ckf',
-    'tests/examples/1979688.chk',
-    'tests/examples/check.def',
-    'test-data/check.def',
-    'tests/examples/platon.out',
-    'tests/examples/work/platon.out',
-    'tests/examples/work/check.def',
-    'test-data/1000007-finalcif.chk',
-    'test-data/1000007-finalcif.cif',
-    'test-data/1000007-finalcif.vrf',
+    data / 'examples/checkcif-1979688-finalcif.html',
+    data / 'examples/1979688-finalcif.chk',
+    data / 'examples/1979688-finalcif.ckf',
+    data / 'examples/1979688-finalcif.vrf',
+    data / 'examples/1979688-finalcif.cif',
+    data / 'examples/1979688-finalcif.gif',
+    data / 'examples/1979688-finalcif.fcf',
+    data / 'examples/1979688.ckf',
+    data / 'examples/1979688.chk',
+    data / 'examples/check.def',
+    data / 'examples/check.def',
+    data / 'examples/platon.out',
+    data / 'examples/work/platon.out',
+    data / 'examples/work/check.def',
+    data / 'examples/1000007-finalcif.chk',
+    data / 'examples/1000007-finalcif.cif',
+    data / 'examples/1000007-finalcif.vrf',
 )
 
 
@@ -36,7 +39,7 @@ class TestPlatonCheckCIF(AppWindowTestCase):
     def setUp(self) -> None:
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
             self.skipTest('No PLATON executable found or no network. Skipping test!')
-        self.app = AppWindow(file=Path('tests/examples/1979688.cif').resolve())
+        self.app = AppWindow(file=(data / 'examples/1979688.cif').resolve())
         self.app.hide()
 
     def tearDown(self) -> None:
@@ -48,16 +51,16 @@ class TestPlatonCheckCIF(AppWindowTestCase):
     def test_checkcif_offline(self):
         self.app.hide()
         self.app.ui.CheckcifButton.click()
-        timediff = int(Path('tests/examples/1979688-finalcif.chk').stat().st_mtime) - int(time.time())
+        timediff = int((data / 'examples/1979688-finalcif.chk').stat().st_mtime) - int(time.time())
         self.assertLess(timediff, 5)  # .chk file was modified less than 5 seconds ago
 
     def test_checkdef_contains_text(self):
         self.app.hide()
         self.app.ui.CheckcifButton.click()
         time.sleep(0.3)
-        self.assertEqual('FINALCIF V{}'.format(VERSION) in Path('tests/examples/1979688-finalcif.chk').read_text(),
+        self.assertEqual('FINALCIF V{}'.format(VERSION) in (data / 'examples/1979688-finalcif.chk').read_text(),
                          True)
-        self.assertEqual('SumFormula C77 H80 O25' in Path('tests/examples/1979688-finalcif.chk').read_text(), True)
+        self.assertEqual('SumFormula C77 H80 O25' in (data / 'examples/1979688-finalcif.chk').read_text(), True)
 
     def test_offline_checkcif_writes_gif(self):
         self.app.hide()
@@ -71,7 +74,7 @@ class TestPlatonCheckCIFwithCIFwithoutHKLdata(AppWindowTestCase):
     def setUp(self) -> None:
         if not get_platon_exe() or os.environ.get('NO_NETWORK'):
             self.skipTest('No PLATON executable found or NO_NETWORK is set. Skipping test!')
-        self.app = AppWindow(file=Path('./test-data/1000007.cif').resolve())
+        self.app = AppWindow(file=(data / 'examples/1000007.cif').resolve())
         self.app.hide()
         self.app.ui.structfactCheckBox.setChecked(True)
 
@@ -84,5 +87,5 @@ class TestPlatonCheckCIFwithCIFwithoutHKLdata(AppWindowTestCase):
     def test_checkcif_offline(self):
         self.app.hide()
         self.app.ui.CheckcifButton.click()
-        timediff = int(Path('./test-data/1000007-finalcif.chk').resolve().stat().st_mtime) - int(time.time())
+        timediff = int((data / 'examples/1000007-finalcif.chk').resolve().stat().st_mtime) - int(time.time())
         self.assertLess(timediff, 5)  # .chk file was modified less than 5 seconds ago

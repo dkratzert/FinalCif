@@ -539,7 +539,7 @@ class Sadabs:
 
 if __name__ == '__main__':
     print('###############\n\n')
-    s = Sadabs(fileobj=Path(r'test-data/twinabs_multi_options.abs'))
+    s = Sadabs(fileobj=Path(r'tests/examples/twinabs_multi_options.abs'))
     print(s)
     for dat in s:
         print(dat)

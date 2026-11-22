@@ -34,7 +34,7 @@ class TestFileIsOpened(AppWindowTestCase):
 
     def tearDown(self) -> None:
         Path('foo.cif').unlink(missing_ok=True)
-        Path('tests/examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
+        (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif.cif').unlink(missing_ok=True)
         self.app.ui.trackChangesCifCheckBox.setChecked(False)
         super().tearDown()
 
@@ -52,7 +52,7 @@ class TestWorkfolder(AppWindowTestCase):
         (data / 'examples/work/cu_BruecknerJK_153F40_0m-finalcif_changes.cif').unlink(missing_ok=True)
         self.app = AppWindow(file=self.testcif)
         self.app.ui.trackChangesCifCheckBox.setChecked(True)
-        self.app.equipment.import_equipment_from_file(str(data.parent / 'test-data/Crystallographer_Details.cif'))
+        self.app.equipment.import_equipment_from_file(str(data / 'examples/Crystallographer_Details.cif'))
         self.app.setWindowIcon(QIcon('./icon/multitable.png'))
         self.app.setWindowTitle(f'FinalCif v{VERSION}')
         self.app.settings.save_settings_list('cif_order', 'order', [])
@@ -295,7 +295,7 @@ class TestWorkfolderOtherCifName(AppWindowTestCase):
         self.testcif = (data / 'examples/work/p21c.cif').resolve()
         self.app = AppWindow(file=self.testcif)
         self.app.ui.trackChangesCifCheckBox.setChecked(True)
-        self.app.equipment.import_equipment_from_file(data.parent / 'test-data/Crystallographer_Details.cif')
+        self.app.equipment.import_equipment_from_file(data / 'examples/Crystallographer_Details.cif')
         self.app.setWindowIcon(QIcon('./icon/multitable.png'))
         self.app.setWindowTitle(f'FinalCif v{VERSION}')
 

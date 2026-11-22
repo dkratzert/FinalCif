@@ -182,7 +182,7 @@ class VZSImageViewer(QtWidgets.QWidget):
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     widget = VZSImageViewer()
-    widget.load_file(Path("test-data/BB_GS3.vzs"))
+    widget.load_file(Path("tests/examples/BB_GS3.vzs"))
     widget.setWindowTitle("VZS Viewer")
     widget.show()
     sys.exit(app.exec())

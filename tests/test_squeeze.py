@@ -18,11 +18,14 @@ from finalcif.tools.squeeze import (append_unknown_solvent, build_details_text, 
                                     has_unassigned_solvent, remove_unknown_solvent)
 from tests.helpers import AppWindowTestCase
 
+data = Path('tests')
+
+
 app = QApplication.instance()
 if app is None:
     app = QApplication([])
 
-FIXTURES = Path(__file__).parent / 'fixtures'
+FIXTURES = data / 'fixtures'
 SQF_FILE = FIXTURES / 'squeeze_test.sqf'
 SMTBX_FILE = FIXTURES / 'smtbx_test.cif'
 
@@ -498,7 +501,7 @@ class TestUnassignedSolvent(unittest.TestCase):
         self.assertTrue(has_unassigned_solvent(CifContainer(SMTBX_FILE)))
 
     def test_cif_without_void_loop_is_not_unassigned(self):
-        cif = CifContainer(Path('tests/examples/1979688.cif').absolute())
+        cif = CifContainer((data / 'examples/1979688.cif').absolute())
         self.assertFalse(has_unassigned_solvent(cif))
 
     def test_assigned_void_content_is_not_unassigned(self):
@@ -551,12 +554,12 @@ class TestAppWindowRefreshAfterSqueezeDialog(AppWindowTestCase):
     def setUp(self) -> None:
         super().setUp()
         from finalcif.appwindow import AppWindow
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        self.testcif = (data / 'examples/1979688.cif').absolute()
         self.app = AppWindow(file=self.testcif)
 
     def tearDown(self) -> None:
         self.app.cif.finalcif_file.unlink(missing_ok=True)
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         super().tearDown()
 
     @staticmethod
@@ -598,12 +601,12 @@ class TestAppWindowSqueezedSolventMarker(AppWindowTestCase):
     def setUp(self) -> None:
         super().setUp()
         from finalcif.appwindow import AppWindow
-        self.testcif = Path('tests/examples/1979688.cif').absolute()
+        self.testcif = (data / 'examples/1979688.cif').absolute()
         self.app = AppWindow(file=self.testcif)
 
     def tearDown(self) -> None:
         self.app.cif.finalcif_file.unlink(missing_ok=True)
-        Path('tests/examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
+        (data / 'examples/1979688-finalcif_changes.cif').unlink(missing_ok=True)
         super().tearDown()
 
     def _add_empty_squeeze_loop(self) -> None:

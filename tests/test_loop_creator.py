@@ -10,13 +10,13 @@ app = QApplication.instance()
 if app is None:
     app = QApplication([])
 
-data = Path('.')
+data = Path('tests')
 
 
 class TestLoopCreator(unittest.TestCase):
     def setUp(self) -> None:
         self.w = QMainWindow()
-        self.cif = CifContainer(data / 'test-data/1000006.cif')
+        self.cif = CifContainer(data / 'examples/1000006.cif')
         self.lc = LoopCreator(parent=self.w, cif=self.cif)
         self.lc.saveLoopPushButton.clicked.connect(self.lc.save_new_loop_to_cif)
         self.w.setCentralWidget(self.lc)

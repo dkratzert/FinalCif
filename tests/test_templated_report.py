@@ -24,7 +24,7 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.report.templated_report import TemplatedReport, ReportFormat, Hydrogens, get_card, BondsAndAngles
 
 data = Path('tests')
-test_data = Path('test-data')
+test_data = data / 'examples'
 
 
 @pytest.fixture
@@ -359,7 +359,7 @@ class TestCIFwithOneAtom(AppWindowTestCase):
 
     def setUp(self) -> None:
         # creating a new CIF with a new block:
-        self.cif = CifContainer('test-data/diamond/9008564.cif')
+        self.cif = CifContainer(data / 'examples/diamond/9008564.cif')
         self.options = Options()
         self.t = TemplatedReport(options=self.options,
                                  cif=self.cif,
@@ -447,7 +447,7 @@ class TestData(AppWindowTestCase):
 
 class TestHydrogenText(AppWindowTestCase):
     def setUp(self) -> None:
-        self.cif = CifContainer('test-data/p21c.cif')
+        self.cif = CifContainer(data / 'examples/p21c.cif')
         self.h = Hydrogens(self.cif)
 
     def test_hydrogen_text_html(self):
@@ -483,7 +483,7 @@ class TestGetCard(unittest.TestCase):
     """Unit tests for the get_card() helper — no AppWindow needed."""
 
     def setUp(self):
-        self.cif = CifContainer(Path('tests/examples/1979688_small.cif').resolve())
+        self.cif = CifContainer((data / 'examples/1979688_small.cif').resolve())
 
     # --- normal behaviour ---
 

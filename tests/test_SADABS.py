@@ -10,10 +10,13 @@ from pathlib import Path
 
 from finalcif.datafiles.sadabs import Sadabs
 
+data = Path('tests')
+
+
 
 class TestSADABSWU19(unittest.TestCase):
     def setUp(self) -> None:
-        self.test_data = Path('test-data')
+        self.test_data = data / 'examples'
         self.s = Sadabs(r'IK_WU19.abs', searchpath=self.test_data)  # this is a sadabs file
 
     def test_twincomp(self):
@@ -48,7 +51,7 @@ class TestSADABSWU19(unittest.TestCase):
 
 class TestTWINABS(unittest.TestCase):
     def setUp(self) -> None:
-        self.test_data = Path('test-data')
+        self.test_data = data / 'examples'
         self.s = Sadabs(r'twin-4-5.abs', searchpath=self.test_data)  # this is a twinabs file
 
     def test_transmission(self):
@@ -80,7 +83,7 @@ class TestTWINABSMultipleOutputs(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.s = Sadabs(fileobj=Path('test-data/twinabs_multi_options.abs'))
+        self.s = Sadabs(fileobj=data / 'examples/twinabs_multi_options.abs')
 
     def test_all_datasets_are_found(self) -> None:
         self.assertEqual(['t4_dom0.hkl', 't4_dom1.hkl', 't4_dom-2.hkl',
@@ -154,7 +157,7 @@ class TestTWINABSHKLF5BeforeTable(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.s = Sadabs(fileobj=Path('test-data/twinabs_hklf5_first.abs'))
+        self.s = Sadabs(fileobj=data / 'examples/twinabs_hklf5_first.abs')
 
     def test_first_dataset_uses_the_table_written_later(self) -> None:
         self.assertEqual(20616, self.s.dataset(0).reflections_number)
@@ -169,7 +172,7 @@ class TestTWINABSHKLF5BeforeTable(unittest.TestCase):
 
 class TestTWINABSRealWorldFile(unittest.TestCase):
     def setUp(self) -> None:
-        self.s = Sadabs(fileobj=Path('test-data/DK_ML766_twin.abs'))
+        self.s = Sadabs(fileobj=data / 'examples/DK_ML766_twin.abs')
 
     def test_number_of_datasets(self) -> None:
         self.assertEqual(4, len(self.s.datasets))
@@ -198,7 +201,7 @@ class TestSADABSMultipleOutputs(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.s = Sadabs(fileobj=Path('test-data/sad.abs'))
+        self.s = Sadabs(fileobj=data / 'examples/sad.abs')
 
     def test_all_datasets_are_found(self) -> None:
         self.assertEqual(['sad_noface_u.hkl', 'sad_noface_m.hkl', 'xd.hkl',

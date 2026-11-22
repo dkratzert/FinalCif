@@ -561,7 +561,7 @@ class AuthorLoops:
 if __name__ == '__main__':
     import pprint
 
-    l = AuthorLoops(Ui_FinalCifWindow(), CifContainer('test-data/1000007.cif'), None)
+    l = AuthorLoops(Ui_FinalCifWindow(), CifContainer('tests/examples/1000007.cif'), None)
     data = l.export_raw_data()
     pprint.pprint(data)
 

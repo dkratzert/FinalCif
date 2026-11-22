@@ -18,7 +18,7 @@ from finalcif.tools.options import Options
 from tests.helpers import AppWindowTestCase
 
 data = Path('tests')
-test_data = Path('test-data')
+test_data = data / 'examples'
 
 
 class TablesTestCase(AppWindowTestCase):

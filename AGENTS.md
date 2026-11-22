@@ -52,7 +52,7 @@
 ## Workflow & Commands
 - **Testing:** 
   - *Command:* `uv run pytest tests`
-  - Small fixture files live in `tests/fixtures/`; larger raw test data in `test-data/`.
+  - Small fixture files live in `tests/fixtures/`; larger raw test data in `tests/examples/`.
 - **Type Checking:** The dev dependency group includes `ty` and `pyside6-stubs`; `pyrefly` is also configured via `[tool.pyrefly]` in `pyproject.toml`.
 - **Linting:** 
   - *Command (local):* `ruff check .` — configured via `.ruff.toml`; line-length is **120**, target `py312`.

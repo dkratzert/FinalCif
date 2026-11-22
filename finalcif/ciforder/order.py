@@ -224,7 +224,7 @@ if __name__ == "__main__":
     from finalcif.tools.settings import FinalCifSettings
 
     app = QtWidgets.QApplication(sys.argv)
-    # form = CifOrder(parent=None, cif_file=Path('test-data/1000007.cif').resolve())
+    # form = CifOrder(parent=None, cif_file=Path('tests/examples/1000007.cif').resolve())
     settings = FinalCifSettings()
     form = CifOrder(parent=None)
     form.set_order_from_settings(settings)

@@ -8,7 +8,7 @@ data = Path('tests')
 class TestMyCODStructuresParser(TestCase):
     def setUp(self) -> None:
         # Imagine we have a web page from the COD with a list of structures in it
-        html = (data / 'statics/cod_struct_list.html').read_text()
+        html = (data / 'fixtures/cod_struct_list.html').read_text()
         # The pasrer gets initilized
         self.parser = MyCODStructuresParser()
         # And we feed the parser with data

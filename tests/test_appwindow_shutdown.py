@@ -6,6 +6,9 @@ from qtpy.QtCore import QThread
 from finalcif.appwindow import AppWindow
 from tests.helpers import AppWindowTestCase
 
+data = Path('tests')
+
+
 
 class _SlowThread(QThread):
     def run(self) -> None:
@@ -16,7 +19,7 @@ class TestBackgroundThreadShutdown(AppWindowTestCase):
     """Qt aborts the process when a running QThread is deleted with its parent."""
 
     def setUp(self) -> None:
-        self.testcif = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
+        self.testcif = (data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').resolve()
         self.app = AppWindow(file=self.testcif)
 
     def test_running_worker_thread_is_finished_by_close(self):

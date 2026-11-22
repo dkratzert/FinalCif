@@ -1,6 +1,6 @@
 """Robustness tests for moiety formulae of pathological structure models.
 
-The structures in ``test-data/pathological/`` are deliberately awful: whole
+The structures in ``tests/examples/pathological/`` are deliberately awful: whole
 molecules disordered without any PART label, alternative positions 0.5 Angstrom
 apart, fullerene cages smeared over a dozen disorder groups, deposited sum
 formulae that contradict the atom list, and solvent that was squeezed away.
@@ -34,7 +34,9 @@ from finalcif.cif.cif_file_io import CifContainer
 from finalcif.tools.z_from_packing import (_expand_to_unit_cell, _normalize_element,
                                            _split_disorder, count_z_and_zprime)
 
-FIXTURE_DIR = Path('test-data/pathological')
+data = Path('tests')
+
+FIXTURE_DIR = data / 'examples/pathological'
 
 # (file stem, what makes the model pathological, what PLATON reports)
 #

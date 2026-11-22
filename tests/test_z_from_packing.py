@@ -27,6 +27,8 @@ from finalcif.tools.z_from_packing import (
     ZResult,
 )
 
+data = Path('tests')
+
 
 # ---------------------------------------------------------------------------
 # Unit tests for disorder filtering
@@ -348,29 +350,29 @@ class TestWeakContactsAreNotBonds:
 # Integration tests against real CIF files
 # ---------------------------------------------------------------------------
 
-def _load(relative_path: str) -> CifContainer:
-    return CifContainer(Path(relative_path))
+def _load(path: Path) -> CifContainer:
+    return CifContainer(path)
 
 
 class TestCountZRealStructures:
     def test_triclinic_z2_ml7(self):
         """DK_ML7-66 — P -1, Z=2, single organic molecule, no disorder."""
-        cif = _load('test-data/DK_ML7-66-final.cif')
+        cif = _load(data / 'examples/DK_ML7-66-final.cif')
         assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 2
 
     def test_monoclinic_z2_sucrose(self):
         """DK_Zucker2 — P 1 21 1 (sucrose), Z=2, single molecule, no disorder."""
-        cif = _load('test-data/DK_Zucker2_0m.cif')
+        cif = _load(data / 'examples/DK_Zucker2_0m.cif')
         assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 2
 
     def test_triclinic_z2_ntd106c(self):
         """ntd106c — P -1, Z=2, single neutral organic molecule."""
-        cif = _load('test-data/ntd106c-P-1-final.cif')
+        cif = _load(data / 'examples/ntd106c-P-1-final.cif')
         assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 2
 
     def test_twin_structure_z2(self):
         """twin1/DK_ML7-66 — P -1, Z=2 (same molecule, twin dataset)."""
-        cif = _load('tests/examples/twin1/DK_ML7-66-final.cif')
+        cif = _load(data / 'examples/twin1/DK_ML7-66-final.cif')
         assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 2
 
     def test_multicomponent_salt_gives_correct_z(self):
@@ -381,7 +383,7 @@ class TestCountZRealStructures:
         The GCD-by-composition step recognises that each species appears
         exactly 4 times and returns Z=4, matching the CIF value.
         """
-        cif = _load('tests/examples/multi.cif')
+        cif = _load(data / 'examples/multi.cif')
         assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 4
 
     def test_salt_1000006_finalcif(self):
@@ -390,7 +392,7 @@ class TestCountZRealStructures:
         Regression test: previously returned 8 (raw entity count) instead of
         the crystallographic Z=4.
         """
-        cif = _load('test-data/1000006.cif')
+        cif = _load(data / 'examples/1000006.cif')
         assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 4
 
     def test_empty_atoms_returns_one(self):
@@ -410,7 +412,7 @@ class TestCountZRealStructures:
         forces GCD(2, 1)=1.  With the fix, the minor component is excluded and
         GCD(2)=2 is returned correctly.
         """
-        cif = _load('test-data/1519506.cif')
+        cif = _load(data / 'examples/1519506.cif')
         assert count_z(cif.atoms_fract, cif.symmops, cif.cell[:6]) == 2
 
 
@@ -563,7 +565,7 @@ class TestZPrime:
 
     def test_count_z_and_zprime_returns_zresult(self):
         """Return type is ZResult with the expected fields."""
-        cif = _load('test-data/1000006.cif')
+        cif = _load(data / 'examples/1000006.cif')
         result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
         assert isinstance(result, ZResult)
         assert result.z == 4
@@ -574,7 +576,7 @@ class TestZPrime:
 
     def test_count_z_and_zprime_triclinic(self):
         """P -1 structure: Z=2, Z_sg=2 → Z′=1, high confidence."""
-        cif = _load('test-data/DK_ML7-66-final.cif')
+        cif = _load(data / 'examples/DK_ML7-66-final.cif')
         result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
         assert result.z == 2
         assert result.z_sg == 2
@@ -776,7 +778,7 @@ class TestMoietyFormulaFromComponents:
 
     def test_zresult_has_moiety_formula_field(self):
         """ZResult produced by count_z_and_zprime has a moiety_formula attribute."""
-        cif = _load('test-data/DK_ML7-66-final.cif')
+        cif = _load(data / 'examples/DK_ML7-66-final.cif')
         result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
         assert hasattr(result, 'moiety_formula')
         assert isinstance(result.moiety_formula, str)
@@ -785,7 +787,7 @@ class TestMoietyFormulaFromComponents:
     def test_zresult_moiety_empty_for_polymeric_without_formula(self):
         """ZResult.moiety_formula is empty when formula_derived=True but no formula_sum."""
         import gemmi as _g2
-        cif = _load('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
+        cif = _load(data / 'examples/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
         # Deliberately do NOT pass formula_sum so the polymeric fallback has nothing to work with.
         result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
         # Without formula_sum the bond-graph GCD = 1 (one connected network), formula_derived=False.
@@ -795,11 +797,11 @@ class TestMoietyFormulaFromComponents:
     def test_zresult_moiety_polymeric_uses_formula_sum(self):
         """ZResult.moiety_formula for NiAs (polymeric) is 'As Ni' when formula_sum is supplied."""
         import gemmi as _g2
-        doc = _g2.cif.read('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
+        doc = _g2.cif.read(str(data / 'examples/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif'))
         block = doc[0]
         fv = block.find_value('_chemical_formula_sum')
         formula_val = _g2.cif.as_string(fv).strip("'\" ")
-        cif = _load('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
+        cif = _load(data / 'examples/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
         result = count_z_and_zprime(
             cif.atoms_fract, cif.symmops, cif.cell[:6], formula_sum=formula_val
         )
@@ -809,7 +811,7 @@ class TestMoietyFormulaFromComponents:
 
     def test_zresult_moiety_salt(self):
         """Tetracycline HCl: moiety formula contains organic + Cl."""
-        cif = _load('test-data/1000006.cif')
+        cif = _load(data / 'examples/1000006.cif')
         result = count_z_and_zprime(cif.atoms_fract, cif.symmops, cif.cell[:6])
         moiety = result.moiety_formula
         # Should mention Cl as a separate species after the organic
@@ -830,7 +832,7 @@ class TestMoietyFormulaFromComponents:
         four copies × 0.5 = 2 effective in Z=4 cell → ratio=0.5).  Summed over
         the moieties this equals _chemical_formula_sum for the reported Z=4.
         """
-        cif = _load('tests/examples/1979688.cif')
+        cif = _load(data / 'examples/1979688.cif')
         result = count_z_and_zprime(
             cif.atoms_fract, cif.symmops, cif.cell[:6],
             formula_sum=cif['_chemical_formula_sum'],
@@ -848,7 +850,7 @@ class TestMoietyFormulaFromComponents:
         Expected: organic cation + tetrafluoroborate anion, one of each per
         formula unit (P 2₁/n, Z=4), each carrying its formal charge.
         """
-        cif = _load('tests/examples/Esser_JW367_0m.cif')
+        cif = _load(data / 'examples/Esser_JW367_0m.cif')
         result = count_z_and_zprime(
             cif.atoms_fract, cif.symmops, cif.cell[:6],
             formula_sum=cif['_chemical_formula_sum'],
@@ -875,7 +877,7 @@ class TestCountZPolymeric:
         Also exercises element-symbol normalization: the CIF stores type symbols
         as 'Ni0+' and 'As0+'; after normalization the formula comparison works.
         """
-        cif = _load('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
+        cif = _load(data / 'examples/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif')
         # Read the formula_sum from the CIF (as the appwindow does).
         formula_val = _g.cif.as_string(cif.block.find_value('_chemical_formula_sum'))
         result = count_z_and_zprime(
@@ -935,12 +937,12 @@ class TestCountZPolymeric:
 # Comprehensive parametrized test suite covering COD-database structure types
 # ---------------------------------------------------------------------------
 
-def _load_cif_raw(path: str) -> tuple[list, list[str], tuple[float, ...], str | None, int | None]:
+def _load_cif_raw(path: Path) -> tuple[list, list[str], tuple[float, ...], str | None, int | None]:
     """Load a CIF file directly via gemmi and return (atoms, symmops, cell, formula, z_cif).
 
     Works with any CIF layout — does not require CifContainer — so it can read
     the minimal fixture files in tests/examples/cod/ as well as the full
-    FinalCif CIF files in test-data/.
+    FinalCif CIF files in tests/examples/.
 
     Reads ``_atom_site_disorder_group`` and ``_atom_site_occupancy`` when
     present so that partial-occupancy disorder filtering works identically to
@@ -948,7 +950,7 @@ def _load_cif_raw(path: str) -> tuple[list, list[str], tuple[float, ...], str | 
 
     Returns ``None`` for ``z_cif`` when ``_cell_formula_units_Z`` is absent.
     """
-    doc = _g.cif.read(path)
+    doc = _g.cif.read(str(path))
     block = doc[0]
 
     # Symmetry operations
@@ -1025,31 +1027,31 @@ def _load_cif_raw(path: str) -> tuple[list, list[str], tuple[float, ...], str | 
     return atoms, symmops, cell, formula, z_cif
 
 
-# ── Existing COD structures from test-data/ ──────────────────────────────────
+# ── Existing COD structures from tests/examples/ ──────────────────────────────────
 # Each entry: (relative_path, expected_Z, expected_confidence, description)
 
 _COD_TESTDATA_CASES = [
     # path                                    Z   confidence  description
-    ('test-data/1000006.cif',                 4,  'high',    'tetracycline HCl, P212121 (organic salt)'),
-    ('test-data/1519506.cif',                 2,  'high',    'siloxane macrocycle, P-1, with disordered minor fragment'),
-    ('test-data/4060308.cif',                 2,  'high',    'W carbene complex, P-1'),
-    ('test-data/4060314.cif',                 4,  'formula', 'Au2Cl14 / Tl salt, P21/n — bond-graph undercount corrected by formula'),
-    ('test-data/406äöü0310.cif',              2,  'high',    'Re complex with encoding edge-case filename, P-1'),
-    ('test-data/SH2185_Cu.cif',               4,  'high',    'organic amine, P212121'),
-    ('test-data/alert_example.cif',           2,  'high',    'organic, P-1'),
-    ('test-data/p21c.cif',                    4,  'high',    'organic, P21/c, Z=4'),
-    ('test-data/p31c.cif',                    2,  'medium',  'P31c hexagonal, Z=2, Z′=⅓ (3-fold special position)'),
-    ('test-data/sad-final.cif',               2,  'medium',  'P31c hexagonal, Z=2, Z′=⅓ (3-fold special position)'),
-    ('test-data/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif',
+    (data / 'examples/1000006.cif',           4,  'high',    'tetracycline HCl, P212121 (organic salt)'),
+    (data / 'examples/1519506.cif',           2,  'high',    'siloxane macrocycle, P-1, with disordered minor fragment'),
+    (data / 'examples/4060308.cif',           2,  'high',    'W carbene complex, P-1'),
+    (data / 'examples/4060314.cif',           4,  'formula', 'Au2Cl14 / Tl salt, P21/n — bond-graph undercount corrected by formula'),
+    (data / 'examples/406äöü0310.cif',        2,  'high',    'Re complex with encoding edge-case filename, P-1'),
+    (data / 'examples/SH2185_Cu.cif',         4,  'high',    'organic amine, P212121'),
+    (data / 'examples/alert_example.cif',     2,  'high',    'organic, P-1'),
+    (data / 'examples/p21c.cif',              4,  'high',    'organic, P21/c, Z=4'),
+    (data / 'examples/p31c.cif',              2,  'medium',  'P31c hexagonal, Z=2, Z′=⅓ (3-fold special position)'),
+    (data / 'examples/sad-final.cif',         2,  'medium',  'P31c hexagonal, Z=2, Z′=⅓ (3-fold special position)'),
+    (data / 'examples/1923_Aminoff, G._Ni As_P 63.m m c_Nickel arsenide.cif',
                                               2,  'formula', 'NiAs — fully polymeric inorganic, ionic type_symbols'),
 ]
 
 
 
 def _make_cod_test_id(val):
-    """Return a short test ID from the CIF path string."""
-    if isinstance(val, str):
-        return Path(val).stem
+    """Return a short test ID from the CIF path."""
+    if isinstance(val, Path):
+        return val.stem
     return str(val)
 
 
@@ -1061,7 +1063,7 @@ def _make_cod_test_id(val):
 class TestZCodSuite:
     """Parametrized Z + Z′ test suite covering diverse COD-database structure types.
 
-    Each test case loads a CIF file (either from ``test-data/`` or from the
+    Each test case loads a CIF file (either from ``tests/examples/`` or from the
     minimal fixtures in ``tests/examples/cod/``), runs :func:`count_z_and_zprime`
     with the CIF's own ``_chemical_formula_sum``, and asserts that the computed Z
     matches ``_cell_formula_units_Z`` and that the confidence level is as expected.
@@ -1070,7 +1072,7 @@ class TestZCodSuite:
     crystallographic data (same atom positions and unit-cell parameters as the
     reference structures) using gemmi's space-group engine to expand the full
     operator list.  They cover structure types that are abundant in the COD
-    database but absent from the regular ``test-data/`` organics:
+    database but absent from the regular ``tests/examples/`` organics:
 
     * **Ionic / polymeric inorganics** (NaCl, TiO2, ZnO, CuO, CaCO3) — these
       always yield ``confidence='formula'`` because the bond graph spans the

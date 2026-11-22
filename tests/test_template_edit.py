@@ -7,11 +7,14 @@ from qtpy.QtTest import QTest
 
 from finalcif.appwindow import AppWindow
 
+data = Path('tests')
+
+
 
 class EquipmentTestCase(AppWindowTestCase):
     def setUp(self) -> None:
-        self.app = AppWindow(Path('test-data/1000006.cif'))
-        self.app.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
+        self.app = AppWindow(data / 'examples/1000006.cif')
+        self.app.equipment.import_equipment_from_file(data / 'examples/Crystallographer_Details.cif')
         self.app.hide()
 
     def tearDown(self) -> None:
@@ -44,7 +47,7 @@ class EquipmentTestCase(AppWindowTestCase):
 
 class PropertiesTestCase(AppWindowTestCase):
     def setUp(self) -> None:
-        self.app = AppWindow(file=Path('test-data/1000006.cif'))
+        self.app = AppWindow(file=data / 'examples/1000006.cif')
         self.app.hide()
 
     def property_edit_click(self, field: str):

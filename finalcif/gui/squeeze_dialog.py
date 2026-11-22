@@ -631,7 +631,7 @@ if __name__ == '__main__':
     from finalcif.cif.cif_file_io import CifContainer
 
     app = QApplication([])
-    cif = CifContainer(Path('test-data/SH2185_Cu.cif').resolve())
+    cif = CifContainer(Path('tests/examples/SH2185_Cu.cif').resolve())
     dialog = SqueezeSolventDialog(cif, None)
     dialog.show()
     app.exec_()

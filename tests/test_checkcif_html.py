@@ -17,13 +17,16 @@ from qtpy.QtTest import QTest
 from finalcif.appwindow import AppWindow
 from finalcif.gui.custom_classes import Column
 
+data = Path('tests')
+
+
 
 class TestCheckCifHTML(AppWindowTestCase):
 
     def setUp(self) -> None:
         if os.environ.get('NO_NETWORK'):
             self.skipTest('No network available.')
-        self.app = AppWindow(file=Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve())
+        self.app = AppWindow(file=(data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').resolve())
         self.app.hide()  # For full screen view
         self.resobj = self.app.cif.finalcif_file_prefixed(prefix='checkcif-', suffix='-finalcif.html')
 

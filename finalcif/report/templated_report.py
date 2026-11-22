@@ -1501,10 +1501,10 @@ if __name__ == '__main__':
 
     data = Path('tests')
     testcif = Path(data / 'examples/1979688.cif').absolute()
-    # testcif = Path(data / r'..\test-data\4060314.cif').absolute()
+    # testcif = Path(data / 'examples/4060314.cif').absolute()
 
-    # testcif = Path(r'test-data/p31c.cif').absolute()
-    # testcif = Path(r'test-data/p31c.cif').absolute()
+    # testcif = Path(r'tests/examples/p31c.cif').absolute()
+    # testcif = Path(r'tests/examples/p31c.cif').absolute()
     # testcif = Path(r"D:\Downloads\9008564.cif").absolute()
     cif = CifContainer(testcif)
 
@@ -1512,7 +1512,7 @@ if __name__ == '__main__':
 
     options = Options()
     options.structure_figure = pic
-    options.video_image = Path('test-data/rigaku_video/sample01.jpg')
+    options.video_image = Path('tests/examples/rigaku_video/sample01.jpg')
     # Set options with leading underscore without settings parameter in Options:
     options._bonds_table = True
     # options._report_adp = True

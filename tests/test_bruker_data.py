@@ -12,6 +12,9 @@ from pathlib import Path
 from finalcif.cif.cif_file_io import CifContainer
 from finalcif.datafiles.bruker_data import BrukerData
 
+data = Path('tests')
+
+
 CIF_TEXT = """data_test
 _audit_creation_method 'SHELXL-2018/3'
 _diffrn_reflns_number 1234
@@ -28,7 +31,7 @@ class ReflectionsFromAbsFileTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.tempdir = Path(tempfile.mkdtemp())
-        shutil.copy(Path('test-data/twinabs_multi_options.abs'), self.tempdir / 'twin.abs')
+        shutil.copy(data / 'examples/twinabs_multi_options.abs', self.tempdir / 'twin.abs')
 
     def tearDown(self) -> None:
         shutil.rmtree(self.tempdir, ignore_errors=True)
@@ -89,7 +92,7 @@ class ReflectionsFromSadabsFileTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         self.tempdir = Path(tempfile.mkdtemp())
-        shutil.copy(Path('test-data/IK_WU19.abs'), self.tempdir / 'IK_WU19.abs')
+        shutil.copy(data / 'examples/IK_WU19.abs', self.tempdir / 'IK_WU19.abs')
         cif_file = self.tempdir / 'IK_WU19_0m.cif'
         cif_file.write_text(CIF_TEXT, encoding='utf-8')
         self.data = BrukerData(FakeApp(), CifContainer(cif_file))
@@ -111,7 +114,7 @@ class RintFallbackTestCase(unittest.TestCase):
     does not contain the value already.
     """
 
-    example = Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif')
+    example = data / 'examples/work/cu_BruecknerJK_153F40_0m.cif'
 
     def test_rint_of_shelxl_is_not_replaced(self):
         data = BrukerData(FakeApp(), CifContainer(self.example))
@@ -165,7 +168,7 @@ _shelx_hkl_file
 
     def setUp(self) -> None:
         self.tempdir = Path(tempfile.mkdtemp())
-        shutil.copy(Path('test-data/twinabs_multi_options.abs'), self.tempdir / 'twin.abs')
+        shutil.copy(data / 'examples/twinabs_multi_options.abs', self.tempdir / 'twin.abs')
         cif_file = self.tempdir / 't5_dom1.cif'
         cif_file.write_text(self.cif_text, encoding='utf-8')
         self.cif_file = cif_file.resolve()

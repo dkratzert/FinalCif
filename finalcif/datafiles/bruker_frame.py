@@ -81,18 +81,18 @@ class BrukerFrameHeader:
 
 
 if __name__ == '__main__':
-    sfrm = BrukerFrameHeader('test-data/apex_frame.sfrm')
+    sfrm = BrukerFrameHeader('tests/examples/apex_frame.sfrm')
     print(sfrm)
 
     print('#####')
 
-    sfrm = BrukerFrameHeader('test-data/mo_DK_Zucker2_01_0001.sfrm')
+    sfrm = BrukerFrameHeader('tests/examples/mo_DK_Zucker2_01_0001.sfrm')
     print(sfrm)
     print(sfrm.radiation_type)
 
     print('#####')
 
-    sfrm = BrukerFrameHeader('test-data/cu_Ylid_Shutterless_01_0001.sfrm')
+    sfrm = BrukerFrameHeader('tests/examples/cu_Ylid_Shutterless_01_0001.sfrm')
     print(sfrm)
     print(sfrm.radiation_type)
     print(sfrm.measure_date)

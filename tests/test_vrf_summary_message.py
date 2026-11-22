@@ -5,13 +5,16 @@ from pathlib import Path
 from finalcif.appwindow import AppWindow
 from tests.helpers import AppWindowTestCase
 
+data = Path('tests')
+
+
 
 class TestVrfSummaryMessage(AppWindowTestCase):
     """The 'no alerts' branch is only reached for C/G-only CheckCIF reports."""
 
     def setUp(self) -> None:
         super().setUp()
-        self.app = AppWindow(file=Path('tests/examples/work/cu_BruecknerJK_153F40_0m.cif').resolve())
+        self.app = AppWindow(file=(data / 'examples/work/cu_BruecknerJK_153F40_0m.cif').resolve())
         self.app.hide()
 
     def test_no_alerts_without_c_alerts_requested(self):

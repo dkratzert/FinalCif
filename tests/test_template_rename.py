@@ -10,6 +10,9 @@ from tests.helpers import AppWindowTestCase
 from finalcif.appwindow import AppWindow
 from finalcif.tools.settings import FinalCifSettings
 
+data = Path('tests')
+
+
 
 class RenameSettingsTestCase(unittest.TestCase):
     """Unit tests for FinalCifSettings.rename_template() — no GUI needed."""
@@ -147,8 +150,8 @@ class EquipmentRenameGUITestCase(AppWindowTestCase):
     """Integration tests for renaming equipment templates via the GUI helpers."""
 
     def setUp(self) -> None:
-        self.app = AppWindow(Path('test-data/1000006.cif'))
-        self.app.equipment.import_equipment_from_file('test-data/Crystallographer_Details.cif')
+        self.app = AppWindow(data / 'examples/1000006.cif')
+        self.app.equipment.import_equipment_from_file(data / 'examples/Crystallographer_Details.cif')
         # Clean up any leftover renamed entry from a previous test run
         self.app.equipment.settings.delete_template('equipment', 'Crystallographer Details Renamed')
         self.app.hide()
@@ -323,7 +326,7 @@ class PropertiesRenameGUITestCase(AppWindowTestCase):
     """Integration tests for renaming property templates via the GUI helpers."""
 
     def setUp(self) -> None:
-        self.app = AppWindow(Path('test-data/1000006.cif'))
+        self.app = AppWindow(data / 'examples/1000006.cif')
         # Remove any leftover renamed entry from a previous test run
         self.app.properties.settings.delete_template('property', 'Crystal Colour')
         self.app.hide()
@@ -385,8 +388,8 @@ class AuthorRenameGUITestCase(AppWindowTestCase):
     """Integration tests for renaming author loop templates via the GUI helpers."""
 
     def setUp(self) -> None:
-        self.testcif = Path('tests/examples/1979688.cif')
-        self.testimport_author = Path('tests/other_templates/AATest_Author.cif')
+        self.testcif = data / 'examples/1979688.cif'
+        self.testimport_author = data / 'other_templates/AATest_Author.cif'
         self.app = AppWindow(self.testcif)
         self.app.authors.import_author(str(self.testimport_author))
         self.app.hide()

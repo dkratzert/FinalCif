@@ -9,6 +9,9 @@ from pathlib import Path
 
 from finalcif.datafiles.bruker_frame import BrukerFrameHeader
 
+data = Path('tests')
+
+
 
 class TestBrukerFrame(unittest.TestCase):
     """
@@ -17,8 +20,8 @@ class TestBrukerFrame(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.test_data = Path('./test-data')
-        self.example_data = Path('tests/examples/')
+        self.test_data = data / 'examples'
+        self.example_data = data / 'examples/'
 
     def test_str(self):
         sfrm = BrukerFrameHeader(basename='apex_frame',

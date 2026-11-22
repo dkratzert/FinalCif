@@ -79,7 +79,7 @@ if __name__ == '__main__':
     from qtpy.QtWidgets import QApplication
 
     app = QApplication(sys.argv)
-    cif = CifContainer('test-data/1000006.cif')
+    cif = CifContainer('tests/examples/1000006.cif')
     lc = LoopCreator(cif=cif)
     lc.saveLoopPushButton.clicked.connect(lc.save_new_loop_to_cif)
     lc.show()

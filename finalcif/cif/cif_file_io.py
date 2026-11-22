@@ -1179,9 +1179,9 @@ class CifContainer:
 
 if __name__ == '__main__':
     # c = CifContainer('../41467_2015.cif')
-    # c = CifContainer('test-data/p21c.cif')
+    # c = CifContainer('tests/examples/p21c.cif')
 
-    c = CifContainer('test-data/DK_Zucker2_0m.cif')
+    c = CifContainer('tests/examples/DK_Zucker2_0m.cif')
     c.load_this_block(len(c.doc) - 1)
     # pp(list(c.torsion_angles()))
     print(c.bond_dist('C1-C2'))

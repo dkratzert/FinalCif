@@ -4,13 +4,13 @@ from pathlib import Path
 
 from finalcif import appwindow
 
-data = Path('.')
+data = Path('tests')
 
 
 class TestOptions(AppWindowTestCase):
 
     def setUp(self) -> None:
-        self.app = appwindow.AppWindow(file=data / 'test-data/1000006.cif')
+        self.app = appwindow.AppWindow(file=data / 'examples/1000006.cif')
         self.app.ui.HAtomsCheckBox.setChecked(False)
         self.app.ui.ReportTextCheckBox.setChecked(False)
         self.app.ui.ADPTableCheckBox.setChecked(False)

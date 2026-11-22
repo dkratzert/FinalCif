@@ -28,9 +28,11 @@ from finalcif.tools.z_from_packing import (_build_bond_graph, _expand_to_unit_ce
                                            _symmetry_images_may_bond, count_z_and_zprime,
                                            moiety_formula_from_components)
 
+data = Path('tests')
 
-def _load(relative_path: str) -> CifContainer:
-    return CifContainer(Path(relative_path))
+
+def _load(path: Path) -> CifContainer:
+    return CifContainer(path)
 
 
 def _atoms(*symbols_with_neighbours) -> tuple[ChargeAtom, ...]:
@@ -382,7 +384,7 @@ class TestMultipliersArePerFormulaUnit:
 # ---------------------------------------------------------------------------
 
 class TestMoietyFormulaOfRealStructures:
-    def _moiety(self, path: str) -> str:
+    def _moiety(self, path: Path) -> str:
         cif = _load(path)
         return count_z_and_zprime(
             cif.atoms_fract, cif.symmops, cif.cell[:6],
@@ -395,17 +397,17 @@ class TestMoietyFormulaOfRealStructures:
         PLATON finds the same two fragments (``'C9 H9 Br Cl N2, B F4'``) but
         reports no charges.
         """
-        assert self._moiety('tests/examples/Esser_JW367_0m.cif') == 'C9 H9 Br Cl N2 1+, B F4 1-'
+        assert self._moiety(data / 'examples/Esser_JW367_0m.cif') == 'C9 H9 Br Cl N2 1+, B F4 1-'
 
     def test_tetracycline_hydrochloride(self):
         """1000006: protonated dimethylamino group + chloride.
 
         PLATON: ``'C22 H25 N2 O8, Cl'`` — same fragments, no charges.
         """
-        assert self._moiety('test-data/1000006.cif') == 'C22 H25 N2 O8 1+, Cl 1-'
+        assert self._moiety(data / 'examples/1000006.cif') == 'C22 H25 N2 O8 1+, Cl 1-'
 
     def test_neutral_molecule_gets_no_charge(self):
-        assert self._moiety('test-data/DK_ML7-66-final.cif') == 'C23 H21 N O'
+        assert self._moiety(data / 'examples/DK_ML7-66-final.cif') == 'C23 H21 N O'
 
     def test_solvate_keeps_the_per_formula_unit_multiplier(self):
         """Half a methanol per molecule, so the moiety still sums to the sum formula.
@@ -414,10 +416,10 @@ class TestMoietyFormulaOfRealStructures:
         halves Z for this structure (``Z = 2[Calc], 4[Rep]``).  We keep the Z of
         the CIF, which makes the moiety add up to ``_chemical_formula_sum``.
         """
-        assert self._moiety('tests/examples/1979688.cif') == 'C38 H38 O12, 0.5(C H4 O)'
+        assert self._moiety(data / 'examples/1979688.cif') == 'C38 H38 O12, 0.5(C H4 O)'
 
     def test_sucrose_is_neutral(self):
-        assert self._moiety('test-data/DK_Zucker2_0m.cif') == 'C12 H22 O11'
+        assert self._moiety(data / 'examples/DK_Zucker2_0m.cif') == 'C12 H22 O11'
 
     def test_disordered_anion_precedes_the_larger_cation(self):
         """1548072: PLATON reports ``'4(C16 Al F36 O4), C60 H48 In4 N12'``.
@@ -426,7 +428,7 @@ class TestMoietyFormulaOfRealStructures:
         is disordered over more sites, so its residue holds the larger number of
         modelled non-hydrogen atoms and PLATON lists it first.
         """
-        assert (self._moiety('test-data/1548072_many_atoms.cif')
+        assert (self._moiety(data / 'examples/1548072_many_atoms.cif')
                 == '4(C16 Al F36 O4), C60 H48 In4 N12')
 
     def test_special_position_solvent_of_a_half_molecule_structure(self):
@@ -616,26 +618,26 @@ class TestMoietyOrderFollowsPlaton:
 #   1508702  PLATON: 'C16 H22 N2 O3 S'                                Z=4
 #   1506408  PLATON: 'C10 H14 N2 O2 S'                                Z=16
 _COD_MOIETY_CASES = [
-    ('test-data/1517679.cif', 'C18 H18 N4 2+, 2(B F4 1-)', 4,
+    (data / 'examples/1517679.cif', 'C18 H18 N4 2+, 2(B F4 1-)', 4,
      'organic dication with two tetrafluoroborates, P 21/n'),
-    ('test-data/1513675.cif', 'C20 H38 N6 P2 Si2 2+, 2(Cl4 Ga 1-), C H2 Cl2', 4,
+    (data / 'examples/1513675.cif', 'C20 H38 N6 P2 Si2 2+, 2(Cl4 Ga 1-), C H2 Cl2', 4,
      'dication, two tetrachlorogallates and a dichloromethane solvate, P 21/c'),
-    ('test-data/1517303.cif', 'C24 H24 Br2 N O P Pd, C H2 Cl2', 2,
+    (data / 'examples/1517303.cif', 'C24 H24 Br2 N O P Pd, C H2 Cl2', 2,
      'neutral palladium complex with dichloromethane solvate, P 21'),
-    ('test-data/1508702.cif', 'C16 H22 N2 O3 S', 4,
+    (data / 'examples/1508702.cif', 'C16 H22 N2 O3 S', 4,
      'neutral organic, P 21/n'),
-    ('test-data/1506408.cif', 'C10 H14 N2 O2 S', 16,
+    (data / 'examples/1506408.cif', 'C10 H14 N2 O2 S', 16,
      'neutral organic in the high-symmetry group F dd 2, Z = 16'),
 ]
 
 
 @pytest.mark.parametrize('path, expected_moiety, expected_z, description',
                          _COD_MOIETY_CASES,
-                         ids=[Path(case[0]).stem for case in _COD_MOIETY_CASES])
+                         ids=[case[0].stem for case in _COD_MOIETY_CASES])
 class TestCodMoietyFormulas:
     """The generated moiety formula and Z must match the COD deposit."""
 
-    def _result(self, path: str):
+    def _result(self, path: Path):
         cif = _load(path)
         return count_z_and_zprime(
             cif.atoms_fract, cif.symmops, cif.cell[:6],

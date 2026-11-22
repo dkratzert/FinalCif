@@ -14,8 +14,11 @@ from qtpy import QtWidgets
 from finalcif.appwindow import AppWindow
 from tests.helpers import AppWindowTestCase
 
-CIF_WITH_HKL = Path('tests/examples/1979688.cif')
-CIF_WITHOUT_HKL = Path('tests/examples/Esser_JW367_0m.cif')
+data = Path('tests')
+
+
+CIF_WITH_HKL = data / 'examples/1979688.cif'
+CIF_WITHOUT_HKL = data / 'examples/Esser_JW367_0m.cif'
 
 
 class TestResidualDensitySources(AppWindowTestCase):

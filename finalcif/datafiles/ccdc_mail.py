@@ -85,6 +85,6 @@ class CCDCMail:
 
 if __name__ == '__main__':
     cif = CifContainer(
-        Path('test-data/DK_zucker2_0m.cif'))
+        Path('tests/examples/DK_zucker2_0m.cif'))
     ccdc = CCDCMail(cif)
     print(ccdc)

@@ -12,14 +12,14 @@ from finalcif.gui.import_selector import ImportSelector, is_empty_value, shorten
 from finalcif.tools.settings import FinalCifSettings
 
 data = Path('tests')
-testdata = Path('test-data')
+testdata = data / 'examples'
 
 
 
 
 class MyTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        imp_cif = CifContainer(data / 'statics/import_cif.cif')
+        imp_cif = CifContainer(data / 'fixtures/import_cif.cif')
         shutil.copyfile(testdata / 'p21c.cif', testdata / 'p21c-copy.cif')
         targetcif = CifContainer(testdata / 'p21c-copy.cif')
         settings = FinalCifSettings()

@@ -94,7 +94,6 @@ no-binary = ["finalcif"]
 [tool.hatch.build.targets.sdist]
 exclude = [
     "/.github",
-    "/test-data",
     "/scripts",
     "/setup",
     "/tests",

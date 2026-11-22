@@ -190,12 +190,12 @@ if __name__ == "__main__":
     import sys
 
     app = QtWidgets.QApplication([])
-    imp_cif = CifContainer('test-data/DK_Zucker2_0m.cif')
-    shutil.copyfile('test-data/p21c.cif', 'test-data/p21c-copy.cif')
-    targetcif = CifContainer('test-data/p21c-copy.cif')
+    imp_cif = CifContainer('tests/examples/DK_Zucker2_0m.cif')
+    shutil.copyfile('tests/examples/p21c.cif', 'tests/examples/p21c-copy.cif')
+    targetcif = CifContainer('tests/examples/p21c-copy.cif')
     settings = FinalCifSettings()
     imp = ImportSelector(None, import_cif=imp_cif, target_cif=targetcif, settings=settings)
     imp.show_import_window()
     app.exec()
-    Path('test-data/p21c-copy.cif').unlink(missing_ok=True)
+    Path('tests/examples/p21c-copy.cif').unlink(missing_ok=True)
     sys.exit()

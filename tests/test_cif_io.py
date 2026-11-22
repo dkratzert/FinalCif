@@ -5,12 +5,12 @@ from unittest.mock import patch
 
 from finalcif.cif.cif_file_io import CifContainer, has_cif2_header
 
-data = Path('.')
+data = Path('tests')
 
 
 class CifFileCRCTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.cif = CifContainer(data / 'tests/examples/1979688.cif')
+        self.cif = CifContainer(data / 'examples/1979688.cif')
 
     def test_calc_crc(self):
         self.assertEqual(20714, self.cif.calc_checksum(self.cif['_shelx_hkl_file']))
@@ -18,7 +18,7 @@ class CifFileCRCTestCase(unittest.TestCase):
 
 class CifFileCRClargerTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.cif = CifContainer(data / 'test-data/DK_Zucker2_0m.cif')
+        self.cif = CifContainer(data / 'examples/DK_Zucker2_0m.cif')
 
     def test_calc_crc(self):
         self.assertEqual(26780, self.cif.calc_checksum(self.cif['_shelx_hkl_file']))
@@ -26,7 +26,7 @@ class CifFileCRClargerTestCase(unittest.TestCase):
 
 class CifFileTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.cif = CifContainer(data / 'tests/examples/1979688.cif')
+        self.cif = CifContainer(data / 'examples/1979688.cif')
 
     def test_calc_crc(self):
         self.assertEqual(3583, self.cif.calc_checksum('hello world'))
@@ -38,7 +38,7 @@ class CifFileTestCase(unittest.TestCase):
         self.assertEqual(20714, self.cif.hkl_checksum_calcd)
 
     def test_res_crc_without_res(self):
-        self.assertEqual(0, CifContainer(data / 'test-data/1000006.cif').res_checksum_calcd)
+        self.assertEqual(0, CifContainer(data / 'examples/1000006.cif').res_checksum_calcd)
 
     def test_get_unknown_value_from_key(self):
         self.assertEqual('', self.cif['_chemical_melting_point'])
@@ -57,7 +57,7 @@ class CifFileTestCase(unittest.TestCase):
 
     def test_centrosymm(self):
         self.assertEqual(False, self.cif.is_centrosymm)
-        c = CifContainer(data / 'test-data/DK_ML7-66-final.cif')
+        c = CifContainer(data / 'examples/DK_ML7-66-final.cif')
         self.assertEqual(True, c.is_centrosymm)
 
     def test_ishydrogen(self):
@@ -80,8 +80,8 @@ class CifFileTestCase(unittest.TestCase):
         self.assertEqual(True, self.cif.test_res_checksum())
 
     def test_checksum_test_without_checksum(self):
-        self.assertEqual(True, CifContainer(data / 'test-data/1000006.cif').test_res_checksum())
-        self.assertEqual(True, CifContainer(data / 'test-data/1000006.cif').test_hkl_checksum())
+        self.assertEqual(True, CifContainer(data / 'examples/1000006.cif').test_res_checksum())
+        self.assertEqual(True, CifContainer(data / 'examples/1000006.cif').test_hkl_checksum())
 
     def test_distance_from_string(self):
         self.assertEqual('1.527(3)', self.cif.bond_dist('C1-C2'))
@@ -141,7 +141,7 @@ class CifFileTestCase(unittest.TestCase):
 
 class TestQuotationMark(unittest.TestCase):
     def setUp(self) -> None:
-        self.cif = CifContainer(data / 'tests/examples/1979688.cif')
+        self.cif = CifContainer(data / 'examples/1979688.cif')
         shutil.copyfile(self.cif.fileobj, data / 'test.cif')
         self.cif2 = CifContainer(data / 'test.cif')
 
@@ -158,7 +158,7 @@ class TestQuotationMark(unittest.TestCase):
 
 class TestMultiCif(unittest.TestCase):
     def setUp(self) -> None:
-        self.cif = CifContainer(data / 'tests/examples/multi.cif')
+        self.cif = CifContainer(data / 'examples/multi.cif')
 
     def test_ismulti(self):
         self.assertEqual(True, self.cif.is_multi_cif)
@@ -171,7 +171,7 @@ class TestVrfKeyOrdering(unittest.TestCase):
     """Tests that _vrf_* keys are moved to the top by order_cif_keys() and keys_with_essentials()."""
 
     def setUp(self) -> None:
-        self.cif = CifContainer(data / 'tests/examples/work/cu_BruecknerJK_153F40_0m.cif')
+        self.cif = CifContainer(data / 'examples/work/cu_BruecknerJK_153F40_0m.cif')
 
     def test_order_cif_keys_puts_vrf_first(self):
         """After order_cif_keys(), the first key in the block must be a _vrf_* key."""
@@ -262,9 +262,9 @@ class TestVRFEntry(unittest.TestCase):
 
 class TestCifAndMmcifNormalization(unittest.TestCase):
     def setUp(self) -> None:
-        self.temp_cif_with_cif2_header = Path('tests/statics/test_import_input_with_cif2_header.cif')
-        self.temp_mmcif = Path('tests/statics/test_import_input.mmcif')
-        self.temp_cif = Path('tests/statics/test_import_input.cif')
+        self.temp_cif_with_cif2_header = data / 'fixtures/test_import_input_with_cif2_header.cif'
+        self.temp_mmcif = data / 'fixtures/test_import_input.mmcif'
+        self.temp_cif = data / 'fixtures/test_import_input.cif'
         cif_content = "data_test\n_foo_bar 'baz'\n"
         self.temp_cif_with_cif2_header.write_text("#\\#CIF_2.0\n" + cif_content, encoding='utf-8')
         self.temp_mmcif.write_text(cif_content, encoding='utf-8')
@@ -297,7 +297,7 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         mocked.assert_not_called()
 
     def test_cif2_keywords_are_translated_to_cif11_names(self) -> None:
-        modern_cif = Path('tests/statics/test_import_input_cif2_keywords.cif')
+        modern_cif = data / 'fixtures/test_import_input_cif2_keywords.cif'
         modern_cif.write_text("#\\#CIF_2.0\ndata_test\n_cell.length_a 10.1\n", encoding='utf-8')
         self.addCleanup(modern_cif.unlink, missing_ok=True)
         container = CifContainer(modern_cif)
@@ -307,7 +307,7 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         self.assertEqual('', container['_cell.length_a'])
 
     def test_mmcif_keywords_are_translated_to_cif11_names(self) -> None:
-        modern_mmcif = Path('tests/statics/test_import_input_mmcif_keywords.mmcif')
+        modern_mmcif = data / 'fixtures/test_import_input_mmcif_keywords.mmcif'
         modern_mmcif.write_text("data_test\n_cell.length_a 11.2\n", encoding='utf-8')
         self.addCleanup(modern_mmcif.unlink, missing_ok=True)
         container = CifContainer(modern_mmcif)
@@ -316,7 +316,7 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         self.assertNotIn('_cell.length_a', container)
 
     def test_translation_table_overrides_simple_dot_conversion(self) -> None:
-        modern_cif = Path('tests/statics/test_import_input_cif2_translation_table.cif')
+        modern_cif = data / 'fixtures/test_import_input_cif2_translation_table.cif'
         modern_cif.write_text(
             "#\\#CIF_2.0\n"
             "data_test\n"
@@ -330,7 +330,7 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         self.assertNotIn('_diffrn.ambient_temperature', container.keys())
 
     def test_translation_table_handles_space_group_aliases(self) -> None:
-        modern_cif = Path('tests/statics/test_import_input_cif2_translation_table_space_group.cif')
+        modern_cif = data / 'fixtures/test_import_input_cif2_translation_table_space_group.cif'
         modern_cif.write_text(
             "#\\#CIF_2.0\n"
             "data_test\n"
@@ -349,7 +349,7 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
         self.assertNotIn('_space_group_symop_operation_xyz', container.keys())
 
     def test_translation_table_uses_civet_aliases_for_nontrivial_mappings(self) -> None:
-        modern_cif = Path('tests/statics/test_import_input_cif2_translation_table_civet_aliases.cif')
+        modern_cif = data / 'fixtures/test_import_input_cif2_translation_table_civet_aliases.cif'
         modern_cif.write_text(
             "#\\#CIF_2.0\n"
             "data_test\n"
@@ -401,7 +401,7 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
                            'Expected modulated-structures keywords in the mapping table.')
 
     def test_text_block_content_is_not_keyword_translated(self) -> None:
-        modern_cif = Path('tests/statics/test_import_input_cif2_text_block.cif')
+        modern_cif = data / 'fixtures/test_import_input_cif2_text_block.cif'
         modern_cif.write_text(
             "#\\#CIF_2.0\n"
             "data_test\n"
@@ -449,8 +449,8 @@ class TestCifAndMmcifNormalization(unittest.TestCase):
 
 class TestHasCif2Header(unittest.TestCase):
     def setUp(self) -> None:
-        self.cif1_file = Path('tests/statics/test_has_cif2_header_cif1.cif')
-        self.cif2_file = Path('tests/statics/test_has_cif2_header_cif2.cif')
+        self.cif1_file = data / 'fixtures/test_has_cif2_header_cif1.cif'
+        self.cif2_file = data / 'fixtures/test_has_cif2_header_cif2.cif'
         self.cif1_file.write_text("data_test\n_foo_bar 'baz'\n", encoding='utf-8')
         self.cif2_file.write_text("#\\#CIF_2.0\ndata_test\n_foo_bar 'baz'\n", encoding='utf-8')
 
@@ -465,10 +465,10 @@ class TestHasCif2Header(unittest.TestCase):
         self.assertTrue(has_cif2_header(self.cif2_file))
 
     def test_nonexistent_file_returns_false(self) -> None:
-        self.assertFalse(has_cif2_header(Path('tests/statics/nonexistent_file.cif')))
+        self.assertFalse(has_cif2_header(data / 'fixtures/nonexistent_file.cif'))
 
     def test_cif2_with_bom_returns_true(self) -> None:
-        bom_file = Path('tests/statics/test_has_cif2_header_bom.cif')
+        bom_file = data / 'fixtures/test_has_cif2_header_bom.cif'
         bom_file.write_text("\ufeff#\\#CIF_2.0\ndata_test\n_foo_bar 'baz'\n", encoding='utf-8')
         self.addCleanup(bom_file.unlink, missing_ok=True)
         self.assertTrue(has_cif2_header(bom_file))
