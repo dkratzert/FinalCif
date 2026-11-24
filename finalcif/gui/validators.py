@@ -94,7 +94,7 @@ class CalculatedZLimits(Integerlimits):
     The expected value is populated at runtime via :meth:`set_calculated_z` once the
     background bond-graph packing analysis (see :mod:`finalcif.tools.z_from_packing`)
     finishes. Before that, or when the estimate is unreliable, only the inherited
-    positive-integer range check applies.
+    positive-integer range check applies. Whole decimal numbers like ``2.0`` count as integers.
     """
 
     def __init__(self):
@@ -113,6 +113,7 @@ class CalculatedZLimits(Integerlimits):
             self.help_text = self._range_help_text
 
     def validate_cif_key(self, value: str) -> bool:
+        value = _whole_decimal_as_integer(value)
         if not super().validate_cif_key(value):
             return False
         if self.calculated_z is None:
@@ -125,6 +126,20 @@ class CalculatedZLimits(Integerlimits):
         except ValueError:
             return True
         return given_z == self.calculated_z
+
+
+def _whole_decimal_as_integer(value: str) -> str:
+    """Returns ``'2'`` for ``'2.0'``, other values unchanged."""
+    number, bracket, esd = value.partition('(')
+    if '.' not in number:
+        return value
+    try:
+        as_float = float(number)
+    except ValueError:
+        return value
+    if not as_float.is_integer():
+        return value
+    return f'{int(as_float)}{bracket}{esd}'
 
 
 # Singleton used by the GUI so the computed Z can be shared between the

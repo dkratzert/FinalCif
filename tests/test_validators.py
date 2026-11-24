@@ -1,6 +1,8 @@
 import unittest
 
-from finalcif.gui.validators import validators
+import pytest
+
+from finalcif.gui.validators import CalculatedZLimits, validators
 
 
 class TestValidators(unittest.TestCase):
@@ -42,6 +44,23 @@ class TestValidators(unittest.TestCase):
         self.assertEqual('Textlimits', v.__class__.__name__)
         self.assertEqual("Must be one of: triclinic, monoclinic, orthorhombic, "
                          "tetragonal, trigonal, hexagonal, cubic.", v.help_text)
+
+
+@pytest.mark.parametrize(('given', 'calculated', 'expected'), [
+    ('2', 2, True),
+    ('2.0', 2, True),
+    ('2.00', 2, True),
+    ('2.0', None, True),
+    ('4.0', 2, False),
+    ('2.5', 2, False),
+    ('2.5', None, False),
+    ('0.0', None, False),
+    ('?', 2, True),
+])
+def test_calculated_z_accepts_whole_decimal_numbers(given: str, calculated: int | None, expected: bool):
+    validator = CalculatedZLimits()
+    validator.set_calculated_z(calculated)
+    assert validator.valid(given) is expected
 
 
 if __name__ == '__main__':
