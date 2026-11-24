@@ -27,6 +27,7 @@ if TYPE_CHECKING:
 from fastmolwidget import Atomtuple
 from fastmolwidget.density_controls import ResidualDensityControls
 from fastmolwidget.hkl_io import find_reflection_file, has_reflections
+from fastmolwidget.molecule2D import MoleculeWidget
 from fastmolwidget.part_combo import PartFilterWidget
 
 from finalcif.gui.shelx_navigation import find_shelx_line_for_atom, scroll_and_highlight_shelx_atom
@@ -1648,7 +1649,7 @@ class AppWindow(QMainWindow):
         if self.report_picture_path:
             self.options.structure_figure = self.report_picture_path
         else:
-            self.options.structure_figure = self.cif.finalcif_file.with_suffix('.gif')
+            self.options.structure_figure = self.render_structure_figure()
         try:
             print('Report with templates')
             template_path = Path(self.get_checked_templates_list_text())
@@ -1702,6 +1703,22 @@ class AppWindow(QMainWindow):
             self.zip_report(report_filename, multi_table_document)
             return None
         return None
+
+    def render_structure_figure(self) -> Path | None:
+        """Renders the symmetry-grown structure to an image file for the report."""
+        atoms = self._calc_grown_atoms()
+        if not atoms:
+            return None
+        image_filename = self.cif.finalcif_file_prefixed(prefix='', suffix='-finalcif.png')
+        widget = MoleculeWidget()
+        widget.resize(1000, 800)
+        widget.open_molecule(self._atoms_with_adps(atoms), cell=self.cif.cell[:6])
+        # Longest molecular axis horizontal, least-squares plane in the screen plane.
+        widget.align_best_view()
+        widget.reset_rotation_center()
+        widget.show_labels(self.ui.labelsCheckBox.isChecked())
+        widget.save_image(image_filename)
+        return image_filename
 
     def zip_report(self, report_filename: Path, multi_table_document: Path | None = None) -> None:
         from finalcif.report.archive_report import ArchiveReport

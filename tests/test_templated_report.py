@@ -42,6 +42,7 @@ def report_window(tmp_path: Path) -> Mock:
     window.get_checked_templates_list_text.return_value = str(tmp_path / 'selected.docx')
     window.options = Options()
     window.report_picture_path = None
+    window.render_structure_figure.return_value = None
     window.running_inside_unit_test = False
     return window
 
