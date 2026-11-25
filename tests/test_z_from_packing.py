@@ -818,6 +818,31 @@ class TestMoietyFormulaFromComponents:
         assert 'Cl' in moiety
         assert ', ' in moiety  # two species separated by comma
 
+    def test_alkaline_earth_polymer_is_split_into_ions(self):
+        """CaCl2·6H2O (P321): Ca chain with bridging water is listed like PLATON."""
+        result = count_z_and_zprime(self._CACL2_ATOMS, self._P321_OPS, (7.845, 7.845, 3.912, 90, 90, 120),
+                                     formula_sum='Ca Cl2 H12 O6')
+        assert result.z == 1
+        assert result.moiety_formula == '2(Cl 1-), 6(H2 O), Ca 2+'
+
+    @pytest.mark.parametrize('order', [[5, 0, 1, 2, 3, 4], [1, 2, 3, 4, 5, 0], [2, 4, 5, 1, 3, 0]])
+    def test_moiety_order_follows_platon_not_atom_list(self, order):
+        """Ties are ordered like PLATON: non-metals before metals, heavier element first."""
+        atoms = [self._CACL2_ATOMS[i] for i in order]
+        result = count_z_and_zprime(atoms, self._P321_OPS, (7.845, 7.845, 3.912, 90, 90, 120),
+                                     formula_sum='Ca Cl2 H12 O6')
+        assert result.moiety_formula == '2(Cl 1-), 6(H2 O), Ca 2+'
+
+    _P321_OPS = ['x,y,z', '-y,x-y,z', '-x+y,-x,z', 'y,x,-z', 'x-y,-y,-z', '-x,-x+y,-z']
+    _CACL2_ATOMS = [
+        ['Cl1', 'Cl', 0.333333, 0.666667, 0.57453, 0, 1.0, 0.0114],
+        ['O1', 'O', 0.6893, 0.6893, 1.0, 0, 1.0, 0.0126],
+        ['H1', 'H', 0.591543, 0.670872, 0.9263, 0, 1.0, 0.019],
+        ['O2', 'O', 1.0, 0.7876, 0.5, 0, 1.0, 0.0111],
+        ['H3', 'H', 0.90933, 0.683645, 0.5133, 0, 1.0, 0.017],
+        ['Ca1', 'Ca', 1.0, 1.0, 1.0, 0, 1.0, 0.008],
+    ]
+
     def test_part_minus1_solvent_half_methanol(self):
         """PART -1 methanol solvate: 1979688 (P 2₁ 2₁ 2, Z=4).
 

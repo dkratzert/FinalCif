@@ -23,6 +23,7 @@ Algorithm
 from __future__ import annotations
 
 import dataclasses
+import itertools
 import math
 import re
 from collections import Counter, deque
@@ -65,12 +66,13 @@ type CellParameters = Sequence[float]
 # callers may still pass plain ``(element, occupancy)`` pairs.
 type AtomRecord = tuple[str, float] | tuple[str, float, tuple[tuple[str, int], ...]]
 
-# One symmetry-expanded unit-cell site.  The disorder group and the index of
-# the symmetry image that produced the site are both optional so that tests and
-# callers may pass plain ``(element, position, occupancy)`` triples.
+# One symmetry-expanded unit-cell site.  The disorder group, the index of the
+# symmetry image that produced the site and the atom label are all optional so
+# that tests and callers may pass plain ``(element, position, occupancy)`` triples.
 type ExpandedAtom = (tuple[str, tuple[float, float, float], float]
                      | tuple[str, tuple[float, float, float], float, int]
-                     | tuple[str, tuple[float, float, float], float, int, int])
+                     | tuple[str, tuple[float, float, float], float, int, int]
+                     | tuple[str, tuple[float, float, float], float, int, int, str])
 
 # How much to trust an estimated Z (see :attr:`ZResult.confidence`).
 type Confidence = Literal['high', 'medium', 'formula', 'low']
@@ -244,6 +246,20 @@ FULL_OCCUPANCY: float = 0.99
 # Waals range, so no genuine bond is lost.
 _HYDROGEN: frozenset[str] = frozenset({'H', 'D'})
 
+# Alkali and alkaline-earth metals.  Their contacts to ligands are ionic, so in
+# polymeric structures they are listed as separate moieties (e.g. a chain of
+# Ca with bridging water is reported as '2(Cl), 6(H2 O), Ca').
+_ALKALI_METALS: frozenset[str] = frozenset({'Li', 'Na', 'K', 'Rb', 'Cs', 'Fr',
+                                            'Be', 'Mg', 'Ca', 'Sr', 'Ba', 'Ra'})
+
+# Non-metals; every other element counts as a metal when ordering moieties.
+_NON_METALS: frozenset[str] = frozenset({
+    'H', 'D', 'He', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Si', 'P', 'S', 'Cl', 'Ar',
+    'Ge', 'As', 'Se', 'Br', 'Kr', 'Te', 'I', 'Xe', 'At', 'Rn'})
+
+# Numeric part and suffix of an atom label after its element symbol (``'12A'`` in ``'C12A'``).
+_LABEL_NUMBER_RE: re.Pattern[str] = re.compile(r'(\d+)(.*)$')
+
 
 def _atom_element(atom: AtomRecord) -> str:
     """Return the raw type symbol of a component atom (oxidation suffix included)."""
@@ -280,6 +296,11 @@ def _expanded_disorder_group(atom: ExpandedAtom) -> int:
     if len(atom) > 3:
         return int(cast('tuple[str, tuple[float, float, float], float, int]', atom)[3])
     return 0
+
+
+def _expanded_label(atom: ExpandedAtom) -> str:
+    """Return the atom label of an expanded site, or ``''`` when it carries none."""
+    return str(atom[5]) if len(atom) > 5 else ''
 
 
 def _expanded_image_mask(atom: ExpandedAtom) -> int:
@@ -735,7 +756,7 @@ def _expand_to_unit_cell(
          (s.fract.x - math.floor(s.fract.x),
           s.fract.y - math.floor(s.fract.y),
           s.fract.z - math.floor(s.fract.z)),
-         s.occ, s.disorder_group, _EVERY_IMAGE)
+         s.occ, s.disorder_group, _EVERY_IMAGE, s.label)
         for s in ss.get_all_unit_cell_sites()
     ]
     expanded.extend(_expand_over_symmetry(over_symmetry, list(group_ops)))
@@ -758,11 +779,12 @@ def _expand_over_symmetry(atoms: Sequence[AsuAtom], operations: list) -> list[Ex
         element = str(atom[1])
         occupancy = float(atom[6])
         group = _disorder_group(atom)
+        label = str(atom[0])
         for index, operation in enumerate(operations):
             x, y, z = operation.apply_to_xyz(source)
             generated.append((element,
                               (x - math.floor(x), y - math.floor(y), z - math.floor(z)),
-                              occupancy, group, 1 << index))
+                              occupancy, group, 1 << index, label))
     return generated
 
 
@@ -984,25 +1006,132 @@ def _get_components(
         adj: dict[int, set[int]],
         expanded: list[ExpandedAtom],
 ) -> list[list[AtomRecord]]:
-    """Return each connected component as a list of ``(element, occupancy, neighbours)`` records."""
+    """Return each connected component as a list of ``(element, occupancy, neighbours)`` records.
+
+    The components are sorted by :func:`_residue_rank`, which decides the order
+    of moieties that have the same number of non-hydrogen atoms.
+    """
     neighbours = _neighbour_table(adj, expanded)
+    ranked = sorted(_component_indices(adj), key=lambda indices: _residue_rank(indices, expanded))
+    return [[(expanded[i][0], expanded[i][2], neighbours[i]) for i in indices] for indices in ranked]
+
+
+def _atom_rank(atom: ExpandedAtom) -> tuple[float, int, str]:
+    """Return an atom sort key: heavier element first, then label number and suffix.
+
+    Sites with an occupancy below 0.5 are ranked as if 1.5 atomic numbers lighter.
+    """
+    element = _normalize_element(atom[0])
+    atomic_number: float = 1 if element == 'D' else gemmi.Element(element).atomic_number
+    if float(atom[2]) < 0.5:
+        atomic_number -= 1.5
+    label = _expanded_label(atom)
+    if label.lower().startswith(element.lower()):
+        label = label[len(element):]
+    match = _LABEL_NUMBER_RE.search(label)
+    if match is None:
+        return -atomic_number, 0, label.upper()
+    return -atomic_number, int(match.group(1)), match.group(2).upper()
+
+
+def _residue_rank(indices: list[int], expanded: list[ExpandedAtom]) -> tuple[bool, tuple[float, int, str]]:
+    """Return the sort key of a component: its best-ranked non-metal atom.
+
+    Components without any non-metal follow all others, ranked by their best metal atom.
+    """
+    non_metals = [i for i in indices if _normalize_element(expanded[i][0]) in _NON_METALS]
+    pool = non_metals or indices
+    return not non_metals, min(_atom_rank(expanded[i]) for i in pool)
+
+
+def _component_indices(adj: dict[int, set[int]]) -> list[list[int]]:
+    """Return the atom indices of each connected component of *adj*."""
     visited: set[int] = set()
-    components: list[list[AtomRecord]] = []
+    components: list[list[int]] = []
     for start in adj:
-        if start not in visited:
-            queue: deque[int] = deque([start])
-            visited.add(start)
-            comp: list[AtomRecord] = []
-            while queue:
-                node = queue.popleft()
-                atom = expanded[node]
-                comp.append((atom[0], atom[2], neighbours[node]))
-                for nbr in adj[node]:
-                    if nbr not in visited:
-                        visited.add(nbr)
-                        queue.append(nbr)
-            components.append(comp)
+        if start in visited:
+            continue
+        visited.add(start)
+        queue: deque[int] = deque([start])
+        comp: list[int] = []
+        while queue:
+            node = queue.popleft()
+            comp.append(node)
+            for nbr in adj[node] - visited:
+                visited.add(nbr)
+                queue.append(nbr)
+        components.append(comp)
     return components
+
+
+def _bond_shifts(i: int, j: int, expanded: list[ExpandedAtom],
+                 uc: gemmi.UnitCell) -> list[tuple[int, int, int]]:
+    """Return every lattice shift under which atom *j* is bonded to atom *i*."""
+    cutoff = _get_radius(expanded[i][0]) + _get_radius(expanded[j][0]) + BOND_TOLERANCE
+    fi, fj = expanded[i][1], expanded[j][1]
+    shifts: list[tuple[int, int, int]] = []
+    for shift in itertools.product((-1, 0, 1), repeat=3):
+        delta = gemmi.Fractional(*(fj[k] + shift[k] - fi[k] for k in range(3)))
+        if uc.orthogonalize(delta).length() < cutoff:
+            shifts.append(shift)
+    return shifts
+
+
+def _is_polymeric(indices: list[int], adj: dict[int, set[int]],
+                  expanded: list[ExpandedAtom], uc: gemmi.UnitCell) -> bool:
+    """Return ``True`` when the component extends infinitely through the lattice.
+
+    Each heavy atom gets the lattice offset it is reached with.  Reaching an atom
+    again under a different offset means the component is bonded to its own
+    translated copy.  Hydrogens are terminal and skipped.
+    """
+    heavy = {i for i in indices if _normalize_element(expanded[i][0]) not in _HYDROGEN}
+    if not heavy:
+        return False
+    start = min(heavy)
+    offsets: dict[int, tuple[int, ...]] = {start: (0, 0, 0)}
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()
+        origin = offsets[node]
+        for nbr in adj[node] & heavy:
+            for shift in _bond_shifts(node, nbr, expanded, uc):
+                target = tuple(o + s for o, s in zip(origin, shift, strict=True))
+                if nbr not in offsets:
+                    offsets[nbr] = target
+                    queue.append(nbr)
+                elif offsets[nbr] != target:
+                    return True
+    return False
+
+
+def _detach_alkali_metals_from_polymers(
+        adj: dict[int, set[int]],
+        expanded: list[ExpandedAtom],
+        cell: CellParameters,
+) -> dict[int, set[int]]:
+    """Return *adj* with ionic (earth)alkali-metal bonds removed from polymeric components.
+
+    Only used for the moiety formula: a chain of Ca with bridging water is listed
+    as separate ions and water molecules.  Discrete complexes and all other
+    structures are returned unchanged.
+    """
+    elements = [_normalize_element(atom[0]) for atom in expanded]
+    if not any(element in _ALKALI_METALS for element in elements):
+        return adj
+    uc = gemmi.UnitCell(*cell[:6])
+    detached: dict[int, set[int]] | None = None
+    for indices in _component_indices(adj):
+        metals = [i for i in indices if elements[i] in _ALKALI_METALS]
+        if not metals or not _is_polymeric(indices, adj, expanded, uc):
+            continue
+        if detached is None:
+            detached = {i: set(nbrs) for i, nbrs in adj.items()}
+        for metal in metals:
+            for nbr in [n for n in detached[metal] if elements[n] not in METALS]:
+                detached[metal].discard(nbr)
+                detached[nbr].discard(metal)
+    return adj if detached is None else detached
 
 
 def _z_from_components(components: list[list[AtomRecord]]) -> int:
@@ -1484,7 +1613,7 @@ def _moiety_formula_impl(
     # established by the GEN022 sort in platon_special.f).  Following that order
     # avoids checkCIF's `042_ALERT_1_C` ("Calc. and Reported MoietyFormula
     # Strings Differ"), which compares the moiety sequence.  Equal counts keep
-    # the order in which the species were discovered.
+    # the residue order established by _get_components.
     species.sort(key=lambda item: (-item.max_non_h, item.order))
 
     entries: list[_MoietyEntry] = []
@@ -1786,6 +1915,8 @@ def _count_z_with_source(
 
     adj = _build_bond_graph(expanded, cell)
     components = _get_components(adj, expanded)
+    moiety_adj = _detach_alkali_metals_from_polymers(adj, expanded, cell)
+    moiety_components = components if moiety_adj is adj else _get_components(moiety_adj, expanded)
     z = _z_from_components(components)
     z = max(1, z)
     formula_derived = False
@@ -1803,11 +1934,11 @@ def _count_z_with_source(
                     z = z_from_form
                     formula_derived = True
     except Exception:
-        moiety = moiety_formula_from_components(components, z, formula_derived=False)
+        moiety = moiety_formula_from_components(moiety_components, z, formula_derived=False)
         return _ZSource(z, formula_derived, moiety)
 
     moiety = moiety_formula_from_components(
-        components, z,
+        moiety_components, z,
         formula_derived=formula_derived,
         formula_sum_dict=parsed_formula,
     )
